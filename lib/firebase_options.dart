@@ -16,6 +16,9 @@ import 'package:flutter/foundation.dart'
 /// ```
 
 class DefaultFirebaseOptions {
+  static const String GOOGLE_CLIENT_ID =
+      '264542271356-fakng0208n8pak72m1j90tbjc38ng5ag.apps.googleusercontent.com';
+
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
       return web;
@@ -86,5 +89,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'flashcards-521f0.firebasestorage.app',
     measurementId: 'G-0672HCZSK8',
   );
-
 }

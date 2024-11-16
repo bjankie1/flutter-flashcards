@@ -1,35 +1,56 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:logger/logger.dart';
 
 import 'cards.dart';
 import 'repository.dart';
 
 class FirebaseCardsRepository implements CardsRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  var logger = Logger();
 
   @override
-  Future<void> saveDeck(Deck deck) async {
-    await _firestore.collection('decks').doc(deck.name).set(deck.toJson());
+  Future<Deck> addDeck(Deck deck) async {
+    final docRef = await _firestore.collection('decks').add(deck.toJson());
+    final newDeck = deck.copyWith(id: docRef.id);
+    return newDeck;
+  }
+
+  @override
+  Future<void> updateDeck(Deck deck) async {
+    await _firestore.collection('decks').doc(deck.id).update(deck.toJson());
   }
 
   @override
   Future<List<Deck>> loadDecks() async {
+    logger.i('Loading decks');
+    // Check authentication state
+    final user = FirebaseAuth.instance.currentUser; // Get current user
+    if (user == null) {
+      logger.w(
+          'User not logged in while attempting to load decks.'); // Log warning
+      return []; // Or throw an exception, depending on your error handling
+    } else {
+      logger.d('User UID: ${user.uid}'); // Log user UID if authenticated
+    }
     final snapshot = await _firestore.collection('decks').get();
     return snapshot.docs.map((doc) => Deck.fromJson(doc.data())).toList();
   }
 
   @override
-  Future<void> addCard(Card card) async {
-    // Generuj unikalne ID dla karty, jeśli nie jest już zdefiniowane
-    final cardId = card.question.text;
-
-    await _firestore.collection('cards').doc(cardId).set(card.toJson());
+  Future<Card> addCard(Card card) async {
+    logger.i('Adding card');
+    var docRef = await _firestore.collection('cards').add(card.toJson());
+    final newCard = card.copyWith(id: docRef.id);
+    return newCard;
   }
 
   @override
   Future<void> deleteDeck(String deckId) async {
+    logger.i('Deleting deck: $deckId');
     final batch = _firestore.batch();
 
-    // 1. Usuń talię
+    // 1. Remove deck
     batch.delete(_firestore.collection('decks').doc(deckId));
 
     // 2. Usuń powiązane karty

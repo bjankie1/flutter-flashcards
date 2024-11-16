@@ -3,10 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart'
     hide EmailAuthProvider, GoogleAuthProvider;
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
+import 'package:flutter_flashcards/src/decks-widgets/decks.dart';
 import 'package:provider/provider.dart';
 
 import 'app_router.dart';
 import 'authentication.dart';
+import 'model/repository.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
@@ -66,12 +68,17 @@ class _FlashcardsHomePageState extends State<FlashcardsHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final repository = Provider.of<CardsRepository>(context, listen: false);
     Widget page;
     switch (selectedIndex) {
       case 0:
         page = GeneratorPage();
       case 1:
         page = FavoritesPage();
+      case 2:
+        page = DeckListWidget(
+          repository: repository,
+        );
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -90,6 +97,10 @@ class _FlashcardsHomePageState extends State<FlashcardsHomePage> {
                   NavigationRailDestination(
                     icon: Icon(Icons.favorite),
                     label: Text('Favorites'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.note),
+                    label: Text('Decks'),
                   ),
                 ],
                 selectedIndex: selectedIndex,

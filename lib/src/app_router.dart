@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
 import 'package:go_router/go_router.dart';
 
+import '../firebase_options.dart';
 import 'app_state.dart';
 
 // Add GoRouter configuration outside the App class
@@ -19,7 +20,8 @@ final router = GoRouter(
             return SignInScreen(
               providers: [
                 EmailAuthProvider(),
-                GoogleProvider(clientId: AppState.GOOGLE_CLIENT_ID),
+                GoogleProvider(
+                    clientId: DefaultFirebaseOptions.GOOGLE_CLIENT_ID),
               ],
               actions: [
                 ForgotPasswordAction(((context, email) {

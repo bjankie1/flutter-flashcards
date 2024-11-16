@@ -7,6 +7,7 @@ part 'cards.g.dart';
 @freezed
 class Deck with _$Deck {
   const factory Deck({
+    String? id,
     required String name,
     String? description,
     String? parentDeckId,
@@ -64,6 +65,7 @@ class CardOptions with _$CardOptions {
 @freezed
 class Card with _$Card {
   const factory Card({
+    String? id,
     required String deckId,
     required Content question,
     required String answer,

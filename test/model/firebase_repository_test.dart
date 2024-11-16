@@ -20,7 +20,7 @@ void main() {
 
     test('Save and load deck', () async {
       final deck = model.Deck(name: 'Test Deck');
-      await repository.saveDeck(deck);
+      await repository.addDeck(deck);
 
       final loadedDecks = await repository.loadDecks();
       expect(loadedDecks.length, 1);
@@ -29,7 +29,7 @@ void main() {
 
     test('Delete deck and associated cards', () async {
       final deck = model.Deck(name: 'Test Deck 2');
-      await repository.saveDeck(deck);
+      await repository.addDeck(deck);
       await repository.addCard(model.Card(
         deckId: deck.name,
         question: model.Content(text: "Question 1"),
