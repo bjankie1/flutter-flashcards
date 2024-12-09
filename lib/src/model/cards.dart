@@ -1,108 +1,354 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flutter/foundation.dart';
+import 'dart:convert';
+import 'dart:math';
 
-part 'cards.freezed.dart';
-part 'cards.g.dart';
+enum State {
+  newState(0),
+  learning(1),
+  review(2),
+  relearning(3);
 
-@freezed
-class Deck with _$Deck {
-  const factory Deck({
-    String? id,
-    required String name,
-    String? description,
-    String? parentDeckId,
-    DeckOptions? deckOptions,
-  }) = _Deck;
+  const State(this.val);
 
-  factory Deck.fromJson(Map<String, dynamic> json) => _$DeckFromJson(json);
+  final int val;
 }
 
-@freezed
-class DeckOptions with _$DeckOptions {
-  const factory DeckOptions({
-    required int cardsDaily,
-    required int newCardsDailyLimit,
-    required Duration maxInterval,
-  }) = _DeckOptions;
+enum Rating {
+  again(1),
+  hard(2),
+  good(3),
+  easy(4);
 
-  factory DeckOptions.fromJson(Map<String, dynamic> json) =>
-      _$DeckOptionsFromJson(json);
+  const Rating(this.val);
+
+  final int val;
 }
 
-@freezed
-class Tag with _$Tag {
-  const factory Tag({
-    required String name,
-  }) = _Tag;
+class Deck {
+  final String? id;
+  final String name;
+  final String? description;
+  final String? parentDeckId;
+  final DeckOptions? deckOptions;
 
-  factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
+  const Deck({
+    this.id,
+    required this.name,
+    this.description,
+    this.parentDeckId,
+    this.deckOptions,
+  });
+
+  withId({required String id}) {
+    return Deck(
+      id: id,
+      name: name,
+      description: description,
+      parentDeckId: parentDeckId,
+      deckOptions: deckOptions,
+    );
+  }
 }
 
-@freezed
-class Content with _$Content {
-  const factory Content({
-    required String text,
-    List<String>?
-        attachments, // Assuming attachments are represented by strings (e.g., URLs)
-  }) = _Content;
+class DeckOptions {
+  final int cardsDaily;
+  final int newCardsDailyLimit;
+  final Duration maxInterval;
 
-  factory Content.fromJson(Map<String, dynamic> json) =>
-      _$ContentFromJson(json);
+  const DeckOptions({
+    required this.cardsDaily,
+    required this.newCardsDailyLimit,
+    required this.maxInterval,
+  });
 }
 
-@freezed
-class CardOptions with _$CardOptions {
-  const factory CardOptions({
-    required String deckId,
-    required bool reverse,
-    required bool inputRequire,
-  }) = _CardOptions;
+class Tag {
+  final String name;
 
-  factory CardOptions.fromJson(Map<String, dynamic> json) =>
-      _$CardOptionsFromJson(json);
+  const Tag({
+    required this.name,
+  });
 }
 
-@freezed
-class Card with _$Card {
-  const factory Card({
-    String? id,
-    required String deckId,
-    required Content question,
-    required String answer,
-    CardOptions? options,
-    List<Tag>? tags,
-    List<String>? alternativeAnswers,
-    Content? explanation,
-  }) = _Card;
+class Attachment {
+  final String id;
+  final String url;
 
-  factory Card.fromJson(Map<String, dynamic> json) => _$CardFromJson(json);
+  const Attachment({required this.id, required this.url});
 }
 
-@freezed
-class CardStats with _$CardStats {
-  const factory CardStats({
-    required String cardId,
-    required double stability,
-    required double difficulty,
-    required double lastAnswerRate,
-    required DateTime lastAnswerDate,
-    required int numberOfAnswers,
-    required DateTime dateAdded,
-  }) = _CardStats;
+// @JsonSerializable(explicitToJson: true)
+class Content {
+  final String text;
+  final List<Attachment>? attachments;
 
-  factory CardStats.fromJson(Map<String, dynamic> json) =>
-      _$CardStatsFromJson(json);
+  const Content({
+    required this.text,
+    this.attachments,
+  });
+
+  factory Content.basic(String text) => Content(text: text, attachments: []);
 }
 
-@freezed
-class CardAnswer with _$CardAnswer {
-  const factory CardAnswer({
-    required String cardId,
-    required DateTime date,
-    required double answerRate,
-    required Duration timeSpent,
-  }) = _CardAnswer;
+class CardOptions {
+  final bool reverse;
+  final bool inputRequired;
 
-  factory CardAnswer.fromJson(Map<String, dynamic> json) =>
-      _$CardAnswerFromJson(json);
+  CardOptions({
+    required this.reverse,
+    required this.inputRequired,
+  });
+}
+
+class Card {
+  final String? id;
+  final String deckId;
+  final Content question;
+  final String answer;
+  final CardOptions? options;
+  final List<Tag>? tags;
+  final List<String>? alternativeAnswers;
+  final Content? explanation;
+
+  const Card({
+    this.id,
+    required this.deckId,
+    required this.question,
+    required this.answer,
+    this.options,
+    this.tags,
+    this.alternativeAnswers,
+    this.explanation,
+  });
+
+  withId({required String id}) {
+    return Card(
+      id: id,
+      deckId: deckId,
+      question: question,
+      answer: answer,
+      options: options,
+      tags: tags,
+      alternativeAnswers: alternativeAnswers,
+      explanation: explanation,
+    );
+  }
+}
+
+class CardStats {
+  final String cardId;
+  final double stability; // Represents how well the card is learned
+  final double difficulty;
+  final DateTime? lastReview;
+  final int numberOfReviews;
+  late DateTime? dateAdded;
+  final int interval; // Time until next review (in days)
+  final DateTime? nextReviewDate;
+  final State state;
+  final dynamic numberOfLapses;
+
+  CardStats(
+      {required this.cardId,
+      this.interval = 0,
+      this.lastReview,
+      this.nextReviewDate,
+      this.stability = 0,
+      this.difficulty = 0,
+      this.numberOfReviews = 0,
+      this.numberOfLapses = 0,
+      this.dateAdded,
+      this.state = State.newState}) {
+    dateAdded ??= DateTime.now();
+  }
+
+  double? getRetrievability(DateTime now) {
+    const decay = -0.5;
+    final factor = pow(0.9, 1 / decay) - 1;
+
+    if (state == State.review && lastReview != null) {
+      final elapsedDays = (now.difference(lastReview!).inDays)
+          .clamp(0, double.infinity)
+          .toInt();
+      return pow(1 + factor * elapsedDays / stability, decay).toDouble();
+    } else {
+      return null;
+    }
+  }
+
+  CardStats copyWith({
+    String? cardId,
+    double? stability,
+    double? difficulty,
+    DateTime? lastReview,
+    DateTime? lastAnswerDate,
+    int? numberOfReviews,
+    int? numberOfLapses,
+    DateTime? dateAdded,
+    int? interval,
+    DateTime? nextReviewDate,
+    dynamic state,
+  }) {
+    return CardStats(
+      cardId: cardId ?? this.cardId,
+      stability: stability ?? this.stability,
+      difficulty: difficulty ?? this.difficulty,
+      lastReview: lastReview ?? this.lastReview,
+      numberOfReviews: numberOfReviews ?? this.numberOfReviews,
+      dateAdded: dateAdded ?? this.dateAdded,
+      interval: interval ?? this.interval,
+      nextReviewDate: nextReviewDate ?? this.nextReviewDate,
+      state: state ?? this.state,
+      numberOfLapses: numberOfLapses ?? this.numberOfLapses,
+    );
+  }
+
+  CardStats withState(State state) => copyWith(state: state);
+
+  CardStats addReview() => copyWith(numberOfReviews: numberOfReviews + 1);
+
+  CardStats withInterval(int interval) => copyWith(interval: interval);
+
+  CardStats nextReview(DateTime date) => copyWith(nextReviewDate: date);
+
+  int elapsedDays() => state == State.newState || lastReview == null
+      ? 0
+      : DateTime.now().difference(lastReview!).inDays;
+}
+
+class CardAnswer {
+  final String cardId;
+  final DateTime date;
+  final double answerRate;
+  final Duration timeSpent;
+
+  const CardAnswer({
+    required this.cardId,
+    required this.date,
+    required this.answerRate,
+    required this.timeSpent,
+  });
+}
+
+// Copied from https://github.com/open-spaced-repetition/dart-fsrs/
+class ReviewLog {
+  Rating rating;
+  int scheduledDays;
+  int elapsedDays;
+  DateTime review;
+  State state;
+
+  ReviewLog(this.rating, this.scheduledDays, this.elapsedDays, this.review,
+      this.state);
+  @override
+  String toString() {
+    return jsonEncode({
+      "rating": rating.toString(),
+      "scheduledDays": scheduledDays,
+      "elapsedDays": elapsedDays,
+      "review": review.toString(),
+      "state": state.toString(),
+    });
+  }
+}
+
+/// Store card and review log info
+class SchedulingInfo {
+  late CardStats card;
+  late ReviewLog reviewLog;
+
+  SchedulingInfo(this.card, this.reviewLog);
+}
+
+/// Calculate next review
+class SchedulingCards {
+  late CardStats again;
+  late CardStats hard;
+  late CardStats good;
+  late CardStats easy;
+
+  SchedulingCards(CardStats card) {
+    again = card.copyWith();
+    hard = card.copyWith();
+    good = card.copyWith();
+    easy = card.copyWith();
+  }
+
+  void updateState(State state) {
+    switch (state) {
+      case State.newState:
+        again = again.withState(State.learning);
+        hard = hard.withState(State.learning);
+        good = good.withState(State.learning);
+        easy = easy.withState(State.review);
+      case State.learning:
+      case State.relearning:
+        again = again.withState(state);
+        hard = hard.withState(state);
+        good = good.withState(State.review);
+        easy = easy.withState(State.review);
+      case State.review:
+        again = again.withState(State.relearning);
+        hard = hard.withState(State.review);
+        good = good.withState(State.review);
+        easy = easy.withState(State.review);
+        again = again.addReview();
+    }
+  }
+
+  void schedule(
+    DateTime now,
+    double hardInterval,
+    double goodInterval,
+    double easyInterval,
+  ) {
+    again = again.withInterval(0);
+    hard = hard.withInterval(hardInterval.toInt());
+    good = good.withInterval(goodInterval.toInt());
+    easy = easy.withInterval(easyInterval.toInt());
+    again = again.nextReview(now.add(Duration(minutes: 5)));
+    hard = hard.nextReview((hardInterval > 0)
+        ? now.add(Duration(days: hardInterval.toInt()))
+        : now.add(Duration(minutes: 10)));
+    good = good.nextReview(now.add(Duration(days: goodInterval.toInt())));
+    easy = easy.nextReview(now.add(Duration(days: easyInterval.toInt())));
+  }
+
+  Map<Rating, SchedulingInfo> recordLog(CardStats card, DateTime now) {
+    final elapsedDays = card.elapsedDays();
+    return {
+      Rating.again: SchedulingInfo(
+          again,
+          ReviewLog(
+              Rating.again, again.interval, elapsedDays, now, card.state)),
+      Rating.hard: SchedulingInfo(hard,
+          ReviewLog(Rating.hard, hard.interval, elapsedDays, now, card.state)),
+      Rating.good: SchedulingInfo(good,
+          ReviewLog(Rating.good, good.interval, elapsedDays, now, card.state)),
+      Rating.easy: SchedulingInfo(easy,
+          ReviewLog(Rating.easy, easy.interval, elapsedDays, now, card.state)),
+    };
+  }
+}
+
+class Parameters {
+  double requestRetention = 0.9;
+  int maximumInterval = 36500;
+  List<double> w = [
+    0.4,
+    0.6,
+    2.4,
+    5.8,
+    4.93,
+    0.94,
+    0.86,
+    0.01,
+    1.49,
+    0.14,
+    0.94,
+    2.18,
+    0.05,
+    0.34,
+    1.26,
+    0.29,
+    2.61
+  ];
 }

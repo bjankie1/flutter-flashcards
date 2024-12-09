@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
-import 'firebase_repository.dart';
+import 'firebase/firebase_repository.dart';
 import 'repository.dart';
 
-class CardsRepositoryProvider extends FutureProvider<CardsRepository> {
+class CardsRepositoryProvider extends Provider<CardsRepository> {
   CardsRepositoryProvider({super.key})
       : super(
-          create: (context) async {
+          create: (context) {
             final logger = Logger();
             if (const bool.fromEnvironment("testing")) {
               logger.i('Instantiating in-memory repository');
@@ -18,7 +18,6 @@ class CardsRepositoryProvider extends FutureProvider<CardsRepository> {
               return FirebaseCardsRepository();
             }
           },
-          initialData: InMemoryCardsRepository(),
         );
 
   static CardsRepository of(BuildContext context, {bool listen = true}) {

@@ -1,18 +1,17 @@
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/app.dart';
+import 'package:flutter_flashcards/src/decks/decks_page.dart';
 import 'package:go_router/go_router.dart';
 
 import '../firebase_options.dart';
-import 'app_state.dart';
 
 // Add GoRouter configuration outside the App class
 final router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => FlashcardsHomePage(),
+      builder: (context, state) => DesksPage(),
       routes: [
         GoRoute(
           path: 'sign-in',

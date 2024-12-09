@@ -32,6 +32,9 @@ dependencies:
   freezed_annotation: ^2.4.4
   logger: ^2.5.0
   uuid: ^4.5.1
+  flutter_markdown: ^0.7.4+2
+  gpt_markdown: ^0.1.10
+  fsrs: ^1.1.1
 
 dev_dependencies:
   flutter_test:

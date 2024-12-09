@@ -37,7 +37,7 @@ void main() async {
         CardsRepositoryProvider(),
         ChangeNotifierProvider(create: (context) => AppState()),
       ],
-      child: const MyApp(),
+      child: const FlashcardsApp(),
     ),
   );
 }

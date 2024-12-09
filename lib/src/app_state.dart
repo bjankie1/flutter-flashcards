@@ -1,4 +1,3 @@
-import 'package:english_words/english_words.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -20,24 +19,10 @@ class AppState extends ChangeNotifier {
     });
   }
 
-  var current = WordPair.random();
+  var title = 'Flashcards';
 
-  void getNext() {
-    current = WordPair.random();
-    _logger.d('Generated new word pair: $current'); // Debug log for word pair
-    notifyListeners();
-  }
-
-  var favourites = <WordPair>[];
-
-  void toggleFavorite() {
-    if (favourites.contains(current)) {
-      favourites.remove(current);
-      _logger.d('Removed word pair from favorites: $current');
-    } else {
-      favourites.add(current);
-      _logger.d('Added word pair to favorites: $current');
-    }
+  void setTitle(String newTitle) {
+    title = newTitle;
     notifyListeners();
   }
 
