@@ -14,8 +14,11 @@ abstract class CardsRepository {
   Future<List<model.Card>> loadCards(String deckId);
   Future<model.Card> saveCard(model.Card card);
   Future<void> deleteCard(String cardId);
-  Future<void> loadCardToReview(String deckId);
+  Future<List<model.Card>> loadCardToReview(String deckId);
   Future<model.CardStats> loadCardStats(String cardId);
+  Future<int> getCardCount(String deckId);
+  Future<int> getCardToReviewCount(String deckId);
+
   @protected
   Future<void> saveCardStats(model.CardStats stats);
 
@@ -137,8 +140,20 @@ class InMemoryCardsRepository extends CardsRepository {
   }
 
   @override
-  Future<void> loadCardToReview(String deckId) {
+  Future<List<model.Card>> loadCardToReview(String deckId) {
     // TODO: implement loadCardToReview
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<int> getCardCount(String deckId) {
+    // TODO: implement loadCardCount
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<int> getCardToReviewCount(String deckId) {
+    // TODO: implement getCardCountToReview
     throw UnimplementedError();
   }
 }

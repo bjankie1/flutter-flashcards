@@ -25,7 +25,11 @@ class _StudyCardsState extends State<StudyCards> {
   @override
   Widget build(BuildContext context) {
     final repository = Provider.of<CardsRepository>(context, listen: false);
-    var card = widget.cards[_currentCardIndex];
+    final card = currentCard();
+    if (card == null) {
+      return BaseLayout(
+          title: 'No cards to learn', child: Text('No cards to learn'));
+    }
     return BaseLayout(
       title: 'Learning card $_currentCardIndex of ${widget.cards.length}',
       child: Card(
@@ -58,6 +62,7 @@ class _StudyCardsState extends State<StudyCards> {
               ),
             if (_answered)
               SegmentedButton<model.Rating>(
+                emptySelectionAllowed: true,
                 segments: [
                   ButtonSegment<model.Rating>(
                       value: model.Rating.again, label: Text('No idea')),
@@ -79,6 +84,11 @@ class _StudyCardsState extends State<StudyCards> {
         ),
       ),
     );
+  }
+
+  model.Card? currentCard() {
+    if (widget.cards.isEmpty) return null;
+    return widget.cards[_currentCardIndex];
   }
 
   void nextCard() {

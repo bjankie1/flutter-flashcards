@@ -132,6 +132,26 @@ class Card {
       explanation: explanation,
     );
   }
+
+  Card copyWith({
+    String? id,
+    String? deckId,
+    Content? question,
+    String? answer,
+    CardOptions? options,
+    List<Tag>? tags,
+    List<String>? alternativeAnswers,
+    Content? explanation,
+  }) =>
+      Card(
+          id: id ?? this.id,
+          deckId: deckId ?? this.deckId,
+          question: question ?? this.question,
+          answer: answer ?? this.answer,
+          options: options ?? this.options,
+          tags: tags ?? this.tags,
+          alternativeAnswers: alternativeAnswers ?? this.alternativeAnswers,
+          explanation: explanation ?? this.explanation);
 }
 
 class CardStats {

@@ -59,6 +59,12 @@ class DeckListWidget extends StatelessWidget {
                                   child: Text(
                                     deck.name,
                                   )),
+                              subtitle: Row(
+                                children: [
+                                  DeckCardsNumber(repository, deck),
+                                  DeckCardsToReview(repository, deck)
+                                ],
+                              ),
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(
@@ -74,9 +80,18 @@ class DeckListWidget extends StatelessWidget {
                                     },
                                   ),
                                   ElevatedButton(
-                                      onPressed: () async => startLearning(
-                                          context, repository, deck),
-                                      child: Text('Learn'))
+                                    onPressed: () async => startLearning(
+                                        context, repository, deck),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Theme.of(context)
+                                          .colorScheme
+                                          .primary, // Use primary color from the theme
+                                      foregroundColor: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary, // Use appropriate contrast color
+                                    ),
+                                    child: Text('Learn'),
+                                  )
                                 ],
                               ),
                             )
@@ -121,12 +136,86 @@ class DeckListWidget extends StatelessWidget {
 
   void startLearning(
       BuildContext context, CardsRepository repository, model.Deck deck) async {
-    final cards = await repository.loadCards(deck.id!);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => StudyCards(
-          cards: cards,
+    try {
+      final cards = await repository.loadCardToReview(deck.id!);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => StudyCards(
+            cards: cards,
+          ),
+        ),
+      );
+    } on Exception catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.errorContainer,
+          content: Row(
+            children: [
+              Icon(Icons.warning_amber_rounded,
+                  color: Theme.of(context).colorScheme.onErrorContainer),
+              const SizedBox(width: 8),
+              Text('Error loading cards',
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onErrorContainer)),
+            ],
+          )));
+    }
+  }
+}
+
+class DeckCardsNumber extends FutureBuilder<int> {
+  DeckCardsNumber(CardsRepository repository, model.Deck deck)
+      : super(
+            future: repository.getCardCount(deck.id!),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                final cardCount = snapshot.data;
+                return TagText("Cards: $cardCount");
+              }
+            });
+}
+
+class DeckCardsToReview extends FutureBuilder<int> {
+  DeckCardsToReview(CardsRepository repository, model.Deck deck)
+      : super(
+            future: repository.getCardToReviewCount(deck.id!),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                final cardCount = snapshot.data;
+                return TagText("To review: $cardCount");
+              }
+            });
+}
+
+class TagText extends StatelessWidget {
+  const TagText(
+    this.text, {
+    super.key,
+  });
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: Material(
+        elevation: 2,
+        borderRadius: BorderRadius.circular(8.0), // Rounded corners
+        color: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest, // Use theme color
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: Text(text),
         ),
       ),
     );
