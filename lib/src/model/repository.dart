@@ -19,6 +19,10 @@ abstract class CardsRepository {
   Future<int> getCardCount(String deckId);
   Future<int> getCardToReviewCount(String deckId);
 
+  Future<void> recordCardAnswer(model.CardAnswer answer);
+  Future<List<model.CardAnswer>> loadAnswers(
+      DateTime dayStart, DateTime dayEnd);
+
   @protected
   Future<void> saveCardStats(model.CardStats stats);
 
@@ -39,6 +43,8 @@ abstract class CardsRepository {
     _log.i('Next schedule for card $cardId is ${scheduled?.nextReviewDate}');
     await saveCardStats(scheduled!);
   }
+
+  Future<model.CardReviewStats> loadCardReviewStats(DateTime day) {}
 
   // var _listeners = <VoidCallback>[];
 
@@ -154,6 +160,19 @@ class InMemoryCardsRepository extends CardsRepository {
   @override
   Future<int> getCardToReviewCount(String deckId) {
     // TODO: implement getCardCountToReview
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<model.CardAnswer>> loadAnswers(
+      DateTime dayStart, DateTime dayEnd) {
+    // TODO: implement loadAnswers
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> recordCardAnswer(model.CardAnswer answer) {
+    // TODO: implement recordCardAnswer
     throw UnimplementedError();
   }
 }

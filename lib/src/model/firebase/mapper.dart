@@ -204,16 +204,16 @@ class CardAnswerSerializer extends FirebaseSerializer<model.CardAnswer> {
   model.CardAnswer _cardAnswerFromJson(Map<String, dynamic> json) =>
       model.CardAnswer(
         cardId: json['cardId'] as String,
-        date: (json['date'] as Timestamp).toDate(),
-        answerRate: json['answerRate'] as double,
+        reviewStart: (json['date'] as Timestamp).toDate(),
+        rating: model.Rating.values[json['rating'] as int],
         timeSpent: Duration(milliseconds: json['timeSpent'] as int),
       );
 
   @override
   Map<String, dynamic> _serialize(model.CardAnswer value) => {
         'cardId': value.cardId,
-        'date': value.date,
-        'answerRate': value.answerRate,
+        'reviewStart': value.reviewStart,
+        'answerRate': value.rating.index,
         'timeSpent': value.timeSpent.inMilliseconds,
       };
 }

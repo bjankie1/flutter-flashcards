@@ -12,6 +12,7 @@ class FirebaseCardsRepository extends CardsRepository {
   final _user = FirebaseAuth.instance.currentUser; // Get current user
 
   Future<Deck> _addDeck(Deck deck) async {
+    _log.i("Saving new deck ${deck.name}");
     final serializer = DeckSerializer();
     final docRef = _firestore.collection('decks').doc(); // new doc ref
     await serializer.toSnapshot(deck, docRef).then(
@@ -255,5 +256,31 @@ class FirebaseCardsRepository extends CardsRepository {
   Future<int> getCardToReviewCount(String deckId) async {
     final ids = await _cardIdsToReview(deckId);
     return ids.length;
+  }
+
+  @override
+  Future<List<CardAnswer>> loadAnswers(
+      DateTime dayStart, DateTime dayEnd) async {
+    final serializer = CardAnswerSerializer();
+    final snapshot = await _firestore
+        .collection('cardAnswers')
+        .where('userId', isEqualTo: _user!.uid)
+        .where('reviewStart', isGreaterThanOrEqualTo: dayStart)
+        .where('reviewStart', isLessThanOrEqualTo: dayEnd)
+        .get();
+    final answers = await Future.wait(snapshot.docs
+        .map((doc) async => await serializer.fromSnapshot(doc))
+        .toList());
+    return answers;
+  }
+
+  @override
+  Future<void> recordCardAnswer(CardAnswer answer) async {
+    _log.i("Recording answer for card ${answer.cardId}");
+    final serializer = CardAnswerSerializer();
+    final docRef = _firestore.collection('cardAnswers').doc();
+    await serializer.toSnapshot(answer, docRef).then(
+        (value) => _log.d("Answer saved"),
+        onError: (e) => _log.e("Error saving answer: $e"));
   }
 }
