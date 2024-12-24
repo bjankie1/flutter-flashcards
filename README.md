@@ -2,8 +2,9 @@
 
 ## TODO
 
+- I18n
 - Unify navigation
   - [ ] Left bar for decks -> navigate to cards.
-  - [ ] Dedicated learning view
-  - [ ] Deep links
+  - [x] Dedicated learning view
+  - [ ] Improved navigation with deep links perhaps
   - [ ]

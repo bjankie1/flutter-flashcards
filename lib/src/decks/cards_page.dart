@@ -14,6 +14,7 @@ class CardsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseLayout(
       title: 'Cards for ${deck.name}',
+      currentPage: PageIndex.cards,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _addCard(context, null),
         label: const Text('Add card'),

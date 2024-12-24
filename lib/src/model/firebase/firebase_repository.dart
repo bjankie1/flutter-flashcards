@@ -101,7 +101,7 @@ class FirebaseCardsRepository extends CardsRepository {
       }
     }
 
-    await batch.commit();
+    await batch.commit().whenComplete(() => notifyDeckChanged());
   }
 
   @override
@@ -122,7 +122,7 @@ class FirebaseCardsRepository extends CardsRepository {
     for (final doc in cardAnswerSnapshot.docs) {
       batch.delete(doc.reference);
     }
-    return batch.commit();
+    return await batch.commit().whenComplete(() => notifyCardChanged());
   }
 
   @override
@@ -146,20 +146,20 @@ class FirebaseCardsRepository extends CardsRepository {
   }
 
   @override
-  Future<Card> saveCard(Card card) {
+  Future<Card> saveCard(Card card) async {
     if (card.id == null) {
-      return _addCard(card);
+      return await _addCard(card).whenComplete(() => notifyCardChanged());
     } else {
-      return _updateCard(card);
+      return await _updateCard(card).whenComplete(() => notifyCardChanged());
     }
   }
 
   @override
-  Future<Deck> saveDeck(Deck deck) {
+  Future<Deck> saveDeck(Deck deck) async {
     if (deck.id == null) {
-      return _addDeck(deck);
+      return await _addDeck(deck).whenComplete(() => notifyDeckChanged());
     } else {
-      return _updateDeck(deck);
+      return await _updateDeck(deck).whenComplete(() => notifyDeckChanged());
     }
   }
 
@@ -261,17 +261,24 @@ class FirebaseCardsRepository extends CardsRepository {
   @override
   Future<List<CardAnswer>> loadAnswers(
       DateTime dayStart, DateTime dayEnd) async {
+    _log.i('Loading answers for $dayStart to $dayEnd');
     final serializer = CardAnswerSerializer();
-    final snapshot = await _firestore
-        .collection('cardAnswers')
-        .where('userId', isEqualTo: _user!.uid)
-        .where('reviewStart', isGreaterThanOrEqualTo: dayStart)
-        .where('reviewStart', isLessThanOrEqualTo: dayEnd)
-        .get();
-    final answers = await Future.wait(snapshot.docs
-        .map((doc) async => await serializer.fromSnapshot(doc))
-        .toList());
-    return answers;
+    try {
+      final snapshot = await _firestore
+          .collection('cardAnswers')
+          .where('userId', isEqualTo: _user!.uid)
+          .where('reviewStart', isGreaterThanOrEqualTo: dayStart)
+          .where('reviewStart', isLessThanOrEqualTo: dayEnd)
+          .get();
+      final answers = await Future.wait(snapshot.docs
+          .map((doc) async => await serializer.fromSnapshot(doc))
+          .toList());
+      _log.d('Loaded ${answers.length} answers');
+      return answers;
+    } on Exception catch (e) {
+      _log.w('Failed loading answers', error: e);
+      rethrow;
+    }
   }
 
   @override

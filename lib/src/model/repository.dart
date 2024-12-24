@@ -5,8 +5,13 @@ import 'package:uuid/uuid.dart';
 import '../fsrs/fsrs.dart';
 import 'cards.dart' as model;
 
-abstract class CardsRepository {
+abstract class CardsRepository extends ChangeNotifier {
   final _log = Logger();
+
+  final ValueNotifier<bool> _cardsUpdated = ValueNotifier<bool>(false);
+  ValueListenable<bool> get cardsUpdated => _cardsUpdated;
+  final ValueNotifier<bool> _decksUpdated = ValueNotifier<bool>(false);
+  ValueListenable<bool> get decksUpdated => _decksUpdated;
 
   Future<model.Deck> saveDeck(model.Deck deck);
   Future<List<model.Deck>> loadDecks();
@@ -26,6 +31,18 @@ abstract class CardsRepository {
   @protected
   Future<void> saveCardStats(model.CardStats stats);
 
+  @protected
+  void notifyCardChanged() {
+    _cardsUpdated.value = !_cardsUpdated.value;
+    notifyListeners();
+  }
+
+  @protected
+  void notifyDeckChanged() {
+    _decksUpdated.value = !_decksUpdated.value;
+    notifyListeners();
+  }
+
   /// Record an answer if it hasn't been responded today.
   /// Ignores the information if it has.
   /// Calculates next review date based on FSRS algorithm
@@ -43,41 +60,6 @@ abstract class CardsRepository {
     _log.i('Next schedule for card $cardId is ${scheduled?.nextReviewDate}');
     await saveCardStats(scheduled!);
   }
-
-  Future<model.CardReviewStats> loadCardReviewStats(DateTime day) {}
-
-  // var _listeners = <VoidCallback>[];
-
-  // bool _disposed = false;
-
-  // @override
-  // void addListener(VoidCallback listener) {
-  //   if (_disposed) {
-  //     throw StateError('addListener called after dispose');
-  //   }
-  //   _listeners.add(listener);
-  // }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   _disposed = true;
-  // }
-
-  // @override
-  // bool get hasListeners => _listeners.isNotEmpty;
-
-  // @override
-  // void notifyListeners() {
-  //   for (var element in _listeners) {
-  //     element();
-  //   }
-  // }
-
-  // @override
-  // void removeListener(VoidCallback listener) {
-  //   _listeners.remove(listener);
-  // }
 }
 
 class InMemoryCardsRepository extends CardsRepository {

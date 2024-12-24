@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'firebase/firebase_repository.dart';
 import 'repository.dart';
 
-class CardsRepositoryProvider extends Provider<CardsRepository> {
+class CardsRepositoryProvider extends ListenableProvider<CardsRepository> {
   CardsRepositoryProvider({super.key})
       : super(
           create: (context) {

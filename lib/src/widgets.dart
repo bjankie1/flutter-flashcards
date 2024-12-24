@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/model/repository.dart';
+import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 class Header extends StatelessWidget {
   const Header(this.heading, {super.key});
@@ -64,4 +67,79 @@ class StyledButton extends StatelessWidget {
         onPressed: onPressed,
         child: child,
       );
+}
+
+class RepositoryLoader<T> extends StatelessWidget {
+  final Logger _log = Logger();
+  final Widget Function(
+      BuildContext context, T result, CardsRepository repository) builder;
+
+  final Future<T> Function(CardsRepository repository) fetcher;
+
+  final Widget Function(Object e) errorWidgetBuilder;
+
+  final Widget? indicatorWidget;
+
+  final Widget? noDataWidget;
+
+  RepositoryLoader(
+      {required this.fetcher,
+      required this.builder,
+      this.errorWidgetBuilder = _defaultErrorWidget,
+      this.indicatorWidget,
+      this.noDataWidget});
+
+  static Widget _defaultErrorWidget(Object e) =>
+      Center(child: Text('Error: $e'));
+
+  @override
+  Widget build(BuildContext context) {
+    final repository = Provider.of<CardsRepository>(context, listen: false);
+    return FutureBuilder(
+        future: fetcher(repository),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return indicatorWidget ??
+                Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            _log.w('Error loading data',
+                error: snapshot.error, stackTrace: snapshot.stackTrace);
+            return errorWidgetBuilder(snapshot.error!);
+          }
+          if (!snapshot.hasData) {
+            _log.d('No data for widget');
+            return noDataWidget ?? Center(child: Text('No data'));
+          }
+          return builder(context, snapshot.data!, repository);
+        });
+  }
+}
+
+class BreadcrumbBar extends StatelessWidget {
+  final List<String> breadcrumbs;
+  final void Function(int index) onBreadcrumbTap;
+
+  const BreadcrumbBar(
+      {required this.breadcrumbs, required this.onBreadcrumbTap, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: breadcrumbs.asMap().entries.map((entry) {
+        final index = entry.key;
+        final title = entry.value;
+        return GestureDetector(
+          onTap: () => onBreadcrumbTap(index),
+          child: Text(
+            index == breadcrumbs.length - 1 ? title : '$title / ',
+            style: index == breadcrumbs.length - 1
+                ? TextStyle(fontWeight: FontWeight.bold)
+                : null,
+          ),
+        );
+      }).toList(),
+    );
+  }
 }

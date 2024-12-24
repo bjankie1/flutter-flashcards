@@ -6,16 +6,16 @@ import 'package:gpt_markdown/gpt_markdown.dart';
 
 import '../model/cards.dart' as model;
 
-class StudyCards extends StatefulWidget {
+class StudyCardsPage extends StatefulWidget {
   final List<model.Card> cards;
 
-  const StudyCards({super.key, required this.cards});
+  const StudyCardsPage({super.key, required this.cards});
 
   @override
-  State<StatefulWidget> createState() => _StudyCardsState();
+  State<StatefulWidget> createState() => _StudyCardsPageState();
 }
 
-class _StudyCardsState extends State<StudyCards> {
+class _StudyCardsPageState extends State<StudyCardsPage> {
   int _currentCardIndex = 0;
 
   bool _answered = false;
@@ -28,10 +28,14 @@ class _StudyCardsState extends State<StudyCards> {
     final card = currentCard();
     if (card == null) {
       return BaseLayout(
-          title: 'No cards to learn', child: Text('No cards to learn'));
+        title: 'No cards to learn',
+        currentPage: PageIndex.learning,
+        child: Text('No cards to learn'),
+      );
     }
     return BaseLayout(
       title: 'Learning card $_currentCardIndex of ${widget.cards.length}',
+      currentPage: PageIndex.learning,
       child: Card(
         child: Column(
           children: [

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
-import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import '../model/cards.dart' as model;
 
@@ -29,7 +28,19 @@ class _CardEditState extends State<CardEdit> {
   final model.Card? card;
   final String deckId;
 
-  _CardEditState(this.card, this.deckId);
+  _CardEditState(this.card, this.deckId) {
+    cardQuestionTextController.text = card?.question.text ?? '';
+    cardAnswerTextController.text = card?.answer ?? '';
+    cardHintTextController.text = card?.explanation?.text ?? '';
+  }
+
+  void reset() {
+    cardQuestionTextController.text = '';
+    cardAnswerTextController.text = '';
+    cardHintTextController.text = '';
+    question = null;
+    hint = null;
+  }
 
   @override
   void initState() {
@@ -114,9 +125,22 @@ class _CardEditState extends State<CardEdit> {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: FilledButton(
-                onPressed: () async => _saveCard(context),
-                child: Text('Submit')),
+            child: Row(
+              spacing: 8.0,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                OutlinedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('Cancel')),
+                FilledButton(
+                    onPressed: () async => _saveCard(context),
+                    child: Text('Save')),
+                if (card?.id == null)
+                  FilledButton(
+                      onPressed: () async => _saveCard(context, addNew: true),
+                      child: Text('Add next')),
+              ],
+            ),
           )
         ],
       ),
@@ -134,7 +158,7 @@ class _CardEditState extends State<CardEdit> {
     return null;
   }
 
-  _saveCard(BuildContext context) async {
+  _saveCard(BuildContext context, {bool addNew = false}) async {
     if (formKey.currentState!.validate()) {
       final cardToSave = model.Card(
           id: card?.id,
@@ -148,6 +172,11 @@ class _CardEditState extends State<CardEdit> {
           .then((value) => _showSnackbar(context, 'Card saved!', false),
               onError: (e) =>
                   _showSnackbar(context, "Error saving card", true));
+      if (addNew) {
+        reset();
+      } else {
+        Navigator.of(context).pop();
+      }
     }
   }
 

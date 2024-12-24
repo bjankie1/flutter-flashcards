@@ -13,10 +13,12 @@ class CardEditPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
-        title: 'Card edit',
-        child: CardEdit(
-          card: card,
-          deckId: deckId,
-        ));
+      title: 'Card edit',
+      currentPage: PageIndex.cards,
+      child: CardEdit(
+        card: card,
+        deckId: deckId,
+      ),
+    );
   }
 }

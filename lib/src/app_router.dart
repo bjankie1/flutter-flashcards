@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/decks/decks_page.dart';
+import 'package:flutter_flashcards/src/decks/study_page.dart';
+import 'package:flutter_flashcards/src/statistics/statistics_page.dart';
 import 'package:go_router/go_router.dart';
 
 import '../firebase_options.dart';
@@ -11,7 +14,15 @@ final router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => DesksPage(),
+      redirect: (context, state) {
+        final bool loggedIn =
+            FirebaseAuth.instance.currentUser != null; // Check login state
+        if (!loggedIn) {
+          return '/sign-in'; // Redirect to sign-in if not logged in
+        }
+        return null; // Proceed with normal navigation if logged in
+      },
+      builder: (context, state) => DecksPage(),
       routes: [
         GoRoute(
           path: 'sign-in',
@@ -80,6 +91,27 @@ final router = GoRouter(
                 }),
               ],
             );
+          },
+        ),
+        GoRoute(
+          path: 'decks',
+          name: 'decks',
+          builder: (context, state) {
+            return DecksPage();
+          },
+        ),
+        GoRoute(
+          path: 'study',
+          name: 'study',
+          builder: (context, state) {
+            return StudyCardsPage(cards: []);
+          },
+        ),
+        GoRoute(
+          path: 'statistics',
+          name: 'statistics',
+          builder: (context, state) {
+            return StudyStatisticsPage();
           },
         ),
       ],

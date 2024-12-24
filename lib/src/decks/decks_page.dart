@@ -6,11 +6,12 @@ import '../base_layout.dart';
 import '../model/cards.dart' as model;
 import '../model/repository.dart';
 
-class DesksPage extends StatelessWidget {
+class DecksPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
       title: 'Flashcard decks',
+      currentPage: PageIndex.cards,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => {
           _showAddDeckDialog(context, null),
