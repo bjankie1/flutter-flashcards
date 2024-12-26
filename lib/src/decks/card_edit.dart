@@ -79,7 +79,16 @@ class _CardEditState extends State<CardEdit> {
                 Expanded(
                     child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: TexMarkdown(question ?? ''),
+                  child: Container(
+                      height: 150,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TexMarkdown(question ?? ''),
+                      )),
                 ))
               ],
             ),
@@ -89,12 +98,17 @@ class _CardEditState extends State<CardEdit> {
             child: Row(
               children: [
                 Expanded(
-                  child: TextFormField(
-                    controller: cardAnswerTextController,
-                    decoration: InputDecoration(
-                        hintText: 'Answer',
-                        labelText: 'Answer',
-                        border: OutlineInputBorder()),
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: cardAnswerTextController,
+                        decoration: InputDecoration(
+                            hintText: 'Answer',
+                            labelText: 'Answer',
+                            border: OutlineInputBorder()),
+                      ),
+                      ListView(shrinkWrap: true, children: [])
+                    ],
                   ),
                 ),
                 Spacer()
@@ -117,8 +131,18 @@ class _CardEditState extends State<CardEdit> {
                 ),
                 Expanded(
                   child: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: TexMarkdown(hint ?? '')),
+                    padding: EdgeInsets.all(8.0),
+                    child: Container(
+                        height: 150,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TexMarkdown(hint ?? ''),
+                        )),
+                  ),
                 )
               ],
             ),

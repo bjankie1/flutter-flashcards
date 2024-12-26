@@ -1,0 +1,32 @@
+{
+  "@@locale": "en",
+  "appTitle": "Flashcards",
+  "cards": "Cards",
+  "decks": "Decks",
+  "learning": "Learning",
+  "settings": "Settings",
+  "cardsToReview": "To review: {count}",
+  "@cardsToReview": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noCardsMessage": "No cards found.",
+  "add": "Add",
+  "deckSaved": "'Deck saved!'",
+  "deckName": "Deck name",
+  "addDeck": "Add Deck",
+  "editDeck": "Edit Deck",
+  "editCard": "Edit card",
+  "deckEmptyMessage": "Deck has no cards yet.",
+  "deckHeader": "Cards for {deckName}",
+  "@deckHeader": {
+    "placeholders": {
+      "deckName": {
+        "type": "String"
+      }
+    }
+  }
+}

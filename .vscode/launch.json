@@ -5,16 +5,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to Chrome",
-      "port": 9222,
-      "request": "attach",
-      "type": "chrome",
-      "webRoot": "${workspaceFolder}"
-    },
-    {
-      "name": "flutter_flashcards",
+      "name": "Flutter",
+      "type": "dart",
       "request": "launch",
-      "type": "dart"
+      "program": "lib/main.dart"
     },
     {
       "name": "flutter_flashcards (profile mode)",

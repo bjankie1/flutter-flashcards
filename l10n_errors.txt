@@ -1,0 +1,12 @@
+{
+  "pl": [
+    "add",
+    "deckSaved",
+    "deckName",
+    "addDeck",
+    "editDeck",
+    "editCard",
+    "deckEmptyMessage",
+    "deckHeader"
+  ]
+}

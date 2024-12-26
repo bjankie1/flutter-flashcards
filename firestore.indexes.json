@@ -11,7 +11,10 @@
     {
       "collectionGroup": "cardAnswers",
       "queryScope": "COLLECTION",
-      "fields": [{ "fieldPath": "reviewStart", "order": "ASCENDING" }]
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "reviewStart", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

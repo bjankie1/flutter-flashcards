@@ -15,6 +15,7 @@ abstract class CardsRepository extends ChangeNotifier {
 
   Future<model.Deck> saveDeck(model.Deck deck);
   Future<List<model.Deck>> loadDecks();
+  Future<model.Deck> loadDeck(String deckId);
   Future<void> deleteDeck(String deckId);
   Future<List<model.Card>> loadCards(String deckId);
   Future<model.Card> saveCard(model.Card card);
@@ -155,6 +156,12 @@ class InMemoryCardsRepository extends CardsRepository {
   @override
   Future<void> recordCardAnswer(model.CardAnswer answer) {
     // TODO: implement recordCardAnswer
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<model.Deck> loadDeck(String deckId) {
+    // TODO: implement loadDeck
     throw UnimplementedError();
   }
 }

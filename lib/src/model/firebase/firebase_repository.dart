@@ -290,4 +290,15 @@ class FirebaseCardsRepository extends CardsRepository {
         (value) => _log.d("Answer saved"),
         onError: (e) => _log.e("Error saving answer: $e"));
   }
+
+  @override
+  Future<Deck> loadDeck(String deckId) async {
+    _log.i('Loading deck $deckId');
+    final serializer = DeckSerializer();
+    return await _firestore
+        .collection('decks')
+        .doc(deckId)
+        .get()
+        .then((snapshot) async => await serializer.fromSnapshot(snapshot));
+  }
 }

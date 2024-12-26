@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:flutter_flashcards/src/decks/card_edit_page.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
@@ -19,12 +20,12 @@ class CardsList extends StatelessWidget {
       builder: (context, updated, _) {
         return RepositoryLoader<List<model.Card>>(
           fetcher: (repository) => repository.loadCards(deck.id!),
-          noDataWidget: Center(child: Text('No flashcards found.')),
+          noDataWidget: Center(child: Text(context.l10n.deckEmptyMessage)),
           builder: (context, data, _) {
             final flashcards = data;
             return Column(
               children: [
-                Header('Cards for ${deck.name}'),
+                Header(context.l10n.deckHeader(deck.name)),
                 SizedBox(
                   width: 500,
                   child: ListView.builder(
@@ -32,27 +33,29 @@ class CardsList extends StatelessWidget {
                     itemCount: flashcards.length,
                     itemBuilder: (context, index) {
                       final card = flashcards[index];
-                      return ListTile(
-                        title: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => CardEditPage(
-                                    card: card,
-                                    deckId: card.deckId,
-                                  ),
-                                ));
-                            Provider.of<AppState>(context, listen: false)
-                                .setTitle('Edit card');
-                          },
-                          child: Text(card.question.text),
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () async {
-                            await _deleteCard(context, card);
-                          },
+                      return Card(
+                        child: ListTile(
+                          title: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CardEditPage(
+                                      card: card,
+                                      deckId: card.deckId,
+                                    ),
+                                  ));
+                              Provider.of<AppState>(context, listen: false)
+                                  .setTitle(context.l10n.editCard);
+                            },
+                            child: Text(card.question.text),
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () async {
+                              await _deleteCard(context, card);
+                            },
+                          ),
                         ),
                       );
                     },

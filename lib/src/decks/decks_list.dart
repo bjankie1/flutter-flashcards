@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/decks/study_page.dart';
-import 'package:flutter_flashcards/src/model/cards.dart' as model;
+import 'package:flutter_flashcards/l10n/app_localizations.dart';
+import 'package:flutter_flashcards/src/app.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../app_state.dart';
+import '../model/cards.dart' as model;
 import '../model/repository.dart';
 import '../widgets.dart';
-import 'cards_page.dart';
+import 'study_page.dart';
 
 class DeckListWidget extends StatelessWidget {
   @override
@@ -16,7 +17,7 @@ class DeckListWidget extends StatelessWidget {
       builder: (context, decks, repository) {
         return Column(
           children: [
-            Header('Decks'),
+            Header(AppLocalizations.of(context)!.decks),
             SizedBox(
               width: 700,
               child: ListView.builder(
@@ -24,7 +25,7 @@ class DeckListWidget extends StatelessWidget {
                 itemCount: decks.isEmpty ? 1 : decks.length,
                 itemBuilder: (context, index) {
                   if (decks.isEmpty) {
-                    return const Center(child: Text('No decks found :().'));
+                    return Center(child: Text(context.l10n.noCardsMessage));
                   } else {
                     final deck = decks[index];
                     return Card(
@@ -33,16 +34,8 @@ class DeckListWidget extends StatelessWidget {
                           ListTile(
                             title: InkWell(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CardsPage(
-                                        deck: deck,
-                                      ),
-                                    ),
-                                  );
-                                  Provider.of<AppState>(context, listen: false)
-                                      .setTitle('Cards for ${deck.name}');
+                                  context.pushNamed('deck',
+                                      pathParameters: {'deckId': deck.id!});
                                 },
                                 child: Text(
                                   deck.name,
@@ -165,7 +158,7 @@ class DeckCardsToReview extends RepositoryLoader<int> {
             fetcher: (repository) => repository.getCardToReviewCount(deck.id!),
             builder: (context, data, _) {
               final cardCount = data;
-              return TagText("To review: $cardCount");
+              return TagText(context.l10n.cardsToReview(cardCount));
             });
 }
 

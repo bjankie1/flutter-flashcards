@@ -1,0 +1,10 @@
+{
+  "@@locale": "pl",
+  "appTitle": "Flashcards - fiszki",
+  "decks": "Zestawy",
+  "cards": "Karty",
+  "settings": "Ustawienia",
+  "learning": "Nauczanie",
+  "cardsToReview": "Do nauki: {count}",
+  "noCardsMessage": "Brak kart."
+}
