@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
+import 'package:flutter_flashcards/src/common/custom_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_flashcards/l10n/app_localizations.dart';
 
@@ -16,18 +17,21 @@ class FlashcardsApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AppState(),
-      child: MaterialApp.router(
-        title: 'Flashcards',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
-        ),
-        routerConfig: router,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-      ),
-    );
+    return ValueListenableBuilder<ThemeMode>(
+        valueListenable: context.watch<AppState>().currentTheme,
+        builder: (context, currentTheme, _) => ValueListenableBuilder<Locale>(
+              // Add this ValueListenableBuilder
+              valueListenable: context.watch<AppState>().currentLocale,
+              builder: (context, currentLocale, _) => MaterialApp.router(
+                title: 'Flashcards ' + currentLocale.languageCode,
+                theme: getLightThemeFlexColor(),
+                darkTheme: getDarkThemeFlexColor(),
+                themeMode: currentTheme,
+                routerConfig: router,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                locale: currentLocale,
+              ),
+            ));
   }
 }

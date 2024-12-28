@@ -111,7 +111,7 @@ class RepositoryLoader<T> extends StatelessWidget {
             _log.d('No data for widget');
             return noDataWidget ?? Center(child: Text('No data'));
           }
-          return builder(context, snapshot.data!, repository);
+          return builder(context, snapshot.data as T, repository);
         });
   }
 }

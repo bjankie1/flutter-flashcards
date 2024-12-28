@@ -19,6 +19,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get learning => 'Learning';
 
   @override
+  String get learn => 'Learn';
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
   String get settings => 'Settings';
 
   @override
@@ -39,10 +45,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deckName => 'Deck name';
 
   @override
-  String get addDeck => 'Add Deck';
+  String get addDeck => 'Add deck';
 
   @override
-  String get editDeck => 'Edit Deck';
+  String get addCard => 'Add card';
+
+  @override
+  String get editDeck => 'Edit deck';
 
   @override
   String get editCard => 'Edit card';
@@ -54,4 +63,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String deckHeader(String deckName) {
     return 'Cards for $deckName';
   }
+
+  @override
+  String get saveAndNext => 'Save and add next';
+
+  @override
+  String deleteDeck(String deck) {
+    return 'Delete $deck';
+  }
+
+  @override
+  String get deleteDeckConfirmation => 'Are you sure you want to delete this deck?';
+
+  @override
+  String get delete => 'Delete';
 }

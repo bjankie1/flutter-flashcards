@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/model/repository.dart';
+import 'package:flutter_flashcards/src/app.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
-import 'package:provider/provider.dart';
+import '../model/repository.dart';
 import '../model/cards.dart' as model;
 
 class CardEdit extends StatefulWidget {
@@ -57,116 +57,109 @@ class _CardEditState extends State<CardEdit> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: formKey,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: cardQuestionTextController,
-                    validator: _validateQuestion,
-                    maxLines: 5,
-                    decoration: InputDecoration(
-                        hintText: 'Question',
-                        labelText: 'Question',
-                        border: OutlineInputBorder()),
-                  ),
-                ),
-                Expanded(
-                    child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                      height: 150,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TexMarkdown(question ?? ''),
-                      )),
-                ))
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        controller: cardAnswerTextController,
+    return Card(
+      child: Form(
+        key: formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            spacing: 8.0,
+            children: [
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: cardQuestionTextController,
+                        validator: _validateQuestion,
+                        maxLines: 5,
                         decoration: InputDecoration(
-                            hintText: 'Answer',
-                            labelText: 'Answer',
+                            hintText: 'Question',
+                            labelText: 'Question',
                             border: OutlineInputBorder()),
                       ),
-                      ListView(shrinkWrap: true, children: [])
-                    ],
-                  ),
+                    ),
+                    SizedBox(width: 8.0),
+                    Expanded(
+                        child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            padding: EdgeInsets.all(8.0),
+                            child: TexMarkdown(question ?? '')))
+                  ],
                 ),
-                Spacer()
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: cardHintTextController,
-                    maxLines: 5,
-                    decoration: InputDecoration(
-                        hintText: 'Hint',
-                        labelText: 'Hint',
-                        border: OutlineInputBorder()),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Container(
-                        height: 150,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(8.0),
+              ),
+              Row(
+                spacing: 8.0,
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: cardAnswerTextController,
+                          decoration: InputDecoration(
+                              hintText: 'Answer',
+                              labelText: 'Answer',
+                              border: OutlineInputBorder()),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TexMarkdown(hint ?? ''),
-                        )),
+                        ListView(shrinkWrap: true, children: [])
+                      ],
+                    ),
                   ),
-                )
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              spacing: 8.0,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                OutlinedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text('Cancel')),
-                FilledButton(
-                    onPressed: () async => _saveCard(context),
-                    child: Text('Save')),
-                if (card?.id == null)
+                  Spacer()
+                ],
+              ),
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: cardHintTextController,
+                        maxLines: 5,
+                        decoration: InputDecoration(
+                            hintText: 'Hint',
+                            labelText: 'Hint',
+                            border: OutlineInputBorder()),
+                      ),
+                    ),
+                    SizedBox(width: 8.0),
+                    Expanded(
+                      child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TexMarkdown(hint ?? ''),
+                          )),
+                    )
+                  ],
+                ),
+              ),
+              Row(
+                spacing: 8.0,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(context.ml10n.cancelButtonLabel)),
                   FilledButton(
-                      onPressed: () async => _saveCard(context, addNew: true),
-                      child: Text('Add next')),
-              ],
-            ),
-          )
-        ],
+                      onPressed: () async => _saveCard(context),
+                      child: Text(context.ml10n.saveButtonLabel)),
+                  if (card?.id == null)
+                    FilledButton(
+                        onPressed: () async => _saveCard(context, addNew: true),
+                        child: Text(context.l10n.saveAndNext)),
+                ],
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -191,15 +184,13 @@ class _CardEditState extends State<CardEdit> {
           answer: cardAnswerTextController.text,
           explanation: model.Content.basic(cardHintTextController.text));
 
-      await Provider.of<CardsRepository>(context, listen: false)
-          .saveCard(cardToSave)
-          .then((value) => _showSnackbar(context, 'Card saved!', false),
-              onError: (e) =>
-                  _showSnackbar(context, "Error saving card", true));
+      await context.cardRepository.saveCard(cardToSave).then(
+          (value) => _showSnackbar(context, 'Card saved!', false),
+          onError: (e) => _showSnackbar(context, "Error saving card", true));
       if (addNew) {
         reset();
       } else {
-        Navigator.of(context).pop();
+        Navigator.pop(context);
       }
     }
   }

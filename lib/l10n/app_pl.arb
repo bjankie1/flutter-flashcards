@@ -5,6 +5,21 @@
   "cards": "Karty",
   "settings": "Ustawienia",
   "learning": "Nauczanie",
+  "learn": "Nauka",
   "cardsToReview": "Do nauki: {count}",
-  "noCardsMessage": "Brak kart."
+  "noCardsMessage": "Brak kart.",
+  "saveAndNext": "Zapisz i dodaj kolejną",
+  "deleteDeck": "Usuń zestaw kart '{deck}'?",
+  "deleteDeckConfirmation": "Czy na pewno chcesz usunąć ten zestaw kart?",
+  "delete": "Usuń",
+  "deckEmptyMessage": "Zestaw jest pusty.",
+  "deckHeader": "Zestaw: {deckName}",
+  "editCard": "Edytuj kartę",
+  "statistics": "Statystyki",
+  "add": "Dodaj",
+  "deckSaved": "Zestaw zapisany",
+  "deckName": "Nazwa zestawu",
+  "addCard": "Dodaj kartę",
+  "addDeck": "Dodaj zestaw",
+  "editDeck": "Edytuj zestaw"
 }

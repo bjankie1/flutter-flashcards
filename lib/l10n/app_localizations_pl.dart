@@ -19,6 +19,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get learning => 'Nauczanie';
 
   @override
+  String get learn => 'Nauka';
+
+  @override
+  String get statistics => 'Statystyki';
+
+  @override
   String get settings => 'Ustawienia';
 
   @override
@@ -30,28 +36,45 @@ class AppLocalizationsPl extends AppLocalizations {
   String get noCardsMessage => 'Brak kart.';
 
   @override
-  String get add => 'Add';
+  String get add => 'Dodaj';
 
   @override
-  String get deckSaved => '\'Deck saved!\'';
+  String get deckSaved => 'Zestaw zapisany';
 
   @override
-  String get deckName => 'Deck name';
+  String get deckName => 'Nazwa zestawu';
 
   @override
-  String get addDeck => 'Add Deck';
+  String get addDeck => 'Dodaj zestaw';
 
   @override
-  String get editDeck => 'Edit Deck';
+  String get addCard => 'Dodaj kartę';
 
   @override
-  String get editCard => 'Edit card';
+  String get editDeck => 'Edytuj zestaw';
 
   @override
-  String get deckEmptyMessage => 'Deck has no cards yet.';
+  String get editCard => 'Edytuj kartę';
+
+  @override
+  String get deckEmptyMessage => 'Zestaw jest pusty.';
 
   @override
   String deckHeader(String deckName) {
-    return 'Cards for $deckName';
+    return 'Zestaw: $deckName';
   }
+
+  @override
+  String get saveAndNext => 'Zapisz i dodaj kolejną';
+
+  @override
+  String deleteDeck(String deck) {
+    return 'Usuń zestaw kart \'$deck\'?';
+  }
+
+  @override
+  String get deleteDeckConfirmation => 'Czy na pewno chcesz usunąć ten zestaw kart?';
+
+  @override
+  String get delete => 'Usuń';
 }

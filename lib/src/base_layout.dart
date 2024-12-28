@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart'
     hide EmailAuthProvider, GoogleAuthProvider;
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/l10n/app_localizations.dart';
+import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -46,19 +48,33 @@ class BaseLayout extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       return Scaffold(
         appBar: AppBar(
-          leading: ModalRoute.of(context)?.canPop ==
-                  true // Check if there's a previous route
-              ? IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () => Navigator.of(context).pop(),
-                )
-              : null,
+          // leading: ModalRoute.of(context)?.canPop ==
+          //         true // Check if there's a previous route
+          //     ? IconButton(
+          //         icon: const Icon(Icons.arrow_back),
+          //         onPressed: () => Navigator.of(context).pop(),
+          //       )
+          //     : null,
           title: Consumer<AppState>(
             builder: (context, appState, child) {
               return Row(
                 children: [
-                  Text(appState.title),
+                  Text(title),
                   Spacer(),
+                  ValueListenableBuilder<ThemeMode>(
+                    valueListenable: context.watch<AppState>().currentTheme,
+                    builder: (context, currentTheme, _) => IconButton(
+                      icon: Icon(// Your icon based on current theme
+                          currentTheme == ThemeMode.light
+                              ? Icons.dark_mode
+                              : Icons.light_mode),
+                      onPressed: () {
+                        Provider.of<AppState>(context, listen: false)
+                            .toggleTheme();
+                      },
+                    ),
+                  ),
+                  LocaleSelection(),
                   Consumer<AppState>(
                     builder: (context, appState, _) => AuthFunc(
                         loggedIn: appState.loggedIn,
@@ -85,6 +101,33 @@ class BaseLayout extends StatelessWidget {
   }
 }
 
+class LocaleSelection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+        valueListenable: context.watch<AppState>().currentLocale,
+        builder: (context, locale, _) {
+          final locales = AppLocalizations.supportedLocales;
+          final selectedIndices = {
+            locales.firstWhere((l) => l.languageCode == locale.languageCode)
+          }; // Calculate selected here
+          return SegmentedButton(
+            multiSelectionEnabled: false,
+            selected: selectedIndices,
+            segments: locales
+                .map((locale) => ButtonSegment(
+                    value: locale,
+                    label: Text(locale.languageCode.toUpperCase())))
+                .toList(),
+            onSelectionChanged: (index) {
+              Logger().i('Locale selected: ${index.first}');
+              context.read<AppState>().setLocale(index.first);
+            },
+          );
+        });
+  }
+}
+
 class LeftNavigation extends StatelessWidget {
   final PageIndex? currentPage;
 
@@ -104,22 +147,22 @@ class LeftNavigation extends StatelessWidget {
           selectedIcon: Icon(
             Icons.edit,
           ),
-          label: Text('Decks'),
+          label: Text(context.l10n.decks),
         ),
         NavigationRailDestination(
           icon: Icon(Icons.school_outlined),
           selectedIcon: Icon(Icons.school),
-          label: Text('Learning'),
+          label: Text(context.l10n.learning),
         ),
         NavigationRailDestination(
           icon: Icon(Icons.show_chart_outlined),
           selectedIcon: Icon(Icons.show_chart),
-          label: Text('Statistics'),
+          label: Text(context.l10n.statistics),
         ),
         NavigationRailDestination(
           icon: Icon(Icons.settings_outlined),
           selectedIcon: Icon(Icons.settings),
-          label: Text('Settings'),
+          label: Text(context.l10n.settings),
         ),
       ],
       selectedIndex: selectedIndex,

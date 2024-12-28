@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../fsrs/fsrs.dart';
@@ -164,4 +166,9 @@ class InMemoryCardsRepository extends CardsRepository {
     // TODO: implement loadDeck
     throw UnimplementedError();
   }
+}
+
+extension CardRepositoryProvider on BuildContext {
+  CardsRepository get cardRepository =>
+      Provider.of<CardsRepository>(this, listen: false);
 }

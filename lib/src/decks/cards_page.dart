@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/base_layout.dart';
 import 'package:flutter_flashcards/src/decks/cards_list.dart';
 
@@ -13,11 +14,11 @@ class CardsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
-      title: 'Cards for ${deck.name}',
+      title: context.l10n.deckHeader(deck.name),
       currentPage: PageIndex.cards,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _addCard(context, null),
-        label: const Text('Add card'),
+        label: Text(context.l10n.addCard),
         icon: const Icon(Icons.add),
       ),
       child: CardsList(deck: deck),

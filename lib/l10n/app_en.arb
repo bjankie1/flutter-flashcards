@@ -4,6 +4,8 @@
   "cards": "Cards",
   "decks": "Decks",
   "learning": "Learning",
+  "learn": "Learn",
+  "statistics": "Statistics",
   "settings": "Settings",
   "cardsToReview": "To review: {count}",
   "@cardsToReview": {
@@ -17,8 +19,9 @@
   "add": "Add",
   "deckSaved": "'Deck saved!'",
   "deckName": "Deck name",
-  "addDeck": "Add Deck",
-  "editDeck": "Edit Deck",
+  "addDeck": "Add deck",
+  "addCard": "Add card",
+  "editDeck": "Edit deck",
   "editCard": "Edit card",
   "deckEmptyMessage": "Deck has no cards yet.",
   "deckHeader": "Cards for {deckName}",
@@ -28,5 +31,16 @@
         "type": "String"
       }
     }
-  }
+  },
+  "saveAndNext": "Save and add next",
+  "deleteDeck": "Delete {deck}",
+  "@deleteDeck": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteDeckConfirmation": "Are you sure you want to delete this deck?",
+  "delete": "Delete"
 }

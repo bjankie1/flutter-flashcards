@@ -71,7 +71,7 @@ class DeckListWidget extends StatelessWidget {
                                         .colorScheme
                                         .onPrimary, // Use appropriate contrast color
                                   ),
-                                  child: Text('Learn'),
+                                  child: Text(context.l10n.learn),
                                 )
                               ],
                             ),
@@ -94,19 +94,19 @@ class DeckListWidget extends StatelessWidget {
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text('Delete ${deck.name}?'),
-              content: Text('Are you sure you want to delete this deck?'),
+              title: Text(context.l10n.deleteDeck(deck.name)),
+              content: Text(context.l10n.deleteDeckConfirmation),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text('Cancel'),
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(context.ml10n.cancelButtonLabel),
                 ),
                 FilledButton(
                   onPressed: () async {
                     await repository.deleteDeck(deck.id!);
-                    Navigator.of(context).pop();
+                    Navigator.pop(context);
                   },
-                  child: Text('Delete'),
+                  child: Text(context.l10n.delete),
                 ),
               ],
             ));
@@ -125,7 +125,7 @@ class DeckListWidget extends StatelessWidget {
           ),
         ),
       );
-    } on Exception catch (e) {
+    } on Exception {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Theme.of(context).colorScheme.errorContainer,
           content: Row(
@@ -148,7 +148,7 @@ class DeckCardsNumber extends RepositoryLoader<int> {
             fetcher: (repository) => repository.getCardCount(deck.id!),
             builder: (context, data, _) {
               final cardCount = data;
-              return TagText("Cards: $cardCount");
+              return TagText("${context.l10n.cards}: $cardCount");
             });
 }
 

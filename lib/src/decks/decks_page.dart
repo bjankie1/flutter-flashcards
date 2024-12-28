@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:provider/provider.dart';
 
 import 'decks_list.dart';
 import '../base_layout.dart';
@@ -27,7 +25,6 @@ class DecksPage extends StatelessWidget {
 
   _showAddDeckDialog(BuildContext context, model.Deck? deck) async {
     String deckName = deck?.name ?? '';
-    final repository = Provider.of<CardsRepository>(context, listen: false);
 
     return showDialog<void>(
       context: context,
@@ -55,7 +52,7 @@ class DecksPage extends StatelessWidget {
               ),
               child: Text(context.ml10n.cancelButtonLabel),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pop(context);
               },
             ),
             TextButton(
@@ -67,14 +64,14 @@ class DecksPage extends StatelessWidget {
                   : context.ml10n.saveButtonLabel),
               onPressed: () async {
                 if (deckName.isNotEmpty) {
-                  await repository.saveDeck(model.Deck(name: deckName));
-                  // setState(() {});
+                  await context.cardRepository
+                      .saveDeck(model.Deck(name: deckName));
                   if (context.mounted) {
                     ScaffoldMessenger.of(context)
                       ..removeCurrentSnackBar()
                       ..showSnackBar(
                           SnackBar(content: Text(context.l10n.deckSaved)));
-                    Navigator.of(context).pop();
+                    Navigator.pop(context);
                   }
                 }
               },

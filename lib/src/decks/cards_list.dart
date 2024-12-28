@@ -15,8 +15,7 @@ class CardsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
-      valueListenable:
-          Provider.of<CardsRepository>(context, listen: true).cardsUpdated,
+      valueListenable: context.watch<CardsRepository>().cardsUpdated,
       builder: (context, updated, _) {
         return RepositoryLoader<List<model.Card>>(
           fetcher: (repository) => repository.loadCards(deck.id!),
@@ -68,7 +67,7 @@ class CardsList extends StatelessWidget {
                     onPressed: () {
                       _editCard(context, null);
                     },
-                    child: const Text('Add Card'),
+                    child: Text(context.l10n.addCard),
                   ),
                 ),
               ],

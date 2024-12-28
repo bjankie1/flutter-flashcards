@@ -64,7 +64,7 @@ final router = GoRouter(
                             'Please check your email to verify your email address'));
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
-                  context.pushReplacement('/');
+                  context.go('/');
                 })),
               ],
             );
@@ -89,7 +89,7 @@ final router = GoRouter(
               providers: const [],
               actions: [
                 SignedOutAction((context) {
-                  context.pushReplacement('/');
+                  context.go('/');
                 }),
               ],
             );

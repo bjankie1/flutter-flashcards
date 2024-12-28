@@ -119,6 +119,18 @@ abstract class AppLocalizations {
   /// **'Learning'**
   String get learning;
 
+  /// No description provided for @learn.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn'**
+  String get learn;
+
+  /// No description provided for @statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statistics;
+
   /// No description provided for @settings.
   ///
   /// In en, this message translates to:
@@ -158,13 +170,19 @@ abstract class AppLocalizations {
   /// No description provided for @addDeck.
   ///
   /// In en, this message translates to:
-  /// **'Add Deck'**
+  /// **'Add deck'**
   String get addDeck;
+
+  /// No description provided for @addCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Add card'**
+  String get addCard;
 
   /// No description provided for @editDeck.
   ///
   /// In en, this message translates to:
-  /// **'Edit Deck'**
+  /// **'Edit deck'**
   String get editDeck;
 
   /// No description provided for @editCard.
@@ -184,6 +202,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cards for {deckName}'**
   String deckHeader(String deckName);
+
+  /// No description provided for @saveAndNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and add next'**
+  String get saveAndNext;
+
+  /// No description provided for @deleteDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {deck}'**
+  String deleteDeck(String deck);
+
+  /// No description provided for @deleteDeckConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this deck?'**
+  String get deleteDeckConfirmation;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
