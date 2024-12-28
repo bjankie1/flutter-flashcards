@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
+import 'package:flutter_flashcards/src/model/user.dart';
 import 'package:logger/logger.dart';
 
 abstract class FirebaseSerializer<T> {
@@ -216,4 +218,25 @@ class CardAnswerSerializer extends FirebaseSerializer<model.CardAnswer> {
         'answerRate': value.rating.index,
         'timeSpent': value.timeSpent.inMilliseconds,
       };
+}
+
+class UserSerializer extends FirebaseSerializer<UserProfile> {
+  @override
+  Map<String, dynamic> _serialize(UserProfile value) => {
+        'name': value.name,
+        'themeIndex': value.theme.index,
+        'locale': value.locale.languageCode,
+        'photoUrl': value.photoUrl,
+      };
+
+  @override
+  Future<UserProfile> fromSnapshot(DocumentSnapshot<Object?> snapshot) async {
+    final data = snapshot.data() as Map<String, dynamic>;
+    return UserProfile(
+        id: snapshot.id,
+        name: data['name'],
+        theme: ThemeMode.values[data['themeIndex']],
+        locale: Locale(data['locale']),
+        photoUrl: data['photoUrl']);
+  }
 }

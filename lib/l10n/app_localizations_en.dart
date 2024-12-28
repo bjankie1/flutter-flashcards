@@ -28,6 +28,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
+  String get profile => 'Profile';
+
+  @override
   String cardsToReview(int count) {
     return 'To review: $count';
   }
@@ -77,4 +80,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delete => 'Delete';
+
+  @override
+  String get signIn => 'Login';
+
+  @override
+  String get signOut => 'Logout';
+
+  @override
+  String get deckNamePrompt => 'Please enter a deck name';
+
+  @override
+  String get noCardsToLearn => 'No cards to learn';
 }

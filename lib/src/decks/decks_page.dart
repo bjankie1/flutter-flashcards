@@ -40,7 +40,7 @@ class DecksPage extends StatelessWidget {
             decoration: InputDecoration(labelText: context.l10n.deckName),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter a deck name';
+                return context.l10n.deckNamePrompt;
               }
               return null;
             },

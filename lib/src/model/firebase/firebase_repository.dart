@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_flashcards/src/model/firebase/mapper.dart';
+import 'package:flutter_flashcards/src/model/user.dart';
 import 'package:logger/logger.dart';
 
 import '../cards.dart';
@@ -300,5 +301,28 @@ class FirebaseCardsRepository extends CardsRepository {
         .doc(deckId)
         .get()
         .then((snapshot) async => await serializer.fromSnapshot(snapshot));
+  }
+
+  @override
+  Future<void> saveUser(UserProfile user) async {
+    if (FirebaseAuth.instance.currentUser == null) {
+      throw Exception("User not logged in");
+    }
+    final docRef = _firestore
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid);
+    final serializer = UserSerializer();
+    await serializer.toSnapshot(user, docRef);
+    _log.i('Saved user profile ${user.id}');
+  }
+
+  @override
+  Future<UserProfile?> loadUser(String userId) async {
+    final serializer = UserSerializer();
+    final doc = await _firestore.collection('users').doc(userId).get();
+    if (doc.exists) {
+      return await serializer.fromSnapshot(doc);
+    }
+    return null;
   }
 }

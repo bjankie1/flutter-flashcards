@@ -137,6 +137,12 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settings;
 
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
   /// No description provided for @cardsToReview.
   ///
   /// In en, this message translates to:
@@ -226,6 +232,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get delete;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get signIn;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get signOut;
+
+  /// No description provided for @deckNamePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a deck name'**
+  String get deckNamePrompt;
+
+  /// No description provided for @noCardsToLearn.
+  ///
+  /// In en, this message translates to:
+  /// **'No cards to learn'**
+  String get noCardsToLearn;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

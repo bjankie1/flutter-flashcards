@@ -7,6 +7,7 @@
   "learn": "Learn",
   "statistics": "Statistics",
   "settings": "Settings",
+  "profile": "Profile",
   "cardsToReview": "To review: {count}",
   "@cardsToReview": {
     "placeholders": {
@@ -42,5 +43,9 @@
     }
   },
   "deleteDeckConfirmation": "Are you sure you want to delete this deck?",
-  "delete": "Delete"
+  "delete": "Delete",
+  "signIn": "Login",
+  "signOut": "Logout",
+  "deckNamePrompt": "Please enter a deck name",
+  "noCardsToLearn": "No cards to learn"
 }

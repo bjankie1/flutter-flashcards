@@ -151,10 +151,12 @@ class _CardEditState extends State<CardEdit> {
                   FilledButton(
                       onPressed: () async => _saveCard(context),
                       child: Text(context.ml10n.saveButtonLabel)),
-                  if (card?.id == null)
-                    FilledButton(
+                  Visibility(
+                    visible: card?.id == null,
+                    child: FilledButton(
                         onPressed: () async => _saveCard(context, addNew: true),
                         child: Text(context.l10n.saveAndNext)),
+                  ),
                 ],
               )
             ],

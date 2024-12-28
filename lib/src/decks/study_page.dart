@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:provider/provider.dart';
 import '../base_layout.dart';
@@ -28,9 +29,9 @@ class _StudyCardsPageState extends State<StudyCardsPage> {
     final card = currentCard();
     if (card == null) {
       return BaseLayout(
-        title: 'No cards to learn',
+        title: context.l10n.noCardsToLearn,
         currentPage: PageIndex.learning,
-        child: Text('No cards to learn'),
+        child: Text(context.l10n.noCardsToLearn),
       );
     }
     return BaseLayout(
@@ -49,13 +50,16 @@ class _StudyCardsPageState extends State<StudyCardsPage> {
               ),
             ),
             Divider(),
-            if (!_answered)
-              ElevatedButton(
+            Visibility(
+              visible: !_answered,
+              child: ElevatedButton(
                 child: Text("Show answer"),
                 onPressed: () => setState(() => _answered = true),
               ),
-            if (_answered)
-              Expanded(
+            ),
+            Visibility(
+              visible: _answered,
+              child: Expanded(
                 child: SizedBox(
                   width: 800,
                   child: Padding(
@@ -64,8 +68,10 @@ class _StudyCardsPageState extends State<StudyCardsPage> {
                   ),
                 ),
               ),
-            if (_answered)
-              SegmentedButton<model.Rating>(
+            ),
+            Visibility(
+              visible: _answered,
+              child: SegmentedButton<model.Rating>(
                 emptySelectionAllowed: true,
                 segments: [
                   ButtonSegment<model.Rating>(
@@ -84,6 +90,7 @@ class _StudyCardsPageState extends State<StudyCardsPage> {
                   nextCard();
                 },
               ),
+            ),
           ],
         ),
       ),

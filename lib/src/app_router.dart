@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/decks/cards_page.dart';
 import 'package:flutter_flashcards/src/decks/decks_page.dart';
 import 'package:flutter_flashcards/src/decks/study_page.dart';
+import 'package:flutter_flashcards/src/settings/settings_page.dart';
 import 'package:flutter_flashcards/src/statistics/statistics_page.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -129,6 +130,13 @@ final router = GoRouter(
           name: 'statistics',
           builder: (context, state) {
             return StudyStatisticsPage();
+          },
+        ),
+        GoRoute(
+          path: 'settings',
+          name: 'settings',
+          builder: (context, state) {
+            return SettingsPage();
           },
         ),
       ],

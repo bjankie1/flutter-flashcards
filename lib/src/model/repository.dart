@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_flashcards/src/model/user.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -19,9 +20,11 @@ abstract class CardsRepository extends ChangeNotifier {
   Future<List<model.Deck>> loadDecks();
   Future<model.Deck> loadDeck(String deckId);
   Future<void> deleteDeck(String deckId);
+
   Future<List<model.Card>> loadCards(String deckId);
   Future<model.Card> saveCard(model.Card card);
   Future<void> deleteCard(String cardId);
+
   Future<List<model.Card>> loadCardToReview(String deckId);
   Future<model.CardStats> loadCardStats(String cardId);
   Future<int> getCardCount(String deckId);
@@ -33,6 +36,9 @@ abstract class CardsRepository extends ChangeNotifier {
 
   @protected
   Future<void> saveCardStats(model.CardStats stats);
+
+  Future<UserProfile?> loadUser(String userId);
+  Future<void> saveUser(UserProfile user);
 
   @protected
   void notifyCardChanged() {
@@ -164,6 +170,18 @@ class InMemoryCardsRepository extends CardsRepository {
   @override
   Future<model.Deck> loadDeck(String deckId) {
     // TODO: implement loadDeck
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> saveUser(UserProfile user) {
+    // TODO: implement saveUser
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<UserProfile?> loadUser(String userId) {
+    // TODO: implement loadUser
     throw UnimplementedError();
   }
 }

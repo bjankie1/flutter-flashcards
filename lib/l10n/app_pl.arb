@@ -6,6 +6,7 @@
   "settings": "Ustawienia",
   "learning": "Nauczanie",
   "learn": "Nauka",
+  "profile": "Profil",
   "cardsToReview": "Do nauki: {count}",
   "noCardsMessage": "Brak kart.",
   "saveAndNext": "Zapisz i dodaj kolejną",
@@ -21,5 +22,7 @@
   "deckName": "Nazwa zestawu",
   "addCard": "Dodaj kartę",
   "addDeck": "Dodaj zestaw",
-  "editDeck": "Edytuj zestaw"
+  "editDeck": "Edytuj zestaw",
+  "signIn": "Zaloguj",
+  "signOut": "Wyloguj"
 }
