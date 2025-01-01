@@ -23,7 +23,7 @@ class FlashcardsApp extends StatelessWidget {
               // Add this ValueListenableBuilder
               valueListenable: context.watch<AppState>().currentLocale,
               builder: (context, currentLocale, _) => MaterialApp.router(
-                title: 'Flashcards ' + currentLocale.languageCode,
+                title: 'Flashcards ${currentLocale.languageCode}',
                 theme: getLightThemeFlexColor(),
                 darkTheme: getDarkThemeFlexColor(),
                 themeMode: currentTheme,

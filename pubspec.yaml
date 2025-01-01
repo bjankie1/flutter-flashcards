@@ -32,14 +32,15 @@ dependencies:
   logger: ^2.5.0
   uuid: ^4.5.1
   flutter_markdown: ^0.7.4+2
-  gpt_markdown: ^0.1.10
-  fsrs: ^1.1.1
-  intl: ^0.19.0
-  intl_translation: ^0.20.1
-  flex_seed_scheme: ^3.4.1
-  flex_color_scheme: ^8.0.2
+  gpt_markdown: any
+  fsrs: any
+  intl: any
+  intl_translation: any
+  flex_seed_scheme: any
+  flex_color_scheme: any
   random_color_scheme: ^0.1.4
   flag: ^7.0.0
+  fl_chart: ^0.70.0
 
 dev_dependencies:
   flutter_test:

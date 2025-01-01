@@ -24,7 +24,7 @@ void main() {
 
     final loadedDecks = await repository.loadDecks();
     expect(loadedDecks.length, 1);
-    expect(loadedDecks[0].name, 'Test Deck');
+    expect(loadedDecks.first.name, 'Test Deck');
   });
 
   test('Delete deck and associated cards', () async {

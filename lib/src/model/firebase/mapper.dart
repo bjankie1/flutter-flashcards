@@ -161,24 +161,22 @@ class CardStatsSerializer extends FirebaseSerializer<model.CardStats> {
   model.CardStats _cardStatsFromJson(String id, Map<String, dynamic> json) =>
       model.CardStats(
         cardId: id,
-        stability: json['stats']?['stability'] as double? ?? 0,
-        difficulty: json['stats']?['difficulty'] as double? ?? 0,
+        variant: model.CardReviewVariant.fromString(json['variant']),
+        stability: json['stability'] as double? ?? 0,
+        difficulty: json['difficulty'] as double? ?? 0,
         lastReview:
-            (json['stats']?['lastReview'] as Timestamp? ?? Timestamp.now())
-                .toDate(),
-        numberOfReviews: json['stats']?['numberOfReviews'] as int? ?? 0,
-        numberOfLapses: json['stats']?['numberOfLapses'] as int? ?? 0,
+            (json['lastReview'] as Timestamp? ?? Timestamp.now()).toDate(),
+        numberOfReviews: json['numberOfReviews'] as int? ?? 0,
+        numberOfLapses: json['numberOfLapses'] as int? ?? 0,
         dateAdded:
-            (json['stats']?['dateAdded'] as Timestamp? ?? Timestamp.now())
-                .toDate(),
-        interval: (json['stats']?['interval'] ?? 0) as int? ?? 0,
+            (json['dateAdded'] as Timestamp? ?? Timestamp.now()).toDate(),
+        interval: (json['interval'] ?? 0) as int? ?? 0,
         nextReviewDate:
-            ((json['stats']?['nextReviewDate'] ?? Timestamp.now()) as Timestamp)
-                .toDate(),
-        state: json['stats']?['state'] == null
+            ((json['nextReviewDate'] ?? Timestamp.now()) as Timestamp).toDate(),
+        state: json['state'] == null
             ? model.State.newState
-            : model.State.values.firstWhere(
-                (element) => element.name == json['stats']['state']),
+            : model.State.values
+                .firstWhere((element) => element.name == json['state']),
       );
 
   @override
@@ -193,30 +191,6 @@ class CardStatsSerializer extends FirebaseSerializer<model.CardStats> {
         'interval': value.interval,
         'nextReviewDate': value.nextReviewDate,
         'state': value.state.name,
-      };
-}
-
-class CardAnswerSerializer extends FirebaseSerializer<model.CardAnswer> {
-  @override
-  Future<model.CardAnswer> fromSnapshot(DocumentSnapshot snapshot) async {
-    final data = snapshot.data() as Map<String, dynamic>;
-    return _cardAnswerFromJson(data);
-  }
-
-  model.CardAnswer _cardAnswerFromJson(Map<String, dynamic> json) =>
-      model.CardAnswer(
-        cardId: json['cardId'] as String,
-        reviewStart: (json['date'] as Timestamp).toDate(),
-        rating: model.Rating.values[json['rating'] as int],
-        timeSpent: Duration(milliseconds: json['timeSpent'] as int),
-      );
-
-  @override
-  Map<String, dynamic> _serialize(model.CardAnswer value) => {
-        'cardId': value.cardId,
-        'reviewStart': value.reviewStart,
-        'answerRate': value.rating.index,
-        'timeSpent': value.timeSpent.inMilliseconds,
       };
 }
 

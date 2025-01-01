@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
+import 'package:flutter_flashcards/src/app_state.dart';
+import 'package:provider/provider.dart';
 
 import 'decks_list.dart';
 import '../base_layout.dart';
@@ -9,18 +11,20 @@ import '../model/repository.dart';
 class DecksPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BaseLayout(
-      title: 'Flashcard decks',
-      currentPage: PageIndex.cards,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => {
-          _showAddDeckDialog(context, null),
-        },
-        label: Text(context.l10n.addDeck),
-        icon: const Icon(Icons.add),
-      ),
-      child: DeckListWidget(),
-    );
+    return Consumer<AppState>(builder: (context, appState, _) {
+      return BaseLayout(
+        title: 'Flashcard decks',
+        currentPage: PageIndex.cards,
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => {
+            _showAddDeckDialog(context, null),
+          },
+          label: Text(context.l10n.addDeck),
+          icon: const Icon(Icons.add),
+        ),
+        child: DeckListWidget(),
+      );
+    });
   }
 
   _showAddDeckDialog(BuildContext context, model.Deck? deck) async {

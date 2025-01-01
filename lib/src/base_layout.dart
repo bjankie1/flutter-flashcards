@@ -80,6 +80,7 @@ class BaseLayout extends StatelessWidget {
                         loggedIn: appState.loggedIn,
                         signOut: () {
                           FirebaseAuth.instance.signOut();
+                          context.go('/');
                         }),
                   ),
                 ],

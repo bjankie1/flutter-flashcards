@@ -16,22 +16,23 @@ abstract class CardsRepository extends ChangeNotifier {
   final ValueNotifier<bool> _decksUpdated = ValueNotifier<bool>(false);
   ValueListenable<bool> get decksUpdated => _decksUpdated;
 
-  Future<model.Deck> saveDeck(model.Deck deck);
-  Future<List<model.Deck>> loadDecks();
-  Future<model.Deck> loadDeck(String deckId);
+  Future<void> saveDeck(model.Deck deck);
+  Future<Iterable<model.Deck>> loadDecks();
+  Future<model.Deck?> loadDeck(String deckId);
   Future<void> deleteDeck(String deckId);
 
-  Future<List<model.Card>> loadCards(String deckId);
-  Future<model.Card> saveCard(model.Card card);
+  Future<Iterable<model.Card>> loadCards(String deckId);
+  Future<void> saveCard(model.Card card);
   Future<void> deleteCard(String cardId);
 
-  Future<List<model.Card>> loadCardToReview(String deckId);
-  Future<model.CardStats> loadCardStats(String cardId);
+  Future<Iterable<model.Card>> loadCardToReview({String? deckId});
+  Future<Map<model.State, int>> cardsToReviewCount({String? deckId});
+  Future<model.CardStats> loadCardStats(
+      String cardId, model.CardReviewVariant variant);
   Future<int> getCardCount(String deckId);
-  Future<int> getCardToReviewCount(String deckId);
 
   Future<void> recordCardAnswer(model.CardAnswer answer);
-  Future<List<model.CardAnswer>> loadAnswers(
+  Future<Iterable<model.CardAnswer>> loadAnswers(
       DateTime dayStart, DateTime dayEnd);
 
   @protected
@@ -55,8 +56,9 @@ abstract class CardsRepository extends ChangeNotifier {
   /// Record an answer if it hasn't been responded today.
   /// Ignores the information if it has.
   /// Calculates next review date based on FSRS algorithm
-  Future<void> recordAnswer(String cardId, model.Rating rating) async {
-    final stats = await loadCardStats(cardId);
+  Future<void> recordAnswer(String cardId, model.CardReviewVariant variant,
+      model.Rating rating) async {
+    final stats = await loadCardStats(cardId, variant);
     if (stats.lastReview != null &&
         stats.lastReview!.difference(DateTime.now()).inDays == 0 &&
         stats.nextReviewDate != null &&
@@ -78,7 +80,7 @@ class InMemoryCardsRepository extends CardsRepository {
   var _uuid = Uuid();
 
   @override
-  Future<model.Deck> saveDeck(model.Deck deck) async {
+  Future<void> saveDeck(model.Deck deck) async {
     if (deck.id == null) {
       var deckId = deck.id!;
       deckId = _uuid.v4();
@@ -86,7 +88,6 @@ class InMemoryCardsRepository extends CardsRepository {
       _decks[deckId] = deckWithId;
       return deckWithId;
     }
-    return _decks[deck.id!] = deck;
   }
 
   @override
@@ -102,7 +103,7 @@ class InMemoryCardsRepository extends CardsRepository {
   }
 
   @override
-  Future<model.Card> saveCard(model.Card card) async {
+  Future<void> saveCard(model.Card card) async {
     if (card.id == null) {
       final cardId = _uuid.v4(); // Generate a UUID
       final cardWithId = card.withId(id: cardId); // Assign the UUID to the card
@@ -110,7 +111,6 @@ class InMemoryCardsRepository extends CardsRepository {
       return cardWithId;
     }
     _cards[card.id!] = card;
-    return card;
   }
 
   @override
@@ -131,13 +131,14 @@ class InMemoryCardsRepository extends CardsRepository {
   }
 
   @override
-  Future<model.CardStats> loadCardStats(String cardId) {
+  Future<model.CardStats> loadCardStats(
+      String cardId, model.CardReviewVariant variant) {
     // TODO: implement loadCardStats
     throw UnimplementedError();
   }
 
   @override
-  Future<List<model.Card>> loadCardToReview(String deckId) {
+  Future<List<model.Card>> loadCardToReview({String? deckId}) {
     // TODO: implement loadCardToReview
     throw UnimplementedError();
   }
@@ -145,12 +146,6 @@ class InMemoryCardsRepository extends CardsRepository {
   @override
   Future<int> getCardCount(String deckId) {
     // TODO: implement loadCardCount
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<int> getCardToReviewCount(String deckId) {
-    // TODO: implement getCardCountToReview
     throw UnimplementedError();
   }
 
@@ -182,6 +177,12 @@ class InMemoryCardsRepository extends CardsRepository {
   @override
   Future<UserProfile?> loadUser(String userId) {
     // TODO: implement loadUser
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Map<model.State, int>> cardsToReviewCount({String? deckId}) {
+    // TODO: implement cardCardsToReviewCount
     throw UnimplementedError();
   }
 }

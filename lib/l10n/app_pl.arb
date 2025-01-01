@@ -24,5 +24,11 @@
   "addDeck": "Dodaj zestaw",
   "editDeck": "Edytuj zestaw",
   "signIn": "Zaloguj",
-  "signOut": "Wyloguj"
+  "signOut": "Wyloguj",
+  "answerRecordedMessage": "Odpowiedź zapisana",
+  "deckNamePrompt": "Proszę podać nazwę zestawu",
+  "noCardsToLearn": "Brak kart do nauki",
+  "showAnswer": "Pokaż odpowiedź",
+  "learnProgressMessage": "Uczysz się karty {current} z {total}",
+  "learnEverything": "Pełna powtórka"
 }

@@ -1,6 +1,14 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+
+abstract class FirebaseSerializable<T> {
+  Map<String, dynamic> toJson();
+  String? get idValue;
+}
+
 enum State {
   newState(0),
   learning(1),
@@ -10,6 +18,9 @@ enum State {
   const State(this.val);
 
   final int val;
+
+  factory State.fromName(String name) =>
+      State.values.firstWhere((element) => element.name == name);
 }
 
 enum Rating {
@@ -23,7 +34,7 @@ enum Rating {
   final int val;
 }
 
-class Deck {
+class Deck implements FirebaseSerializable {
   final String? id;
   final String name;
   final String? description;
@@ -47,6 +58,71 @@ class Deck {
       deckOptions: deckOptions,
     );
   }
+
+  @override
+  int get hashCode => Object.hash(id, name);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Deck &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          id == other.id;
+
+  Deck copyWith({
+    ValueGetter<String?>? id,
+    String? name,
+    ValueGetter<String?>? description,
+    ValueGetter<String?>? parentDeckId,
+    ValueGetter<DeckOptions?>? deckOptions,
+  }) {
+    return Deck(
+      id: id != null ? id() : this.id,
+      name: name ?? this.name,
+      description: description != null ? description() : this.description,
+      parentDeckId: parentDeckId != null ? parentDeckId() : this.parentDeckId,
+      deckOptions: deckOptions != null ? deckOptions() : this.deckOptions,
+    );
+  }
+
+  factory Deck.fromJson(String id, Map<String, dynamic> json) => Deck(
+        id: id,
+        name: json['name'] as String,
+        description: json['description'] as String?,
+        parentDeckId: json['parentDeckId'] as String?,
+        deckOptions: json['deckOptions'] != null
+            ? _deckOptionsFromJson(json['deckOptions'] as Map<String, dynamic>)
+            : null,
+      );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'description': description,
+        'parentDeckId': parentDeckId,
+        'deckOptions':
+            deckOptions != null ? _deckOptionsToJson(deckOptions!) : null,
+      };
+
+  static DeckOptions _deckOptionsFromJson(Map<String, dynamic> json) =>
+      DeckOptions(
+        cardsDaily: json['cardsDaily'] as int,
+        newCardsDailyLimit: json['newCardsDailyLimit'] as int,
+        maxInterval: Duration(
+            milliseconds:
+                json['maxInterval'] as int), // Parse from milliseconds
+      );
+
+  Map<String, dynamic> _deckOptionsToJson(DeckOptions deckOptions) => {
+        'cardsDaily': deckOptions.cardsDaily,
+        'newCardsDailyLimit': deckOptions.newCardsDailyLimit,
+        'maxInterval':
+            deckOptions.maxInterval.inMilliseconds, // Store as milliseconds
+      };
+
+  @override
+  String get idValue => id!;
 }
 
 class DeckOptions {
@@ -67,6 +143,15 @@ class Tag {
   const Tag({
     required this.name,
   });
+
+  @override
+  int get hashCode => name.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is Tag && runtimeType == other.runtimeType && name == other.name;
+  }
 }
 
 class Attachment {
@@ -99,7 +184,22 @@ class CardOptions {
   });
 }
 
-class Card {
+Content? _contentFromJson(Map<String, dynamic> json) {
+  if (json['text'] == null) {
+    return null;
+  }
+  return Content(text: json['text'] as String);
+}
+
+CardOptions _cardOptionsFromJson(Map<String, dynamic> json) => CardOptions(
+      reverse: (json['reverse'] ?? false) as bool,
+      inputRequired: (json['inputRequire'] ?? false) as bool,
+    );
+
+List<Tag> _tagsFromJson(List<String> data) =>
+    data.map((tag) => Tag(name: tag)).toList();
+
+class Card implements FirebaseSerializable {
   final String? id;
   final String deckId;
   final Content question;
@@ -152,10 +252,62 @@ class Card {
           tags: tags ?? this.tags,
           alternativeAnswers: alternativeAnswers ?? this.alternativeAnswers,
           explanation: explanation ?? this.explanation);
+
+  @override
+  int get hashCode => Object.hash(id, deckId, question);
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is Card &&
+            runtimeType == other.runtimeType &&
+            deckId == other.deckId &&
+            question == other.question &&
+            answer == other.answer &&
+            id == other.id;
+  }
+
+  @override
+  String get idValue => id!;
+
+  @override
+  Map<String, dynamic> toJson() {
+    // TODO: implement toJson
+    throw UnimplementedError();
+  }
+
+  factory Card.fromJson(String id, Map<String, dynamic> data) => Card(
+      id: id,
+      deckId: data['deckId'],
+      question: _contentFromJson(data['question'])!,
+      explanation: _contentFromJson(data['explanation']),
+      answer: data['answer'],
+      options: _cardOptionsFromJson(data['options']),
+      tags: _tagsFromJson(data['tags'] ?? []),
+      alternativeAnswers: data['alternativeAnswers'] ?? []);
 }
 
-class CardStats {
+/// Cards can have more than one variant to review. For instance a card can be configured to
+/// review it both based on question as well as for the answer (reversed).
+enum CardReviewVariant {
+  front,
+  back;
+
+  factory CardReviewVariant.fromString(String name) {
+    switch (name) {
+      case 'front':
+        return CardReviewVariant.front;
+      case 'back':
+        return CardReviewVariant.back;
+      default:
+        return CardReviewVariant.front;
+    }
+  }
+}
+
+class CardStats implements FirebaseSerializable {
   final String cardId;
+  final CardReviewVariant variant;
   final double stability; // Represents how well the card is learned
   final double difficulty;
   final DateTime? lastReview;
@@ -164,10 +316,11 @@ class CardStats {
   final int interval; // Time until next review (in days)
   final DateTime? nextReviewDate;
   final State state;
-  final dynamic numberOfLapses;
+  final int numberOfLapses;
 
   CardStats(
       {required this.cardId,
+      this.variant = CardReviewVariant.front,
       this.interval = 0,
       this.lastReview,
       this.nextReviewDate,
@@ -196,6 +349,7 @@ class CardStats {
 
   CardStats copyWith({
     String? cardId,
+    CardReviewVariant? variant,
     double? stability,
     double? difficulty,
     DateTime? lastReview,
@@ -209,6 +363,7 @@ class CardStats {
   }) {
     return CardStats(
       cardId: cardId ?? this.cardId,
+      variant: variant ?? this.variant,
       stability: stability ?? this.stability,
       difficulty: difficulty ?? this.difficulty,
       lastReview: lastReview ?? this.lastReview,
@@ -216,7 +371,7 @@ class CardStats {
       dateAdded: dateAdded ?? this.dateAdded,
       interval: interval ?? this.interval,
       nextReviewDate: nextReviewDate ?? this.nextReviewDate,
-      state: state ?? this.state,
+      state: state ?? this.state.name,
       numberOfLapses: numberOfLapses ?? this.numberOfLapses,
     );
   }
@@ -232,20 +387,95 @@ class CardStats {
   int elapsedDays() => state == State.newState || lastReview == null
       ? 0
       : DateTime.now().difference(lastReview!).inDays;
+
+  static Iterable<CardStats> statsForCard(Card card) {
+    if (card.options?.reverse == true) {
+      return [
+        CardStats(cardId: card.id!, variant: CardReviewVariant.front),
+        CardStats(cardId: card.id!, variant: CardReviewVariant.back)
+      ];
+    }
+    return [CardStats(cardId: card.id!, variant: CardReviewVariant.front)];
+  }
+
+  factory CardStats.fromJson(String id, Map<String, dynamic> data) {
+    if (id.split(r'::') case [final cardId, final variant]) {
+      return CardStats(
+        cardId: cardId,
+        variant: CardReviewVariant.fromString(variant),
+        stability: data['stability'] as double? ?? 0,
+        difficulty: data['difficulty'] as double? ?? 0,
+        lastReview:
+            (data['lastReview'] as Timestamp? ?? Timestamp.now()).toDate(),
+        numberOfReviews: data['numberOfReviews'] as int? ?? 0,
+        numberOfLapses: data['numberOfLapses'] as int? ?? 0,
+        dateAdded:
+            (data['dateAdded'] as Timestamp? ?? Timestamp.now()).toDate(),
+        interval: (data['interval'] ?? 0) as int? ?? 0,
+        nextReviewDate:
+            ((data['nextReviewDate'] ?? Timestamp.now()) as Timestamp).toDate(),
+        state: data['state'] == null
+            ? State.newState
+            : State.fromName(data['state']),
+      );
+    }
+    throw Exception('Invalid id format');
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'cardId': cardId,
+        'variant': variant.name,
+        'stability': stability,
+        'difficulty': difficulty,
+        'lastReview': lastReview,
+        'numberOfReviews': numberOfReviews,
+        'numberOfLapses': numberOfLapses,
+        'dateAdded': dateAdded,
+        'interval': interval,
+        'nextReviewDate': nextReviewDate,
+        'state': state.name,
+      };
+
+  @override
+  String get idValue => '$cardId::${variant.name}';
 }
 
-class CardAnswer {
+class CardAnswer implements FirebaseSerializable {
   final String cardId;
+  final CardReviewVariant variant;
   final DateTime reviewStart;
   final Duration timeSpent;
   final Rating rating;
 
   const CardAnswer({
     required this.cardId,
+    required this.variant,
     required this.reviewStart,
     required this.timeSpent,
     required this.rating,
   });
+
+  factory CardAnswer.fromJson(String id, Map<String, dynamic> json) =>
+      CardAnswer(
+        cardId: json['cardId'] as String,
+        variant: CardReviewVariant.fromString(json['variant']),
+        reviewStart: (json['date'] as Timestamp).toDate(),
+        rating: Rating.values[json['rating'] as int],
+        timeSpent: Duration(milliseconds: json['timeSpent'] as int),
+      );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'cardId': cardId,
+        'variant': variant.name,
+        'reviewStart': reviewStart,
+        'answerRate': rating.index,
+        'timeSpent': timeSpent.inMilliseconds,
+      };
+
+  @override
+  String get idValue => '$cardId::${variant.name}';
 }
 
 class CardReviewStats {

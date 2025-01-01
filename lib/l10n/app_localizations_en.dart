@@ -92,4 +92,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noCardsToLearn => 'No cards to learn';
+
+  @override
+  String get answerRecordedMessage => 'Answer recorded';
+
+  @override
+  String get showAnswer => 'Show answer';
+
+  @override
+  String learnProgressMessage(int current, int total) {
+    return 'Learning card $current of $total';
+  }
+
+  @override
+  String get learnEverything => 'Learn everything';
 }

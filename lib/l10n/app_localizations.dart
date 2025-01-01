@@ -256,6 +256,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No cards to learn'**
   String get noCardsToLearn;
+
+  /// No description provided for @answerRecordedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer recorded'**
+  String get answerRecordedMessage;
+
+  /// No description provided for @showAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Show answer'**
+  String get showAnswer;
+
+  /// No description provided for @learnProgressMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning card {current} of {total}'**
+  String learnProgressMessage(int current, int total);
+
+  /// No description provided for @learnEverything.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn everything'**
+  String get learnEverything;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

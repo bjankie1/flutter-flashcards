@@ -4,7 +4,7 @@ import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/decks/cards_page.dart';
 import 'package:flutter_flashcards/src/decks/decks_page.dart';
-import 'package:flutter_flashcards/src/decks/study_page.dart';
+import 'package:flutter_flashcards/src/reviews/rewiews_landing_page.dart';
 import 'package:flutter_flashcards/src/settings/settings_page.dart';
 import 'package:flutter_flashcards/src/statistics/statistics_page.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
@@ -100,15 +100,21 @@ final router = GoRouter(
           path: 'decks/:deckId',
           name: 'deck',
           builder: (context, state) {
-            final deck = state.pathParameters['deckId'];
-            if (deck == null) {
+            final deckId = state.pathParameters['deckId'];
+            if (deckId == null) {
               return DecksPage();
             }
             return RepositoryLoader(
-                fetcher: (repository) async => await repository.loadDeck(deck),
-                builder: (context, deck, _) => CardsPage(
-                      deck: deck,
-                    ));
+                fetcher: (repository) async =>
+                    await repository.loadDeck(deckId),
+                builder: (context, deck, _) {
+                  if (deck == null) {
+                    return Text('Deck not found');
+                  }
+                  return CardsPage(
+                    deck: deck,
+                  );
+                });
           },
         ),
         GoRoute(
@@ -122,7 +128,7 @@ final router = GoRouter(
           path: 'study',
           name: 'study',
           builder: (context, state) {
-            return StudyCardsPage(cards: []);
+            return ReviewsPage();
           },
         ),
         GoRoute(
