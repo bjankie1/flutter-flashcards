@@ -11,6 +11,7 @@ import 'package:flutter_flashcards/src/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../firebase_options.dart';
+import 'reviews/study_cards_page.dart';
 
 // Add GoRouter configuration outside the App class
 final router = GoRouter(
@@ -125,12 +126,23 @@ final router = GoRouter(
           },
         ),
         GoRoute(
-          path: 'study',
-          name: 'study',
-          builder: (context, state) {
-            return ReviewsPage();
-          },
-        ),
+            path: 'study',
+            name: 'study',
+            builder: (context, state) {
+              return ReviewsPage();
+            },
+            routes: [
+              GoRoute(
+                path: 'learn',
+                name: 'learn',
+                builder: (context, state) {
+                  final deckId = state.uri.queryParameters['deckId'];
+                  return StudyCardsPage(
+                    deckId: deckId,
+                  );
+                },
+              ),
+            ]),
         GoRoute(
           path: 'statistics',
           name: 'statistics',

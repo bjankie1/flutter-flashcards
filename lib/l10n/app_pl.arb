@@ -30,5 +30,11 @@
   "noCardsToLearn": "Brak kart do nauki",
   "showAnswer": "Pokaż odpowiedź",
   "learnProgressMessage": "Uczysz się karty {current} z {total}",
-  "learnEverything": "Pełna powtórka"
+  "learnEverything": "Pełna powtórka",
+  "hintPrompt": "Opcjonalna podpowiedź",
+  "hintLabel": "Podpowiedź",
+  "rateAgainLabel": "Ponownie",
+  "rateHardLabel": "Trudne",
+  "rateGoodLabel": "Dobrze",
+  "rateEasyLabel": "Łatwe"
 }

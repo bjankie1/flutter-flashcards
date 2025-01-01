@@ -4,6 +4,7 @@ import 'package:flutter_flashcards/src/base_layout.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
+import 'package:go_router/go_router.dart';
 
 class ReviewsPage extends StatelessWidget {
   @override
@@ -55,14 +56,14 @@ class ReviewsBreakdown extends StatelessWidget {
                         label: Text(context.l10n
                             .cardsToReview(cardsByDeck[deck]!.length))),
                     trailing: FilledButton(
-                        onPressed: () => learn(deck.id),
+                        onPressed: () => learn(context, deck.id),
                         child: Text(context.l10n.learn))),
               )),
           Visibility(
             visible: cardsByDeck.isNotEmpty,
             child: ListTile(
                 title: FilledButton(
-                    onPressed: () => learnEverything(),
+                    onPressed: () => learnEverything(context),
                     child: Text(
                       context.l10n.learnEverything,
                     ))),
@@ -79,6 +80,12 @@ class ReviewsBreakdown extends StatelessWidget {
     );
   }
 
-  learn(String? id) {}
-  learnEverything() {}
+  learn(BuildContext context, String? id) {
+    context.pushNamed('learn', queryParameters: {'deckId': id});
+  }
+
+  learnEverything(BuildContext context) {
+    // Navigate to `StudyCardsPage`
+    context.pushNamed('learn');
+  }
 }

@@ -280,6 +280,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Learn everything'**
   String get learnEverything;
+
+  /// No description provided for @hintPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Hint (optional)'**
+  String get hintPrompt;
+
+  /// No description provided for @hintLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hint'**
+  String get hintLabel;
+
+  /// No description provided for @rateAgainLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Again'**
+  String get rateAgainLabel;
+
+  /// No description provided for @rateHardLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hard'**
+  String get rateHardLabel;
+
+  /// No description provided for @rateGoodLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get rateGoodLabel;
+
+  /// No description provided for @rateEasyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Easy'**
+  String get rateEasyLabel;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

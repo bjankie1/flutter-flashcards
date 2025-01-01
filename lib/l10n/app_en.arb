@@ -61,5 +61,11 @@
       }
     }
   },
-  "learnEverything": "Learn everything"
+  "learnEverything": "Learn everything",
+  "hintPrompt": "Hint (optional)",
+  "hintLabel": "Hint",
+  "rateAgainLabel": "Again",
+  "rateHardLabel": "Hard",
+  "rateGoodLabel": "Good",
+  "rateEasyLabel": "Easy"
 }

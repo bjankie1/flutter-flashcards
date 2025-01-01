@@ -16,7 +16,8 @@ class FSRS {
 
   Map<model.Rating, model.SchedulingInfo> repeat(
       model.CardStats card, DateTime now) {
-    final s = model.SchedulingCards(card.copyWith(lastReview: now).addReview());
+    var reviewedCard = card.copyWith(lastReview: now).addReview();
+    final s = model.SchedulingCards(reviewedCard);
     s.updateState(card.state);
 
     switch (card.state) {

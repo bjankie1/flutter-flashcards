@@ -376,7 +376,7 @@ class CardStats implements FirebaseSerializable {
     DateTime? dateAdded,
     int? interval,
     DateTime? nextReviewDate,
-    dynamic state,
+    State? state,
   }) {
     return CardStats(
       cardId: cardId ?? this.cardId,
@@ -388,7 +388,7 @@ class CardStats implements FirebaseSerializable {
       dateAdded: dateAdded ?? this.dateAdded,
       interval: interval ?? this.interval,
       nextReviewDate: nextReviewDate ?? this.nextReviewDate,
-      state: state ?? this.state.name,
+      state: state ?? this.state,
       numberOfLapses: numberOfLapses ?? this.numberOfLapses,
     );
   }

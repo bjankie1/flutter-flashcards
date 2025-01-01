@@ -60,6 +60,7 @@ abstract class CardsRepository extends ChangeNotifier {
   /// Calculates next review date based on FSRS algorithm
   Future<void> recordAnswer(String cardId, model.CardReviewVariant variant,
       model.Rating rating) async {
+    _log.d('Recording answer for card $cardId with variant $variant');
     final stats = await loadCardStats(cardId, variant);
     if (stats.lastReview != null &&
         stats.lastReview!.difference(DateTime.now()).inDays == 0 &&

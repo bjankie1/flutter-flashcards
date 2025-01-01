@@ -25,6 +25,23 @@
         { "fieldPath": "state", "order": "ASCENDING" },
         { "fieldPath": "nextReviewDate", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "cardStats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "nextReviewDate", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "cardStats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "state", "order": "ASCENDING" },
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "nextReviewDate", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

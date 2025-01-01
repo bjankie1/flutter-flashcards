@@ -13,7 +13,14 @@ void main() {
     log.i('Initialized binding');
     await Firebase.initializeApp();
     log.i('Initialized Firebase app');
-    FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+    FirebaseFirestore.instance.settings = const Settings(
+      host: 'localhost:8080',
+      sslEnabled: false,
+      persistenceEnabled: false,
+    );
+    FirebaseFirestore.instance.useFirestoreEmulator('127.0.0.1', 8080);
+
+    // [Authentication | localhost:9099]
     log.i('Connected to emulator');
     repository = FirebaseCardsRepository();
   });

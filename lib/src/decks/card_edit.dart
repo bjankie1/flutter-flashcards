@@ -88,7 +88,7 @@ class _CardEditState extends State<CardEdit> {
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                             padding: EdgeInsets.all(8.0),
-                            child: TexMarkdown(question ?? '')))
+                            child: GptMarkdown(question ?? '')))
                   ],
                 ),
               ),
@@ -121,8 +121,8 @@ class _CardEditState extends State<CardEdit> {
                         controller: cardHintTextController,
                         maxLines: 5,
                         decoration: InputDecoration(
-                            hintText: 'Hint',
-                            labelText: 'Hint',
+                            hintText: context.l10n.hintPrompt,
+                            labelText: context.l10n.hintLabel,
                             border: OutlineInputBorder()),
                       ),
                     ),
@@ -135,7 +135,7 @@ class _CardEditState extends State<CardEdit> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: TexMarkdown(hint ?? ''),
+                            child: GptMarkdown(hint ?? ''),
                           )),
                     )
                   ],

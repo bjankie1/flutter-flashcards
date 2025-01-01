@@ -106,4 +106,22 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get learnEverything => 'Pełna powtórka';
+
+  @override
+  String get hintPrompt => 'Opcjonalna podpowiedź';
+
+  @override
+  String get hintLabel => 'Podpowiedź';
+
+  @override
+  String get rateAgainLabel => 'Ponownie';
+
+  @override
+  String get rateHardLabel => 'Trudne';
+
+  @override
+  String get rateGoodLabel => 'Dobrze';
+
+  @override
+  String get rateEasyLabel => 'Łatwe';
 }

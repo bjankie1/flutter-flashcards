@@ -230,17 +230,14 @@ class FirebaseCardsRepository extends CardsRepository {
   @override
   Future<CardStats> loadCardStats(
       String cardId, CardReviewVariant variant) async {
-    final snapshot = await _cardStatsCollection
-        .where('cardId', isEqualTo: cardId)
-        .where(
-          'variant',
-          isEqualTo: variant.name,
-        )
+    final snapshot = await _firestore
+        .collection('cardStats')
+        .doc('$cardId::${variant.name}')
         .get();
-    if (snapshot.docs.isEmpty) {
-      throw Exception('No card stats for $cardId and variant $variant');
+    if (snapshot.exists) {
+      return CardStats.fromJson(snapshot.id, snapshot.data()!);
     }
-    return snapshot.docs.first.data();
+    throw Exception('No card stats for $cardId and variant $variant');
   }
 
   Future<Iterable<String>> _deckCardsIds(String deckId) async {
@@ -347,7 +344,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
 
   @override
   Future<void> saveCardStats(CardStats stats) async {
-    final docRef = _firestore.collection('cardStats').doc(stats.cardId);
+    _log.d('Saving card stats ${stats.cardId}::${stats.variant}');
+    final docRef = _firestore.collection('cardStats').doc(stats.idValue);
     await docRef.set({'userId': userId, ...stats.toJson()}).then(
         (value) => print("Review answer successfully recorded!"),
         onError: (e) => print("Error recording review answer: $e"));
