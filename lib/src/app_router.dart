@@ -4,13 +4,14 @@ import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/decks/cards_page.dart';
 import 'package:flutter_flashcards/src/decks/decks_page.dart';
-import 'package:flutter_flashcards/src/decks/study_page.dart';
+import 'package:flutter_flashcards/src/reviews/rewiews_landing_page.dart';
 import 'package:flutter_flashcards/src/settings/settings_page.dart';
 import 'package:flutter_flashcards/src/statistics/statistics_page.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../firebase_options.dart';
+import 'reviews/study_cards_page.dart';
 
 // Add GoRouter configuration outside the App class
 final router = GoRouter(
@@ -100,15 +101,21 @@ final router = GoRouter(
           path: 'decks/:deckId',
           name: 'deck',
           builder: (context, state) {
-            final deck = state.pathParameters['deckId'];
-            if (deck == null) {
+            final deckId = state.pathParameters['deckId'];
+            if (deckId == null) {
               return DecksPage();
             }
             return RepositoryLoader(
-                fetcher: (repository) async => await repository.loadDeck(deck),
-                builder: (context, deck, _) => CardsPage(
-                      deck: deck,
-                    ));
+                fetcher: (repository) async =>
+                    await repository.loadDeck(deckId),
+                builder: (context, deck, _) {
+                  if (deck == null) {
+                    return Text('Deck not found');
+                  }
+                  return CardsPage(
+                    deck: deck,
+                  );
+                });
           },
         ),
         GoRoute(
@@ -119,12 +126,23 @@ final router = GoRouter(
           },
         ),
         GoRoute(
-          path: 'study',
-          name: 'study',
-          builder: (context, state) {
-            return StudyCardsPage(cards: []);
-          },
-        ),
+            path: 'study',
+            name: 'study',
+            builder: (context, state) {
+              return ReviewsPage();
+            },
+            routes: [
+              GoRoute(
+                path: 'learn',
+                name: 'learn',
+                builder: (context, state) {
+                  final deckId = state.uri.queryParameters['deckId'];
+                  return StudyCardsPage(
+                    deckId: deckId,
+                  );
+                },
+              ),
+            ]),
         GoRoute(
           path: 'statistics',
           name: 'statistics',

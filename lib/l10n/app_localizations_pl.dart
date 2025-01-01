@@ -88,8 +88,40 @@ class AppLocalizationsPl extends AppLocalizations {
   String get signOut => 'Wyloguj';
 
   @override
-  String get deckNamePrompt => 'Please enter a deck name';
+  String get deckNamePrompt => 'Proszę podać nazwę zestawu';
 
   @override
-  String get noCardsToLearn => 'No cards to learn';
+  String get noCardsToLearn => 'Brak kart do nauki';
+
+  @override
+  String get answerRecordedMessage => 'Odpowiedź zapisana';
+
+  @override
+  String get showAnswer => 'Pokaż odpowiedź';
+
+  @override
+  String learnProgressMessage(int current, int total) {
+    return 'Uczysz się karty $current z $total';
+  }
+
+  @override
+  String get learnEverything => 'Pełna powtórka';
+
+  @override
+  String get hintPrompt => 'Opcjonalna podpowiedź';
+
+  @override
+  String get hintLabel => 'Podpowiedź';
+
+  @override
+  String get rateAgainLabel => 'Ponownie';
+
+  @override
+  String get rateHardLabel => 'Trudne';
+
+  @override
+  String get rateGoodLabel => 'Dobrze';
+
+  @override
+  String get rateEasyLabel => 'Łatwe';
 }

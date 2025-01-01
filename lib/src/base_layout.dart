@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/l10n/app_localizations.dart';
 import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
+import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -80,7 +81,17 @@ class BaseLayout extends StatelessWidget {
                         loggedIn: appState.loggedIn,
                         signOut: () {
                           FirebaseAuth.instance.signOut();
+                          context.go('/');
                         }),
+                  ),
+                  Visibility(
+                    visible: false,
+                    child: IconButton(
+                      icon: const Icon(Icons.refresh),
+                      onPressed: () async {
+                        await context.read<CardsRepository>().updateAllStats();
+                      },
+                    ),
                   ),
                 ],
               );

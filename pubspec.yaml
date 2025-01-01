@@ -10,45 +10,46 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
-  cloud_firestore: ^5.4.5
-  firebase_auth: ^5.3.2
-  firebase_core: ^3.7.0
-  firebase_database: ^11.1.5
-  firebase_remote_config: ^5.1.4
-  firebase_storage: ^12.3.5
+  cloud_firestore: ^5.6.0
+  firebase_auth: ^5.3.4
+  firebase_core: ^3.9.0
+  firebase_database: ^11.2.0
+  firebase_remote_config: ^5.2.0
+  firebase_storage: ^12.3.7
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
   english_words: ^4.0.0
   provider: ^6.1.2
-  flutter_tex: ^4.0.9
+  flutter_tex: ^4.0.12
   json_annotation: ^4.9.0
   firebase_ui_auth: ^1.16.0
-  go_router: ^14.6.0
+  go_router: ^14.6.2
   google_sign_in: ^6.2.2
   firebase_ui_oauth_google: ^1.4.0
   freezed_annotation: ^2.4.4
   logger: ^2.5.0
   uuid: ^4.5.1
   flutter_markdown: ^0.7.4+2
-  gpt_markdown: ^0.1.10
-  fsrs: ^1.1.1
-  intl: ^0.19.0
-  intl_translation: ^0.20.1
-  flex_seed_scheme: ^3.4.1
-  flex_color_scheme: ^8.0.2
+  gpt_markdown: ^1.0.3
+  fsrs: any
+  intl: any
+  intl_translation: any
+  flex_seed_scheme: any
+  flex_color_scheme: any
   random_color_scheme: ^0.1.4
   flag: ^7.0.0
+  fl_chart: ^0.70.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0
-  build_runner: ^2.4.13
+  build_runner: ^2.4.14
   cloud_firestore_odm_generator: ^1.0.0-dev.89
-  json_serializable: ^6.8.0
+  json_serializable: ^6.9.0
   freezed: ^2.5.7
   fake_cloud_firestore: ^3.1.0
 

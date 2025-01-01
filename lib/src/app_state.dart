@@ -29,13 +29,13 @@ class AppState extends ChangeNotifier {
       }
     });
     currentTheme.addListener(() async {
-      if (_userProfile != null) {
+      if (_userProfile != null && _userProfile?.theme != currentTheme.value) {
         _userProfile = _userProfile!.copyWith(theme: currentTheme.value);
         await cardRepository.saveUser(_userProfile!);
       }
     });
     currentLocale.addListener(() async {
-      if (_userProfile != null) {
+      if (_userProfile != null && _userProfile?.locale != currentLocale.value) {
         _userProfile = _userProfile!.copyWith(locale: currentLocale.value);
         await cardRepository.saveUser(_userProfile!);
       }
@@ -56,6 +56,7 @@ class AppState extends ChangeNotifier {
     _logger.d('User logged in: $userId'); // Debug log for user ID
     _userProfile = await cardRepository.loadUser(userId);
     if (_userProfile == null) {
+      _logger.i('User profile not found, creating new one');
       _userProfile = UserProfile(
           id: userId,
           name: '',
@@ -64,6 +65,8 @@ class AppState extends ChangeNotifier {
           photoUrl: '');
       await cardRepository.saveUser(_userProfile!);
     } else {
+      _logger.i('Loaded theme ${_userProfile?.theme.name}');
+      _logger.i('Loaded locale ${_userProfile?.locale.languageCode}');
       setTheme(_userProfile!.theme);
       _currentLocale.value = _userProfile!.locale;
     }

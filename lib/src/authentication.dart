@@ -23,12 +23,13 @@ class AuthFunc extends StatelessWidget {
     return Row(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 24, bottom: 8),
-          child: StyledButton(
+          padding: const EdgeInsets.only(top: 8, left: 24, bottom: 8),
+          child: FilledButton.icon(
               onPressed: () {
                 !loggedIn ? context.push('/sign-in') : signOut();
               },
-              child: !loggedIn
+              icon: Icon(Icons.exit_to_app),
+              label: !loggedIn
                   ? Text(context.l10n.signIn)
                   : Text(context.l10n.signOut)),
         ),

@@ -17,14 +17,13 @@ class CardsList extends StatelessWidget {
     return ValueListenableBuilder<bool>(
       valueListenable: context.watch<CardsRepository>().cardsUpdated,
       builder: (context, updated, _) {
-        return RepositoryLoader<List<model.Card>>(
+        return RepositoryLoader<Iterable<model.Card>>(
           fetcher: (repository) => repository.loadCards(deck.id!),
           noDataWidget: Center(child: Text(context.l10n.deckEmptyMessage)),
           builder: (context, data, _) {
-            final flashcards = data;
+            final flashcards = data.toList();
             return Column(
               children: [
-                Header(context.l10n.deckHeader(deck.name)),
                 SizedBox(
                   width: 500,
                   child: ListView.builder(

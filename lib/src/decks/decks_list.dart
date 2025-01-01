@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/l10n/app_localizations.dart';
 import 'package:flutter_flashcards/src/app.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -7,17 +6,18 @@ import 'package:provider/provider.dart';
 import '../model/cards.dart' as model;
 import '../model/repository.dart';
 import '../widgets.dart';
-import 'study_page.dart';
+import '../reviews/study_cards_page.dart';
 
 class DeckListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return RepositoryLoader<List<model.Deck>>(
+    return RepositoryLoader<Iterable<model.Deck>>(
       fetcher: (repository) => repository.loadDecks(),
-      builder: (context, decks, repository) {
+      builder: (context, decksIterable, repository) {
+        final decks = decksIterable.toList();
+        decks.sort((deck1, deck2) => deck1.name.compareTo(deck2.name));
         return Column(
           children: [
-            Header(AppLocalizations.of(context)!.decks),
             SizedBox(
               width: 700,
               child: ListView.builder(
@@ -117,11 +117,8 @@ class DeckListWidget extends StatelessWidget {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => RepositoryLoader(
-            fetcher: (repository) => repository.loadCardToReview(deck.id!),
-            builder: (context, cards, repository) => StudyCardsPage(
-              cards: cards,
-            ),
+          builder: (context) => StudyCardsPage(
+            deckId: deck.id,
           ),
         ),
       );
@@ -152,12 +149,13 @@ class DeckCardsNumber extends RepositoryLoader<int> {
             });
 }
 
-class DeckCardsToReview extends RepositoryLoader<int> {
+class DeckCardsToReview extends RepositoryLoader<Map<model.State, int>> {
   DeckCardsToReview(model.Deck deck)
       : super(
-            fetcher: (repository) => repository.getCardToReviewCount(deck.id!),
+            fetcher: (repository) =>
+                repository.cardsToReviewCount(deckId: deck.id!),
             builder: (context, data, _) {
-              final cardCount = data;
+              final cardCount = data.values.reduce((agg, next) => agg + next);
               return TagText(context.l10n.cardsToReview(cardCount));
             });
 }

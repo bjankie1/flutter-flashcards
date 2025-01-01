@@ -92,4 +92,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noCardsToLearn => 'No cards to learn';
+
+  @override
+  String get answerRecordedMessage => 'Answer recorded';
+
+  @override
+  String get showAnswer => 'Show answer';
+
+  @override
+  String learnProgressMessage(int current, int total) {
+    return 'Learning card $current of $total';
+  }
+
+  @override
+  String get learnEverything => 'Learn everything';
+
+  @override
+  String get hintPrompt => 'Hint (optional)';
+
+  @override
+  String get hintLabel => 'Hint';
+
+  @override
+  String get rateAgainLabel => 'Again';
+
+  @override
+  String get rateHardLabel => 'Hard';
+
+  @override
+  String get rateGoodLabel => 'Good';
+
+  @override
+  String get rateEasyLabel => 'Easy';
 }

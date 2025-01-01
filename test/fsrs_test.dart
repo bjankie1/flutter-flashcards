@@ -20,7 +20,7 @@ void main() {
       expect(stats.lastReview, closeToTime(now));
       expect(stats.numberOfReviews, 1);
       expect(stats.dateAdded, closeToTime(DateTime.now()));
-      expect(stats.interval, 0);
+      expect(stats.interval, 1);
       expect(stats.nextReviewDate,
           closeToTime(now, tolerance: Duration(hours: 1)));
     });
