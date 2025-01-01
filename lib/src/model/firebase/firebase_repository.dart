@@ -98,16 +98,49 @@ class FirebaseCardsRepository extends CardsRepository {
   Future<void> _updateCard(Card card) async {
     _log.i('Updating card');
     await _firestore.runTransaction((transaction) async {
+      // Firestore transactions require all reads to be executed before all writes.
       final docRef = _firestore.collection('cards').doc(card.id);
+      final stats = CardStats.statsForCard(card);
+      final statsDocs = await Future.wait(stats.map((s) async =>
+          await _firestore
+              .collection('cardStats')
+              .doc(s.idValue)
+              .get()
+              .then((snapshot) => (s, snapshot.reference, snapshot.exists))));
       transaction.set(docRef, {'userId': userId, ...card.toJson()});
-      for (final s in CardStats.statsForCard(card)) {
-        final sDoc = _firestore.collection('cardStats').doc(s.idValue);
-        final snapshot = await transaction.get(sDoc);
-        if (!snapshot.exists) {
-          transaction.set(sDoc, {'userId': userId, ...s.toJson()});
+      for (final record in statsDocs) {
+        try {
+          if (!record.$3) {
+            transaction
+                .set(record.$2, {'userId': userId, ...record.$1.toJson()});
+          }
+        } on Exception catch (e) {
+          _log.e('Error updating card stats: $e');
+          rethrow;
         }
       }
     });
+  }
+
+  @override
+  Future<void> updateAllStats() async {
+    _log.i('Updating card');
+    final cardsSnapshot = await _cardsCollection.get();
+
+    for (final snapshot in cardsSnapshot.docs) {
+      final stats = CardStats.statsForCard(snapshot.data());
+      final statsDocs = await Future.wait(stats.map((s) async =>
+          await _firestore
+              .collection('cardStats')
+              .doc(s.idValue)
+              .get()
+              .then((snapshot) => (s, snapshot.reference, snapshot.exists))));
+      for (final record in statsDocs) {
+        if (!record.$3) {
+          await record.$2.set({'userId': userId, ...record.$1.toJson()});
+        }
+      }
+    }
   }
 
   @override
@@ -169,9 +202,19 @@ class FirebaseCardsRepository extends CardsRepository {
   @override
   Future<void> saveCard(Card card) async {
     if (card.id == null) {
-      return await _addCard(card).whenComplete(() => notifyCardChanged());
+      return await _addCard(card)
+          .whenComplete(() => notifyCardChanged())
+          .onError((e, stackTrace) {
+        _log.w("Error adding card", error: e, stackTrace: stackTrace);
+        throw e as Error;
+      });
     } else {
-      return await _updateCard(card).whenComplete(() => notifyCardChanged());
+      return await _updateCard(card)
+          .whenComplete(() => notifyCardChanged())
+          .onError((e, stackTrace) {
+        _log.w("Error updating card", error: e, stackTrace: stackTrace);
+        throw e as Error;
+      });
     }
   }
 
@@ -200,6 +243,12 @@ class FirebaseCardsRepository extends CardsRepository {
     return snapshot.docs.first.data();
   }
 
+  Future<Iterable<String>> _deckCardsIds(String deckId) async {
+    final snapshots =
+        await _collection('cards').where('deckId', isEqualTo: deckId).get();
+    return snapshots.docs.map((doc) => doc.id);
+  }
+
   /// Loads identifiers and review variants of cards to review based on `nextReviewDate`
   @override
   Future<Map<State, int>> cardsToReviewCount({String? deckId}) async {
@@ -209,7 +258,8 @@ class FirebaseCardsRepository extends CardsRepository {
           Filter('nextReviewDate', isLessThanOrEqualTo: DateTime.now()),
           Filter('nextReviewDate', isNull: true)));
       if (deckId != null) {
-        baseQuery = baseQuery.where('deckId', isEqualTo: deckId);
+        final cardIds = await _deckCardsIds(deckId);
+        baseQuery = baseQuery.where('cardId', whereIn: cardIds);
       }
 
       countState(State state) async {
@@ -276,13 +326,15 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   Future<Iterable<Card>> loadCardToReview({String? deckId}) async {
     // Load cards to review IDs and corresponding card review variant.
     final cardIdsWithVariants = await _cardIdsToReview();
+    _log.d('Cards to review: ${cardIdsWithVariants.length}');
     // Load corresponding cards for each card ID from the tuple
     final cardIds =
         cardIdsWithVariants.map((t) => t.$1).toSet(); // unique card Ids
     final cardsQuery = deckId != null
-        ? _cardsCollection.where(Filter.and(Filter('cardId', whereIn: cardIds),
+        ? _cardsCollection.where(Filter.and(
+            Filter(FieldPath.documentId, whereIn: cardIds),
             Filter('deckId', isEqualTo: deckId)))
-        : _cardsCollection.where('cardId', whereIn: cardIds);
+        : _cardsCollection.where(FieldPath.documentId, whereIn: cardIds);
     final cardsSnapshot = await cardsQuery.get();
     final cards = cardsSnapshot.docs.map((doc) => doc.data());
     final cardsMappedToId =

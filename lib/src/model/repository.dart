@@ -41,6 +41,8 @@ abstract class CardsRepository extends ChangeNotifier {
   Future<UserProfile?> loadUser(String userId);
   Future<void> saveUser(UserProfile user);
 
+  Future<void> updateAllStats();
+
   @protected
   void notifyCardChanged() {
     _cardsUpdated.value = !_cardsUpdated.value;
@@ -183,6 +185,12 @@ class InMemoryCardsRepository extends CardsRepository {
   @override
   Future<Map<model.State, int>> cardsToReviewCount({String? deckId}) {
     // TODO: implement cardCardsToReviewCount
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> updateAllStats() {
+    // TODO: implement updateAllStats
     throw UnimplementedError();
   }
 }

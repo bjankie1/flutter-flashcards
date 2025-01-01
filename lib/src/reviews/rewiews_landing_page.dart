@@ -58,12 +58,22 @@ class ReviewsBreakdown extends StatelessWidget {
                         onPressed: () => learn(deck.id),
                         child: Text(context.l10n.learn))),
               )),
-          ListTile(
-              title: FilledButton(
-                  onPressed: () => learnEverything(),
-                  child: Text(
-                    context.l10n.learnEverything,
-                  )))
+          Visibility(
+            visible: cardsByDeck.isNotEmpty,
+            child: ListTile(
+                title: FilledButton(
+                    onPressed: () => learnEverything(),
+                    child: Text(
+                      context.l10n.learnEverything,
+                    ))),
+          ),
+          Visibility(
+            visible: cardsByDeck.isEmpty,
+            child: Text(
+              context.l10n.noCardsToLearn,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+          )
         ]),
       ),
     );

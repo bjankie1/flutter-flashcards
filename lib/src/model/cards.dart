@@ -159,6 +159,8 @@ class Attachment {
   final String url;
 
   const Attachment({required this.id, required this.url});
+
+  toJson() => {"id": id, "url": url};
 }
 
 // @JsonSerializable(explicitToJson: true)
@@ -172,6 +174,11 @@ class Content {
   });
 
   factory Content.basic(String text) => Content(text: text, attachments: []);
+
+  toJson() => {
+        "text": text,
+        "attachments": attachments?.map((e) => e.toJson()).toList()
+      };
 }
 
 class CardOptions {
@@ -271,10 +278,20 @@ class Card implements FirebaseSerializable {
   String get idValue => id!;
 
   @override
-  Map<String, dynamic> toJson() {
-    // TODO: implement toJson
-    throw UnimplementedError();
-  }
+  Map<String, dynamic> toJson() => {
+        'deckId': deckId,
+        'question': question.toJson() ?? {},
+        'answer': answer,
+        'options': _cardOptionsToJson(),
+        'tags': tags?.map((tag) => tag.name).toSet(),
+        'alternativeAnswers': alternativeAnswers,
+        'explanation': explanation?.toJson() ?? {},
+      };
+
+  Map<String, dynamic> _cardOptionsToJson() => {
+        'reverse': options?.reverse,
+        'inputRequired': options?.inputRequired,
+      };
 
   factory Card.fromJson(String id, Map<String, dynamic> data) => Card(
       id: id,

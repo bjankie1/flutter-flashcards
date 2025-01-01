@@ -29,13 +29,13 @@ class AppState extends ChangeNotifier {
       }
     });
     currentTheme.addListener(() async {
-      if (_userProfile != null) {
+      if (_userProfile != null && _userProfile?.theme != currentTheme.value) {
         _userProfile = _userProfile!.copyWith(theme: currentTheme.value);
         await cardRepository.saveUser(_userProfile!);
       }
     });
     currentLocale.addListener(() async {
-      if (_userProfile != null) {
+      if (_userProfile != null && _userProfile?.locale != currentLocale.value) {
         _userProfile = _userProfile!.copyWith(locale: currentLocale.value);
         await cardRepository.saveUser(_userProfile!);
       }
