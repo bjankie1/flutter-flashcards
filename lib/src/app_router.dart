@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/decks/card_edit_page.dart';
 import 'package:flutter_flashcards/src/decks/cards_page.dart';
 import 'package:flutter_flashcards/src/decks/decks_page.dart';
 import 'package:flutter_flashcards/src/reviews/rewiews_landing_page.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_flashcards/src/settings/settings_page.dart';
 import 'package:flutter_flashcards/src/statistics/statistics_page.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 
 import '../firebase_options.dart';
 import 'reviews/study_cards_page.dart';
@@ -117,6 +119,46 @@ final router = GoRouter(
                   );
                 });
           },
+          routes: [
+            GoRoute(
+                path: 'cards/:cardId',
+                name: 'editCard',
+                builder: (context, state) {
+                  final deckId = state.pathParameters['deckId'];
+                  if (deckId == null) {
+                    return DecksPage();
+                  }
+                  final cardId = state.pathParameters['cardId'];
+
+                  return RepositoryLoader(
+                      fetcher: (repository) async =>
+                          cardId != null && cardId != 'create'
+                              ? await repository.loadCard(cardId)
+                              : null,
+                      builder: (context, card, _) {
+                        if (cardId != null && card == null) {
+                          return Text('Card not found');
+                        }
+                        return CardEditPage(
+                          card: card,
+                          deckId: deckId,
+                        );
+                      });
+                }),
+            GoRoute(
+                path: 'add',
+                name: 'addCard',
+                builder: (context, state) {
+                  Logger().i('Creating card');
+                  final deckId = state.pathParameters['deckId'];
+                  if (deckId == null) {
+                    return DecksPage();
+                  }
+                  return CardEditPage(
+                    deckId: deckId,
+                  );
+                })
+          ],
         ),
         GoRoute(
           path: 'decks',

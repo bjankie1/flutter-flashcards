@@ -124,4 +124,31 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get rateEasyLabel => 'Łatwe';
+
+  @override
+  String get userNotLoggedIn => 'Musisz być zalogowany';
+
+  @override
+  String printHours(int hours) {
+    return '$hours godzin';
+  }
+
+  @override
+  String printMinutes(int minutes) {
+    return '$minutes minut';
+  }
+
+  @override
+  String printSeconds(int seconds) {
+    return '$seconds sekund';
+  }
+
+  @override
+  String get weekDurationFilterLabel => 'Ostatnie 7 dni';
+
+  @override
+  String get monthDurationFilterLabel => 'Ostatni miesiąc';
+
+  @override
+  String get cardReviewedPerHourHeader => 'Godziny powtórek';
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
-import 'package:flutter_flashcards/src/app_state.dart';
-import 'package:flutter_flashcards/src/decks/card_edit_page.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
+import 'package:go_router/go_router.dart';
+import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:provider/provider.dart';
 import '../model/cards.dart' as model;
 
@@ -22,11 +22,11 @@ class CardsList extends StatelessWidget {
           noDataWidget: Center(child: Text(context.l10n.deckEmptyMessage)),
           builder: (context, data, _) {
             final flashcards = data.toList();
-            return Column(
-              children: [
-                SizedBox(
-                  width: 500,
-                  child: ListView.builder(
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Column(
+                children: [
+                  ListView.builder(
                     shrinkWrap: true,
                     itemCount: flashcards.length,
                     itemBuilder: (context, index) {
@@ -34,19 +34,14 @@ class CardsList extends StatelessWidget {
                       return Card(
                         child: ListTile(
                           title: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CardEditPage(
-                                      card: card,
-                                      deckId: card.deckId,
-                                    ),
-                                  ));
-                              Provider.of<AppState>(context, listen: false)
-                                  .setTitle(context.l10n.editCard);
+                            onTap: () async {
+                              await context
+                                  .push('/decks/${deck.id}/cards/${card.id}');
                             },
-                            child: Text(card.question.text),
+                            child: GptMarkdown(
+                              card.question.text,
+                              maxLines: 5,
+                            ),
                           ),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete),
@@ -58,18 +53,20 @@ class CardsList extends StatelessWidget {
                       );
                     },
                   ),
-                ),
-                Padding(
-                  // Now always visible
-                  padding: const EdgeInsets.all(8.0),
-                  child: FilledButton(
-                    onPressed: () {
-                      _editCard(context, null);
-                    },
-                    child: Text(context.l10n.addCard),
+                  Padding(
+                    // Now always visible
+                    padding: const EdgeInsets.all(8.0),
+                    child: FilledButton(
+                      onPressed: () async {
+                        await context.pushNamed('addCard', pathParameters: {
+                          'deckId': deck.id!,
+                        });
+                      },
+                      child: Text(context.l10n.addCard),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             );
           },
         );
@@ -78,16 +75,4 @@ class CardsList extends StatelessWidget {
   }
 
   _deleteCard(BuildContext context, model.Card card) async {}
-
-  void _editCard(BuildContext context, model.Card? card) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CardEditPage(
-          card: card,
-          deckId: deck.id!,
-        ),
-      ),
-    );
-  }
 }

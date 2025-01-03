@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../model/cards.dart' as model;
 import '../model/repository.dart';
 import '../widgets.dart';
-import '../reviews/study_cards_page.dart';
 
 class DeckListWidget extends StatelessWidget {
   @override
@@ -33,9 +32,8 @@ class DeckListWidget extends StatelessWidget {
                         children: [
                           ListTile(
                             title: InkWell(
-                                onTap: () {
-                                  context.pushNamed('deck',
-                                      pathParameters: {'deckId': deck.id!});
+                                onTap: () async {
+                                  await context.push('/decks/${deck.id}');
                                 },
                                 child: Text(
                                   deck.name,
@@ -98,13 +96,13 @@ class DeckListWidget extends StatelessWidget {
               content: Text(context.l10n.deleteDeckConfirmation),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => context.pop(),
                   child: Text(context.ml10n.cancelButtonLabel),
                 ),
                 FilledButton(
                   onPressed: () async {
                     await repository.deleteDeck(deck.id!);
-                    Navigator.pop(context);
+                    context.pop();
                   },
                   child: Text(context.l10n.delete),
                 ),
@@ -114,14 +112,7 @@ class DeckListWidget extends StatelessWidget {
 
   void startLearning(BuildContext context, model.Deck deck) async {
     try {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => StudyCardsPage(
-            deckId: deck.id,
-          ),
-        ),
-      );
+      await context.push('/study/learn?deckId=${deck.id}');
     } on Exception {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Theme.of(context).colorScheme.errorContainer,

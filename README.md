@@ -4,8 +4,8 @@
 
 ### Basics
 
-- [ ] Reviews page
-  - [ ] Select single deck
+- [x] Reviews page
+  - [x] Select single deck
 - [ ] Image upload
 - [ ] Statistics page details:
   - [ ] Cards reviews per day per deck - stacked bar chart (https://github.com/imaNNeo/fl_chart/blob/main/repo_files/documentations/bar_chart.md)

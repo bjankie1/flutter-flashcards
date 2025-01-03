@@ -56,14 +56,14 @@ class ReviewsBreakdown extends StatelessWidget {
                         label: Text(context.l10n
                             .cardsToReview(cardsByDeck[deck]!.length))),
                     trailing: FilledButton(
-                        onPressed: () => learn(context, deck.id),
+                        onPressed: () async => await learn(context, deck.id),
                         child: Text(context.l10n.learn))),
               )),
           Visibility(
             visible: cardsByDeck.isNotEmpty,
             child: ListTile(
                 title: FilledButton(
-                    onPressed: () => learnEverything(context),
+                    onPressed: () async => await learnEverything(context),
                     child: Text(
                       context.l10n.learnEverything,
                     ))),
@@ -80,12 +80,12 @@ class ReviewsBreakdown extends StatelessWidget {
     );
   }
 
-  learn(BuildContext context, String? id) {
-    context.pushNamed('learn', queryParameters: {'deckId': id});
+  learn(BuildContext context, String? id) async {
+    await context.pushNamed('learn', queryParameters: {'deckId': id});
   }
 
-  learnEverything(BuildContext context) {
+  learnEverything(BuildContext context) async {
     // Navigate to `StudyCardsPage`
-    context.pushNamed('learn');
+    await context.pushNamed('learn');
   }
 }

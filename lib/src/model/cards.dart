@@ -477,8 +477,8 @@ class CardAnswer implements FirebaseSerializable {
       CardAnswer(
         cardId: json['cardId'] as String,
         variant: CardReviewVariant.fromString(json['variant']),
-        reviewStart: (json['date'] as Timestamp).toDate(),
-        rating: Rating.values[json['rating'] as int],
+        reviewStart: (json['reviewStart'] as Timestamp).toDate(),
+        rating: Rating.values[json['answerRate'] as int],
         timeSpent: Duration(milliseconds: json['timeSpent'] as int),
       );
 

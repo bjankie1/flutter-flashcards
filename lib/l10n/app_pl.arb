@@ -36,5 +36,12 @@
   "rateAgainLabel": "Ponownie",
   "rateHardLabel": "Trudne",
   "rateGoodLabel": "Dobrze",
-  "rateEasyLabel": "Łatwe"
+  "rateEasyLabel": "Łatwe",
+  "userNotLoggedIn": "Musisz być zalogowany",
+  "printHours": "{hours} godzin",
+  "printMinutes": "{minutes} minut",
+  "printSeconds": "{seconds} sekund",
+  "weekDurationFilterLabel": "Ostatnie 7 dni",
+  "monthDurationFilterLabel": "Ostatni miesiąc",
+  "cardReviewedPerHourHeader": "Godziny powtórek"
 }

@@ -124,4 +124,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rateEasyLabel => 'Easy';
+
+  @override
+  String get userNotLoggedIn => 'You need to log in';
+
+  @override
+  String printHours(int hours) {
+    return '$hours hours';
+  }
+
+  @override
+  String printMinutes(int minutes) {
+    return '$minutes minutes';
+  }
+
+  @override
+  String printSeconds(int seconds) {
+    return '$seconds seconds';
+  }
+
+  @override
+  String get weekDurationFilterLabel => 'Last 7 days';
+
+  @override
+  String get monthDurationFilterLabel => 'Last month';
+
+  @override
+  String get cardReviewedPerHourHeader => 'Cards reviewed per hour';
 }

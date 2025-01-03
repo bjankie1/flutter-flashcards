@@ -15,6 +15,7 @@ abstract class CardsRepository extends ChangeNotifier {
   ValueListenable<bool> get cardsUpdated => _cardsUpdated;
   final ValueNotifier<bool> _decksUpdated = ValueNotifier<bool>(false);
   ValueListenable<bool> get decksUpdated => _decksUpdated;
+  Future<model.Card?> loadCard(String cardId);
 
   Future<void> saveDeck(model.Deck deck);
   Future<Iterable<model.Deck>> loadDecks();
@@ -59,8 +60,14 @@ abstract class CardsRepository extends ChangeNotifier {
   /// Ignores the information if it has.
   /// Calculates next review date based on FSRS algorithm
   Future<void> recordAnswer(String cardId, model.CardReviewVariant variant,
-      model.Rating rating) async {
+      model.Rating rating, DateTime reviewStart, Duration duration) async {
     _log.d('Recording answer for card $cardId with variant $variant');
+    recordCardAnswer(model.CardAnswer(
+        cardId: cardId,
+        variant: variant,
+        reviewStart: reviewStart,
+        timeSpent: duration,
+        rating: rating));
     final stats = await loadCardStats(cardId, variant);
     if (stats.lastReview != null &&
         stats.lastReview!.difference(DateTime.now()).inDays == 0 &&
@@ -192,6 +199,12 @@ class InMemoryCardsRepository extends CardsRepository {
   @override
   Future<void> updateAllStats() {
     // TODO: implement updateAllStats
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<model.Card?> loadCard(String cardId) {
+    // TODO: implement loadCard
     throw UnimplementedError();
   }
 }

@@ -316,6 +316,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Easy'**
   String get rateEasyLabel;
+
+  /// No description provided for @userNotLoggedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to log in'**
+  String get userNotLoggedIn;
+
+  /// No description provided for @printHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} hours'**
+  String printHours(int hours);
+
+  /// No description provided for @printMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} minutes'**
+  String printMinutes(int minutes);
+
+  /// No description provided for @printSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds} seconds'**
+  String printSeconds(int seconds);
+
+  /// No description provided for @weekDurationFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 days'**
+  String get weekDurationFilterLabel;
+
+  /// No description provided for @monthDurationFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last month'**
+  String get monthDurationFilterLabel;
+
+  /// No description provided for @cardReviewedPerHourHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards reviewed per hour'**
+  String get cardReviewedPerHourHeader;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -67,5 +67,33 @@
   "rateAgainLabel": "Again",
   "rateHardLabel": "Hard",
   "rateGoodLabel": "Good",
-  "rateEasyLabel": "Easy"
+  "rateEasyLabel": "Easy",
+  "userNotLoggedIn": "You need to log in",
+  "printHours": "{hours} hours",
+  "@printHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "printMinutes": "{minutes} minutes",
+  "@printMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "printSeconds": "{seconds} seconds",
+  "@printSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "weekDurationFilterLabel": "Last 7 days",
+  "monthDurationFilterLabel": "Last month",
+  "cardReviewedPerHourHeader": "Cards reviewed per hour"
 }

@@ -42,6 +42,14 @@
         { "fieldPath": "userId", "order": "ASCENDING" },
         { "fieldPath": "nextReviewDate", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "reviewLog",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "reviewStart", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
