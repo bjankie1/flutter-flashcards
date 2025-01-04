@@ -3,7 +3,7 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/decks/card_edit_page.dart';
-import 'package:flutter_flashcards/src/decks/cards_page.dart';
+import 'package:flutter_flashcards/src/decks/deck_details_page.dart';
 import 'package:flutter_flashcards/src/decks/decks_page.dart';
 import 'package:flutter_flashcards/src/reviews/rewiews_landing_page.dart';
 import 'package:flutter_flashcards/src/settings/settings_page.dart';

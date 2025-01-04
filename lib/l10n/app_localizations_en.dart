@@ -151,4 +151,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cardReviewedPerHourHeader => 'Cards reviewed per hour';
+
+  @override
+  String get deckNameSavedMessage => 'Deck name saved';
+
+  @override
+  String get deckDescriptionSavedMessage => 'Deck description saved';
+
+  @override
+  String get errorSavingDescriptionMessage => 'Error saving description';
+
+  @override
+  String get countCardsPerDeckChartTitle => 'Number of cards studied per deck';
+
+  @override
+  String get timePerDeckChartTitle => 'Time spent per deck';
 }

@@ -3,6 +3,9 @@ import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/base_layout.dart';
 import 'package:flutter_flashcards/src/decks/cards_list.dart';
 import 'package:flutter_flashcards/src/decks/deck_details.dart';
+import 'package:flutter_flashcards/src/model/repository.dart';
+import 'package:flutter_flashcards/src/widgets.dart';
+import 'package:provider/provider.dart';
 
 import '../model/cards.dart' as model;
 import 'card_edit_page.dart';
@@ -15,18 +18,26 @@ class DeckDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
-      title: context.l10n.deckHeader(deck.name),
+      title: '',
       currentPage: PageIndex.cards,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _addCard(context, null),
         label: Text(context.l10n.addCard),
         icon: const Icon(Icons.add),
       ),
-      child: Column(
-        children: [
-          DeckInformation(deck: deck),
-          CardsList(deck: deck),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40.0),
+        child: Column(
+          children: [
+            ValueListenableBuilder(
+                valueListenable: context.watch<CardsRepository>().decksUpdated,
+                builder: (context, deckChange, _) => RepositoryLoader(
+                    fetcher: (repository) => repository.loadDeck(deck.id!),
+                    builder: (context, deck, _) =>
+                        DeckInformation(deck: deck!))),
+            CardsList(deck: deck),
+          ],
+        ),
       ),
     );
   }

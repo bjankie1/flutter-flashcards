@@ -71,18 +71,18 @@ class Deck implements FirebaseSerializable {
           id == other.id;
 
   Deck copyWith({
-    ValueGetter<String?>? id,
+    String? id,
     String? name,
-    ValueGetter<String?>? description,
-    ValueGetter<String?>? parentDeckId,
-    ValueGetter<DeckOptions?>? deckOptions,
+    String? description,
+    String? parentDeckId,
+    DeckOptions? deckOptions,
   }) {
     return Deck(
-      id: id != null ? id() : this.id,
+      id: id != null ? id : this.id,
       name: name ?? this.name,
-      description: description != null ? description() : this.description,
-      parentDeckId: parentDeckId != null ? parentDeckId() : this.parentDeckId,
-      deckOptions: deckOptions != null ? deckOptions() : this.deckOptions,
+      description: description != null ? description : this.description,
+      parentDeckId: parentDeckId != null ? parentDeckId : this.parentDeckId,
+      deckOptions: deckOptions != null ? deckOptions : this.deckOptions,
     );
   }
 

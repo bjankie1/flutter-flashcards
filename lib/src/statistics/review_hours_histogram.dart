@@ -99,7 +99,7 @@ class _ReviewHoursHistogramState extends State<ReviewHoursHistogram> {
             Expanded(
               child: SizedBox(
                 height: 40,
-                child: FittedBox(
+                child: Center(
                   child: Text(context.l10n.cardReviewedPerHourHeader,
                       style: Theme.of(context).textTheme.titleMedium),
                 ),

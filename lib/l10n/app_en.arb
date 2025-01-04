@@ -95,5 +95,10 @@
   },
   "weekDurationFilterLabel": "Last 7 days",
   "monthDurationFilterLabel": "Last month",
-  "cardReviewedPerHourHeader": "Cards reviewed per hour"
+  "cardReviewedPerHourHeader": "Cards reviewed per hour",
+  "deckNameSavedMessage": "Deck name saved",
+  "deckDescriptionSavedMessage": "Deck description saved",
+  "errorSavingDescriptionMessage": "Error saving description",
+  "countCardsPerDeckChartTitle": "Number of cards studied per deck",
+  "timePerDeckChartTitle": "Time spent per deck"
 }

@@ -19,7 +19,7 @@ class _StudyStatisticsPageState extends State<StudyStatisticsPage> {
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
-        title: 'Statistics',
+        title: 'Statistics!',
         currentPage: PageIndex.statistics,
         child: ChangeNotifierProvider(
           create: (context) => FiltersModel(),
@@ -70,8 +70,8 @@ class StatisticsCharts extends StatelessWidget {
                   ),
                   Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: AspectRatio(
-                        aspectRatio: 4.0,
+                      child: SizedBox(
+                        height: 400,
                         child: Row(
                           children: [
                             DecksReviewsPieChart(result,

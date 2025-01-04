@@ -358,6 +358,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cards reviewed per hour'**
   String get cardReviewedPerHourHeader;
+
+  /// No description provided for @deckNameSavedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck name saved'**
+  String get deckNameSavedMessage;
+
+  /// No description provided for @deckDescriptionSavedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck description saved'**
+  String get deckDescriptionSavedMessage;
+
+  /// No description provided for @errorSavingDescriptionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving description'**
+  String get errorSavingDescriptionMessage;
+
+  /// No description provided for @countCardsPerDeckChartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of cards studied per deck'**
+  String get countCardsPerDeckChartTitle;
+
+  /// No description provided for @timePerDeckChartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Time spent per deck'**
+  String get timePerDeckChartTitle;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -151,4 +151,19 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get cardReviewedPerHourHeader => 'Godziny powtórek';
+
+  @override
+  String get deckNameSavedMessage => 'Nazwa zestawu zapisana';
+
+  @override
+  String get deckDescriptionSavedMessage => 'Opis zestawu zapisany';
+
+  @override
+  String get errorSavingDescriptionMessage => 'Nie udało się zapisać opisu';
+
+  @override
+  String get countCardsPerDeckChartTitle => 'Według liczby kart';
+
+  @override
+  String get timePerDeckChartTitle => 'Czas poświęcony na każdy zestaw';
 }

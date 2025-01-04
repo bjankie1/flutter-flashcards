@@ -22,51 +22,48 @@ class CardsList extends StatelessWidget {
           noDataWidget: Center(child: Text(context.l10n.deckEmptyMessage)),
           builder: (context, data, _) {
             final flashcards = data.toList();
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Column(
-                children: [
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: flashcards.length,
-                    itemBuilder: (context, index) {
-                      final card = flashcards[index];
-                      return Card(
-                        child: ListTile(
-                          title: InkWell(
-                            onTap: () async {
-                              await context
-                                  .push('/decks/${deck.id}/cards/${card.id}');
-                            },
-                            child: GptMarkdown(
-                              card.question.text,
-                              maxLines: 5,
-                            ),
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () async {
-                              await _deleteCard(context, card);
-                            },
+            return Column(
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: flashcards.length,
+                  itemBuilder: (context, index) {
+                    final card = flashcards[index];
+                    return Card(
+                      child: ListTile(
+                        title: InkWell(
+                          onTap: () async {
+                            await context
+                                .push('/decks/${deck.id}/cards/${card.id}');
+                          },
+                          child: GptMarkdown(
+                            card.question.text,
+                            maxLines: 5,
                           ),
                         ),
-                      );
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () async {
+                            await _deleteCard(context, card);
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                Padding(
+                  // Now always visible
+                  padding: const EdgeInsets.all(8.0),
+                  child: FilledButton(
+                    onPressed: () async {
+                      await context.pushNamed('addCard', pathParameters: {
+                        'deckId': deck.id!,
+                      });
                     },
+                    child: Text(context.l10n.addCard),
                   ),
-                  Padding(
-                    // Now always visible
-                    padding: const EdgeInsets.all(8.0),
-                    child: FilledButton(
-                      onPressed: () async {
-                        await context.pushNamed('addCard', pathParameters: {
-                          'deckId': deck.id!,
-                        });
-                      },
-                      child: Text(context.l10n.addCard),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             );
           },
         );

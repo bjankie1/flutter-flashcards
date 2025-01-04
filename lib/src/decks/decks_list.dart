@@ -15,75 +15,69 @@ class DeckListWidget extends StatelessWidget {
       builder: (context, decksIterable, repository) {
         final decks = decksIterable.toList();
         decks.sort((deck1, deck2) => deck1.name.compareTo(deck2.name));
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: decks.isEmpty ? 1 : decks.length,
-                itemBuilder: (context, index) {
-                  if (decks.isEmpty) {
-                    return Center(child: Text(context.l10n.noCardsMessage));
-                  } else {
-                    final deck = decks[index];
-                    return ListTile(
-                      title: Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                                onTap: () async {
-                                  await context.push('/decks/${deck.id}');
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: SizedBox(
+            height: 500,
+            width: 500,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: decks.isEmpty ? 1 : decks.length,
+              itemBuilder: (context, index) {
+                if (decks.isEmpty) {
+                  return Center(child: Text(context.l10n.noCardsMessage));
+                } else {
+                  final deck = decks[index];
+                  return ListTile(
+                    title: InkWell(
+                        onTap: () async {
+                          await context.push('/decks/${deck.id}');
+                        },
+                        child: Text(
+                          deck.name,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        )),
+                    subtitle: Row(
+                      children: [
+                        DeckCardsNumber(deck),
+                        DeckCardsToReview(deck),
+                        Spacer(),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment
+                                .end, // Align buttons to the right
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () async {
+                                  await deleteDeck(context, deck);
                                 },
-                                child: Text(
-                                  deck.name,
-                                )),
-                          ),
-                          IconButton(onPressed: () {}, icon: Icon(Icons.edit))
-                        ],
-                      ),
-                      subtitle: Row(
-                        children: [
-                          DeckCardsNumber(deck),
-                          DeckCardsToReview(deck),
-                          Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment
-                                  .end, // Align buttons to the right
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () async {
-                                    await deleteDeck(context, deck);
-                                  },
+                              ),
+                              ElevatedButton(
+                                onPressed: () async =>
+                                    startLearning(context, deck),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .primary, // Use primary color from the theme
+                                  foregroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimary, // Use appropriate contrast color
                                 ),
-                                ElevatedButton(
-                                  onPressed: () async =>
-                                      startLearning(context, deck),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Theme.of(context)
-                                        .colorScheme
-                                        .primary, // Use primary color from the theme
-                                    foregroundColor: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimary, // Use appropriate contrast color
-                                  ),
-                                  child: Text(context.l10n.learn),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  }
-                },
-              ),
+                                child: Text(context.l10n.learn),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                }
+              },
             ),
-          ],
+          ),
         );
       },
     );

@@ -215,9 +215,15 @@ class FirebaseCardsRepository extends CardsRepository {
   @override
   Future<Deck> saveDeck(Deck deck) async {
     if (deck.id == null) {
-      return await _addDeck(deck).whenComplete(() => notifyDeckChanged());
+      final result =
+          await _addDeck(deck).whenComplete(() => notifyDeckChanged());
+      notifyDeckChanged();
+      return result;
     } else {
-      return await _updateDeck(deck).whenComplete(() => notifyDeckChanged());
+      final result =
+          await _updateDeck(deck).whenComplete(() => notifyDeckChanged());
+      notifyDeckChanged();
+      return result;
     }
   }
 
@@ -250,6 +256,14 @@ class FirebaseCardsRepository extends CardsRepository {
           Filter('nextReviewDate', isNull: true)));
       if (deckId != null) {
         final cardIds = await _deckCardsIds(deckId);
+        if (cardIds.isEmpty) {
+          return {
+            State.newState: 0,
+            State.learning: 0,
+            State.relearning: 0,
+            State.review: 0
+          };
+        }
         baseQuery = baseQuery.where('cardId', whereIn: cardIds);
       }
 

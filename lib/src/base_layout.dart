@@ -99,6 +99,7 @@ class BaseLayout extends StatelessWidget {
           ),
         ),
         body: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             LeftNavigation(
               currentPage: currentPage,
@@ -148,9 +149,7 @@ class LeftNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _log.i('Page index is $currentPage');
     int selectedIndex = currentPage?.index ?? 0;
-
     return NavigationRail(
       destinations: [
         NavigationRailDestination(
