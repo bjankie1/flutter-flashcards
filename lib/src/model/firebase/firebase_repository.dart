@@ -422,4 +422,20 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         .get();
     return snapshot.docs.firstOrNull?.data();
   }
+
+  @override
+  Future<Iterable<Card>> loadCardsByIds(Iterable<String> cardIds) async {
+    final snapshot = await _cardsCollection
+        .where(FieldPath.documentId, whereIn: cardIds)
+        .get();
+    return snapshot.docs.map((e) => e.data());
+  }
+
+  @override
+  Future<Iterable<Deck>> loadDecksByIds(Iterable<String> deckIds) async {
+    final snapshot = await _decksCollection
+        .where(FieldPath.documentId, whereIn: deckIds)
+        .get();
+    return snapshot.docs.map((e) => e.data());
+  }
 }

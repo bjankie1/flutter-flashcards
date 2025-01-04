@@ -17,8 +17,8 @@ class DeckListWidget extends StatelessWidget {
         decks.sort((deck1, deck2) => deck1.name.compareTo(deck2.name));
         return Column(
           children: [
-            SizedBox(
-              width: 700,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: decks.isEmpty ? 1 : decks.length,
@@ -27,24 +27,26 @@ class DeckListWidget extends StatelessWidget {
                     return Center(child: Text(context.l10n.noCardsMessage));
                   } else {
                     final deck = decks[index];
-                    return Card(
-                      child: Column(
+                    return ListTile(
+                      title: Row(
                         children: [
-                          ListTile(
-                            title: InkWell(
+                          Expanded(
+                            child: InkWell(
                                 onTap: () async {
                                   await context.push('/decks/${deck.id}');
                                 },
                                 child: Text(
                                   deck.name,
                                 )),
-                            subtitle: Row(
-                              children: [
-                                DeckCardsNumber(deck),
-                                DeckCardsToReview(deck)
-                              ],
-                            ),
                           ),
+                          IconButton(onPressed: () {}, icon: Icon(Icons.edit))
+                        ],
+                      ),
+                      subtitle: Row(
+                        children: [
+                          DeckCardsNumber(deck),
+                          DeckCardsToReview(deck),
+                          Spacer(),
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),

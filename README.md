@@ -7,9 +7,13 @@
 - [x] Reviews page
   - [x] Select single deck
 - [ ] Image upload
-- [ ] Statistics page details:
-  - [ ] Cards reviews per day per deck - stacked bar chart (https://github.com/imaNNeo/fl_chart/blob/main/repo_files/documentations/bar_chart.md)
-  - [ ] Time spent per deck (https://github.com/imaNNeo/fl_chart/blob/main/repo_files/documentations/bar_chart.md)
+- [ ] Grouping decks into categories e.g. multiple history lessons for grade 6
+  - [ ] Show categories in decks list
+  - [ ] Show categories in study page - learn category
+  - [ ] Represent categories in statistics
+- [ ] Statistics page details https://github.com/imaNNeo/fl_chart/blob/main/repo_files/documentations/bar_chart.md:
+  - [ ] Cards reviews per day per deck - pie chart
+  - [ ] Time spent per deck pie chart
   - [ ] Time spent stats: average per card, 95th percentile, etc.
   - [ ] Reviews per hour of the day - histogram also bar chart with hours on horizontal axis
 - [ ] Batch upload

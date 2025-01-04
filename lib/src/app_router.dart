@@ -114,7 +114,7 @@ final router = GoRouter(
                   if (deck == null) {
                     return Text('Deck not found');
                   }
-                  return CardsPage(
+                  return DeckDetailsPage(
                     deck: deck,
                   );
                 });

@@ -493,6 +493,19 @@ class CardAnswer implements FirebaseSerializable {
 
   @override
   String get idValue => '$cardId::${variant.name}';
+
+  @override
+  int get hashCode => Object.hash(cardId, variant, reviewStart);
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is CardAnswer &&
+            runtimeType == other.runtimeType &&
+            cardId == other.cardId &&
+            variant == other.variant &&
+            reviewStart == other.reviewStart;
+  }
 }
 
 class CardReviewStats {

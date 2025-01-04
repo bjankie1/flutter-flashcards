@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
+import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 import '../model/repository.dart';
 import '../model/cards.dart' as model;
@@ -210,24 +212,13 @@ class _CardEditState extends State<CardEdit> {
           explanation: model.Content.basic(cardHintTextController.text));
 
       await context.cardRepository.saveCard(cardToSave).then(
-          (value) => _showSnackbar(context, 'Card saved!', false),
-          onError: (e) => _showSnackbar(context, "Error saving card", true));
+          (value) => context.showInfoSnackbar('Card saved!'),
+          onError: (e) => context.showErrorSnackbar('Error saving card'));
       if (addNew) {
         reset();
       } else {
-        Navigator.pop(context);
+        context.pop();
       }
-    }
-  }
-
-  void _showSnackbar(BuildContext context, String text, bool isError) {
-    if (context.mounted) {
-      ScaffoldMessenger.of(context)
-        ..removeCurrentSnackBar()
-        ..showSnackBar(SnackBar(
-          content: Text(text),
-          backgroundColor: isError ? Colors.red : Colors.green,
-        ));
     }
   }
 }
