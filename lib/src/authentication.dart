@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
 import 'package:go_router/go_router.dart';
 
-import 'widgets.dart';
-
 class AuthFunc extends StatelessWidget {
   const AuthFunc({
     super.key,
@@ -25,8 +23,8 @@ class AuthFunc extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 8, left: 24, bottom: 8),
           child: FilledButton.icon(
-              onPressed: () {
-                !loggedIn ? context.push('/sign-in') : signOut();
+              onPressed: () async {
+                !loggedIn ? await context.push('/sign-in') : signOut();
               },
               icon: Icon(Icons.exit_to_app),
               label: !loggedIn

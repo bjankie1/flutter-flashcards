@@ -71,18 +71,18 @@ class Deck implements FirebaseSerializable {
           id == other.id;
 
   Deck copyWith({
-    ValueGetter<String?>? id,
+    String? id,
     String? name,
-    ValueGetter<String?>? description,
-    ValueGetter<String?>? parentDeckId,
-    ValueGetter<DeckOptions?>? deckOptions,
+    String? description,
+    String? parentDeckId,
+    DeckOptions? deckOptions,
   }) {
     return Deck(
-      id: id != null ? id() : this.id,
+      id: id != null ? id : this.id,
       name: name ?? this.name,
-      description: description != null ? description() : this.description,
-      parentDeckId: parentDeckId != null ? parentDeckId() : this.parentDeckId,
-      deckOptions: deckOptions != null ? deckOptions() : this.deckOptions,
+      description: description != null ? description : this.description,
+      parentDeckId: parentDeckId != null ? parentDeckId : this.parentDeckId,
+      deckOptions: deckOptions != null ? deckOptions : this.deckOptions,
     );
   }
 
@@ -477,8 +477,8 @@ class CardAnswer implements FirebaseSerializable {
       CardAnswer(
         cardId: json['cardId'] as String,
         variant: CardReviewVariant.fromString(json['variant']),
-        reviewStart: (json['date'] as Timestamp).toDate(),
-        rating: Rating.values[json['rating'] as int],
+        reviewStart: (json['reviewStart'] as Timestamp).toDate(),
+        rating: Rating.values[json['answerRate'] as int],
         timeSpent: Duration(milliseconds: json['timeSpent'] as int),
       );
 
@@ -493,6 +493,19 @@ class CardAnswer implements FirebaseSerializable {
 
   @override
   String get idValue => '$cardId::${variant.name}';
+
+  @override
+  int get hashCode => Object.hash(cardId, variant, reviewStart);
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is CardAnswer &&
+            runtimeType == other.runtimeType &&
+            cardId == other.cardId &&
+            variant == other.variant &&
+            reviewStart == other.reviewStart;
+  }
 }
 
 class CardReviewStats {

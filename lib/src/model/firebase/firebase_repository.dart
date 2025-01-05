@@ -10,7 +10,7 @@ import '../repository.dart';
 class FirebaseCardsRepository extends CardsRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   var _log = Logger();
-  final _user = FirebaseAuth.instance.currentUser;
+  get _user => FirebaseAuth.instance.currentUser;
 
   String get userId {
     _validateUser();
@@ -30,7 +30,7 @@ class FirebaseCardsRepository extends CardsRepository {
           toFirestore: (stats, _) => stats.toJson());
 
   Query<CardAnswer> get _cardAnswersCollection =>
-      _collection('cardAnswers').withConverter<CardAnswer>(
+      _collection('reviewLog').withConverter<CardAnswer>(
           fromFirestore: (doc, _) => CardAnswer.fromJson(doc.id, doc.data()!),
           toFirestore: (answer, _) => answer.toJson());
 
@@ -61,13 +61,7 @@ class FirebaseCardsRepository extends CardsRepository {
   Future<Iterable<Deck>> loadDecks() async {
     _log.i('Loading decks');
     // Check authentication state
-    if (_user == null) {
-      _log.w(
-          'User not logged in while attempting to load decks.'); // Log warning
-      return []; // Or throw an exception, depending on your error handling
-    } else {
-      _log.d('User UID: ${_user.uid}'); // Log user UID if authenticated
-    }
+    _validateUser();
     try {
       final snapshot = await _firestore
           .collection('decks')
@@ -221,9 +215,15 @@ class FirebaseCardsRepository extends CardsRepository {
   @override
   Future<Deck> saveDeck(Deck deck) async {
     if (deck.id == null) {
-      return await _addDeck(deck).whenComplete(() => notifyDeckChanged());
+      final result =
+          await _addDeck(deck).whenComplete(() => notifyDeckChanged());
+      notifyDeckChanged();
+      return result;
     } else {
-      return await _updateDeck(deck).whenComplete(() => notifyDeckChanged());
+      final result =
+          await _updateDeck(deck).whenComplete(() => notifyDeckChanged());
+      notifyDeckChanged();
+      return result;
     }
   }
 
@@ -256,6 +256,14 @@ class FirebaseCardsRepository extends CardsRepository {
           Filter('nextReviewDate', isNull: true)));
       if (deckId != null) {
         final cardIds = await _deckCardsIds(deckId);
+        if (cardIds.isEmpty) {
+          return {
+            State.newState: 0,
+            State.learning: 0,
+            State.relearning: 0,
+            State.review: 0
+          };
+        }
         baseQuery = baseQuery.where('cardId', whereIn: cardIds);
       }
 
@@ -386,7 +394,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   @override
   Future<void> recordCardAnswer(CardAnswer answer) async {
     _log.i("Recording answer for card ${answer.cardId}");
-    final collection = _firestore.collection('cardAnswers');
+    final collection = _firestore.collection('reviewLog');
     collection.add({'userId': userId, ...answer.toJson()}).then(
         (value) => _log.d("Answer saved"),
         onError: (e) => _log.e("Error saving answer: $e"));
@@ -418,5 +426,30 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       return await serializer.fromSnapshot(doc);
     }
     return null;
+  }
+
+  @override
+  Future<Card?> loadCard(String cardId) async {
+    _log.i('Loading card $cardId');
+    final snapshot = await _cardsCollection
+        .where(FieldPath.documentId, isEqualTo: cardId)
+        .get();
+    return snapshot.docs.firstOrNull?.data();
+  }
+
+  @override
+  Future<Iterable<Card>> loadCardsByIds(Iterable<String> cardIds) async {
+    final snapshot = await _cardsCollection
+        .where(FieldPath.documentId, whereIn: cardIds)
+        .get();
+    return snapshot.docs.map((e) => e.data());
+  }
+
+  @override
+  Future<Iterable<Deck>> loadDecksByIds(Iterable<String> deckIds) async {
+    final snapshot = await _decksCollection
+        .where(FieldPath.documentId, whereIn: deckIds)
+        .get();
+    return snapshot.docs.map((e) => e.data());
   }
 }

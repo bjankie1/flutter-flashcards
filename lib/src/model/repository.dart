@@ -15,6 +15,7 @@ abstract class CardsRepository extends ChangeNotifier {
   ValueListenable<bool> get cardsUpdated => _cardsUpdated;
   final ValueNotifier<bool> _decksUpdated = ValueNotifier<bool>(false);
   ValueListenable<bool> get decksUpdated => _decksUpdated;
+  Future<model.Card?> loadCard(String cardId);
 
   Future<void> saveDeck(model.Deck deck);
   Future<Iterable<model.Deck>> loadDecks();
@@ -22,6 +23,9 @@ abstract class CardsRepository extends ChangeNotifier {
   Future<void> deleteDeck(String deckId);
 
   Future<Iterable<model.Card>> loadCards(String deckId);
+  Future<Iterable<model.Card>> loadCardsByIds(Iterable<String> cardIds);
+  Future<Iterable<model.Deck>> loadDecksByIds(Iterable<String> deckIds);
+
   Future<void> saveCard(model.Card card);
   Future<void> deleteCard(String cardId);
 
@@ -59,8 +63,14 @@ abstract class CardsRepository extends ChangeNotifier {
   /// Ignores the information if it has.
   /// Calculates next review date based on FSRS algorithm
   Future<void> recordAnswer(String cardId, model.CardReviewVariant variant,
-      model.Rating rating) async {
+      model.Rating rating, DateTime reviewStart, Duration duration) async {
     _log.d('Recording answer for card $cardId with variant $variant');
+    recordCardAnswer(model.CardAnswer(
+        cardId: cardId,
+        variant: variant,
+        reviewStart: reviewStart,
+        timeSpent: duration,
+        rating: rating));
     final stats = await loadCardStats(cardId, variant);
     if (stats.lastReview != null &&
         stats.lastReview!.difference(DateTime.now()).inDays == 0 &&
@@ -73,6 +83,14 @@ abstract class CardsRepository extends ChangeNotifier {
     final scheduled = f.repeat(stats, DateTime.now())[rating]?.card;
     _log.i('Next schedule for card $cardId is ${scheduled?.nextReviewDate}');
     await saveCardStats(scheduled!);
+  }
+
+  Future<Map<String, model.Deck>> mapCardsToDecks(
+      Iterable<String> cardIds) async {
+    final cards = await loadCardsByIds(cardIds);
+    final decks = await loadDecksByIds(cards.map((c) => c.deckId).toSet());
+    return Map.fromEntries(cards.map(
+        (c) => MapEntry(c.id!, decks.firstWhere((d) => d.id == c.deckId))));
   }
 }
 
@@ -192,6 +210,24 @@ class InMemoryCardsRepository extends CardsRepository {
   @override
   Future<void> updateAllStats() {
     // TODO: implement updateAllStats
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<model.Card?> loadCard(String cardId) {
+    // TODO: implement loadCard
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Iterable<model.Card>> loadCardsByIds(Iterable<String> cardIds) {
+    // TODO: implement loadCardsByIds
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Iterable<model.Deck>> loadDecksByIds(Iterable<String> deckIds) {
+    // TODO: implement loadDecksByIds
     throw UnimplementedError();
   }
 }

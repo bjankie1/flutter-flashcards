@@ -7,7 +7,7 @@ import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class AppState extends ChangeNotifier {
-  final _logger = Logger(); // Create a Logger instance
+  final _log = Logger(); // Create a Logger instance
 
   final CardsRepository cardRepository;
 
@@ -20,9 +20,10 @@ class AppState extends ChangeNotifier {
   UserProfile? get loggedInUser => _userProfile;
 
   AppState(this.cardRepository) {
-    _logger.i('Initializing Firebase authentication'); // Use logger.i for info
+    _log.i('Initializing Firebase authentication');
     FirebaseAuth.instance.userChanges().listen((user) async {
       if (user != null) {
+        _log.d('user in instance: ${FirebaseAuth.instance.currentUser?.email}');
         await loadState(user.uid); // Debug log for user ID
       } else {
         resetState(); // Debug log for logout
@@ -44,7 +45,7 @@ class AppState extends ChangeNotifier {
 
   void resetState() {
     _loggedIn = false;
-    _logger.d('User logged out'); // Debug log for logout
+    _log.d('User logged out'); // Debug log for logout
     setTheme(ThemeMode.system);
     _userProfile = null;
     _currentLocale.value = WidgetsBinding.instance.platformDispatcher.locale;
@@ -52,11 +53,11 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> loadState(String userId) async {
+    _log.d('User logged in: $userId'); // Debug log for user ID
     _loggedIn = true;
-    _logger.d('User logged in: $userId'); // Debug log for user ID
     _userProfile = await cardRepository.loadUser(userId);
     if (_userProfile == null) {
-      _logger.i('User profile not found, creating new one');
+      _log.i('User profile not found, creating new one');
       _userProfile = UserProfile(
           id: userId,
           name: '',
@@ -65,8 +66,8 @@ class AppState extends ChangeNotifier {
           photoUrl: '');
       await cardRepository.saveUser(_userProfile!);
     } else {
-      _logger.i('Loaded theme ${_userProfile?.theme.name}');
-      _logger.i('Loaded locale ${_userProfile?.locale.languageCode}');
+      _log.i('Loaded theme ${_userProfile?.theme.name}');
+      _log.i('Loaded locale ${_userProfile?.locale.languageCode}');
       setTheme(_userProfile!.theme);
       _currentLocale.value = _userProfile!.locale;
     }

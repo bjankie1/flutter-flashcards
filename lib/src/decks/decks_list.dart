@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../model/cards.dart' as model;
 import '../model/repository.dart';
 import '../widgets.dart';
-import '../reviews/study_cards_page.dart';
 
 class DeckListWidget extends StatelessWidget {
   @override
@@ -16,74 +15,67 @@ class DeckListWidget extends StatelessWidget {
       builder: (context, decksIterable, repository) {
         final decks = decksIterable.toList();
         decks.sort((deck1, deck2) => deck1.name.compareTo(deck2.name));
-        return Column(
-          children: [
-            SizedBox(
-              width: 700,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: decks.isEmpty ? 1 : decks.length,
-                itemBuilder: (context, index) {
-                  if (decks.isEmpty) {
-                    return Center(child: Text(context.l10n.noCardsMessage));
-                  } else {
-                    final deck = decks[index];
-                    return Card(
-                      child: Column(
-                        children: [
-                          ListTile(
-                            title: InkWell(
-                                onTap: () {
-                                  context.pushNamed('deck',
-                                      pathParameters: {'deckId': deck.id!});
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: decks.isEmpty ? 1 : decks.length,
+            itemBuilder: (context, index) {
+              if (decks.isEmpty) {
+                return Center(child: Text(context.l10n.noCardsMessage));
+              } else {
+                final deck = decks[index];
+                return Card(
+                  child: ListTile(
+                    title: InkWell(
+                        onTap: () async {
+                          await context.push('/decks/${deck.id}');
+                        },
+                        child: Text(
+                          deck.name,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        )),
+                    subtitle: Row(
+                      children: [
+                        DeckCardsNumber(deck),
+                        DeckCardsToReview(deck),
+                        Spacer(),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment
+                                .end, // Align buttons to the right
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () async {
+                                  await deleteDeck(context, deck);
                                 },
-                                child: Text(
-                                  deck.name,
-                                )),
-                            subtitle: Row(
-                              children: [
-                                DeckCardsNumber(deck),
-                                DeckCardsToReview(deck)
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment
-                                  .end, // Align buttons to the right
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () async {
-                                    await deleteDeck(context, deck);
-                                  },
+                              ),
+                              ElevatedButton(
+                                onPressed: () async =>
+                                    startLearning(context, deck),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .primary, // Use primary color from the theme
+                                  foregroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimary, // Use appropriate contrast color
                                 ),
-                                ElevatedButton(
-                                  onPressed: () async =>
-                                      startLearning(context, deck),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Theme.of(context)
-                                        .colorScheme
-                                        .primary, // Use primary color from the theme
-                                    foregroundColor: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimary, // Use appropriate contrast color
-                                  ),
-                                  child: Text(context.l10n.learn),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  }
-                },
-              ),
-            ),
-          ],
+                                child: Text(context.l10n.learn),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
         );
       },
     );
@@ -98,13 +90,13 @@ class DeckListWidget extends StatelessWidget {
               content: Text(context.l10n.deleteDeckConfirmation),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => context.pop(),
                   child: Text(context.ml10n.cancelButtonLabel),
                 ),
                 FilledButton(
                   onPressed: () async {
                     await repository.deleteDeck(deck.id!);
-                    Navigator.pop(context);
+                    context.pop();
                   },
                   child: Text(context.l10n.delete),
                 ),
@@ -114,14 +106,7 @@ class DeckListWidget extends StatelessWidget {
 
   void startLearning(BuildContext context, model.Deck deck) async {
     try {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => StudyCardsPage(
-            deckId: deck.id,
-          ),
-        ),
-      );
+      await context.push('/study/learn?deckId=${deck.id}');
     } on Exception {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Theme.of(context).colorScheme.errorContainer,

@@ -316,6 +316,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Easy'**
   String get rateEasyLabel;
+
+  /// No description provided for @userNotLoggedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to log in'**
+  String get userNotLoggedIn;
+
+  /// No description provided for @printHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} hours'**
+  String printHours(int hours);
+
+  /// No description provided for @printMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} minutes'**
+  String printMinutes(int minutes);
+
+  /// No description provided for @printSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds} seconds'**
+  String printSeconds(int seconds);
+
+  /// No description provided for @weekDurationFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 days'**
+  String get weekDurationFilterLabel;
+
+  /// No description provided for @monthDurationFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last month'**
+  String get monthDurationFilterLabel;
+
+  /// No description provided for @cardReviewedPerHourHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards reviewed per hour'**
+  String get cardReviewedPerHourHeader;
+
+  /// No description provided for @deckNameSavedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck name saved'**
+  String get deckNameSavedMessage;
+
+  /// No description provided for @deckDescriptionSavedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck description saved'**
+  String get deckDescriptionSavedMessage;
+
+  /// No description provided for @errorSavingDescriptionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving description'**
+  String get errorSavingDescriptionMessage;
+
+  /// No description provided for @countCardsPerDeckChartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of cards studied per deck'**
+  String get countCardsPerDeckChartTitle;
+
+  /// No description provided for @timePerDeckChartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Time spent per deck'**
+  String get timePerDeckChartTitle;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

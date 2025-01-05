@@ -26,31 +26,18 @@ class CardsReview extends StatefulWidget {
 class _CardsReviewState extends State<CardsReview> {
   bool _answered = false;
 
+  DateTime _reviewStart = DateTime.now();
+
   void nextCard(int cardIndex) {
     setState(() {
       _answered = false;
+      _reviewStart = DateTime.now();
       widget.onNextCard((cardIndex + 1) % widget.cards.length);
     });
   }
 
-  updateStats(
-      CardsRepository repository, model.Rating rating, model.Card card) async {
-    try {
-      await repository.recordAnswer(
-          card.id!, model.CardReviewVariant.front, rating);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          content: Row(
-            children: [
-              const Icon(Icons.warning_amber_rounded, color: Colors.white),
-              const SizedBox(width: 8),
-              Text('Error recording answer',
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onErrorContainer)),
-            ],
-          )));
-    }
+  void evaluateAnswer() {
+    setState(() => _answered = true);
   }
 
   @override
@@ -66,18 +53,29 @@ class _CardsReviewState extends State<CardsReview> {
               markdown: card.question.text,
               color: Theme.of(context).colorScheme.secondaryContainer,
             ),
-            Divider(),
             Visibility(
               visible: !_answered,
-              child: Padding(
-                padding: EdgeInsets.all(10.0),
-                child: FilledButton(
-                  child: Text(context.l10n.showAnswer),
-                  onPressed: () => setState(() => _answered = true),
-                ),
+              child: Expanded(
+                child: Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: AnimatedContainer(
+                        duration: const Duration(seconds: 1),
+                        curve: Curves.easeIn,
+                        child: Material(
+                          color: Colors.lightGreenAccent,
+                          borderRadius: BorderRadius.circular(12.0),
+                          child: InkWell(
+                            onTap: evaluateAnswer,
+                            child: FittedBox(
+                              child: Text(
+                                '?',
+                                style: TextStyle(fontSize: 30),
+                              ),
+                            ),
+                          ),
+                        ))),
               ),
             ),
-            Visibility(visible: !_answered, child: Spacer()),
             Visibility(
               visible: _answered,
               child: Padding(
@@ -107,7 +105,11 @@ class _CardsReviewState extends State<CardsReview> {
               visible: _answered,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: RateAnswer(card, () => nextCard(index)),
+                child: RateAnswer(
+                  card: card,
+                  onRated: () => nextCard(index),
+                  reviewStart: _reviewStart,
+                ),
               ),
             ),
           ],
@@ -122,7 +124,10 @@ class RateAnswer extends StatefulWidget {
 
   final void Function() onRated;
 
-  RateAnswer(this.card, this.onRated);
+  final DateTime reviewStart;
+
+  RateAnswer(
+      {required this.card, required this.onRated, required this.reviewStart});
 
   @override
   State<RateAnswer> createState() => _RateAnswerState();
@@ -134,8 +139,10 @@ class _RateAnswerState extends State<RateAnswer> {
   updateStats(BuildContext context, CardsRepository repository,
       model.Rating rating, model.Card card) async {
     try {
-      await repository.recordAnswer(
-          card.id!, model.CardReviewVariant.front, rating);
+      final reviewStart = widget.reviewStart;
+      final duration = DateTime.now().difference(reviewStart);
+      await repository.recordAnswer(card.id!, model.CardReviewVariant.front,
+          rating, reviewStart, duration);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Theme.of(context).colorScheme.errorContainer,
