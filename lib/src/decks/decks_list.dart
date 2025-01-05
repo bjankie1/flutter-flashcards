@@ -17,18 +17,16 @@ class DeckListWidget extends StatelessWidget {
         decks.sort((deck1, deck2) => deck1.name.compareTo(deck2.name));
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: SizedBox(
-            height: 500,
-            width: 500,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: decks.isEmpty ? 1 : decks.length,
-              itemBuilder: (context, index) {
-                if (decks.isEmpty) {
-                  return Center(child: Text(context.l10n.noCardsMessage));
-                } else {
-                  final deck = decks[index];
-                  return ListTile(
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: decks.isEmpty ? 1 : decks.length,
+            itemBuilder: (context, index) {
+              if (decks.isEmpty) {
+                return Center(child: Text(context.l10n.noCardsMessage));
+              } else {
+                final deck = decks[index];
+                return Card(
+                  child: ListTile(
                     title: InkWell(
                         onTap: () async {
                           await context.push('/decks/${deck.id}');
@@ -73,10 +71,10 @@ class DeckListWidget extends StatelessWidget {
                         )
                       ],
                     ),
-                  );
-                }
-              },
-            ),
+                  ),
+                );
+              }
+            },
           ),
         );
       },
