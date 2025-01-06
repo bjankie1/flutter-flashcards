@@ -4,7 +4,7 @@ description: "Flashcards app for my kids."
 # Prevent accidental publishing to pub.dev.
 publish_to: 'none'
 
-version: 1.0.1+17
+version: 1.0.1+18
 
 environment:
   sdk: ^3.6.0
@@ -40,6 +40,8 @@ dependencies:
   flag: ^7.0.0
   fl_chart: ^0.70.0
   url_strategy: ^0.3.0
+  image_picker: ^1.1.2
+  image_picker_for_web: ^3.0.6
 
 dev_dependencies:
   flutter_test:

@@ -100,5 +100,27 @@
   "deckDescriptionSavedMessage": "Deck description saved",
   "errorSavingDescriptionMessage": "Error saving description",
   "countCardsPerDeckChartTitle": "Number of cards studied per deck",
-  "timePerDeckChartTitle": "Time spent per deck"
+  "timePerDeckChartTitle": "Time spent per deck",
+  "answerLabel": "Answer",
+  "answerHint": "Answer text",
+  "questionLabel": "Question",
+  "questionHint": "Question text",
+  "cardSavedMessage": "Card saved",
+  "cardSavingErrorMessage": "Error saving card",
+  "editCardTitle": "Editing card in **{deck}** deck",
+  "@editCardTitle": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      }
+    }
+  },
+  "createCardTitle": "Create card in **{deck}**",
+  "@createCardTitle": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      }
+    }
+  }
 }

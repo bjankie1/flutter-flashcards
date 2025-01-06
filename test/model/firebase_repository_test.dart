@@ -41,7 +41,7 @@ void main() {
 
     await repository.saveCard(model.Card(
       deckId: deckId,
-      question: model.Content(text: "Question 1"),
+      question: 'Question 1',
       answer: "Answer 1",
     ));
 

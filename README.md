@@ -11,13 +11,15 @@
   - [ ] Show categories in decks list
   - [ ] Show categories in study page - learn category
   - [ ] Represent categories in statistics
-- [ ] Statistics page details https://github.com/imaNNeo/fl_chart/blob/main/repo_files/documentations/bar_chart.md:
-  - [ ] Cards reviews per day per deck - pie chart
-  - [ ] Time spent per deck pie chart
-  - [ ] Time spent stats: average per card, 95th percentile, etc.
-  - [ ] Reviews per hour of the day - histogram also bar chart with hours on horizontal axis
+- [x] Statistics page details https://github.com/imaNNeo/fl_chart/blob/main/repo_files/documentations/bar_chart.md:
+  - [x] Cards reviews per day per deck - pie chart
+  - [x] Time spent per deck pie chart
+  - [x] Time spent stats: average per card, 95th percentile, etc.
+  - [x] Reviews per hour of the day - histogram also bar chart with hours on horizontal axis
 - [ ] Batch upload
-- [ ] Improved navigation with deep links perhaps
+- [ ] Improved navigation with deep links
+- [ ] Android version
+- [ ] iOS version
 - [x] Basic localization support
 - [x] widget with locale selector
 - [x] persist locale selection in a cookie or something like that

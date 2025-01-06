@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/base_layout.dart';
 import 'package:flutter_flashcards/src/decks/card_edit.dart';
+import 'package:flutter_flashcards/src/widgets.dart';
 import '../model/cards.dart' as model;
 
 class CardEditPage extends StatelessWidget {
@@ -12,12 +14,19 @@ class CardEditPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BaseLayout(
-      title: 'Card edit',
-      currentPage: PageIndex.cards,
-      child: CardEdit(
-        card: card,
-        deckId: deckId,
+    return RepositoryLoader(
+      fetcher: (repository) => repository.loadDeck(deckId),
+      builder: (context, deck, _) => BaseLayout(
+        title: card == null
+            ? context.l10n.createCardTitle(deck?.name ?? '')
+            : context.l10n.editCardTitle(deck?.name ?? ''),
+        currentPage: PageIndex.cards,
+        child: deck != null
+            ? CardEdit(
+                card: card,
+                deckId: deckId,
+              )
+            : Text('Deck not found'),
       ),
     );
   }

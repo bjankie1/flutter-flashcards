@@ -1,6 +1,5 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:random_color_scheme/random_color_scheme.dart';
 
 ThemeData getLightThemeFromSeed() {

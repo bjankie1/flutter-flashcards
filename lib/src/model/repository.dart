@@ -17,6 +17,9 @@ abstract class CardsRepository extends ChangeNotifier {
   ValueListenable<bool> get decksUpdated => _decksUpdated;
   Future<model.Card?> loadCard(String cardId);
 
+  String nextCardId();
+  String nextDeckId();
+
   Future<void> saveDeck(model.Deck deck);
   Future<Iterable<model.Deck>> loadDecks();
   Future<model.Deck?> loadDeck(String deckId);
@@ -228,6 +231,18 @@ class InMemoryCardsRepository extends CardsRepository {
   @override
   Future<Iterable<model.Deck>> loadDecksByIds(Iterable<String> deckIds) {
     // TODO: implement loadDecksByIds
+    throw UnimplementedError();
+  }
+
+  @override
+  String nextCardId() {
+    // TODO: implement nextCardId
+    throw UnimplementedError();
+  }
+
+  @override
+  String nextDeckId() {
+    // TODO: implement nextDeckId
     throw UnimplementedError();
   }
 }

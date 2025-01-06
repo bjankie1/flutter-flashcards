@@ -37,7 +37,7 @@ class CardsList extends StatelessWidget {
                                 .push('/decks/${deck.id}/cards/${card.id}');
                           },
                           child: GptMarkdown(
-                            card.question.text,
+                            card.question,
                             maxLines: 5,
                           ),
                         ),

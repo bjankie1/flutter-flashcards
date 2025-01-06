@@ -166,4 +166,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timePerDeckChartTitle => 'Time spent per deck';
+
+  @override
+  String get answerLabel => 'Answer';
+
+  @override
+  String get answerHint => 'Answer text';
+
+  @override
+  String get questionLabel => 'Question';
+
+  @override
+  String get questionHint => 'Question text';
+
+  @override
+  String get cardSavedMessage => 'Card saved';
+
+  @override
+  String get cardSavingErrorMessage => 'Error saving card';
+
+  @override
+  String editCardTitle(String deck) {
+    return 'Editing card in **$deck** deck';
+  }
+
+  @override
+  String createCardTitle(String deck) {
+    return 'Create card in **$deck**';
+  }
 }
