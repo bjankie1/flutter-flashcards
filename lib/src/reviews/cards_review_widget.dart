@@ -50,7 +50,7 @@ class _CardsReviewState extends State<CardsReview> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ContentMarkdown(
-              markdown: card.question.text,
+              markdown: card.question,
               color: Theme.of(context).colorScheme.secondaryContainer,
             ),
             Visibility(
@@ -94,10 +94,10 @@ class _CardsReviewState extends State<CardsReview> {
             ),
             Visibility(
               visible: _answered &&
-                  card.explanation?.text != null &&
-                  card.explanation?.text != '',
+                  card.explanation != null &&
+                  card.explanation != '',
               child: ContentMarkdown(
-                markdown: card.explanation?.text ?? '',
+                markdown: card.explanation ?? '',
                 color: Theme.of(context).colorScheme.surfaceContainerLow,
               ),
             ),

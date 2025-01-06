@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/firebase_options.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
+import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
@@ -45,6 +46,7 @@ void main() async {
     MultiProvider(
       providers: [
         cardsRepositoryProvider,
+        Provider(create: (context) => StorageService()),
         ChangeNotifierProvider(create: (context) => AppState(cardRepository)),
       ],
       child: const FlashcardsApp(),

@@ -163,24 +163,6 @@ class Attachment {
   toJson() => {"id": id, "url": url};
 }
 
-// @JsonSerializable(explicitToJson: true)
-class Content {
-  final String text;
-  final List<Attachment>? attachments;
-
-  const Content({
-    required this.text,
-    this.attachments,
-  });
-
-  factory Content.basic(String text) => Content(text: text, attachments: []);
-
-  toJson() => {
-        "text": text,
-        "attachments": attachments?.map((e) => e.toJson()).toList()
-      };
-}
-
 class CardOptions {
   final bool reverse;
   final bool inputRequired;
@@ -189,13 +171,6 @@ class CardOptions {
     required this.reverse,
     required this.inputRequired,
   });
-}
-
-Content? _contentFromJson(Map<String, dynamic> json) {
-  if (json['text'] == null) {
-    return null;
-  }
-  return Content(text: json['text'] as String);
 }
 
 CardOptions _cardOptionsFromJson(Map<String, dynamic> json) => CardOptions(
@@ -209,12 +184,14 @@ List<Tag> _tagsFromJson(List<String> data) =>
 class Card implements FirebaseSerializable {
   final String? id;
   final String deckId;
-  final Content question;
+  final String question;
+  final bool questionImageAttached;
   final String answer;
   final CardOptions? options;
   final List<Tag>? tags;
   final List<String>? alternativeAnswers;
-  final Content? explanation;
+  final String? explanation;
+  final bool explanationImageAttached;
 
   const Card({
     this.id,
@@ -225,6 +202,8 @@ class Card implements FirebaseSerializable {
     this.tags,
     this.alternativeAnswers,
     this.explanation,
+    this.questionImageAttached = false,
+    this.explanationImageAttached = false,
   });
 
   withId({required String id}) {
@@ -237,28 +216,37 @@ class Card implements FirebaseSerializable {
       tags: tags,
       alternativeAnswers: alternativeAnswers,
       explanation: explanation,
+      questionImageAttached: questionImageAttached,
+      explanationImageAttached: explanationImageAttached,
     );
   }
 
   Card copyWith({
     String? id,
     String? deckId,
-    Content? question,
+    String? question,
     String? answer,
     CardOptions? options,
     List<Tag>? tags,
     List<String>? alternativeAnswers,
-    Content? explanation,
+    String? explanation,
+    bool? questionImageAttached,
+    bool? explanationImageAttached,
   }) =>
       Card(
-          id: id ?? this.id,
-          deckId: deckId ?? this.deckId,
-          question: question ?? this.question,
-          answer: answer ?? this.answer,
-          options: options ?? this.options,
-          tags: tags ?? this.tags,
-          alternativeAnswers: alternativeAnswers ?? this.alternativeAnswers,
-          explanation: explanation ?? this.explanation);
+        id: id ?? this.id,
+        deckId: deckId ?? this.deckId,
+        question: question ?? this.question,
+        answer: answer ?? this.answer,
+        options: options ?? this.options,
+        tags: tags ?? this.tags,
+        alternativeAnswers: alternativeAnswers ?? this.alternativeAnswers,
+        explanation: explanation ?? this.explanation,
+        questionImageAttached:
+            questionImageAttached ?? this.questionImageAttached,
+        explanationImageAttached:
+            explanationImageAttached ?? this.explanationImageAttached,
+      );
 
   @override
   int get hashCode => Object.hash(id, deckId, question);
@@ -280,12 +268,14 @@ class Card implements FirebaseSerializable {
   @override
   Map<String, dynamic> toJson() => {
         'deckId': deckId,
-        'question': question.toJson() ?? {},
+        'question': question,
         'answer': answer,
         'options': _cardOptionsToJson(),
         'tags': tags?.map((tag) => tag.name).toSet(),
         'alternativeAnswers': alternativeAnswers,
-        'explanation': explanation?.toJson() ?? {},
+        'explanation': explanation ?? '',
+        'questionImageAttached': questionImageAttached,
+        'explanationImageAttached': explanationImageAttached,
       };
 
   Map<String, dynamic> _cardOptionsToJson() => {
@@ -293,15 +283,28 @@ class Card implements FirebaseSerializable {
         'inputRequired': options?.inputRequired,
       };
 
+  static String? _contentValue(dynamic value) {
+    if (value case String result) {
+      return result;
+    }
+
+    if (value case Map content) {
+      return content['text'];
+    }
+    return null;
+  }
+
   factory Card.fromJson(String id, Map<String, dynamic> data) => Card(
       id: id,
       deckId: data['deckId'],
-      question: _contentFromJson(data['question'])!,
-      explanation: _contentFromJson(data['explanation']),
+      question: _contentValue(data['question']) ?? '',
+      explanation: _contentValue(data['explanation']),
       answer: data['answer'],
       options: _cardOptionsFromJson(data['options']),
       tags: _tagsFromJson(data['tags'] ?? []),
-      alternativeAnswers: data['alternativeAnswers'] ?? []);
+      alternativeAnswers: data['alternativeAnswers'] ?? [],
+      questionImageAttached: data['questionImageAttached'] ?? false,
+      explanationImageAttached: data['explanationImageAttached'] ?? false);
 }
 
 /// Cards can have more than one variant to review. For instance a card can be configured to

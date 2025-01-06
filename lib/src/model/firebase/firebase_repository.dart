@@ -58,6 +58,12 @@ class FirebaseCardsRepository extends CardsRepository {
   }
 
   @override
+  String nextCardId() => _firestore.collection('cards').doc().id;
+
+  @override
+  String nextDeckId() => _firestore.collection('decks').doc().id;
+
+  @override
   Future<Iterable<Deck>> loadDecks() async {
     _log.i('Loading decks');
     // Check authentication state

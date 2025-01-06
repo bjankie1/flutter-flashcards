@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/user.dart';
-import 'package:logger/logger.dart';
 
 abstract class FirebaseSerializer<T> {
   Future<T> fromSnapshot(DocumentSnapshot snapshot);
@@ -79,119 +78,6 @@ class TagSerializer extends FirebaseSerializer<model.Tag> {
 
   model.Tag _tagFromJson(Map<String, dynamic> json) =>
       model.Tag(name: json['name'] as String);
-}
-
-class CardSerializer extends FirebaseSerializer<model.Card> {
-  @override
-  Future<model.Card> fromSnapshot(DocumentSnapshot snapshot) async {
-    final data = snapshot.data() as Map<String, dynamic>;
-    final card = model.Card(
-        id: snapshot.id,
-        deckId: data['deckId'],
-        question: _contentFromJson(data['question'])!,
-        explanation: _contentFromJson(data['explanation']),
-        answer: data['answer'],
-        options: _cardOptionsFromJson(data['options']),
-        tags: _tagsFromJson(data['tags'] ?? []),
-        alternativeAnswers: data['alternativeAnswers'] ?? []);
-
-    return card;
-  }
-
-  @override
-  Map<String, dynamic> _serialize(model.Card value) => {
-        'deckId': value.deckId,
-        'question': _contentToJson(value.question),
-        'answer': value.answer,
-        'options': _cardOptionsToJson(value.options),
-        'tags': value.tags?.map((tag) => tag.name).toSet(),
-        'alternativeAnswers': value.alternativeAnswers,
-        'explanation': value.explanation != null
-            ? _contentToJson(value.explanation!)
-            : null,
-      };
-
-  Map<String, dynamic> _cardOptionsToJson(model.CardOptions? cardOptions) => {
-        'reverse': cardOptions?.reverse,
-        'inputRequired': cardOptions?.inputRequired,
-      };
-
-  model.CardOptions _cardOptionsFromJson(Map<String, dynamic> json) =>
-      model.CardOptions(
-        reverse: (json['reverse'] ?? false) as bool,
-        inputRequired: (json['inputRequire'] ?? false) as bool,
-      );
-
-  model.Content? _contentFromJson(Map<String, dynamic> json) {
-    if (json['text'] == null) {
-      return null;
-    }
-    return model.Content(text: json['text'] as String);
-  }
-
-  Map<String, dynamic> _contentToJson(model.Content? content) => {
-        'text': content?.text,
-      };
-
-  List<model.Tag> _tagsFromJson(List<String> data) =>
-      data.map((tag) => model.Tag(name: tag)).toList();
-}
-
-class CardStatsSerializer extends FirebaseSerializer<model.CardStats> {
-  var _log = Logger();
-
-  @override
-  Future<model.CardStats> fromSnapshot(DocumentSnapshot snapshot) async {
-    try {
-      // _log.d('Deserializing stats');
-      return _cardStatsFromJson(
-          snapshot.id, snapshot.data() as Map<String, dynamic>);
-    } on Exception catch (e) {
-      _log.w('Error loading card stats: $e');
-      rethrow;
-    }
-  }
-
-  @override
-  toSnapshot(model.CardStats value, DocumentReference docRef) async {
-    await docRef.set({'stats': _serialize(value)}, SetOptions(merge: true));
-    await _updateUserId(docRef);
-  }
-
-  model.CardStats _cardStatsFromJson(String id, Map<String, dynamic> json) =>
-      model.CardStats(
-        cardId: id,
-        variant: model.CardReviewVariant.fromString(json['variant']),
-        stability: json['stability'] as double? ?? 0,
-        difficulty: json['difficulty'] as double? ?? 0,
-        lastReview:
-            (json['lastReview'] as Timestamp? ?? Timestamp.now()).toDate(),
-        numberOfReviews: json['numberOfReviews'] as int? ?? 0,
-        numberOfLapses: json['numberOfLapses'] as int? ?? 0,
-        dateAdded:
-            (json['dateAdded'] as Timestamp? ?? Timestamp.now()).toDate(),
-        interval: (json['interval'] ?? 0) as int? ?? 0,
-        nextReviewDate:
-            ((json['nextReviewDate'] ?? Timestamp.now()) as Timestamp).toDate(),
-        state: json['state'] == null
-            ? model.State.newState
-            : model.State.values
-                .firstWhere((element) => element.name == json['state']),
-      );
-
-  @override
-  Map<String, dynamic> _serialize(model.CardStats value) => {
-        'cardId': value.cardId,
-        'stability': value.stability,
-        'difficulty': value.difficulty,
-        'lastReview': value.lastReview,
-        'numberOfReviews': value.numberOfReviews,
-        'numberOfLapses': value.numberOfLapses,
-        'dateAdded': value.dateAdded,
-        'interval': value.interval,
-        'nextReviewDate': value.nextReviewDate,
-        'state': value.state.name,
-      };
 }
 
 class UserSerializer extends FirebaseSerializer<UserProfile> {

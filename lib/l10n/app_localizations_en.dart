@@ -166,4 +166,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timePerDeckChartTitle => 'Time spent per deck';
+
+  @override
+  String get answerLabel => 'Answer';
+
+  @override
+  String get answerHint => 'Answer text';
+
+  @override
+  String get questionLabel => 'Question';
+
+  @override
+  String get questionHint => 'Question text';
 }

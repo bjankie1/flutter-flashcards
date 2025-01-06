@@ -166,4 +166,16 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get timePerDeckChartTitle => 'Czas poświęcony na każdy zestaw';
+
+  @override
+  String get answerLabel => 'Odpowiedź';
+
+  @override
+  String get answerHint => 'Tekst odpowiedzi';
+
+  @override
+  String get questionLabel => 'Pytanie';
+
+  @override
+  String get questionHint => 'Tekst pytania';
 }
