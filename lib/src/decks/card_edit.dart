@@ -31,7 +31,7 @@ class _CardEditState extends State<CardEdit> {
   late String cardId;
 
   late bool questionImageAttached;
-  late bool hintImageAttached;
+  late bool explanationImageAttached;
 
   void reset() {
     cardQuestionTextController.text = '';
@@ -47,16 +47,9 @@ class _CardEditState extends State<CardEdit> {
     cardAnswerTextController.text = widget.card?.answer ?? '';
     cardHintTextController.text = widget.card?.explanation ?? '';
     questionImageAttached = widget.card?.questionImageAttached ?? false;
-    hintImageAttached = widget.card?.explanationImageAttached ?? false;
+    explanationImageAttached = widget.card?.explanationImageAttached ?? false;
 
     cardId = widget.card?.id ?? context.read<CardsRepository>().nextCardId();
-
-    // cardQuestionTextController.addListener(() {
-    //   setState(() {});
-    // });
-    // cardHintTextController.addListener(() {
-    //   setState(() {});
-    // });
   }
 
   @override
@@ -76,9 +69,17 @@ class _CardEditState extends State<CardEdit> {
                   child: Column(
                     spacing: 8.0,
                     children: [
-                      _questionInput(context),
-                      _answerInput(context),
-                      _hintInput(context),
+                      _markdownWithImageInput(
+                          controller: cardQuestionTextController,
+                          hintText: context.l10n.questionHint,
+                          labelText: context.l10n.questionLabel,
+                          imagePlacement: ImagePlacement.question),
+                      _answerInput(),
+                      _markdownWithImageInput(
+                          controller: cardHintTextController,
+                          hintText: context.l10n.hintPrompt,
+                          labelText: context.l10n.hintLabel,
+                          imagePlacement: ImagePlacement.explanation),
                     ],
                   ),
                 ),
@@ -91,10 +92,14 @@ class _CardEditState extends State<CardEdit> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     spacing: 8.0,
                     children: [
-                      _markdownPreview(cardQuestionTextController.text),
-                      _questionImagePreview(height: 200),
+                      _markdownPreview(cardQuestionTextController),
+                      _imagePreview(
+                          height: 200, imagePlacement: ImagePlacement.question),
                       Divider(),
-                      _markdownPreview(cardHintTextController.text),
+                      _markdownPreview(cardHintTextController),
+                      _imagePreview(
+                          height: 200,
+                          imagePlacement: ImagePlacement.explanation),
                     ],
                   ),
                 ),
@@ -131,28 +136,15 @@ class _CardEditState extends State<CardEdit> {
     );
   }
 
-  Widget _markdownPreview(String text) {
-    return GptMarkdown(text);
+  Widget _markdownPreview(TextEditingController controller) {
+    return ValueListenableBuilder(
+        valueListenable: controller,
+        builder: (context, value, _) {
+          return GptMarkdown(value.text);
+        });
   }
 
-  Widget _hintInput(BuildContext context) {
-    return SizedBox(
-      height: 200,
-      child: TextFormField(
-        expands: true,
-        maxLines: null,
-        minLines: null,
-        textAlignVertical: TextAlignVertical.top,
-        controller: cardHintTextController,
-        decoration: InputDecoration(
-            hintText: context.l10n.hintPrompt,
-            labelText: context.l10n.hintLabel,
-            border: OutlineInputBorder()),
-      ),
-    );
-  }
-
-  Widget _answerInput(BuildContext context) {
+  Widget _answerInput() {
     return TextFormField(
       controller: cardAnswerTextController,
       decoration: InputDecoration(
@@ -162,19 +154,27 @@ class _CardEditState extends State<CardEdit> {
     );
   }
 
-  Widget _questionImagePreview({double height = 200.0}) {
+  Widget _imagePreview(
+      {double height = 200.0, required ImagePlacement imagePlacement}) {
     return Visibility(
-        visible: questionImageAttached,
+        visible: imagePlacement == ImagePlacement.question &&
+                questionImageAttached ||
+            imagePlacement == ImagePlacement.explanation &&
+                explanationImageAttached,
         child: CardImage(
           cardId: cardId,
-          placement: ImagePlacement.question,
+          placement: imagePlacement,
           height: height,
         ));
   }
 
-  Widget _questionInput(BuildContext context) {
-    return SizedBox(
-      height: 200,
+  Widget _markdownWithImageInput(
+      {required TextEditingController controller,
+      required String hintText,
+      required String labelText,
+      required ImagePlacement imagePlacement}) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: 300, minHeight: 100),
       child: Stack(
         alignment: Alignment.topRight,
         children: [
@@ -183,17 +183,17 @@ class _CardEditState extends State<CardEdit> {
             maxLines: null,
             minLines: null,
             textAlignVertical: TextAlignVertical.top,
-            controller: cardQuestionTextController,
-            validator: _validateQuestion,
+            controller: controller,
             decoration: InputDecoration(
-                hintText: context.l10n.questionHint,
-                labelText: context.l10n.questionLabel,
+                hintText: hintText,
+                labelText: labelText,
                 border: OutlineInputBorder()),
           ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
+          Positioned(
+            top: 8,
+            right: 8,
             child: IconButton.filled(
-              onPressed: () => _uploadImage(ImagePlacement.question),
+              onPressed: () => _uploadImage(imagePlacement),
               icon: Icon(Icons.image),
             ),
           )
@@ -209,10 +209,6 @@ class _CardEditState extends State<CardEdit> {
     super.dispose();
   }
 
-  String? _validateQuestion(String? value) {
-    return null;
-  }
-
   _saveCard(BuildContext context, {bool addNew = false}) async {
     final cardToSave = model.Card(
         id: cardId,
@@ -221,11 +217,12 @@ class _CardEditState extends State<CardEdit> {
         answer: cardAnswerTextController.text,
         explanation: cardHintTextController.text,
         questionImageAttached: questionImageAttached,
-        explanationImageAttached: hintImageAttached);
+        explanationImageAttached: explanationImageAttached);
 
     await context.cardRepository.saveCard(cardToSave).then(
-        (value) => context.showInfoSnackbar('Card saved!'),
-        onError: (e) => context.showErrorSnackbar('Error saving card'));
+        (value) => context.showInfoSnackbar(context.l10n.cardSavedMessage),
+        onError: (e) =>
+            context.showErrorSnackbar(context.l10n.cardSavingErrorMessage));
     if (addNew) {
       reset();
     } else {
@@ -240,24 +237,24 @@ class _CardEditState extends State<CardEdit> {
         await picker.getImageFromSource(source: ImageSource.gallery);
     final service = context.read<StorageService>();
     if (image != null) {
-      await context.read<StorageService>().uploadImage(
-            image,
-            cardId,
-            placement.name,
-            onSuccess: () async {
-              context.showInfoSnackbar('Image recorded');
-              // final url = await service.imageUrl(cardId, placement.name);
-              setState(() {
-                switch (placement) {
-                  case ImagePlacement.question:
-                    questionImageAttached = true;
-                  case ImagePlacement.hint:
-                    hintImageAttached = true;
-                }
-              });
-            },
-            onError: () => context.showErrorSnackbar('Error uploading image'),
-          );
+      await service.uploadImage(
+        image,
+        cardId,
+        placement.name,
+        onSuccess: () async {
+          context.showInfoSnackbar('Image recorded');
+          // final url = await service.imageUrl(cardId, placement.name);
+          setState(() {
+            switch (placement) {
+              case ImagePlacement.question:
+                questionImageAttached = true;
+              case ImagePlacement.explanation:
+                explanationImageAttached = true;
+            }
+          });
+        },
+        onError: () => context.showErrorSnackbar('Error uploading image'),
+      );
     }
   }
 }
@@ -301,4 +298,4 @@ class CardImage extends StatelessWidget {
   }
 }
 
-enum ImagePlacement { question, hint }
+enum ImagePlacement { question, explanation }

@@ -5,6 +5,7 @@ import 'package:flutter_flashcards/l10n/app_localizations.dart';
 import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
+import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -60,7 +61,7 @@ class BaseLayout extends StatelessWidget {
             builder: (context, appState, child) {
               return Row(
                 children: [
-                  Text(title),
+                  GptMarkdown(title),
                   Spacer(),
                   ValueListenableBuilder<ThemeMode>(
                     valueListenable: context.watch<AppState>().currentTheme,
@@ -142,8 +143,6 @@ class LocaleSelection extends StatelessWidget {
 
 class LeftNavigation extends StatelessWidget {
   final PageIndex? currentPage;
-
-  final _log = Logger();
 
   LeftNavigation({this.currentPage});
 

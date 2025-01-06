@@ -412,6 +412,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Question text'**
   String get questionHint;
+
+  /// No description provided for @cardSavedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Card saved'**
+  String get cardSavedMessage;
+
+  /// No description provided for @cardSavingErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving card'**
+  String get cardSavingErrorMessage;
+
+  /// No description provided for @editCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing card in **{deck}** deck'**
+  String editCardTitle(String deck);
+
+  /// No description provided for @createCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create card in **{deck}**'**
+  String createCardTitle(String deck);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

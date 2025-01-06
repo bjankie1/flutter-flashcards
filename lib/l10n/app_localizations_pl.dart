@@ -178,4 +178,20 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get questionHint => 'Tekst pytania';
+
+  @override
+  String get cardSavedMessage => 'Karta zapisana';
+
+  @override
+  String get cardSavingErrorMessage => 'Nie udało się zapisać karty';
+
+  @override
+  String editCardTitle(String deck) {
+    return 'Edycja karty w zestawie **$deck**';
+  }
+
+  @override
+  String createCardTitle(String deck) {
+    return 'Nowa karta w zestawie **$deck**';
+  }
 }

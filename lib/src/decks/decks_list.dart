@@ -25,52 +25,42 @@ class DeckListWidget extends StatelessWidget {
                 return Center(child: Text(context.l10n.noCardsMessage));
               } else {
                 final deck = decks[index];
-                return Card(
-                  child: ListTile(
-                    title: InkWell(
-                        onTap: () async {
-                          await context.push('/decks/${deck.id}');
-                        },
-                        child: Text(
-                          deck.name,
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        )),
-                    subtitle: Row(
-                      children: [
-                        DeckCardsNumber(deck),
-                        DeckCardsToReview(deck),
-                        Spacer(),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment
-                                .end, // Align buttons to the right
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () async {
-                                  await deleteDeck(context, deck);
-                                },
-                              ),
-                              ElevatedButton(
-                                onPressed: () async =>
-                                    startLearning(context, deck),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Theme.of(context)
-                                      .colorScheme
-                                      .primary, // Use primary color from the theme
-                                  foregroundColor: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimary, // Use appropriate contrast color
-                                ),
-                                child: Text(context.l10n.learn),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
+                return ListTile(
+                  dense: true,
+                  onTap: () async {
+                    await context.push('/decks/${deck.id}');
+                  },
+                  title: Text(
+                    deck.name,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  subtitle: Row(
+                    children: [
+                      DeckCardsNumber(deck),
+                      DeckCardsToReview(deck),
+                      Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment
+                              .end, // Align buttons to the right
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () async {
+                                await deleteDeck(context, deck);
+                              },
+                            ),
+                            FilledButton(
+                              onPressed: () async =>
+                                  startLearning(context, deck),
+                              child: Text(context.l10n.learn),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
                   ),
                 );
               }
