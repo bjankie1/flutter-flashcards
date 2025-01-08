@@ -7,6 +7,16 @@ service cloud.firestore {
       allow create: if request.auth.uid != null
     }
 
+    // `collaborators` collection connect users. Records can be created by any user but the creating user's ID needs to
+    // reflected in `initiatorUserId` field. User can modify the record either when their ID is `initiatorUserId` or
+    // `receivingUserId`. The same rule applies to querying - user ID needs to be in either `initiatorUserId` or 
+    // `receivingUserId` fields.
+    match /collaborators {
+      allow create, delete: if request.auth.uid != null && resource.data.initiatorUserId == request.auth.uid
+      allow update: if request.auth.uid != null && (request.auth.uid == resource.data.initiatorUserId || request.auth.uid == resource.data.receivingUserId)
+      allow read: if request.auth.uid != null && (resource.data.initiatorUserId == request.auth.uid || resource.data.receivingUserId == request.auth.uid)
+    }
+
     match /{document=**} {
       allow read, write: if request.auth.uid != null 
                          && (resource == null 

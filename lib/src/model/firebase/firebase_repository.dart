@@ -1,16 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_flashcards/src/model/firebase/mapper.dart';
-import 'package:flutter_flashcards/src/model/user.dart';
+import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:logger/logger.dart';
 
 import '../cards.dart';
 import '../repository.dart';
 
 class FirebaseCardsRepository extends CardsRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   var _log = Logger();
-  get _user => FirebaseAuth.instance.currentUser;
+
+  final FirebaseFirestore _firestore;
+  final User? _user;
+
+  FirebaseCardsRepository(this._firestore, this._user) : super();
 
   String get userId {
     _validateUser();
@@ -38,11 +40,15 @@ class FirebaseCardsRepository extends CardsRepository {
       fromFirestore: (doc, _) => Deck.fromJson(doc.id, doc.data()!),
       toFirestore: (deck, _) => deck.toJson());
 
+  CollectionReference<UserProfile> get _usersCollection =>
+      _firestore.collection('users').withConverter<UserProfile>(
+          fromFirestore: (doc, _) => UserProfile.fromJson(doc.id, doc.data()!),
+          toFirestore: (user, _) => user.toJson());
+
   Future<Deck> _addDeck(Deck deck) async {
     _log.i("Saving new deck ${deck.name}");
-    final serializer = DeckSerializer();
-    final docRef = _firestore.collection('decks').doc(); // new doc ref
-    await serializer.toSnapshot(deck, docRef).then(
+    final docRef = _firestore.collection('decks').doc();
+    await docRef.set({'userId': userId, ...deck.toJson()}).then(
         (value) => _log.i("Deck successfully added!"),
         onError: (e) => _log.e("Error adding deck: $e"));
     final newDeck = deck.withId(id: docRef.id);
@@ -51,9 +57,9 @@ class FirebaseCardsRepository extends CardsRepository {
 
   Future<Deck> _updateDeck(Deck deck) async {
     final docRef = _firestore.collection('decks').doc(deck.id);
-    await DeckSerializer().toSnapshot(deck, docRef).then(
-        (value) => print("Deck successfully updated!"),
-        onError: (e) => print("Error updating deck $e"));
+    await docRef.update(deck.toJson()).then(
+        (value) => _log.i("Deck successfully updated!"),
+        onError: (e) => _log.e("Error updating deck: $e"));
     return deck;
   }
 
@@ -68,19 +74,11 @@ class FirebaseCardsRepository extends CardsRepository {
     _log.i('Loading decks');
     // Check authentication state
     _validateUser();
-    try {
-      final snapshot = await _firestore
-          .collection('decks')
-          .where('userId', isEqualTo: userId)
-          .get();
-      final serializer = DeckSerializer();
-      return await Future.wait(snapshot.docs
-          .map((doc) async => await serializer.fromSnapshot(doc))
-          .toList());
-    } on Exception catch (e) {
+    final snapshot = await _decksCollection.get().onError((e, _) {
       _log.w('Error loading decks: $e', error: e);
-      rethrow;
-    }
+      throw e!;
+    });
+    return snapshot.docs.map((s) => s.data());
   }
 
   Future<void> _addCard(Card card) async {
@@ -88,7 +86,7 @@ class FirebaseCardsRepository extends CardsRepository {
     await _firestore.runTransaction((transaction) async {
       final docRef = _firestore.collection('cards').doc();
       transaction.update(docRef, {'userId': userId, ...card.toJson()});
-      for (final s in CardStats.statsForCard(card)) {
+      for (final s in CardStats.statsForCard(card.withId(id: docRef.id))) {
         final sDoc = _firestore.collection('cardStats').doc(s.idValue);
         transaction.set(sDoc, {'userId': userId, ...s.toJson()});
       }
@@ -417,21 +415,17 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
 
   @override
   Future<void> saveUser(UserProfile user) async {
-    final docRef = _firestore.collection('users').doc(userId);
-    final serializer = UserSerializer();
-    await serializer.toSnapshot(user, docRef);
-    _log.i('Saved user profile ${user.id}');
+    final docRef = _usersCollection.doc(userId);
+    await docRef.update(user.toJson()).then(
+        (value) => _log.i("User successfully updated!"),
+        onError: (e) => _log.e("Error updating user: $e"));
   }
 
   @override
   Future<UserProfile?> loadUser(String userId) async {
-    final serializer = UserSerializer();
     _log.d('Loading user $userId');
-    final doc = await _firestore.collection('users').doc(userId).get();
-    if (doc.exists) {
-      return await serializer.fromSnapshot(doc);
-    }
-    return null;
+    final doc = await _usersCollection.doc(userId).get();
+    return doc.exists ? doc.data() : null;
   }
 
   @override
@@ -457,5 +451,85 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         .where(FieldPath.documentId, whereIn: deckIds)
         .get();
     return snapshot.docs.map((e) => e.data());
+  }
+
+  @override
+  Future<void> saveCollaborationInvitation(String receivingUserEmail) async {
+    _log.i('Saving collaboration invitation for $receivingUserEmail');
+    final snapshot = await _usersCollection
+        .where('email', isEqualTo: receivingUserEmail)
+        .get();
+    final receivingUserId = snapshot.docs.firstOrNull?.id;
+    if (receivingUserId == null) {
+      _log.w('User does not exist $receivingUserEmail');
+      throw Exception('No user found with email $receivingUserEmail');
+    }
+    final docRef = _firestore.collection('collaborators').doc();
+    final request = CollaborationInvitation(
+        id: docRef.id,
+        initiatorUserId: userId,
+        receivingUserId: receivingUserId,
+        sentTimestamp: Timestamp.now(),
+        status: InvitationStatus.pending);
+    await docRef.set(request.toJson());
+  }
+
+  @override
+  Future<Iterable<CollaborationInvitation>> pendingInvitations(
+      {bool sent = false}) async {
+    final snapshot = await _firestore
+        .collection('collaborators')
+        .where(Filter.and(
+          Filter('status', isEqualTo: InvitationStatus.pending.name),
+          sent
+              ? Filter('initiatorUserId', isEqualTo: userId)
+              : Filter('receivingUserId', isEqualTo: userId),
+        ))
+        .get()
+        .then((value) {
+      _log.i('Loaded invitations: ${value.docs.length}');
+      return value;
+    },
+            onError: (e, st) =>
+                _log.e('Error loading invitations: $e', stackTrace: st));
+    return snapshot.docs
+        .map((doc) => CollaborationInvitation.fromJson(doc.id, doc.data()));
+  }
+
+  @override
+  Future<Set<String>> loadCollaborators(String receivingUserEmail) async {
+    final snapshot = await _firestore
+        .collection('collaborators')
+        .where(Filter.and(
+          Filter('status', isEqualTo: InvitationStatus.accepted.name),
+          Filter.or(Filter('initiatorUserId', isEqualTo: userId),
+              Filter('receivingUserId', isEqualTo: userId)),
+        ))
+        .get()
+        .then((value) {
+      _log.i('Loaded collaborators: ${value.docs.length}');
+      return value;
+    },
+            onError: (e, st) =>
+                _log.e('Error loading collaborators: $e', stackTrace: st));
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      return data['receivingUserId'] == userId
+          ? data['initiatorUserId'] as String
+          : data['receivingUserId'] as String;
+    }).toSet();
+  }
+
+  @override
+  Future<void> changeInvitationStatus(
+      String invitationId, InvitationStatus status) async {
+    final docRef = _firestore.collection('collaborators').doc(invitationId);
+    final snapshot = await docRef.get();
+    if (!snapshot.exists) {
+      throw Exception('Invitation not found');
+    }
+    final invitation =
+        CollaborationInvitation.fromJson(snapshot.id, snapshot.data()!);
+    docRef.update(invitation.changeStatus(status).toJson());
   }
 }

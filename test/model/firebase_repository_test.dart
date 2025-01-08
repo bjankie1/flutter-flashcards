@@ -1,28 +1,41 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart'
+    show AuthCredential, GoogleAuthProvider, User;
+import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_flashcards/src/model/cards.dart' as model;
-import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
 import 'package:logger/logger.dart';
 
+import 'package:flutter_flashcards/src/model/cards.dart' as model;
+import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
+
+Future<User?> mockSignIn() async {
+  final googleSignIn = MockGoogleSignIn();
+  final signinAccount = await googleSignIn.signIn();
+  final googleAuth = await signinAccount?.authentication;
+  final AuthCredential credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth?.accessToken,
+    idToken: googleAuth?.idToken,
+  );
+  final user = MockUser(
+    isAnonymous: false,
+    uid: 'someuid',
+    email: 'bob@somedomain.com',
+    displayName: 'Bob',
+  );
+  final auth = MockFirebaseAuth(mockUser: user);
+  final result = await auth.signInWithCredential(credential);
+  return result.user;
+}
+
 void main() {
-  final log = Logger();
   late FirebaseCardsRepository repository;
   setUp(() async {
-    TestWidgetsFlutterBinding.ensureInitialized();
-    log.i('Initialized binding');
-    await Firebase.initializeApp();
-    log.i('Initialized Firebase app');
-    FirebaseFirestore.instance.settings = const Settings(
-      host: 'localhost:8080',
-      sslEnabled: false,
-      persistenceEnabled: false,
-    );
-    FirebaseFirestore.instance.useFirestoreEmulator('127.0.0.1', 8080);
+    final firestore = FakeFirebaseFirestore();
+    User? user = await mockSignIn();
 
-    // [Authentication | localhost:9099]
-    log.i('Connected to emulator');
-    repository = FirebaseCardsRepository();
+    // TestWidgetsFlutterBinding.ensureInitialized();
+    repository = FirebaseCardsRepository(firestore, user);
   });
 
   test('Save and load deck', () async {

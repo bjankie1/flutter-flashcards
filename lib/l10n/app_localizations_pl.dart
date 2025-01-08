@@ -194,4 +194,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String createCardTitle(String deck) {
     return 'Nowa karta w zestawie **$deck**';
   }
+
+  @override
+  String get collaboration => 'Współpraca';
 }

@@ -436,6 +436,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create card in **{deck}**'**
   String createCardTitle(String deck);
+
+  /// No description provided for @collaboration.
+  ///
+  /// In en, this message translates to:
+  /// **'Collaboration'**
+  String get collaboration;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

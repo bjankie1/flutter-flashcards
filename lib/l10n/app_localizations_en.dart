@@ -194,4 +194,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String createCardTitle(String deck) {
     return 'Create card in **$deck**';
   }
+
+  @override
+  String get collaboration => 'Collaboration';
 }

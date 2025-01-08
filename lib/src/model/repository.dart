@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_flashcards/src/model/user.dart';
+import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 import '../fsrs/fsrs.dart';
 import 'cards.dart' as model;
@@ -95,156 +94,16 @@ abstract class CardsRepository extends ChangeNotifier {
     return Map.fromEntries(cards.map(
         (c) => MapEntry(c.id!, decks.firstWhere((d) => d.id == c.deckId))));
   }
-}
 
-class InMemoryCardsRepository extends CardsRepository {
-  var logger = Logger();
-  final Map<String, model.Deck> _decks = {};
-  final Map<String, model.Card> _cards = {};
-  var _uuid = Uuid();
+  Future<void> saveCollaborationInvitation(String receivingUserEmail);
 
-  @override
-  Future<void> saveDeck(model.Deck deck) async {
-    if (deck.id == null) {
-      var deckId = deck.id!;
-      deckId = _uuid.v4();
-      var deckWithId = deck.withId(id: deckId);
-      _decks[deckId] = deckWithId;
-      return deckWithId;
-    }
-  }
+  Future<Set<String>> loadCollaborators(String receivingUserEmail);
 
-  @override
-  Future<List<model.Deck>> loadDecks() async {
-    logger.i('Loading decks from memory');
-    return _decks.values.toList();
-  }
+  Future<Iterable<CollaborationInvitation>> pendingInvitations(
+      {bool sent = false});
 
-  @override
-  Future<void> deleteDeck(String deckId) async {
-    _decks.remove(deckId);
-    _cards.removeWhere((key, value) => value.deckId == deckId);
-  }
-
-  @override
-  Future<void> saveCard(model.Card card) async {
-    if (card.id == null) {
-      final cardId = _uuid.v4(); // Generate a UUID
-      final cardWithId = card.withId(id: cardId); // Assign the UUID to the card
-      _cards[cardId] = cardWithId; // Store the card using the UUID as the key
-      return cardWithId;
-    }
-    _cards[card.id!] = card;
-  }
-
-  @override
-  Future<void> deleteCard(String cardId) async {
-    _cards.remove(cardId);
-  }
-
-  @override
-  Future<List<model.Card>> loadCards(String deckId) async {
-    return Future.value(
-        _cards.values.where((card) => card.deckId == deckId).toList());
-  }
-
-  @override
-  Future<void> saveCardStats(model.CardStats stats) {
-    // TODO: implement _saveCardStats
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<model.CardStats> loadCardStats(
-      String cardId, model.CardReviewVariant variant) {
-    // TODO: implement loadCardStats
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<model.Card>> loadCardToReview({String? deckId}) {
-    // TODO: implement loadCardToReview
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<int> getCardCount(String deckId) {
-    // TODO: implement loadCardCount
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<model.CardAnswer>> loadAnswers(
-      DateTime dayStart, DateTime dayEnd) {
-    // TODO: implement loadAnswers
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> recordCardAnswer(model.CardAnswer answer) {
-    // TODO: implement recordCardAnswer
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<model.Deck> loadDeck(String deckId) {
-    // TODO: implement loadDeck
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> saveUser(UserProfile user) {
-    // TODO: implement saveUser
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<UserProfile?> loadUser(String userId) {
-    // TODO: implement loadUser
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Map<model.State, int>> cardsToReviewCount({String? deckId}) {
-    // TODO: implement cardCardsToReviewCount
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> updateAllStats() {
-    // TODO: implement updateAllStats
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<model.Card?> loadCard(String cardId) {
-    // TODO: implement loadCard
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Iterable<model.Card>> loadCardsByIds(Iterable<String> cardIds) {
-    // TODO: implement loadCardsByIds
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Iterable<model.Deck>> loadDecksByIds(Iterable<String> deckIds) {
-    // TODO: implement loadDecksByIds
-    throw UnimplementedError();
-  }
-
-  @override
-  String nextCardId() {
-    // TODO: implement nextCardId
-    throw UnimplementedError();
-  }
-
-  @override
-  String nextDeckId() {
-    // TODO: implement nextDeckId
-    throw UnimplementedError();
-  }
+  Future<void> changeInvitationStatus(
+      String invitationId, InvitationStatus status);
 }
 
 extension CardRepositoryProvider on BuildContext {

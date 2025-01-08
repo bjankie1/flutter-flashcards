@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
@@ -16,7 +18,7 @@ import 'src/app.dart';
 import 'src/model/repository_provider.dart';
 
 void main() async {
-  final log = Logger();
+  final _log = Logger();
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -27,17 +29,13 @@ void main() async {
 
   late CardsRepository cardRepository;
   if (const bool.fromEnvironment("testing")) {
-    log.i('Instantiating in-memory repository');
-    cardRepository = InMemoryCardsRepository();
+    _log.i('Instantiating in-memory repository');
+    // TODO: FakeFirebaseFirestore
+    cardRepository = FirebaseCardsRepository(FirebaseFirestore.instance, null);
   } else {
-    log.i('Instantiating Firebase repository');
-    cardRepository = FirebaseCardsRepository();
+    _log.i('Instantiating Firebase repository');
+    cardRepository = FirebaseCardsRepository(FirebaseFirestore.instance, null);
   }
-
-  // Run the app and pass in the SettingsController. The app listens to the
-  // SettingsController for changes, then passes it further down to the
-  // SettingsView.
-  var cardsRepositoryProvider = CardsRepositoryProvider(cardRepository);
 
   GoRouter.optionURLReflectsImperativeAPIs = true;
   setPathUrlStrategy();
@@ -45,9 +43,23 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        cardsRepositoryProvider,
-        Provider(create: (context) => StorageService()),
         ChangeNotifierProvider(create: (context) => AppState(cardRepository)),
+        FutureProvider<CardsRepository>.value(
+          value: FirebaseAuth.instance.authStateChanges().first.then((user) {
+            // Create the real repository after auth state is known
+            final repository =
+                FirebaseCardsRepository(FirebaseFirestore.instance, user);
+            return repository;
+          }),
+          initialData: cardRepository,
+          catchError: (context, error) {
+            // Handle errors during repository initialization
+            _log.e('Error initializing repository: $error');
+            return FirebaseCardsRepository(FirebaseFirestore.instance,
+                null); // Return a fallback repository
+          },
+        ),
+        Provider(create: (context) => StorageService()),
       ],
       child: const FlashcardsApp(),
     ),
