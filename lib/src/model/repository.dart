@@ -28,7 +28,7 @@ abstract class CardsRepository extends ChangeNotifier {
   Future<Iterable<model.Card>> loadCardsByIds(Iterable<String> cardIds);
   Future<Iterable<model.Deck>> loadDecksByIds(Iterable<String> deckIds);
 
-  Future<void> saveCard(model.Card card);
+  Future<model.Card> saveCard(model.Card card);
   Future<void> deleteCard(String cardId);
 
   Future<Iterable<model.Card>> loadCardToReview({String? deckId});
@@ -97,7 +97,7 @@ abstract class CardsRepository extends ChangeNotifier {
 
   Future<void> saveCollaborationInvitation(String receivingUserEmail);
 
-  Future<Set<String>> loadCollaborators(String receivingUserEmail);
+  Future<Set<String>> loadCollaborators();
 
   Future<Iterable<CollaborationInvitation>> pendingInvitations(
       {bool sent = false});

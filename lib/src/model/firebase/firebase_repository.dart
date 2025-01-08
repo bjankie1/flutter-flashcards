@@ -46,10 +46,10 @@ class FirebaseCardsRepository extends CardsRepository {
           toFirestore: (user, _) => user.toJson());
 
   Future<Deck> _addDeck(Deck deck) async {
-    _log.i("Saving new deck ${deck.name}");
+    _log.d("Saving new deck ${deck.name}");
     final docRef = _firestore.collection('decks').doc();
     await docRef.set({'userId': userId, ...deck.toJson()}).then(
-        (value) => _log.i("Deck successfully added!"),
+        (value) => _log.d("Deck successfully added!"),
         onError: (e) => _log.e("Error adding deck: $e"));
     final newDeck = deck.withId(id: docRef.id);
     return newDeck;
@@ -58,7 +58,7 @@ class FirebaseCardsRepository extends CardsRepository {
   Future<Deck> _updateDeck(Deck deck) async {
     final docRef = _firestore.collection('decks').doc(deck.id);
     await docRef.update(deck.toJson()).then(
-        (value) => _log.i("Deck successfully updated!"),
+        (value) => _log.d("Deck successfully updated!"),
         onError: (e) => _log.e("Error updating deck: $e"));
     return deck;
   }
@@ -71,7 +71,7 @@ class FirebaseCardsRepository extends CardsRepository {
 
   @override
   Future<Iterable<Deck>> loadDecks() async {
-    _log.i('Loading decks');
+    _log.d('Loading decks');
     // Check authentication state
     _validateUser();
     final snapshot = await _decksCollection.get().onError((e, _) {
@@ -81,20 +81,21 @@ class FirebaseCardsRepository extends CardsRepository {
     return snapshot.docs.map((s) => s.data());
   }
 
-  Future<void> _addCard(Card card) async {
-    _log.i('Adding card');
+  Future<Card> _addCard(Card card) async {
+    _log.d('Adding card');
+    final docRef = _firestore.collection('cards').doc();
     await _firestore.runTransaction((transaction) async {
-      final docRef = _firestore.collection('cards').doc();
-      transaction.update(docRef, {'userId': userId, ...card.toJson()});
+      transaction.set(docRef, {'userId': userId, ...card.toJson()});
       for (final s in CardStats.statsForCard(card.withId(id: docRef.id))) {
         final sDoc = _firestore.collection('cardStats').doc(s.idValue);
         transaction.set(sDoc, {'userId': userId, ...s.toJson()});
       }
     });
+    return card.withId(id: docRef.id);
   }
 
   Future<void> _updateCard(Card card) async {
-    _log.i('Updating card');
+    _log.d('Updating card');
     await _firestore.runTransaction((transaction) async {
       // Firestore transactions require all reads to be executed before all writes.
       final docRef = _firestore.collection('cards').doc(card.id);
@@ -122,7 +123,7 @@ class FirebaseCardsRepository extends CardsRepository {
 
   @override
   Future<void> updateAllStats() async {
-    _log.i('Updating card');
+    _log.d('Updating card');
     final cardsSnapshot = await _cardsCollection.get();
 
     for (final snapshot in cardsSnapshot.docs) {
@@ -143,7 +144,7 @@ class FirebaseCardsRepository extends CardsRepository {
 
   @override
   Future<void> deleteDeck(String deckId) async {
-    _log.i('Deleting deck: $deckId');
+    _log.d('Deleting deck: $deckId');
     final batch = _firestore.batch();
     batch.delete(_firestore.collection('decks').doc(deckId));
     final cardsSnapshot =
@@ -175,8 +176,9 @@ class FirebaseCardsRepository extends CardsRepository {
     for (final doc in cardStatsSnapshot.docs) {
       batch.delete(doc.reference);
     }
-    final cardAnswerSnapshot =
-        await _cardAnswersCollection.where('cardId', isEqualTo: cardId).get();
+    final cardAnswerSnapshot = await _collection('cardAnswers')
+        .where(Filter('cardId', isEqualTo: cardId))
+        .get();
     for (final doc in cardAnswerSnapshot.docs) {
       batch.delete(doc.reference);
     }
@@ -185,9 +187,14 @@ class FirebaseCardsRepository extends CardsRepository {
 
   @override
   Future<List<Card>> loadCards(String deckId) async {
-    final snapshot =
-        await _cardsCollection.where('deckId', isEqualTo: deckId).get();
-    return snapshot.docs.map((doc) => doc.data()).toList();
+    _log.d('Loading cards');
+    final snapshot = await _collection('cards')
+        .where(Filter.and(Filter('userId', isEqualTo: userId),
+            Filter('deckId', isEqualTo: deckId)))
+        .get();
+    return snapshot.docs
+        .map((doc) => Card.fromJson(doc.id, doc.data()))
+        .toList();
   }
 
   void _validateUser() {
@@ -198,7 +205,7 @@ class FirebaseCardsRepository extends CardsRepository {
   }
 
   @override
-  Future<void> saveCard(Card card) async {
+  Future<Card> saveCard(Card card) async {
     if (card.id == null) {
       return await _addCard(card)
           .whenComplete(() => notifyCardChanged())
@@ -207,12 +214,13 @@ class FirebaseCardsRepository extends CardsRepository {
         throw e as Error;
       });
     } else {
-      return await _updateCard(card)
+      await _updateCard(card)
           .whenComplete(() => notifyCardChanged())
           .onError((e, stackTrace) {
         _log.w("Error updating card", error: e, stackTrace: stackTrace);
         throw e as Error;
       });
+      return card;
     }
   }
 
@@ -380,7 +388,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   @override
   Future<Iterable<CardAnswer>> loadAnswers(
       DateTime dayStart, DateTime dayEnd) async {
-    _log.i('Loading answers for $dayStart to $dayEnd');
+    _log.d('Loading answers for $dayStart to $dayEnd');
     try {
       final snapshot = await _cardAnswersCollection
           .where(Filter.and(
@@ -397,7 +405,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
 
   @override
   Future<void> recordCardAnswer(CardAnswer answer) async {
-    _log.i("Recording answer for card ${answer.cardId}");
+    _log.d("Recording answer for card ${answer.cardId}");
     final collection = _firestore.collection('reviewLog');
     collection.add({'userId': userId, ...answer.toJson()}).then(
         (value) => _log.d("Answer saved"),
@@ -406,7 +414,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
 
   @override
   Future<Deck?> loadDeck(String deckId) async {
-    _log.i('Loading deck $deckId');
+    _log.d('Loading deck $deckId');
     final snapshot = await _decksCollection
         .where(FieldPath.documentId, isEqualTo: deckId)
         .get();
@@ -416,8 +424,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   @override
   Future<void> saveUser(UserProfile user) async {
     final docRef = _usersCollection.doc(userId);
-    await docRef.update(user.toJson()).then(
-        (value) => _log.i("User successfully updated!"),
+    await docRef.set(user, SetOptions(merge: true)).then(
+        (value) => _log.d("User successfully updated!"),
         onError: (e) => _log.e("Error updating user: $e"));
   }
 
@@ -430,11 +438,12 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
 
   @override
   Future<Card?> loadCard(String cardId) async {
-    _log.i('Loading card $cardId');
-    final snapshot = await _cardsCollection
-        .where(FieldPath.documentId, isEqualTo: cardId)
-        .get();
-    return snapshot.docs.firstOrNull?.data();
+    _log.d('Loading card $cardId');
+    final snapshot = await _firestore.collection('cards').doc(cardId).get();
+    if (!snapshot.exists) {
+      return null;
+    }
+    return Card.fromJson(snapshot.id, snapshot.data()!);
   }
 
   @override
@@ -455,7 +464,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
 
   @override
   Future<void> saveCollaborationInvitation(String receivingUserEmail) async {
-    _log.i('Saving collaboration invitation for $receivingUserEmail');
+    _log.d('Saving collaboration invitation for $receivingUserEmail');
     final snapshot = await _usersCollection
         .where('email', isEqualTo: receivingUserEmail)
         .get();
@@ -487,7 +496,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         ))
         .get()
         .then((value) {
-      _log.i('Loaded invitations: ${value.docs.length}');
+      _log.d('Loaded invitations: ${value.docs.length}');
       return value;
     },
             onError: (e, st) =>
@@ -497,7 +506,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   }
 
   @override
-  Future<Set<String>> loadCollaborators(String receivingUserEmail) async {
+  Future<Set<String>> loadCollaborators() async {
     final snapshot = await _firestore
         .collection('collaborators')
         .where(Filter.and(
@@ -507,7 +516,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         ))
         .get()
         .then((value) {
-      _log.i('Loaded collaborators: ${value.docs.length}');
+      _log.d('Loaded collaborators: ${value.docs.length}');
       return value;
     },
             onError: (e, st) =>
