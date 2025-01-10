@@ -434,9 +434,7 @@ class CardStats implements FirebaseSerializable {
         dateAdded:
             (data['dateAdded'] as Timestamp? ?? currentClockTimestamp).toDate(),
         interval: (data['interval'] ?? 0) as int? ?? 0,
-        nextReviewDate: data['nextReviewDate'] != null
-            ? (data['nextReviewDate'] as Timestamp).toDate()
-            : null,
+        nextReviewDate: (data['nextReviewDate'] as Timestamp?)?.toDate(),
         state: data['state'] == null
             ? State.newState
             : State.fromName(data['state']),

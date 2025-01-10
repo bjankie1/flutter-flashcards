@@ -377,7 +377,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
 
   @override
   Future<void> saveCardStats(CardStats stats) async {
-    _log.d('Saving card stats ${stats.cardId}::${stats.variant}');
+    _log.d(
+        'Saving card stats ${stats.cardId}::${stats.variant.name} with next review on ${stats.nextReviewDate}');
     final docRef = _firestore.collection('cardStats').doc(stats.idValue);
     await docRef.set({'userId': userId, ...stats.toJson()}).then(
         (value) => print("Review answer successfully recorded!"),

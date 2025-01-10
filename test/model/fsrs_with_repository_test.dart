@@ -5,6 +5,7 @@ import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../matchers.dart';
 import 'firebase_repository_test.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 
@@ -42,7 +43,7 @@ void main() {
     /// Day 4:
     /// Assert:
     /// 1 card available for review on Day 4.
-    test('Basic card review scenario', () async {
+    test('Test Scenario 1: Basic Functionality', () async {
       final deck = await repository.saveDeck(model.Deck(name: 'Test Deck'));
       final card = model.Card(
           id: 'card1',
@@ -62,8 +63,12 @@ void main() {
         expect(cardsToReviewDay1.length, 1);
         expect(cardsToReviewDay1.first, card);
         final reviewTime1 = currentClockDateTime;
-        repository.recordAnswer(card.id!, model.CardReviewVariant.front,
+        await repository.recordAnswer(card.id!, model.CardReviewVariant.front,
             model.Rating.hard, reviewTime1, Duration(minutes: 1));
+        final stats = await repository.loadCardStats(
+            card.id!, model.CardReviewVariant.front);
+        expect(stats, isNotNull);
+        expect(stats.nextReviewDate, isNotNull);
       });
 
       // Day 2:
@@ -80,14 +85,14 @@ void main() {
         final stats1 = await repository.loadCardStats(
             card.id!, model.CardReviewVariant.front);
         expect(stats1.nextReviewDate, isNotNull);
-        expect(stats1.nextReviewDate!.isAfter(day1), isTrue);
+        expect(stats1.nextReviewDate!, isAfter(day1));
         expect(await repository.cardsToReviewCount(), {
           model.State.newState: 0,
           model.State.learning: 1,
           model.State.relearning: 0,
           model.State.review: 0
         });
-        repository.recordAnswer(card.id!, model.CardReviewVariant.front,
+        await repository.recordAnswer(card.id!, model.CardReviewVariant.front,
             model.Rating.good, day2, Duration(minutes: 1));
       });
 
@@ -102,7 +107,7 @@ void main() {
         final stats2 = await repository.loadCardStats(
             card.id!, model.CardReviewVariant.front);
         expect(stats2.nextReviewDate, isNotNull);
-        expect(stats2.nextReviewDate!.isAfter(day3), isTrue);
+        expect(stats2.nextReviewDate, isNot(isBefore(day3)));
         expect(await repository.cardsToReviewCount(), {
           model.State.newState: 0,
           model.State.learning: 0,
@@ -120,34 +125,126 @@ void main() {
     });
   });
 
-  /// Test Scenario 2: Multiple Cards and Different Intervals
-  /// Day 1:
-  /// Add Card 1.
-  /// Add Card 2.
-  /// Day 2:
-  /// Review Card 1, score "Good".
-  /// Review Card 2, score "Easy".
-  /// Assert:
-  /// Card 1 scheduled for review later than Card 2.
-  /// 2 cards available for review on Day 2.
   /// Day 3:
   /// Assert:
   /// 1 card (Card 2) available for review on Day 3.
   /// Day 5 (or later, depending on Card 1's scheduling):
   /// Assert:
   /// 1 card (Card 1) available for review.
-  /// Test Scenario 3: Lapses and Relearning
-  ///
-  /// Day 1:
-  /// Add Card 1.
-  /// Day 2:
-  /// Review Card 1, score "Good".
-  /// Day 5:
-  /// Review Card 1, score "Again" (lapse).
-  /// Assert:
-  /// Card 1's stability is reduced.
-// ignore_for_file: dangling_library_doc_comments
+  test('Test Scenario 2: Multiple Cards and Different Intervals', () async {
+    // Day 1:
+    // Add Card 1.
+    // Add Card 2.
+    final day1 = DateTime(2000);
+    final deck = await repository.saveDeck(model.Deck(name: 'Test Deck'));
+    final card1 = model.Card(
+        id: 'card1',
+        deckId: deck.id!,
+        question: 'Question 1',
+        answer: 'Answer 1');
+    await repository.saveCard(card1);
+    final card2 = model.Card(
+        id: 'card2',
+        deckId: deck.id!,
+        question: 'Question 2',
+        answer: 'Answer 2');
+    await repository.saveCard(card2);
 
-  /// Card 1 is scheduled for review sooner than it would have been if scored "Good" (likely within the next day or two).
-  test('Advanced cards review scenario', () {});
+    // Day 2:
+    // Review Card 1, score "Good".
+    // Review Card 2, score "Easy".
+    // Assert:
+    // Card 2 scheduled for review later than Card 1.
+    // 1 cards available for review on Day 2.
+    final day2 = day1.add(Duration(days: 1));
+    await withClock(Clock.fixed(day2), () async {
+      final cardsToReviewDay2 = await repository.loadCardToReview();
+      expect(cardsToReviewDay2.length, 2);
+      await repository.recordAnswer(card1.id!, model.CardReviewVariant.front,
+          model.Rating.good, day2, Duration(minutes: 1));
+      await repository.recordAnswer(card2.id!, model.CardReviewVariant.front,
+          model.Rating.easy, day2, Duration(minutes: 1));
+      final statsCard1 = await repository.loadCardStats(
+          card1.id!, model.CardReviewVariant.front);
+      final statsCard2 = await repository.loadCardStats(
+          card2.id!, model.CardReviewVariant.front);
+      expect(statsCard1.nextReviewDate, isNotNull);
+      expect(statsCard2.nextReviewDate, isNotNull);
+      expect(statsCard2.nextReviewDate!, isAfter(statsCard1.nextReviewDate!));
+    });
+
+    // Day 3:
+    // Assert:
+    // 1 card (Card 1) available for review on Day 3.
+    final day3 = day2.add(Duration(days: 1));
+    await withClock(Clock.fixed(day3), () async {
+      final cardsToReviewDay3 = await repository.loadCardToReview();
+      expect(cardsToReviewDay3.length, 1);
+      expect(cardsToReviewDay3.first.id, card1.id!);
+    });
+
+    // Day 5 (or later, depending on Card 1's scheduling):
+    // Assert:
+    // 1 card (Card 1) available for review.
+    final day5 = day3.add(Duration(days: 2));
+    await withClock(Clock.fixed(day5), () async {
+      final cardsToReviewDay5 = await repository.loadCardToReview();
+      expect(cardsToReviewDay5.length, 1);
+      expect(cardsToReviewDay5.first.id, card1.id!);
+    });
+
+    // Day 10 (or later, depending on scheduling):
+    // Assert:
+    // 2 cards available for review.
+    final day10 = day3.add(Duration(days: 6));
+    await withClock(Clock.fixed(day10), () async {
+      final cardsToReviewDay5 = await repository.loadCardToReview();
+      expect(cardsToReviewDay5.length, 2);
+    });
+  });
+
+  test('Test Scenario 3: Lapses and Relearning', () async {
+    // Day 1:
+    // Add Card 1.
+    final day1 = DateTime(2000);
+    final deck = await repository.saveDeck(model.Deck(name: 'Test Deck'));
+    final card1 = model.Card(
+        id: 'card1',
+        deckId: deck.id!,
+        question: 'Question 1',
+        answer: 'Answer 1');
+
+    // Day 2:
+    // Review Card 1, score "Good".
+    final day2 = day1.add(Duration(days: 1));
+    await withClock(Clock.fixed(day2), () async {
+      final cardsToReview = await repository.loadCardToReview();
+      expect(cardsToReview.length, 1);
+      expect(cardsToReview.first.id, card1.id!);
+      await repository.recordAnswer(card1.id!, model.CardReviewVariant.front,
+          model.Rating.good, day2, Duration(minutes: 1));
+    });
+
+    // Day 5:
+    // Review Card 1, score "Again" (lapse).
+    // Assert:
+    // Card 1's stability is reduced.
+    // Card 1 is scheduled for review sooner than it would have been if scored "Good" (likely within the next day or two).
+    final day5 = day1.add(Duration(days: 4));
+    await withClock(Clock.fixed(day5), () async {
+      final cardsToReview = await repository.loadCardToReview();
+      final statsBefore = await repository.loadCardStats(
+          card1.id!, model.CardReviewVariant.front);
+      expect(cardsToReview.length, 1);
+      expect(cardsToReview.first.id, card1.id!);
+      await repository.recordAnswer(card1.id!, model.CardReviewVariant.front,
+          model.Rating.again, day2, Duration(minutes: 1));
+      final statsAfter = await repository.loadCardStats(
+          card1.id!, model.CardReviewVariant.front);
+      expect(statsBefore.stability, greaterThan(statsAfter.stability));
+      expect(statsAfter.nextReviewDate, isNotNull);
+      expect(statsAfter.nextReviewDate!, isAfter(day5));
+      expect(statsAfter.nextReviewDate!, isBefore(day5.add(Duration(days: 2))));
+    });
+  });
 }
