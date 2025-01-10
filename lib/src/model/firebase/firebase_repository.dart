@@ -1,10 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:logger/logger.dart';
 
 import '../cards.dart';
 import '../repository.dart';
+
+extension QueryExtensions<T> on Query<T> {
+  Query<Card> get withCardsConverter => withConverter<Card>(
+      fromFirestore: (doc, _) => Card.fromJson(doc.id, doc.data()!),
+      toFirestore: (card, _) => card.toJson());
+  Query<CardStats> get withCardStatsConverter => withConverter<CardStats>(
+      fromFirestore: (doc, _) => CardStats.fromJson(doc.id, doc.data()!),
+      toFirestore: (stats, _) => stats.toJson());
+  Query<Deck> get withDecksConverter => withConverter<Deck>(
+      fromFirestore: (doc, _) => Deck.fromJson(doc.id, doc.data()!),
+      toFirestore: (deck, _) => deck.toJson());
+}
 
 class FirebaseCardsRepository extends CardsRepository {
   var _log = Logger();
@@ -20,16 +33,12 @@ class FirebaseCardsRepository extends CardsRepository {
   }
 
   Query<Map<String, dynamic>> _collection(String name) =>
-      _firestore.collection(name).where('userId', isEqualTo: userId);
+      _firestore.collection(name).where(Filter('userId', isEqualTo: userId));
 
-  Query<Card> get _cardsCollection => _collection('cards').withConverter<Card>(
-      fromFirestore: (doc, _) => Card.fromJson(doc.id, doc.data()!),
-      toFirestore: (card, _) => card.toJson());
+  Query<Map<String, dynamic>> get _cardsCollection => _collection('cards');
 
-  Query<CardStats> get _cardStatsCollection =>
-      _collection('cardStats').withConverter<CardStats>(
-          fromFirestore: (doc, _) => CardStats.fromJson(doc.id, doc.data()!),
-          toFirestore: (stats, _) => stats.toJson());
+  Query<Map<String, dynamic>> get _cardStatsCollection =>
+      _collection('cardStats');
 
   Query<CardAnswer> get _cardAnswersCollection =>
       _collection('reviewLog').withConverter<CardAnswer>(
@@ -124,7 +133,7 @@ class FirebaseCardsRepository extends CardsRepository {
   @override
   Future<void> updateAllStats() async {
     _log.d('Updating card');
-    final cardsSnapshot = await _cardsCollection.get();
+    final cardsSnapshot = await _cardsCollection.withCardsConverter.get();
 
     for (final snapshot in cardsSnapshot.docs) {
       final stats = CardStats.statsForCard(snapshot.data());
@@ -264,7 +273,7 @@ class FirebaseCardsRepository extends CardsRepository {
     try {
       // Cards ready for review
       var baseQuery = _collection('cardStats').where(Filter.or(
-          Filter('nextReviewDate', isLessThanOrEqualTo: DateTime.now()),
+          Filter('nextReviewDate', isLessThanOrEqualTo: currentClockDateTime),
           Filter('nextReviewDate', isNull: true)));
       if (deckId != null) {
         final cardIds = await _deckCardsIds(deckId);
@@ -312,7 +321,9 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     try {
       // Cards ready for review
       final statsSnapshot = await _cardStatsCollection
-          .where('nextReviewDate', isLessThanOrEqualTo: DateTime.now())
+          .where(Filter('nextReviewDate',
+              isLessThanOrEqualTo: currentClockDateTime))
+          .withCardStatsConverter
           .limit(reviewLimit ?? 200)
           .get();
       final toReview = statsSnapshot.docs.map((doc) => doc.data()).toList();
@@ -320,7 +331,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
 
       // New cards
       final statsSnapshotNew = await _cardStatsCollection
-          .where('nextReviewDate', isNull: true)
+          .where(Filter('nextReviewDate', isNull: true))
+          .withCardStatsConverter
           .limit(newLimit ?? 200)
           .get();
       final newCards = statsSnapshotNew.docs.map((doc) => doc.data()).toList();
@@ -351,8 +363,9 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         ? _cardsCollection.where(Filter.and(
             Filter(FieldPath.documentId, whereIn: cardIds),
             Filter('deckId', isEqualTo: deckId)))
-        : _cardsCollection.where(FieldPath.documentId, whereIn: cardIds);
-    final cardsSnapshot = await cardsQuery.get();
+        : _cardsCollection
+            .where(Filter(FieldPath.documentId, whereIn: cardIds));
+    final cardsSnapshot = await cardsQuery.withCardsConverter.get();
     final cards = cardsSnapshot.docs.map((doc) => doc.data());
     final cardsMappedToId =
         Map.fromEntries(cards.map((card) => MapEntry(card.id, card)));
@@ -390,13 +403,14 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       DateTime dayStart, DateTime dayEnd) async {
     _log.d('Loading answers for $dayStart to $dayEnd');
     try {
-      final snapshot = await _cardAnswersCollection
+      final snapshot = await _collection('reviewLog')
           .where(Filter.and(
               Filter('reviewStart', isGreaterThanOrEqualTo: dayStart),
               Filter('reviewStart', isLessThanOrEqualTo: dayEnd)))
           .get();
       _log.d('Loaded ${snapshot.docs.length} answers');
-      return snapshot.docs.map((doc) => doc.data());
+      return snapshot.docs
+          .map((doc) => CardAnswer.fromJson(doc.id, doc.data()));
     } on Exception catch (e) {
       _log.w('Failed loading answers', error: e);
       rethrow;
@@ -449,7 +463,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   @override
   Future<Iterable<Card>> loadCardsByIds(Iterable<String> cardIds) async {
     final snapshot = await _cardsCollection
-        .where(FieldPath.documentId, whereIn: cardIds)
+        .where(Filter(FieldPath.documentId, whereIn: cardIds))
+        .withCardsConverter
         .get();
     return snapshot.docs.map((e) => e.data());
   }
@@ -478,7 +493,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         id: docRef.id,
         initiatorUserId: userId,
         receivingUserId: receivingUserId,
-        sentTimestamp: Timestamp.now(),
+        sentTimestamp: currentClockTimestamp,
         status: InvitationStatus.pending);
     await docRef.set(request.toJson());
   }

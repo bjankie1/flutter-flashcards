@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -75,14 +76,14 @@ abstract class CardsRepository extends ChangeNotifier {
         rating: rating));
     final stats = await loadCardStats(cardId, variant);
     if (stats.lastReview != null &&
-        stats.lastReview!.difference(DateTime.now()).inDays == 0 &&
+        stats.lastReview!.difference(currentClockDateTime).inDays == 0 &&
         stats.nextReviewDate != null &&
-        stats.nextReviewDate!.difference(DateTime.now()).inDays > 0) {
+        stats.nextReviewDate!.difference(currentClockDateTime).inDays > 0) {
       _log.i('Card $cardId has been already reviewed today');
       return;
     }
     final f = FSRS();
-    final scheduled = f.repeat(stats, DateTime.now())[rating]?.card;
+    final scheduled = f.repeat(stats, currentClockDateTime)[rating]?.card;
     _log.i('Next schedule for card $cardId is ${scheduled?.nextReviewDate}');
     await saveCardStats(scheduled!);
   }

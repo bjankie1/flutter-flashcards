@@ -1,8 +1,10 @@
+import 'package:clock/clock.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'
     show AuthCredential, GoogleAuthProvider, User;
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
@@ -33,9 +35,9 @@ Future<User?> mockSignIn(String id, String email) async {
   return result.user;
 }
 
-final firestore = FakeFirebaseFirestore();
-
 void main() {
+  final firestore = FakeFirebaseFirestore();
+
   late FirebaseCardsRepository repository;
   setUp(() async {
     User? user = await mockSignIn(loggedInUserId, loggedInUserEmail);
@@ -44,53 +46,114 @@ void main() {
     repository = FirebaseCardsRepository(firestore, user);
   });
 
-  test('Save and load deck', () async {
-    final deck = model.Deck(name: 'Test Deck');
-    await repository.saveDeck(deck);
+  group('Decks management', () {
+    tearDown(() async {
+      await firestore.clearPersistence();
+    });
 
-    final loadedDecks = await repository.loadDecks();
-    expect(loadedDecks.length, 1);
-    expect(loadedDecks.first.name, 'Test Deck');
+    test('Save and load deck', () async {
+      final deck = model.Deck(name: 'Test Deck');
+      await repository.saveDeck(deck);
+
+      final loadedDecks = await repository.loadDecks();
+      expect(loadedDecks.length, 1);
+      expect(loadedDecks.first.name, 'Test Deck');
+    });
+
+    test('Delete deck and associated cards', () async {
+      final deck = model.Deck(name: 'Test Deck 2');
+      final savedDeck = await repository.saveDeck(deck);
+      final deckId = savedDeck.id!;
+
+      await repository.saveCard(model.Card(
+        deckId: deckId,
+        question: 'Question 1',
+        answer: "Answer 1",
+      ));
+
+      await repository.deleteDeck(deckId);
+
+      final loadedDecks = await repository.loadDecks();
+      expect(loadedDecks.isEmpty, true);
+      final cards = await repository.loadCards(deckId);
+      expect(cards.isEmpty, true);
+    });
+
+    test('Add, delete and update card', () async {
+      final card = model.Card(
+        deckId: 'deck1',
+        question: 'Question',
+        answer: 'Answer',
+      );
+      final addedCard = await repository.saveCard(card);
+
+      var loadedCards = await repository.loadCards('deck1');
+      expect(loadedCards.length, 1);
+
+      await repository.deleteCard(addedCard.id!);
+      final loadedCardsAfterDelete = await repository.loadCard(addedCard.id!);
+      expect(loadedCardsAfterDelete, null);
+
+      final savedCard3 =
+          await repository.saveCard(card.copyWith(answer: 'New answer'));
+      final loadedCardsAfterUpdate = await repository.loadCard(savedCard3.id!);
+      expect(loadedCardsAfterUpdate?.answer, 'New answer');
+    });
   });
 
-  test('Delete deck and associated cards', () async {
-    final deck = model.Deck(name: 'Test Deck 2');
-    final savedDeck = await repository.saveDeck(deck);
-    final deckId = savedDeck.id!;
+  group('Card reviews', () {
+    tearDown(() async {
+      await firestore.clearPersistence();
+    });
 
-    await repository.saveCard(model.Card(
-      deckId: deckId,
-      question: 'Question 1',
-      answer: "Answer 1",
-    ));
+    test('Save and load card stats', () async {
+      final deck = model.Deck(name: 'Test Deck 3');
+      await repository.saveDeck(deck);
 
-    await repository.deleteDeck(deckId);
+      final card = model.Card(
+        id: 'card1',
+        deckId: 'deck1',
+        question: 'Question 1',
+        answer: 'Answer 1',
+      );
+      await repository.saveCard(card);
 
-    final loadedDecks = await repository.loadDecks();
-    expect(loadedDecks.isEmpty, true);
-    final cards = await repository.loadCards(deckId);
-    expect(cards.isEmpty, true);
-  });
+      final frontStats = await repository.loadCardStats(
+          card.id!, model.CardReviewVariant.front);
+      expect(frontStats.cardId, card.id);
+      expect(frontStats.variant, model.CardReviewVariant.front);
+      expect(frontStats.state, model.State.newState);
+      expect(frontStats.nextReviewDate, null);
+      expect(frontStats.stability, 0);
+      expectLater(
+          repository.loadCardStats(card.id!, model.CardReviewVariant.back),
+          throwsA(isA<Exception>()));
+    });
 
-  test('Add, delete and update card', () async {
-    final card = model.Card(
-      deckId: 'deck1',
-      question: 'Question',
-      answer: 'Answer',
-    );
-    final addedCard = await repository.saveCard(card);
+    test('recorded answer reflected ins tats', () async {
+      final deck = model.Deck(name: 'Test Deck 3');
+      await repository.saveDeck(deck);
 
-    var loadedCards = await repository.loadCards('deck1');
-    expect(loadedCards.length, 1);
+      final card = model.Card(
+        id: 'card1',
+        deckId: 'deck1',
+        question: 'Question 1',
+        answer: 'Answer 1',
+      );
+      final duration = Duration(seconds: 15);
+      final reviewTime = clock.agoBy(duration);
+      await repository.saveCard(card);
+      repository.recordAnswer(card.id!, model.CardReviewVariant.front,
+          model.Rating.good, reviewTime, duration);
 
-    await repository.deleteCard(addedCard.id!);
-    final loadedCardsAfterDelete = await repository.loadCard(addedCard.id!);
-    expect(loadedCardsAfterDelete, null);
-
-    final savedCard3 =
-        await repository.saveCard(card.copyWith(answer: 'New answer'));
-    final loadedCardsAfterUpdate = await repository.loadCard(savedCard3.id!);
-    expect(loadedCardsAfterUpdate?.answer, 'New answer');
+      final stats = await repository.loadCardStats(
+          card.id!, model.CardReviewVariant.front);
+      final answers = await repository.loadAnswers(reviewTime, reviewTime);
+      expect(stats.difficulty, 0);
+      expect(answers.length, 1);
+      expect(answers.first.rating, model.Rating.good);
+      // TODO: evaluate stats and answers
+    });
   });
 
   group('Collaboration Invitations', () {
@@ -122,6 +185,10 @@ void main() {
       await firestore.collection('users').doc(user2.id).set(user2.toJson());
     });
 
+    tearDown(() async {
+      await firestore.clearPersistence();
+    });
+
     Future<void> changeLogin(UserProfile newUser) async {
       User? newUserLogged = await mockSignIn(newUser.id, newUser.email);
       repository = FirebaseCardsRepository(firestore, newUserLogged);
@@ -146,21 +213,20 @@ void main() {
     });
 
     test('pendingInvitations retrieves received invitations', () async {
-      final now = Timestamp.now();
-      await repository.saveCollaborationInvitation(user2.email);
+      withClock(Clock.fixed(DateTime(2021)), () async {
+        await repository.saveCollaborationInvitation(user2.email);
 
-      // Log as user2
-      await changeLogin(user2);
+        // Log as user2
+        await changeLogin(user2);
 
-      final invitations = await repository.pendingInvitations();
+        final invitations = await repository.pendingInvitations();
 
-      expect(invitations.length, 1);
-      expect(invitations.first.receivingUserId, user2.id);
-      expect(invitations.first.initiatorUserId, userLogged.id);
-      expect(
-          invitations.first.sentTimestamp.millisecondsSinceEpoch,
-          closeTo(now.millisecondsSinceEpoch,
-              10000)); // 10 second proximity should be enough
+        expect(invitations.length, 1);
+        expect(invitations.first.receivingUserId, user2.id);
+        expect(invitations.first.initiatorUserId, userLogged.id);
+        expect(invitations.first.sentTimestamp,
+            currentClockDateTime.toTimestamp());
+      });
     });
 
     test('changeInvitationStatus updates invitation status', () async {
