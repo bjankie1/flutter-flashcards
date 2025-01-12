@@ -40,7 +40,7 @@ class StatisticsCharts extends StatelessWidget {
                 value.selectedDates.start.dayStart,
                 value.selectedDates.end.dayEnd),
             builder: (context, result, _) {
-              return Column(
+              return ListView(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),

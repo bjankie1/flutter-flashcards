@@ -90,6 +90,7 @@ abstract class CardsRepository extends ChangeNotifier {
 
   Future<Map<String, model.Deck>> mapCardsToDecks(
       Iterable<String> cardIds) async {
+    if (cardIds.isEmpty) return {};
     final cards = await loadCardsByIds(cardIds);
     final decks = await loadDecksByIds(cards.map((c) => c.deckId).toSet());
     return Map.fromEntries(cards.map(

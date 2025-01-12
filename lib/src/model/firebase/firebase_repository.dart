@@ -19,6 +19,8 @@ extension QueryExtensions<T> on Query<T> {
       toFirestore: (deck, _) => deck.toJson());
 
   Query<T> withUserFilter(String userId) => where('userId', isEqualTo: userId);
+  Future<QuerySnapshot<T>> getForUser(String userId) =>
+      where('userId', isEqualTo: userId).get();
 }
 
 class FirebaseCardsRepository extends CardsRepository {
@@ -340,7 +342,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
               isLessThanOrEqualTo: currentClockDateTime))
           .withCardStatsConverter
           .limit(reviewLimit ?? 200)
-          .get();
+          .getForUser(userId);
       final toReview = statsSnapshot.docs.map((doc) => doc.data()).toList();
       _log.d('Cards to review: ${toReview.length}');
 
@@ -349,7 +351,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
           .where(Filter('nextReviewDate', isNull: true))
           .withCardStatsConverter
           .limit(newLimit ?? 200)
-          .get();
+          .getForUser(userId);
       final newCards = statsSnapshotNew.docs.map((doc) => doc.data()).toList();
       _log.d('New cards to review: ${newCards.length}');
 
@@ -360,8 +362,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       // Load cards to review
       final cardsIdsToReview = allCards.map((cs) => (cs.cardId, cs.variant));
       return cardsIdsToReview;
-    } on Exception catch (e) {
-      _log.w('Error querying cards to review: $e');
+    } on Exception catch (e, stackTrace) {
+      _log.w('Error querying cards to review: $e', stackTrace: stackTrace);
       rethrow;
     }
   }
@@ -423,7 +425,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
           .where(Filter.and(
               Filter('reviewStart', isGreaterThanOrEqualTo: dayStart),
               Filter('reviewStart', isLessThanOrEqualTo: dayEnd)))
-          .get();
+          .getForUser(userId);
       _log.d('Loaded ${snapshot.docs.length} answers');
       return snapshot.docs
           .map((doc) => CardAnswer.fromJson(doc.id, doc.data()));
