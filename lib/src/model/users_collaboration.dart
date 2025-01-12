@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/cards.dart';
 
 class UserProfile extends FirebaseSerializable {
@@ -77,6 +78,7 @@ class CollaborationInvitation implements FirebaseSerializable {
   String id;
   String initiatorUserId;
   String receivingUserId;
+  String receivingUserEmail;
   Timestamp sentTimestamp;
   Timestamp? lastChangeTimestamp;
   InvitationStatus status;
@@ -85,6 +87,7 @@ class CollaborationInvitation implements FirebaseSerializable {
       {required this.id,
       required this.initiatorUserId,
       required this.receivingUserId,
+      required this.receivingUserEmail,
       required this.sentTimestamp,
       this.lastChangeTimestamp,
       required this.status});
@@ -94,8 +97,9 @@ class CollaborationInvitation implements FirebaseSerializable {
           id: id,
           initiatorUserId: initiatorUserId,
           receivingUserId: receivingUserId,
+          receivingUserEmail: receivingUserEmail,
           sentTimestamp: sentTimestamp,
-          lastChangeTimestamp: Timestamp.now(),
+          lastChangeTimestamp: currentClockTimestamp,
           status: status);
 
   @override
@@ -113,6 +117,7 @@ class CollaborationInvitation implements FirebaseSerializable {
   Map<String, dynamic> toJson() => {
         'initiatorUserId': initiatorUserId,
         'receivingUserId': receivingUserId,
+        'receivingUserEmail': receivingUserEmail,
         'sentTimestamp': sentTimestamp,
         'lastChangeTimestamp': lastChangeTimestamp,
         'status': status.name
@@ -124,6 +129,7 @@ class CollaborationInvitation implements FirebaseSerializable {
           id: id,
           initiatorUserId: data['initiatorUserId'],
           receivingUserId: data['receivingUserId'],
+          receivingUserEmail: data['receivingUserEmail'],
           sentTimestamp: data['sentTimestamp'],
           lastChangeTimestamp: data['lastChangeTimestamp'],
           status: InvitationStatus.values

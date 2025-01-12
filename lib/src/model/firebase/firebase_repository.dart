@@ -17,13 +17,15 @@ extension QueryExtensions<T> on Query<T> {
   Query<Deck> get withDecksConverter => withConverter<Deck>(
       fromFirestore: (doc, _) => Deck.fromJson(doc.id, doc.data()!),
       toFirestore: (deck, _) => deck.toJson());
+
+  Query<T> withUserFilter(String userId) => where('userId', isEqualTo: userId);
 }
 
 class FirebaseCardsRepository extends CardsRepository {
   var _log = Logger();
 
   final FirebaseFirestore _firestore;
-  final User? _user;
+  User? _user;
 
   FirebaseCardsRepository(this._firestore, this._user) : super();
 
@@ -31,6 +33,8 @@ class FirebaseCardsRepository extends CardsRepository {
     _validateUser();
     return _user!.uid;
   }
+
+  set user(User? user) => _user = user;
 
   Query<Map<String, dynamic>> _collection(String name) =>
       _firestore.collection(name).where(Filter('userId', isEqualTo: userId));
@@ -270,11 +274,18 @@ class FirebaseCardsRepository extends CardsRepository {
   /// Loads identifiers and review variants of cards to review based on `nextReviewDate`
   @override
   Future<Map<State, int>> cardsToReviewCount({String? deckId}) async {
+    _log.d('Loading cards to review count');
+
     try {
       // Cards ready for review
-      var baseQuery = _collection('cardStats').where(Filter.or(
-          Filter('nextReviewDate', isLessThanOrEqualTo: currentClockDateTime),
-          Filter('nextReviewDate', isNull: true)));
+      var baseQuery = _firestore
+          .collection('cardStats')
+          .where(Filter.or(
+              Filter('nextReviewDate',
+                  isLessThanOrEqualTo: currentClockDateTime),
+              Filter('nextReviewDate', isNull: true)))
+          .withUserFilter(userId);
+
       if (deckId != null) {
         final cardIds = await _deckCardsIds(deckId);
         if (cardIds.isEmpty) {
@@ -289,8 +300,12 @@ class FirebaseCardsRepository extends CardsRepository {
       }
 
       countState(State state) async {
-        final result =
-            await baseQuery.where('state', isEqualTo: state.name).count().get();
+        var countQuery =
+            baseQuery.where('state', isEqualTo: state.name).count();
+        final result = await countQuery.get().then((value) {
+          _log.d('Loaded ${value.count} $state cards');
+          return value;
+        });
         return result.count ?? 0;
       }
 
@@ -494,6 +509,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         id: docRef.id,
         initiatorUserId: userId,
         receivingUserId: receivingUserId,
+        receivingUserEmail: receivingUserEmail,
         sentTimestamp: currentClockTimestamp,
         status: InvitationStatus.pending);
     await docRef.set(request.toJson());

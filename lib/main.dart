@@ -8,7 +8,6 @@ import 'package:flutter_flashcards/firebase_options.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
 import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
-import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +17,7 @@ import 'src/app.dart';
 import 'src/model/repository_provider.dart';
 
 void main() async {
-  final _log = Logger();
+  final log = Logger();
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -27,38 +26,21 @@ void main() async {
     GoogleProvider(clientId: DefaultFirebaseOptions.GOOGLE_CLIENT_ID)
   ]);
 
-  late CardsRepository cardRepository;
-  if (const bool.fromEnvironment("testing")) {
-    _log.i('Instantiating in-memory repository');
-    // TODO: FakeFirebaseFirestore
-    cardRepository = FirebaseCardsRepository(FirebaseFirestore.instance, null);
-  } else {
-    _log.i('Instantiating Firebase repository');
-    cardRepository = FirebaseCardsRepository(FirebaseFirestore.instance, null);
-  }
-
   GoRouter.optionURLReflectsImperativeAPIs = true;
   setPathUrlStrategy();
+
+  final repository = FirebaseCardsRepository(FirebaseFirestore.instance, null);
+  final repositoryProvider = CardsRepositoryProvider(repository);
+  FirebaseAuth.instance.authStateChanges().listen((user) {
+    log.i('User logged in as ${user?.email}');
+    repository.user = user;
+  });
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => AppState(cardRepository)),
-        FutureProvider<CardsRepository>.value(
-          value: FirebaseAuth.instance.authStateChanges().first.then((user) {
-            // Create the real repository after auth state is known
-            final repository =
-                FirebaseCardsRepository(FirebaseFirestore.instance, user);
-            return repository;
-          }),
-          initialData: cardRepository,
-          catchError: (context, error) {
-            // Handle errors during repository initialization
-            _log.e('Error initializing repository: $error');
-            return FirebaseCardsRepository(FirebaseFirestore.instance,
-                null); // Return a fallback repository
-          },
-        ),
+        repositoryProvider,
+        ChangeNotifierProvider(create: (context) => AppState(repository)),
         Provider(create: (context) => StorageService()),
       ],
       child: const FlashcardsApp(),

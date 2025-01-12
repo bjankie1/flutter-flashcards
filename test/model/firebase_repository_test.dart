@@ -1,5 +1,4 @@
 import 'package:clock/clock.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'
     show AuthCredential, GoogleAuthProvider, User;

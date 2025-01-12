@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import 'authentication.dart';
 import 'package:go_router/go_router.dart';
 
-enum PageIndex { cards, learning, statistics, settings }
+enum PageIndex { cards, learning, statistics, settings, collaboration }
 
 extension PageIndexNavigation on PageIndex {
   void navigate(BuildContext context) {
@@ -25,6 +25,8 @@ extension PageIndexNavigation on PageIndex {
         context.goNamed('statistics');
       case PageIndex.settings:
         context.goNamed('settings');
+      case PageIndex.collaboration:
+        context.goNamed('collaboration');
     }
   }
 }

@@ -80,11 +80,11 @@ class Deck implements FirebaseSerializable {
     DeckOptions? deckOptions,
   }) {
     return Deck(
-      id: id != null ? id : this.id,
+      id: id ?? this.id,
       name: name ?? this.name,
-      description: description != null ? description : this.description,
-      parentDeckId: parentDeckId != null ? parentDeckId : this.parentDeckId,
-      deckOptions: deckOptions != null ? deckOptions : this.deckOptions,
+      description: description ?? this.description,
+      parentDeckId: parentDeckId ?? this.parentDeckId,
+      deckOptions: deckOptions ?? this.deckOptions,
     );
   }
 
