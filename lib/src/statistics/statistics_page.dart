@@ -40,7 +40,7 @@ class StatisticsCharts extends StatelessWidget {
                 value.selectedDates.start.dayStart,
                 value.selectedDates.end.dayEnd),
             builder: (context, result, _) {
-              return Column(
+              return ListView(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -114,12 +114,12 @@ enum DateFilter {
     switch (this) {
       case lastWeek:
         return DateTimeRange(
-            start: DateTime.now().subtract(Duration(days: 7)),
-            end: DateTime.now());
+            start: currentClockDateTime.subtract(Duration(days: 7)),
+            end: currentClockDateTime);
       case DateFilter.lastMonth:
         return DateTimeRange(
-            start: DateTime.now().subtract(Duration(days: 30)),
-            end: DateTime.now());
+            start: currentClockDateTime.subtract(Duration(days: 30)),
+            end: currentClockDateTime);
       case DateFilter.custom:
         throw UnimplementedError();
     }
@@ -183,7 +183,7 @@ class StatisticsFilter extends StatelessWidget {
                               DateTimeRange? range = await showDateRangePicker(
                                   context: context,
                                   firstDate: DateTime(2024),
-                                  lastDate: DateTime.now());
+                                  lastDate: currentClockDateTime);
                               if (range != null) {
                                 model.selectedDates = range;
                               }

@@ -45,7 +45,7 @@ class _ReviewHoursHistogramState extends State<ReviewHoursHistogram> {
       text = Text(PartOfDay.values[value.toInt()].name, style: style);
     }
     return SideTitleWidget(
-      axisSide: meta.axisSide,
+      meta: meta,
       space: 16,
       child: text,
     );

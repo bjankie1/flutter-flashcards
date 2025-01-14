@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
+import 'package:flutter_flashcards/src/common/card_image.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
 import 'package:go_router/go_router.dart';
@@ -73,13 +74,13 @@ class _CardEditState extends State<CardEdit> {
                           controller: cardQuestionTextController,
                           hintText: context.l10n.questionHint,
                           labelText: context.l10n.questionLabel,
-                          imagePlacement: ImagePlacement.question),
+                          imagePlacement: model.ImagePlacement.question),
                       _answerInput(),
                       _markdownWithImageInput(
                           controller: cardHintTextController,
                           hintText: context.l10n.hintPrompt,
                           labelText: context.l10n.hintLabel,
-                          imagePlacement: ImagePlacement.explanation),
+                          imagePlacement: model.ImagePlacement.explanation),
                     ],
                   ),
                 ),
@@ -94,12 +95,13 @@ class _CardEditState extends State<CardEdit> {
                     children: [
                       _markdownPreview(cardQuestionTextController),
                       _imagePreview(
-                          height: 200, imagePlacement: ImagePlacement.question),
+                          height: 200,
+                          imagePlacement: model.ImagePlacement.question),
                       Divider(),
                       _markdownPreview(cardHintTextController),
                       _imagePreview(
                           height: 200,
-                          imagePlacement: ImagePlacement.explanation),
+                          imagePlacement: model.ImagePlacement.explanation),
                     ],
                   ),
                 ),
@@ -155,11 +157,11 @@ class _CardEditState extends State<CardEdit> {
   }
 
   Widget _imagePreview(
-      {double height = 200.0, required ImagePlacement imagePlacement}) {
+      {double height = 200.0, required model.ImagePlacement imagePlacement}) {
     return Visibility(
-        visible: imagePlacement == ImagePlacement.question &&
+        visible: imagePlacement == model.ImagePlacement.question &&
                 questionImageAttached ||
-            imagePlacement == ImagePlacement.explanation &&
+            imagePlacement == model.ImagePlacement.explanation &&
                 explanationImageAttached,
         child: CardImage(
           cardId: cardId,
@@ -172,7 +174,7 @@ class _CardEditState extends State<CardEdit> {
       {required TextEditingController controller,
       required String hintText,
       required String labelText,
-      required ImagePlacement imagePlacement}) {
+      required model.ImagePlacement imagePlacement}) {
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: 300, minHeight: 100),
       child: Stack(
@@ -230,7 +232,7 @@ class _CardEditState extends State<CardEdit> {
     }
   }
 
-  void _uploadImage(ImagePlacement placement) async {
+  void _uploadImage(model.ImagePlacement placement) async {
     final ImagePickerPlugin picker = ImagePickerPlugin();
     // Pick an image from the gallery
     final XFile? image =
@@ -246,9 +248,9 @@ class _CardEditState extends State<CardEdit> {
           // final url = await service.imageUrl(cardId, placement.name);
           setState(() {
             switch (placement) {
-              case ImagePlacement.question:
+              case model.ImagePlacement.question:
                 questionImageAttached = true;
-              case ImagePlacement.explanation:
+              case model.ImagePlacement.explanation:
                 explanationImageAttached = true;
             }
           });
@@ -258,44 +260,3 @@ class _CardEditState extends State<CardEdit> {
     }
   }
 }
-
-class CardImage extends StatelessWidget {
-  const CardImage(
-      {super.key,
-      required this.cardId,
-      required this.placement,
-      this.height = 200});
-
-  final String cardId;
-
-  final ImagePlacement placement;
-
-  final double height;
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: context.read<StorageService>().imageUrl(cardId, placement.name),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Text('error: ${snapshot.error}');
-          }
-          if (!snapshot.hasData) {
-            return Center(child: Text('No data'));
-          }
-          final url = snapshot.data;
-          if (url == null) {
-            return Center(child: Text('No image data'));
-          }
-          return Image.network(
-            url,
-            height: height,
-          );
-        });
-  }
-}
-
-enum ImagePlacement { question, explanation }
