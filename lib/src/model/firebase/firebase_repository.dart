@@ -7,6 +7,8 @@ import 'package:logger/logger.dart';
 import '../cards.dart';
 import '../repository.dart';
 
+var _log = Logger();
+
 extension QueryExtensions<T> on Query<T> {
   Query<Card> get withCardsConverter => withConverter<Card>(
       fromFirestore: (doc, _) => Card.fromJson(doc.id, doc.data()!),
@@ -23,9 +25,14 @@ extension QueryExtensions<T> on Query<T> {
       where('userId', isEqualTo: userId).get();
 }
 
-class FirebaseCardsRepository extends CardsRepository {
-  var _log = Logger();
+extension ErrorReporting<T> on Future<T> {
+  Future<T> logError(String message) => onError((e, stackTrace) {
+        _log.w('$message: $e', error: e, stackTrace: stackTrace);
+        throw e!;
+      });
+}
 
+class FirebaseCardsRepository extends CardsRepository {
   final FirebaseFirestore _firestore;
   User? _user;
 
@@ -34,6 +41,14 @@ class FirebaseCardsRepository extends CardsRepository {
   String get userId {
     _validateUser();
     return _user!.uid;
+  }
+
+  String get userEmail {
+    _validateUser();
+    if (_user!.email == null) {
+      throw Exception('User has no email address');
+    }
+    return _user!.email!;
   }
 
   set user(User? user) => _user = user;
@@ -89,10 +104,8 @@ class FirebaseCardsRepository extends CardsRepository {
     _log.d('Loading decks');
     // Check authentication state
     _validateUser();
-    final snapshot = await _decksCollection.get().onError((e, _) {
-      _log.w('Error loading decks: $e', error: e);
-      throw e!;
-    });
+    final snapshot =
+        await _decksCollection.get().logError('Error loading decks');
     return snapshot.docs.map((s) => s.data());
   }
 
@@ -224,17 +237,11 @@ class FirebaseCardsRepository extends CardsRepository {
     if (card.id == null) {
       return await _addCard(card)
           .whenComplete(() => notifyCardChanged())
-          .onError((e, stackTrace) {
-        _log.w("Error adding card", error: e, stackTrace: stackTrace);
-        throw e as Error;
-      });
+          .logError('Error adding card');
     } else {
       await _updateCard(card)
           .whenComplete(() => notifyCardChanged())
-          .onError((e, stackTrace) {
-        _log.w("Error updating card", error: e, stackTrace: stackTrace);
-        throw e as Error;
-      });
+          .logError('Error updating card');
       return card;
     }
   }
@@ -278,58 +285,51 @@ class FirebaseCardsRepository extends CardsRepository {
   Future<Map<State, int>> cardsToReviewCount({String? deckId}) async {
     _log.d('Loading cards to review count');
 
-    try {
-      // Cards ready for review
-      var baseQuery = _firestore
-          .collection('cardStats')
-          .where(Filter.or(
-              Filter('nextReviewDate',
-                  isLessThanOrEqualTo: currentClockDateTime),
-              Filter('nextReviewDate', isNull: true)))
-          .withUserFilter(userId);
+    // Cards ready for review
+    var baseQuery = _firestore
+        .collection('cardStats')
+        .where(Filter.or(
+            Filter('nextReviewDate', isLessThanOrEqualTo: currentClockDateTime),
+            Filter('nextReviewDate', isNull: true)))
+        .withUserFilter(userId);
 
-      if (deckId != null) {
-        final cardIds = await _deckCardsIds(deckId);
-        if (cardIds.isEmpty) {
-          return {
-            State.newState: 0,
-            State.learning: 0,
-            State.relearning: 0,
-            State.review: 0
-          };
-        }
-        baseQuery = baseQuery.where('cardId', whereIn: cardIds);
+    if (deckId != null) {
+      final cardIds = await _deckCardsIds(deckId);
+      if (cardIds.isEmpty) {
+        return {
+          State.newState: 0,
+          State.learning: 0,
+          State.relearning: 0,
+          State.review: 0
+        };
       }
+      baseQuery = baseQuery.where('cardId', whereIn: cardIds);
+    }
 
-      countState(State state) async {
-        var countQuery =
-            baseQuery.where('state', isEqualTo: state.name).count();
-        final result = await countQuery.get().then((value) {
-          _log.d('Loaded ${value.count} $state cards');
-          return value;
-        });
-        return result.count ?? 0;
-      }
+    countState(State state) async {
+      var countQuery = baseQuery.where('state', isEqualTo: state.name).count();
+      final result = await countQuery.get().then((value) {
+        _log.d('Loaded ${value.count} $state cards');
+        return value;
+      }).logError('Error counting cards to review');
+      return result.count ?? 0;
+    }
 
-      final newState = await countState(State.newState);
-      final learningState = await countState(State.learning);
-      final relearningState = await countState(State.relearning);
-      final reviewState = await countState(State.review);
+    final newState = await countState(State.newState);
+    final learningState = await countState(State.learning);
+    final relearningState = await countState(State.relearning);
+    final reviewState = await countState(State.review);
 
-      _log.d('''
+    _log.d('''
 Successfully loaded cards to review count. 
 New: $newState, Learning: $learningState, Relearning: $relearningState, Review: $reviewState''');
 
-      return {
-        State.newState: newState,
-        State.learning: learningState,
-        State.relearning: relearningState,
-        State.review: reviewState
-      };
-    } on Exception catch (e) {
-      _log.w('Error querying cards to review: $e');
-      rethrow;
-    }
+    return {
+      State.newState: newState,
+      State.learning: learningState,
+      State.relearning: relearningState,
+      State.review: reviewState
+    };
   }
 
   /// Loads identifiers and review variants of cards to review based on `nextReviewDate`
@@ -342,7 +342,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
               isLessThanOrEqualTo: currentClockDateTime))
           .withCardStatsConverter
           .limit(reviewLimit ?? 200)
-          .getForUser(userId);
+          .getForUser(userId)
+          .logError('Error querying cards to review');
       final toReview = statsSnapshot.docs.map((doc) => doc.data()).toList();
       _log.d('Cards to review: ${toReview.length}');
 
@@ -351,7 +352,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
           .where(Filter('nextReviewDate', isNull: true))
           .withCardStatsConverter
           .limit(newLimit ?? 200)
-          .getForUser(userId);
+          .getForUser(userId)
+          .logError('Error querying new cards to review');
       final newCards = statsSnapshotNew.docs.map((doc) => doc.data()).toList();
       _log.d('New cards to review: ${newCards.length}');
 
@@ -398,8 +400,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         'Saving card stats ${stats.cardId}::${stats.variant.name} with next review on ${stats.nextReviewDate}');
     final docRef = _firestore.collection('cardStats').doc(stats.idValue);
     await docRef.set({'userId': userId, ...stats.toJson()}).then(
-        (value) => print("Review answer successfully recorded!"),
-        onError: (e) => print("Error recording review answer: $e"));
+        (value) => _log.d("Review answer successfully recorded!"),
+        onError: (e) => _log.w("Error recording review answer: $e"));
   }
 
   @override
@@ -408,10 +410,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         .where('deckId', isEqualTo: deckId)
         .count()
         .get()
-        .onError<Exception>((e, stackTrace) {
-      _log.w("Error loading cards: $e");
-      throw e;
-    });
+        .logError('Error loading cards');
 
     return snapshot.count ?? 0;
   }
@@ -420,19 +419,15 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   Future<Iterable<CardAnswer>> loadAnswers(
       DateTime dayStart, DateTime dayEnd) async {
     _log.d('Loading answers for $dayStart to $dayEnd');
-    try {
-      final snapshot = await _collection('reviewLog')
-          .where(Filter.and(
-              Filter('reviewStart', isGreaterThanOrEqualTo: dayStart),
-              Filter('reviewStart', isLessThanOrEqualTo: dayEnd)))
-          .getForUser(userId);
-      _log.d('Loaded ${snapshot.docs.length} answers');
-      return snapshot.docs
-          .map((doc) => CardAnswer.fromJson(doc.id, doc.data()));
-    } on Exception catch (e) {
-      _log.w('Failed loading answers', error: e);
-      rethrow;
-    }
+
+    final snapshot = await _collection('reviewLog')
+        .where(Filter.and(
+            Filter('reviewStart', isGreaterThanOrEqualTo: dayStart),
+            Filter('reviewStart', isLessThanOrEqualTo: dayEnd)))
+        .getForUser(userId)
+        .logError('Loading reviewLog failed');
+    _log.d('Loaded ${snapshot.docs.length} answers');
+    return snapshot.docs.map((doc) => CardAnswer.fromJson(doc.id, doc.data()));
   }
 
   @override
@@ -498,23 +493,14 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   @override
   Future<void> saveCollaborationInvitation(String receivingUserEmail) async {
     _log.d('Saving collaboration invitation for $receivingUserEmail');
-    final snapshot = await _usersCollection
-        .where('email', isEqualTo: receivingUserEmail)
-        .get();
-    final receivingUserId = snapshot.docs.firstOrNull?.id;
-    if (receivingUserId == null) {
-      _log.w('User does not exist $receivingUserEmail');
-      throw Exception('No user found with email $receivingUserEmail');
-    }
     final docRef = _firestore.collection('collaborators').doc();
     final request = CollaborationInvitation(
         id: docRef.id,
         initiatorUserId: userId,
-        receivingUserId: receivingUserId,
         receivingUserEmail: receivingUserEmail,
         sentTimestamp: currentClockTimestamp,
         status: InvitationStatus.pending);
-    await docRef.set(request.toJson());
+    await docRef.set(request.toJson()).logError('Failed saving invitation');
   }
 
   @override
@@ -524,37 +510,32 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         .collection('collaborators')
         .where(Filter.and(
           Filter('status', isEqualTo: InvitationStatus.pending.name),
-          sent
+          (sent
               ? Filter('initiatorUserId', isEqualTo: userId)
-              : Filter('receivingUserId', isEqualTo: userId),
+              : Filter('receivingUserEmail', isEqualTo: userEmail)),
         ))
         .get()
-        .then((value) {
-      _log.d('Loaded invitations: ${value.docs.length}');
-      return value;
-    },
-            onError: (e, st) =>
-                _log.e('Error loading invitations: $e', stackTrace: st));
-    return snapshot.docs
+        .logError('Error loading invitations');
+    _log.d('Loaded ${snapshot.docs.length} invitations');
+    final result = snapshot.docs
         .map((doc) => CollaborationInvitation.fromJson(doc.id, doc.data()));
+    return result;
   }
 
   @override
   Future<Set<String>> loadCollaborators() async {
+    // Even though accepted invitations should have `receivingUserId` field
+    // the filter is applied to `receivingUserEmail` to avoid creating
+    // another index
     final snapshot = await _firestore
         .collection('collaborators')
         .where(Filter.and(
           Filter('status', isEqualTo: InvitationStatus.accepted.name),
           Filter.or(Filter('initiatorUserId', isEqualTo: userId),
-              Filter('receivingUserId', isEqualTo: userId)),
+              Filter('receivingUserEmail', isEqualTo: userEmail)),
         ))
         .get()
-        .then((value) {
-      _log.d('Loaded collaborators: ${value.docs.length}');
-      return value;
-    },
-            onError: (e, st) =>
-                _log.e('Error loading collaborators: $e', stackTrace: st));
+        .logError('Error loading collaborators');
     return snapshot.docs.map((doc) {
       final data = doc.data();
       return data['receivingUserId'] == userId
@@ -573,6 +554,6 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     }
     final invitation =
         CollaborationInvitation.fromJson(snapshot.id, snapshot.data()!);
-    docRef.update(invitation.changeStatus(status).toJson());
+    docRef.update(invitation.changeStatus(status, userId).toJson());
   }
 }

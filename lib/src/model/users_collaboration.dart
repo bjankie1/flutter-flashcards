@@ -77,7 +77,7 @@ enum InvitationStatus { pending, accepted, rejected }
 class CollaborationInvitation implements FirebaseSerializable {
   String id;
   String initiatorUserId;
-  String receivingUserId;
+  String? receivingUserId;
   String receivingUserEmail;
   Timestamp sentTimestamp;
   Timestamp? lastChangeTimestamp;
@@ -86,17 +86,19 @@ class CollaborationInvitation implements FirebaseSerializable {
   CollaborationInvitation(
       {required this.id,
       required this.initiatorUserId,
-      required this.receivingUserId,
+      this.receivingUserId,
       required this.receivingUserEmail,
       required this.sentTimestamp,
       this.lastChangeTimestamp,
       required this.status});
 
-  CollaborationInvitation changeStatus(InvitationStatus status) =>
+  /// Method invoked by receiver of the invitation who can accept or reject the invitation
+  CollaborationInvitation changeStatus(
+          InvitationStatus status, String userId) =>
       CollaborationInvitation(
           id: id,
           initiatorUserId: initiatorUserId,
-          receivingUserId: receivingUserId,
+          receivingUserId: userId,
           receivingUserEmail: receivingUserEmail,
           sentTimestamp: sentTimestamp,
           lastChangeTimestamp: currentClockTimestamp,

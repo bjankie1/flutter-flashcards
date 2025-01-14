@@ -199,13 +199,15 @@ void main() {
       final invitations = await repository.pendingInvitations();
       expect(invitations.length, 0);
       final invitationsSent = await repository.pendingInvitations(sent: true);
+      expect(invitationsSent.length, 1);
       expect(invitationsSent.first.initiatorUserId, loggedInUserId);
-      expect(invitationsSent.first.receivingUserId, user1.id);
+      expect(invitationsSent.first.receivingUserId, isNull);
       expect(invitationsSent.first.status, InvitationStatus.pending);
     });
 
     test('saveCollaborationInvitation throws exception if user not found',
         () async {
+      // the test would have fail if the mock supported security rules
       await expectLater(
           repository.saveCollaborationInvitation('nonexistent@example.com'),
           throwsA(isA<Exception>()));

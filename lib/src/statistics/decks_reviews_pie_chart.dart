@@ -6,7 +6,6 @@ import 'package:flutter_flashcards/src/common/indicator.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
-import 'package:logger/logger.dart';
 
 class DecksReviewsPieChart extends StatefulWidget {
   final Iterable<model.CardAnswer> answers;

@@ -10,15 +10,23 @@ class CollaborationPage extends StatelessWidget {
     return BaseLayout(
         title: context.l10n.collaboration,
         currentPage: PageIndex.collaboration,
-        child: Column(
-          children: [
-            Text('Invite collaborator'),
-            InviteCollaboratorInput(),
-            Text('Collaborators'),
-            CollaboratorsList(),
-            Text('Pending requests'),
-            PendingRequestsList()
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text('Invite collaborator'),
+              InviteCollaboratorInput(),
+              SizedBox(
+                height: 20,
+              ),
+              Text('Collaborators'),
+              CollaboratorsList(),
+              Text('Pending requests'),
+              PendingRequestsList()
+            ],
+          ),
         ));
   }
 }
@@ -30,13 +38,15 @@ class CollaboratorsList extends StatelessWidget {
         fetcher: (repository) =>
             repository.loadCollaborators().then((value) => value.toList()),
         builder: (context, collaborators, _) {
-          return ListView.builder(
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(collaborators[index]),
-                );
-              },
-              itemCount: collaborators.length);
+          return Expanded(
+            child: ListView.builder(
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(collaborators[index]),
+                  );
+                },
+                itemCount: collaborators.length),
+          );
         });
   }
 }
@@ -48,18 +58,20 @@ class PendingRequestsList extends StatelessWidget {
         fetcher: (repository) =>
             repository.pendingInvitations().then((value) => value.toList()),
         builder: (context, invitations, _) {
-          return ListView.builder(
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Row(
-                    children: [
-                      Text(invitations[index].receivingUserEmail),
-                      Text(invitations[index].status.name),
-                    ],
-                  ),
-                );
-              },
-              itemCount: invitations.length);
+          return Expanded(
+            child: ListView.builder(
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Row(
+                      children: [
+                        Text(invitations[index].receivingUserEmail),
+                        Text(invitations[index].status.name),
+                      ],
+                    ),
+                  );
+                },
+                itemCount: invitations.length),
+          );
         });
   }
 }

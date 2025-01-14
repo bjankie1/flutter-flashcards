@@ -3,8 +3,8 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     match /users/{userId} {
-      allow read, write: if request.auth.uid != null && request.auth.uid == userId
-      allow create: if request.auth.uid != null
+      allow read, write: if request.auth.uid != null && request.auth.uid == userId;
+      allow create: if request.auth.uid != null;
     }
 
     // `collaborators` collection connect users. Records can be created by any user but the creating user's ID needs to
@@ -12,16 +12,24 @@ service cloud.firestore {
     // `receivingUserId`. The same rule applies to querying - user ID needs to be in either `initiatorUserId` or 
     // `receivingUserId` fields.
     match /collaborators {
-      allow create, delete: if request.auth.uid != null && resource.data.initiatorUserId == request.auth.uid
-      allow update: if request.auth.uid != null && (request.auth.uid == resource.data.initiatorUserId || request.auth.uid == resource.data.receivingUserId)
-      allow read: if request.auth.uid != null && (resource.data.initiatorUserId == request.auth.uid || resource.data.receivingUserId == request.auth.uid)
+      allow create: if request.auth.uid != null 
+                       && resource.data.initiatorUserId == request.auth.uid
+                       && exists(/databases/$(database)/documents/users/$(resource.data.receivingUserId));
+      allow delete: if request.auth.uid != null 
+                    && resource.data.initiatorUserId == request.auth.uid;
+      allow update: if request.auth.uid != null
+                    && (request.auth.uid == resource.data.initiatorUserId || request.auth.email == resource.data.receivingUserEmail)
+                    && (request.resource.data.diff(resource.data).affectedKeys()
+                      .hasOnly(['receivingUserId', 'status', 'lastChangeTimestamp']));
+      allow read: if request.auth.uid != null
+                  && (resource.data.initiatorUserId == request.auth.uid || resource.data.receivingUserId == request.auth.uid);
     }
 
     match /{document=**} {
       allow read, write: if request.auth.uid != null 
                          && (resource == null 
-                             || request.auth.uid == resource.data.userId)
-      allow create: if request.auth.uid != null
+                             || request.auth.uid == resource.data.userId);
+      allow create: if request.auth.uid != null;
     }
 
   }
