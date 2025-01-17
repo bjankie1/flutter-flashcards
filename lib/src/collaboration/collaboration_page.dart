@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/base_layout.dart';
+import 'package:flutter_flashcards/src/collaboration/collaborators_list.dart';
 import 'package:flutter_flashcards/src/collaboration/invite_collaborator_input.dart';
-import 'package:flutter_flashcards/src/widgets.dart';
+import 'package:flutter_flashcards/src/collaboration/pending_requests_list.dart';
 
 class CollaborationPage extends StatelessWidget {
   @override
@@ -16,62 +17,69 @@ class CollaborationPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text('Invite collaborator'),
               InviteCollaboratorInput(),
               SizedBox(
                 height: 20,
               ),
-              Text('Collaborators'),
-              CollaboratorsList(),
-              Text('Pending requests'),
-              PendingRequestsList()
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Text(
+                                context.l10n.collaboratorsHeader,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
+                              ),
+                              CollaboratorsList(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Text(
+                                context.l10n.pendingInvitationsHeader,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
+                              ),
+                              PendingRequestsList(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Text(
+                                context.l10n.sentInvitationsHeader,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
+                              ),
+                              PendingRequestsList(sent: true),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ],
           ),
         ));
-  }
-}
-
-class CollaboratorsList extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return RepositoryLoader(
-        fetcher: (repository) =>
-            repository.loadCollaborators().then((value) => value.toList()),
-        builder: (context, collaborators, _) {
-          return Expanded(
-            child: ListView.builder(
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(collaborators[index]),
-                  );
-                },
-                itemCount: collaborators.length),
-          );
-        });
-  }
-}
-
-class PendingRequestsList extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return RepositoryLoader(
-        fetcher: (repository) =>
-            repository.pendingInvitations().then((value) => value.toList()),
-        builder: (context, invitations, _) {
-          return Expanded(
-            child: ListView.builder(
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Row(
-                      children: [
-                        Text(invitations[index].receivingUserEmail),
-                        Text(invitations[index].status.name),
-                      ],
-                    ),
-                  );
-                },
-                itemCount: invitations.length),
-          );
-        });
   }
 }

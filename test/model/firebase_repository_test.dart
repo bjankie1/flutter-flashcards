@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:clock/clock.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'
@@ -124,7 +126,7 @@ void main() {
       expect(frontStats.state, model.State.newState);
       expect(frontStats.nextReviewDate, null);
       expect(frontStats.stability, 0);
-      expectLater(
+      await expectLater(
           repository.loadCardStats(card.id!, model.CardReviewVariant.back),
           throwsA(isA<Exception>()));
     });
@@ -217,6 +219,9 @@ void main() {
       withClock(Clock.fixed(DateTime(2021)), () async {
         await repository.saveCollaborationInvitation(user2.email);
 
+        final collaborators = await repository.loadCollaborators();
+        expect(collaborators.length, 0);
+
         // Log as user2
         await changeLogin(user2);
 
@@ -227,10 +232,17 @@ void main() {
         expect(invitations.first.initiatorUserId, userLogged.id);
         expect(invitations.first.sentTimestamp,
             currentClockDateTime.toTimestamp());
+
+        final collaborators2 = await repository.loadCollaborators();
+        expect(collaborators2.length, 0);
       });
     });
 
-    test('changeInvitationStatus updates invitation status', () async {
+    test(
+        'changeInvitationStatus updates invitation status both users start collaboration',
+        () async {
+      await repository.saveUser(userLogged);
+      await repository.saveUser(user1);
       await repository.saveCollaborationInvitation(user1.email);
       await repository.saveCollaborationInvitation(user2.email);
 
@@ -242,6 +254,27 @@ void main() {
           invitations.first.id, InvitationStatus.accepted);
       final invitationsAgain = await repository.pendingInvitations();
       expect(invitationsAgain.length, 0);
+      final collaborators1 = await repository.loadCollaborators();
+      expect(collaborators1.length, 1);
+      expect(collaborators1, contains(userLogged.id));
+      await expectLater(
+          firestore
+              .collection('users')
+              .doc(user1.id)
+              .collection('collaborators')
+              .doc(userLogged.id)
+              .get()
+              .then((doc) => doc.exists),
+          completion(isTrue));
+      await expectLater(
+          firestore
+              .collection('users')
+              .doc(loggedInUserId)
+              .collection('collaborators')
+              .doc(user1.id)
+              .get()
+              .then((doc) => doc.exists),
+          completion(isTrue));
 
       // log in back the original user
       await changeLogin(userLogged);
@@ -257,6 +290,14 @@ void main() {
       expectLater(
           () => repository.changeInvitationStatus(
               'nonexistent_id', InvitationStatus.accepted),
+          throwsA(isA<Exception>()));
+    });
+
+    test(
+        'send the same invitation for the second time should throw an exception',
+        () async {
+      await repository.saveCollaborationInvitation(user1.email);
+      await expectLater(repository.saveCollaborationInvitation(user1.email),
           throwsA(isA<Exception>()));
     });
   });

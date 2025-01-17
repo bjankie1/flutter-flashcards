@@ -442,6 +442,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Collaboration'**
   String get collaboration;
+
+  /// No description provided for @sentInvitationsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent invitations'**
+  String get sentInvitationsHeader;
+
+  /// No description provided for @pendingInvitationsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending invitations'**
+  String get pendingInvitationsHeader;
+
+  /// No description provided for @collaboratorsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Collaborators'**
+  String get collaboratorsHeader;
+
+  /// No description provided for @inviteCollaboratorPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter collaborator email'**
+  String get inviteCollaboratorPrompt;
+
+  /// No description provided for @invitationEmailHelperText.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitees email'**
+  String get invitationEmailHelperText;
+
+  /// No description provided for @invalidEmailMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get invalidEmailMessage;
+
+  /// No description provided for @sendInvitationButtonTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Send invitation'**
+  String get sendInvitationButtonTooltip;
+
+  /// No description provided for @invitationSentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation sent'**
+  String get invitationSentMessage;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

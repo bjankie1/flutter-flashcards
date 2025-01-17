@@ -57,5 +57,14 @@
   "cardSavingErrorMessage": "Nie udało się zapisać karty",
   "editCardTitle": "Edycja karty w zestawie **{deck}**",
   "createCardTitle": "Nowa karta w zestawie **{deck}**",
-  "collaboration": "Współpraca"
+  "collaboration": "Współpraca",
+  "sentInvitationsHeader": "Wysłane zaproszenia",
+  "pendingInvitationsHeader": "Oczekujące zaproszenia",
+  "collaboratorsHeader": "Współpracownicy",
+  "inviteCollaboratorPrompt": "Zaproszenie współpracownika",
+  "invitationSentMessage": "Zaproszenie wysłane",
+  "invitationEmailHelperText": "Adres email osoby zapraszanej",
+  "invitationErrorMessage": "Błąd podczas wysyłania zaproszenia",
+  "invalidEmailMessage": "Proszę podać poprawny adres email",
+  "sendInvitationButtonTooltip": "Wyślij zaproszenie"
 }

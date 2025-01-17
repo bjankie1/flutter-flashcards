@@ -197,4 +197,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get collaboration => 'Collaboration';
+
+  @override
+  String get sentInvitationsHeader => 'Sent invitations';
+
+  @override
+  String get pendingInvitationsHeader => 'Pending invitations';
+
+  @override
+  String get collaboratorsHeader => 'Collaborators';
+
+  @override
+  String get inviteCollaboratorPrompt => 'Enter collaborator email';
+
+  @override
+  String get invitationEmailHelperText => 'Invitees email';
+
+  @override
+  String get invalidEmailMessage => 'Please enter a valid email';
+
+  @override
+  String get sendInvitationButtonTooltip => 'Send invitation';
+
+  @override
+  String get invitationSentMessage => 'Invitation sent';
 }

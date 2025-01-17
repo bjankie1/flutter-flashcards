@@ -11,24 +11,51 @@ service cloud.firestore {
     // reflected in `initiatorUserId` field. User can modify the record either when their ID is `initiatorUserId` or
     // `receivingUserId`. The same rule applies to querying - user ID needs to be in either `initiatorUserId` or 
     // `receivingUserId` fields.
-    match /collaborators {
+    match /collaborators/{invitation} {
       allow create: if request.auth.uid != null 
-                       && resource.data.initiatorUserId == request.auth.uid
-                       && exists(/databases/$(database)/documents/users/$(resource.data.receivingUserId));
+                       && resource.data.initiatorUserId == request.auth.uid;
       allow delete: if request.auth.uid != null 
                     && resource.data.initiatorUserId == request.auth.uid;
       allow update: if request.auth.uid != null
-                    && (request.auth.uid == resource.data.initiatorUserId || request.auth.email == resource.data.receivingUserEmail)
+                    && (request.auth.uid == resource.data.initiatorUserId || request.auth.token.email == resource.data.receivingUserEmail)
                     && (request.resource.data.diff(resource.data).affectedKeys()
                       .hasOnly(['receivingUserId', 'status', 'lastChangeTimestamp']));
       allow read: if request.auth.uid != null
-                  && (resource.data.initiatorUserId == request.auth.uid || resource.data.receivingUserId == request.auth.uid);
+                  && (resource.data.initiatorUserId == request.auth.uid 
+                      || resource.data.receivingUserId == request.auth.uid
+                      || resource.data.receivingUserEmail == request.auth.token.email);
     }
 
-    match /{document=**} {
+    match /cards/{card} {
       allow read, write: if request.auth.uid != null 
-                         && (resource == null 
-                             || request.auth.uid == resource.data.userId);
+                         && (request.auth.uid == resource.data.userId);
+      allow create: if request.auth.uid != null;
+    }
+
+    match /decks/{deck} {
+      allow read, write: if request.auth.uid != null 
+                         && request.auth.uid == resource.data.userId;
+      allow create: if request.auth.uid != null;
+    }
+
+    match /cardAnswers/{cardAnswer} {
+      allow read: if request.auth.uid != null
+                         && (request.auth.uid == resource.data.userId
+                             || exists(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.uid)));
+      allow write: if request.auth.uid != null 
+                         && (request.auth.uid == resource.data.userId);
+      allow create: if request.auth.uid != null;
+    }
+
+    match /cardStats/{cardStat} {
+      allow read, write: if request.auth.uid != null 
+                         && (request.auth.uid == resource.data.userId);
+      allow create: if request.auth.uid != null;
+    }
+
+    match /reviewLog/{reviewLog} {
+      allow read, write: if request.auth.uid != null 
+                         && (request.auth.uid == resource.data.userId);
       allow create: if request.auth.uid != null;
     }
 

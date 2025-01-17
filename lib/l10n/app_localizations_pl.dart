@@ -197,4 +197,28 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get collaboration => 'Współpraca';
+
+  @override
+  String get sentInvitationsHeader => 'Wysłane zaproszenia';
+
+  @override
+  String get pendingInvitationsHeader => 'Oczekujące zaproszenia';
+
+  @override
+  String get collaboratorsHeader => 'Współpracownicy';
+
+  @override
+  String get inviteCollaboratorPrompt => 'Zaproszenie współpracownika';
+
+  @override
+  String get invitationEmailHelperText => 'Adres email osoby zapraszanej';
+
+  @override
+  String get invalidEmailMessage => 'Proszę podać poprawny adres email';
+
+  @override
+  String get sendInvitationButtonTooltip => 'Wyślij zaproszenie';
+
+  @override
+  String get invitationSentMessage => 'Zaproszenie wysłane';
 }
