@@ -1,10 +1,10 @@
-import 'dart:math';
-
 import 'package:clock/clock.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'
     show AuthCredential, GoogleAuthProvider, User;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_flashcards/src/common/crypto.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
@@ -37,14 +37,26 @@ Future<User?> mockSignIn(String id, String email) async {
   return result.user;
 }
 
-void main() {
-  final firestore = FakeFirebaseFirestore();
+/// Load firestore security rules from firestore.rules file
+// ignore_for_file: avoid_print
+Future<String> loadFirestoreSecurityRules() async {
+  final rulesFilesPath = '../../firestore.rules';
+  final rules = await rootBundle.loadString(rulesFilesPath);
+  return rules;
+}
 
+void main() {
+  late FirebaseFirestore firestore;
   late FirebaseCardsRepository repository;
+
   setUp(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    // TODO: maybe later test the rules. Now the problem is that
+    // fake_firebase_security_rules does not support `get` yet.
+    // final rules = await loadFirestoreSecurityRules();
+    firestore = FakeFirebaseFirestore();
     User? user = await mockSignIn(loggedInUserId, loggedInUserEmail);
 
-    // TestWidgetsFlutterBinding.ensureInitialized();
     repository = FirebaseCardsRepository(firestore, user);
   });
 
