@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_flashcards/src/common/crypto.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:logger/logger.dart';
@@ -464,9 +465,14 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   @override
   Future<void> saveUser(UserProfile user) async {
     final docRef = _usersCollection.doc(userId);
-    await docRef.set(user, SetOptions(merge: true)).then(
-        (value) => _log.d("User successfully updated!"),
-        onError: (e) => _log.e("Error updating user: $e"));
+    final emailDigest = user.email.sha256Digest;
+    final emailToUidDocRef =
+        _firestore.collection('emailToUid').doc(emailDigest);
+
+    final batch = _firestore.batch();
+    batch.set(docRef, user, SetOptions(merge: true));
+    batch.set(emailToUidDocRef, {'uid': userId});
+    await batch.commit().logError('Error saving user profile');
   }
 
   @override
@@ -613,5 +619,45 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       batch.delete(receivingDocRef);
       await batch.commit();
     }
+  }
+
+  @override
+  Future<void> grantStatsAccess(String receivingUserEmail) async {
+    final emailDigest = receivingUserEmail.sha256Digest;
+    final snapshot =
+        await _firestore.collection('emailToUid').doc(emailDigest).get();
+    if (!snapshot.exists) {
+      throw Exception('Email not registered');
+    }
+    final receiverUid = snapshot.data()!['uid'];
+    final collaboratorDoc = _usersCollection
+        .doc(userId)
+        .collection('collaborators')
+        .doc(receiverUid);
+    final grantedAccessDoc = _usersCollection
+        .doc(receiverUid)
+        .collection('grantedStatsAccess')
+        .doc(userId);
+    final batch = _firestore.batch();
+    batch.set(
+        collaboratorDoc, {'stats': true, 'createdAt': currentClockTimestamp});
+    batch.set(
+        grantedAccessDoc, {'stats': true, 'createdAt': currentClockTimestamp});
+    await batch.commit();
+  }
+
+  Future<Iterable<UserProfile>> listGrantedStatsAccessUsers() async {
+    final snapshot = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('grantedStatsAccess')
+        .get();
+    final userIds = snapshot.docs.map((doc) => doc.id);
+    final usersSnapshot = await _firestore
+        .collection(usersCollectionName)
+        .where(FieldPath.documentId, whereIn: userIds)
+        .get();
+    return usersSnapshot.docs
+        .map((snapshot) => UserProfile.fromJson(snapshot.id, snapshot.data()));
   }
 }

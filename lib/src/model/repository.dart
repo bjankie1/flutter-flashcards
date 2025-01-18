@@ -106,6 +106,8 @@ abstract class CardsRepository extends ChangeNotifier {
 
   Future<void> changeInvitationStatus(
       String invitationId, InvitationStatus status);
+
+  Future<void> grantStatsAccess(String receivingUserEmail);
 }
 
 extension CardRepositoryProvider on BuildContext {

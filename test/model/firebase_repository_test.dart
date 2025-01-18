@@ -5,6 +5,7 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'
     show AuthCredential, GoogleAuthProvider, User;
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/common/crypto.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
@@ -180,20 +181,23 @@ void main() {
         locale: Locale('pl'),
         photoUrl: '');
 
+    Future<void> changeLogin(UserProfile newUser) async {
+      User? newUserLogged = await mockSignIn(newUser.id, newUser.email);
+      repository = FirebaseCardsRepository(firestore, newUserLogged);
+    }
+
     setUp(() async {
       await repository.saveUser(userLogged);
-      await firestore.collection('users').doc(user1.id).set(user1.toJson());
-      await firestore.collection('users').doc(user2.id).set(user2.toJson());
+      await changeLogin(user1);
+      await repository.saveUser(user1);
+      await changeLogin(user2);
+      await repository.saveUser(user2);
+      await changeLogin(userLogged);
     });
 
     tearDown(() async {
       await firestore.clearPersistence();
     });
-
-    Future<void> changeLogin(UserProfile newUser) async {
-      User? newUserLogged = await mockSignIn(newUser.id, newUser.email);
-      repository = FirebaseCardsRepository(firestore, newUserLogged);
-    }
 
     test('saveCollaborationInvitation saves invitation successfully', () async {
       await repository.saveCollaborationInvitation(user1.email);
@@ -299,6 +303,59 @@ void main() {
       await repository.saveCollaborationInvitation(user1.email);
       await expectLater(repository.saveCollaborationInvitation(user1.email),
           throwsA(isA<Exception>()));
+    });
+
+    test('saveUser should also store emailToUid reference', () async {
+      await repository.saveUser(user1);
+      final emailDigest = user1.email.sha256Digest;
+      final emailToUidDoc = firestore.collection('emailToUid').doc(emailDigest);
+      expectLater(
+          emailToUidDoc.get().then((doc) => doc.exists), completion(isTrue));
+    });
+
+    test(
+        'grant permission to stats to user1 and verify if added to /users/{loggedInUser}/collaborators/{user1}',
+        () async {
+      // save user1 requires them to be logged in
+      await changeLogin(user1);
+      await repository.saveUser(user1);
+
+      // login back to default user
+      await changeLogin(userLogged);
+      await repository.grantStatsAccess(user1.email);
+      await expectLater(
+          firestore
+              .collection('users')
+              .doc(loggedInUserId)
+              .collection('collaborators')
+              .doc(user1.id)
+              .get()
+              .then((doc) => doc.exists),
+          completion(isTrue));
+      await expectLater(
+          firestore
+              .collection('users')
+              .doc(user1.id)
+              .collection('grantedStatsAccess')
+              .doc(loggedInUserId)
+              .get()
+              .then((doc) => doc.exists),
+          completion(isTrue));
+    });
+
+    test(
+        'grant permission to stats to user1 and user1 can get list of collaborators',
+        () async {
+      await repository.saveUser(userLogged);
+      await changeLogin(user1);
+      await repository.saveUser(user1);
+      await changeLogin(userLogged);
+      await repository.grantStatsAccess(user1.email);
+
+      await changeLogin(user1);
+      final usersList = await repository.listGrantedStatsAccessUsers();
+      expect(usersList.length, 1);
+      expect(usersList.first.email, userLogged.email);
     });
   });
 }
