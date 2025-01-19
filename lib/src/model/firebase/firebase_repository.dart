@@ -430,15 +430,15 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   }
 
   @override
-  Future<Iterable<CardAnswer>> loadAnswers(
-      DateTime dayStart, DateTime dayEnd) async {
+  Future<Iterable<CardAnswer>> loadAnswers(DateTime dayStart, DateTime dayEnd,
+      {String? uid}) async {
     _log.d('Loading answers for $dayStart to $dayEnd');
 
     final snapshot = await _collection('reviewLog')
         .where(Filter.and(
             Filter('reviewStart', isGreaterThanOrEqualTo: dayStart),
             Filter('reviewStart', isLessThanOrEqualTo: dayEnd)))
-        .getForUser(userId)
+        .getForUser(uid ?? userId)
         .logError('Loading reviewLog failed');
     _log.d('Loaded ${snapshot.docs.length} answers');
     return snapshot.docs.map((doc) => CardAnswer.fromJson(doc.id, doc.data()));
@@ -646,17 +646,59 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     await batch.commit();
   }
 
-  Future<Iterable<UserProfile>> listGrantedStatsAccessUsers() async {
+  @override
+  Future<void> revokeStatsAccess(String userId) async {
+    final collaboratorDoc =
+        _usersCollection.doc(userId).collection('collaborators').doc(userId);
+    final grantedAccessDoc = _usersCollection
+        .doc(userId)
+        .collection('grantedStatsAccess')
+        .doc(userId);
+    final batch = _firestore.batch();
+    batch.delete(collaboratorDoc);
+    batch.delete(grantedAccessDoc);
+    await batch.commit();
+  }
+
+  @override
+  Future<Iterable<UserProfile>> listOwnStatsGrants() async {
     final snapshot = await _firestore
         .collection('users')
         .doc(userId)
         .collection('grantedStatsAccess')
-        .get();
+        .get()
+        .logError('Error loading granted user IDs');
+    if (snapshot.docs.isEmpty) {
+      _log.d('No grants available');
+      return [];
+    }
     final userIds = snapshot.docs.map((doc) => doc.id);
     final usersSnapshot = await _firestore
         .collection(usersCollectionName)
         .where(FieldPath.documentId, whereIn: userIds)
-        .get();
+        .get()
+        .logError('Error loading collaborators profiles');
+    return usersSnapshot.docs
+        .map((snapshot) => UserProfile.fromJson(snapshot.id, snapshot.data()));
+  }
+
+  @override
+  Future<Iterable<UserProfile>> listGivenStatsGrants() async {
+    final snapshot = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('collaborators')
+        .get()
+        .logError('Error loading collaborator IDs');
+    if (snapshot.docs.isEmpty) {
+      return [];
+    }
+    final userIds = snapshot.docs.map((doc) => doc.id);
+    final usersSnapshot = await _firestore
+        .collection(usersCollectionName)
+        .where(FieldPath.documentId, whereIn: userIds)
+        .get()
+        .logError('Error loading collaborators profiles');
     return usersSnapshot.docs
         .map((snapshot) => UserProfile.fromJson(snapshot.id, snapshot.data()));
   }

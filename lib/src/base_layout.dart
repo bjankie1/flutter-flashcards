@@ -136,7 +136,7 @@ class LocaleSelection extends StatelessWidget {
                 .toList(),
             onSelectionChanged: (index) {
               Logger().i('Locale selected: ${index.first}');
-              context.read<AppState>().setLocale(index.first);
+              context.read<AppState>().locale = index.first;
             },
           );
         });

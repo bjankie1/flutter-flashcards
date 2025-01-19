@@ -6,13 +6,15 @@ class CollaboratorsList extends StatelessWidget {
   Widget build(BuildContext context) {
     return RepositoryLoader(
         fetcher: (repository) =>
-            repository.loadCollaborators().then((value) => value.toList()),
+            repository.listGivenStatsGrants().then((value) => value.toList()),
         builder: (context, collaborators, _) {
           return Expanded(
             child: ListView.builder(
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(collaborators[index]),
+                    title: Text(collaborators[index].name),
+                    leading: Icon(Icons.person),
+                    subtitle: Text(collaborators[index].email),
                   );
                 },
                 itemCount: collaborators.length),

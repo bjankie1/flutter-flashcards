@@ -365,7 +365,7 @@ void main() {
       await repository.grantStatsAccess(user1.email);
 
       await changeLogin(user1);
-      final usersList = await repository.listGrantedStatsAccessUsers();
+      final usersList = await repository.listOwnStatsGrants();
       expect(usersList.length, 1);
       expect(usersList.first.email, userLogged.email);
     });

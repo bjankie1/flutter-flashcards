@@ -101,13 +101,15 @@ class AppState extends ChangeNotifier {
         : ThemeMode.light;
   }
 
-  void setLocale(Locale newLocale) {
+  set locale(Locale newLocale) {
     _currentLocale.value = newLocale;
   }
 
-  void setTitle(String newTitle) {
+  set title(String newTitle) {
     _appTitle.value = newTitle;
   }
+
+  UserProfile? get userProfile => _userProfile;
 }
 
 extension ContextAppState on BuildContext {

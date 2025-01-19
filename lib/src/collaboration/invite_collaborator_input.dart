@@ -28,19 +28,18 @@ class InviteCollaboratorInput extends StatelessWidget {
         IconButton(
             tooltip: 'cancel',
             onPressed: () {
-              context.cardRepository
-                  .saveCollaborationInvitation(_controller.text);
+              _controller.clear();
             },
             icon: Icon(Icons.cancel)),
         IconButton(
             tooltip: context.l10n.sendInvitationButtonTooltip,
             onPressed: () async {
               await context.cardRepository
-                  .saveCollaborationInvitation(_controller.text)
-                  .then(
-                      (_) => context
-                          .showInfoSnackbar(context.l10n.invitationSentMessage),
-                      onError: (e) => context.showErrorSnackbar(e.toString()));
+                  .grantStatsAccess(_controller.text)
+                  .then((_) {
+                _controller.clear();
+                context.showInfoSnackbar(context.l10n.invitationSentMessage);
+              }, onError: (e) => context.showErrorSnackbar(e.toString()));
             },
             icon: Icon(Icons.send))
       ],

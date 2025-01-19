@@ -40,7 +40,8 @@ abstract class CardsRepository extends ChangeNotifier {
 
   Future<void> recordCardAnswer(model.CardAnswer answer);
   Future<Iterable<model.CardAnswer>> loadAnswers(
-      DateTime dayStart, DateTime dayEnd);
+      DateTime dayStart, DateTime dayEnd,
+      {String? uid});
 
   @protected
   Future<void> saveCardStats(model.CardStats stats);
@@ -108,6 +109,10 @@ abstract class CardsRepository extends ChangeNotifier {
       String invitationId, InvitationStatus status);
 
   Future<void> grantStatsAccess(String receivingUserEmail);
+  Future<void> revokeStatsAccess(String userId);
+
+  Future<Iterable<UserProfile>> listOwnStatsGrants();
+  Future<Iterable<UserProfile>> listGivenStatsGrants();
 }
 
 extension CardRepositoryProvider on BuildContext {

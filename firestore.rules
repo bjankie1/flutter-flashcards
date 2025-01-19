@@ -3,13 +3,22 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     match /users/{userId} {
-      allow read, write: if request.auth.uid != null && request.auth.uid == userId;
+      allow read, write: if request.auth.uid != null 
+                            && (request.auth.uid == userId
+                               || exists(/databases/$(database)/documents/users/$(userId)/grantedStatsAccess/$(request.auth.uid))
+                               || exists(/databases/$(database)/documents/users/$(userId)/collaborators/$(request.auth.uid)));
       allow create: if request.auth.uid != null && request.auth.uid == userId;
 
       match /collaborators/{collaboratorId} {
         allow read: if request.auth.uid != null 
                       && (request.auth.uid == userId || request.auth.uid == collaboratorId);
         allow write: if request.auth.uid != null && request.auth.uid == userId;
+      }
+      
+      match /grantedStatsAccess/{grantorId} {
+        allow read: if request.auth.uid != null 
+                      && (request.auth.uid == userId || request.auth.uid == grantorId);
+        allow write: if request.auth.uid != null && request.auth.uid == grantorId;
       }
     }
     
@@ -56,8 +65,8 @@ service cloud.firestore {
       allow read: if request.auth.uid != null
                          && (request.auth.uid == resource.data.userId
                              || (
-                             	exists(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.token.email))
-                             	&& get(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.token.email)).data.stats == true)
+                             	exists(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.uid))
+                             	&& get(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.uid)).data.stats == true)
                              );
       allow write: if request.auth.uid != null && (request.auth.uid == resource.data.userId);
       allow create: if request.auth.uid != null;
@@ -67,8 +76,8 @@ service cloud.firestore {
       allow read: if request.auth.uid != null
                          && (request.auth.uid == resource.data.userId
                              || (
-                             	exists(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.token.email))
-                             	&& get(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.token.email)).data.stats == true)
+                             	exists(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.uid))
+                             	&& get(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.uid)).data.stats == true)
                              );
       allow write: if request.auth.uid != null && request.auth.uid == resource.data.userId;
       allow create: if request.auth.uid != null;

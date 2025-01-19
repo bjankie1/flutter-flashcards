@@ -21,11 +21,14 @@ class CollaborationPage extends StatelessWidget {
               SizedBox(
                 height: 20,
               ),
-              Expanded(
+              SizedBox(
+                height: 400,
+                width: 800,
                 child: Row(
                   children: [
                     Expanded(
-                      child: Card(
+                      child: Container(
+                        color: ColorScheme.of(context).surfaceContainerLow,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
@@ -41,40 +44,6 @@ class CollaborationPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                context.l10n.pendingInvitationsHeader,
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
-                              ),
-                              PendingRequestsList(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                context.l10n.sentInvitationsHeader,
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
-                              ),
-                              PendingRequestsList(sent: true),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
                   ],
                 ),
               ),
