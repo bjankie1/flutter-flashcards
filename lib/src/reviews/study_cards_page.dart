@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/reviews/cards_review_widget.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
-import '../base_layout.dart';
+import '../layout/base_layout.dart';
 
 class StudyCardsPage extends StatefulWidget {
   // Optional filter for deckId

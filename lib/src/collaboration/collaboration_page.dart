@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
-import 'package:flutter_flashcards/src/base_layout.dart';
+import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/collaboration/collaborators_list.dart';
 import 'package:flutter_flashcards/src/collaboration/invite_collaborator_input.dart';
 import 'package:flutter_flashcards/src/collaboration/pending_requests_list.dart';

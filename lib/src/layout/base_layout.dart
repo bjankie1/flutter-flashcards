@@ -2,14 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart'
     hide EmailAuthProvider, GoogleAuthProvider;
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/l10n/app_localizations.dart';
-import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
+import 'package:flutter_flashcards/src/layout/left_navigation.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
-import 'authentication.dart';
+import '../authentication.dart';
 import 'package:go_router/go_router.dart';
 
 enum PageIndex { cards, learning, statistics, settings, collaboration }
@@ -140,64 +140,5 @@ class LocaleSelection extends StatelessWidget {
             },
           );
         });
-  }
-}
-
-class LeftNavigation extends StatelessWidget {
-  final PageIndex? currentPage;
-
-  LeftNavigation({this.currentPage});
-
-  @override
-  Widget build(BuildContext context) {
-    int selectedIndex = currentPage?.index ?? 0;
-    return NavigationRail(
-      destinations: [
-        NavigationRailDestination(
-          icon: Icon(Icons.edit_outlined),
-          selectedIcon: Icon(
-            Icons.edit,
-          ),
-          label: Text(context.l10n.decks),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.school_outlined),
-          selectedIcon: Icon(Icons.school),
-          label: Text(context.l10n.learning),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.show_chart_outlined),
-          selectedIcon: Icon(Icons.show_chart),
-          label: Text(context.l10n.statistics),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.people_alt_outlined),
-          selectedIcon: Icon(Icons.people_alt),
-          label: Text(context.l10n.collaboration),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.settings_outlined),
-          selectedIcon: Icon(Icons.settings),
-          label: Text(context.l10n.settings),
-        ),
-      ],
-      selectedIndex: selectedIndex,
-      groupAlignment: -0.8,
-      labelType: NavigationRailLabelType.all,
-      onDestinationSelected: (int index) {
-        switch (index) {
-          case 0:
-            context.goNamed('decks');
-          case 1:
-            context.goNamed('study');
-          case 2:
-            context.goNamed('statistics');
-          case 3:
-            context.goNamed('collaboration');
-          case 4:
-            context.goNamed('settings');
-        }
-      },
-    );
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:provider/provider.dart';
 
 import 'decks_list.dart';
-import '../base_layout.dart';
+import '../layout/base_layout.dart';
 import '../model/cards.dart' as model;
 import '../model/repository.dart';
 

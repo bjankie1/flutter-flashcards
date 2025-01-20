@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
-import 'package:flutter_flashcards/src/base_layout.dart';
+import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/statistics/select_person_focus.dart';
 import 'package:flutter_flashcards/src/statistics/statistics_charts.dart';

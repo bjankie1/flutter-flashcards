@@ -5,7 +5,7 @@ import 'package:flutter_flashcards/src/settings/theme_selector.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_flashcards/src/app_state.dart';
-import 'package:flutter_flashcards/src/base_layout.dart';
+import 'package:flutter_flashcards/src/layout/base_layout.dart';
 
 /// Displays the various settings that can be customized by the user.
 ///
