@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
-import 'package:flutter_flashcards/src/base_layout.dart';
+import 'package:flutter_flashcards/src/layout/base_layout.dart';
 
 class CardsImportPage extends StatelessWidget {
   @override

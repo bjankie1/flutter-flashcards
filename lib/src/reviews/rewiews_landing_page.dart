@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
-import 'package:flutter_flashcards/src/base_layout.dart';
+import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
