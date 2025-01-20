@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
-import 'package:flutter_flashcards/src/model/user.dart';
+import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -11,20 +11,25 @@ class AppState extends ChangeNotifier {
 
   final CardsRepository cardRepository;
 
-  bool _loggedIn = false;
-
-  bool get loggedIn => _loggedIn;
-
+  bool get loggedIn => _authenticatedUser.value != null;
   UserProfile? _userProfile;
+  ValueNotifier<User?> _authenticatedUser = ValueNotifier(null);
+  ValueListenable<User?> get authenticatedUser => _authenticatedUser;
 
-  UserProfile? get loggedInUser => _userProfile;
+  final ValueNotifier<Locale> _currentLocale =
+      ValueNotifier(WidgetsBinding.instance.platformDispatcher.locale);
+  ValueListenable<Locale> get currentLocale => _currentLocale;
+
+  final ValueNotifier<String> _appTitle = ValueNotifier<String>('Flashcards');
+  ValueListenable<String> get appTitle => _appTitle;
 
   AppState(this.cardRepository) {
     _log.i('Initializing Firebase authentication');
     FirebaseAuth.instance.userChanges().listen((user) async {
       if (user != null) {
         _log.d('user in instance: ${FirebaseAuth.instance.currentUser?.email}');
-        await loadState(user.uid); // Debug log for user ID
+        await loadUserProfile(user.uid);
+        _authenticatedUser.value = user;
       } else {
         resetState(); // Debug log for logout
       }
@@ -44,7 +49,7 @@ class AppState extends ChangeNotifier {
   }
 
   void resetState() {
-    _loggedIn = false;
+    _authenticatedUser.value = null;
     _log.d('User logged out'); // Debug log for logout
     setTheme(ThemeMode.system);
     _userProfile = null;
@@ -52,18 +57,26 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadState(String userId) async {
+  /// Method executed in result to authentication change. Loads user profile
+  /// from firestore and restores state data based on that.
+  Future<void> loadUserProfile(String userId) async {
     _log.d('User logged in: $userId'); // Debug log for user ID
-    _loggedIn = true;
     _userProfile = await cardRepository.loadUser(userId);
     if (_userProfile == null) {
       _log.i('User profile not found, creating new one');
       _userProfile = UserProfile(
           id: userId,
           name: '',
+          email: FirebaseAuth.instance.currentUser!.email ?? '',
           theme: currentTheme.value,
           locale: _currentLocale.value,
           photoUrl: '');
+      await cardRepository.saveUser(_userProfile!);
+    } else if (_userProfile != null &&
+        (_userProfile?.email == null || _userProfile!.email.isEmpty)) {
+      _userProfile = _userProfile!.copyWith(
+        email: FirebaseAuth.instance.currentUser!.email ?? '',
+      );
       await cardRepository.saveUser(_userProfile!);
     } else {
       _log.i('Loaded theme ${_userProfile?.theme.name}');
@@ -88,20 +101,15 @@ class AppState extends ChangeNotifier {
         : ThemeMode.light;
   }
 
-  final ValueNotifier<Locale> _currentLocale =
-      ValueNotifier(WidgetsBinding.instance.platformDispatcher.locale);
-  ValueListenable<Locale> get currentLocale => _currentLocale;
-
-  void setLocale(Locale newLocale) {
+  set locale(Locale newLocale) {
     _currentLocale.value = newLocale;
   }
 
-  final ValueNotifier<String> _appTitle = ValueNotifier<String>('Flashcards');
-  ValueListenable<String> get appTitle => _appTitle;
-
-  void setTitle(String newTitle) {
+  set title(String newTitle) {
     _appTitle.value = newTitle;
   }
+
+  UserProfile? get userProfile => _userProfile;
 }
 
 extension ContextAppState on BuildContext {

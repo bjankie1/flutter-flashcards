@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
+import 'package:flutter_flashcards/src/common/card_image.dart';
+import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
@@ -26,12 +28,12 @@ class CardsReview extends StatefulWidget {
 class _CardsReviewState extends State<CardsReview> {
   bool _answered = false;
 
-  DateTime _reviewStart = DateTime.now();
+  DateTime _reviewStart = currentClockDateTime;
 
   void nextCard(int cardIndex) {
     setState(() {
       _answered = false;
-      _reviewStart = DateTime.now();
+      _reviewStart = currentClockDateTime;
       widget.onNextCard((cardIndex + 1) % widget.cards.length);
     });
   }
@@ -49,15 +51,17 @@ class _CardsReviewState extends State<CardsReview> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ContentMarkdown(
-              markdown: card.question,
-              color: Theme.of(context).colorScheme.secondaryContainer,
+            Expanded(
+              child: CardSideContent(
+                card: card,
+                front: true,
+              ),
             ),
             Visibility(
               visible: !_answered,
               child: Expanded(
                 child: Padding(
-                    padding: EdgeInsets.all(10.0),
+                    padding: EdgeInsets.all(4.0),
                     child: AnimatedContainer(
                         duration: const Duration(seconds: 1),
                         curve: Curves.easeIn,
@@ -96,9 +100,9 @@ class _CardsReviewState extends State<CardsReview> {
               visible: _answered &&
                   card.explanation != null &&
                   card.explanation != '',
-              child: ContentMarkdown(
-                markdown: card.explanation ?? '',
-                color: Theme.of(context).colorScheme.surfaceContainerLow,
+              child: CardSideContent(
+                card: card,
+                front: false,
               ),
             ),
             Visibility(
@@ -140,7 +144,7 @@ class _RateAnswerState extends State<RateAnswer> {
       model.Rating rating, model.Card card) async {
     try {
       final reviewStart = widget.reviewStart;
-      final duration = DateTime.now().difference(reviewStart);
+      final duration = currentClockDateTime.difference(reviewStart);
       await repository.recordAnswer(card.id!, model.CardReviewVariant.front,
           rating, reviewStart, duration);
     } catch (e) {
@@ -199,26 +203,62 @@ class _RateAnswerState extends State<RateAnswer> {
   }
 }
 
-class ContentMarkdown extends StatelessWidget {
-  const ContentMarkdown({super.key, required this.markdown, this.color});
+class CardSideContent extends StatelessWidget {
+  const CardSideContent({super.key, required this.card, this.front = true});
 
-  final String markdown;
+  final model.Card card;
 
-  final Color? color;
+  final bool front;
+
+  Color color(BuildContext context) => front
+      ? Theme.of(context).colorScheme.secondaryContainer
+      : Theme.of(context).colorScheme.surfaceContainerLow;
+
+  String get markdown => front ? card.question : card.answer;
+
+  bool get showImage =>
+      front && card.questionImageAttached ||
+      !front && card.explanationImageAttached;
+
+  model.ImagePlacement get placement =>
+      front ? model.ImagePlacement.question : model.ImagePlacement.explanation;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Card(
-          color: color,
-          child: Padding(
-            padding: EdgeInsets.all(10.0),
-            child: GptMarkdown(
-              markdown,
-              style: Theme.of(context).textTheme.headlineLarge,
-            ),
+      child: Card(
+        color: color(context),
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Stack(
+            children: [
+              Text(front ? 'Question' : 'Explanation'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: FittedBox(
+                      child: GptMarkdown(
+                        markdown,
+                        // style: Theme.of(context).textTheme.headlineLarge,
+                      ),
+                    ),
+                  ),
+                  if (showImage)
+                    Expanded(
+                      flex: 1,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) => CardImage(
+                          cardId: card.id!,
+                          placement: placement,
+                          height: constraints.maxHeight,
+                        ),
+                      ),
+                    ),
+                ],
+              )
+            ],
           ),
         ),
       ),

@@ -1,7 +1,11 @@
+import 'dart:html' as html show window;
+
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/settings/theme_selector.dart';
+import 'package:provider/provider.dart';
+
 import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:flutter_flashcards/src/base_layout.dart';
-import 'package:provider/provider.dart';
 
 /// Displays the various settings that can be customized by the user.
 ///
@@ -17,35 +21,47 @@ class SettingsPage extends StatelessWidget {
         currentPage: PageIndex.settings,
         child: Padding(
           padding: const EdgeInsets.all(16),
-          // Glue the SettingsController to the theme selection DropdownButton.
-          //
-          // When a user selects a theme from the dropdown list, the
-          // SettingsController is updated, which rebuilds the MaterialApp.
-          child: ValueListenableBuilder(
-            valueListenable: context.watch<AppState>().currentTheme,
-            builder: (context, theme, _) => DropdownButton<ThemeMode>(
-              // Read the selected themeMode from the controller
-              value: theme,
-              // Call the updateThemeMode method any time the user selects a theme.
-              onChanged: (value) =>
-                  context.read<AppState>().setTheme(value ?? ThemeMode.system),
-              items: const [
-                DropdownMenuItem(
-                  value: ThemeMode.system,
-                  child: Text('System Theme'),
-                ),
-                DropdownMenuItem(
-                  value: ThemeMode.light,
-                  child: Text('Light Theme'),
-                ),
-                DropdownMenuItem(
-                  value: ThemeMode.dark,
-                  child: Text('Dark Theme'),
-                )
-              ],
-            ),
+          child: Column(
+            children: [
+              AppVersion(),
+              ThemeSelector(),
+            ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class AppVersion extends StatelessWidget {
+  const AppVersion({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text('App version: '),
+        ElevatedButton(
+            onPressed: () {
+              html.window.location.reload();
+            },
+            child: Text('Reload script')),
+      ],
+    );
+  }
+}
+
+class NameInput extends StatelessWidget {
+  final nameController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AppState>(
+      builder: (context, appState, _) => TextField(
+        controller: nameController,
+        decoration: const InputDecoration(labelText: 'Your name'),
       ),
     );
   }

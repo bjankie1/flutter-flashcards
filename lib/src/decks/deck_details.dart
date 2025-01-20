@@ -34,140 +34,143 @@ class _DeckInformationState extends State<DeckInformation> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  controller: nameController,
-                  readOnly: !isEditingName,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderSide: isEditingName
-                              ? const BorderSide() // Default border when editing
-                              : BorderSide.none)),
-                ),
-              ),
-              Visibility(
-                visible: isEditingName,
-                child: IconButton(
-                  icon: Icon(Icons.cancel),
-                  onPressed: () async {
-                    setState(() {
-                      isEditingName = false;
-                      nameController.text = widget.deck.name;
-                    });
-                  },
-                ),
-              ),
-              IconButton.filled(
-                icon: Icon(isEditingName ? Icons.save : Icons.edit),
-                onPressed: () async {
-                  if (isEditingName) {
-                    // Save the name here
-                    String newName = nameController.text.trim();
-                    if (newName.isNotEmpty && newName != widget.deck.name) {
-                      try {
-                        await _saveDeckName();
-                      } on Exception catch (e) {
-                        _log.w('Error saving new name', error: e);
-                        // show error in snackbar
-                        context.showErrorSnackbar('Error saving new name');
-                      }
-                    }
-                  }
-                  setState(() {
-                    isEditingName = !isEditingName; // Toggle editing state
-                  });
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Visibility(
-                visible: isEditingDescription ||
-                    widget.deck.description != null &&
-                        widget.deck.description!.isNotEmpty,
-                child: Expanded(
+    return Container(
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                IntrinsicWidth(
                   child: TextFormField(
-                    controller: descriptionController,
-                    readOnly: !isEditingDescription,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    minLines: 1,
-                    maxLines: 5,
+                    controller: nameController,
+                    readOnly: !isEditingName,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                    maxLines: 1,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
-                            borderSide: isEditingDescription
+                            borderSide: isEditingName
                                 ? const BorderSide() // Default border when editing
                                 : BorderSide.none)),
                   ),
                 ),
-              ),
-              Visibility(
-                visible: isEditingDescription,
-                child: IconButton(
-                  icon: Icon(Icons.cancel),
+                Visibility(
+                  visible: isEditingName,
+                  child: IconButton(
+                    icon: Icon(Icons.cancel),
+                    onPressed: () async {
+                      setState(() {
+                        isEditingName = false;
+                        nameController.text = widget.deck.name;
+                      });
+                    },
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(isEditingName ? Icons.save : Icons.edit),
                   onPressed: () async {
+                    if (isEditingName) {
+                      // Save the name here
+                      String newName = nameController.text.trim();
+                      if (newName.isNotEmpty && newName != widget.deck.name) {
+                        try {
+                          await _saveDeckName();
+                        } on Exception catch (e) {
+                          _log.w('Error saving new name', error: e);
+                          // show error in snackbar
+                          context.showErrorSnackbar('Error saving new name');
+                        }
+                      }
+                    }
                     setState(() {
-                      isEditingDescription = false;
-                      descriptionController.text =
-                          widget.deck.description ?? '';
+                      isEditingName = !isEditingName; // Toggle editing state
                     });
                   },
                 ),
-              ),
-              Visibility(
-                visible: (widget.deck.description == null ||
-                        widget.deck.description!.isEmpty) &&
-                    !isEditingDescription,
-                child: TextButton(
-                    onPressed: () {
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Visibility(
+                  visible: isEditingDescription ||
+                      widget.deck.description != null &&
+                          widget.deck.description!.isNotEmpty,
+                  child: IntrinsicWidth(
+                    child: TextFormField(
+                      controller: descriptionController,
+                      readOnly: !isEditingDescription,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      minLines: 1,
+                      maxLines: 5,
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderSide: isEditingDescription
+                                  ? const BorderSide() // Default border when editing
+                                  : BorderSide.none)),
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: isEditingDescription,
+                  child: IconButton(
+                    icon: Icon(Icons.cancel),
+                    onPressed: () async {
+                      setState(() {
+                        isEditingDescription = false;
+                        descriptionController.text =
+                            widget.deck.description ?? '';
+                      });
+                    },
+                  ),
+                ),
+                Visibility(
+                  visible: (widget.deck.description == null ||
+                          widget.deck.description!.isEmpty) &&
+                      !isEditingDescription,
+                  child: TextButton(
+                      onPressed: () {
+                        setState(() {
+                          isEditingDescription =
+                              !isEditingDescription; // Toggle editing state
+                        });
+                      },
+                      child: Text('Add description')),
+                ),
+                Visibility(
+                  visible: isEditingDescription ||
+                      (widget.deck.description != null &&
+                          widget.deck.description!.isNotEmpty),
+                  child: IconButton(
+                    icon: Icon(isEditingDescription ? Icons.save : Icons.edit),
+                    onPressed: () async {
+                      if (isEditingDescription) {
+                        // Save the name here
+                        String newDeckDescription =
+                            descriptionController.text.trim();
+                        if (newDeckDescription != widget.deck.description) {
+                          try {
+                            await _saveDeckDescription();
+                          } on Exception catch (e) {
+                            _log.w('Error saving description', error: e);
+                            // show error in snackbar
+                            context.showErrorSnackbar(
+                                context.l10n.errorSavingDescriptionMessage);
+                          }
+                        }
+                      }
                       setState(() {
                         isEditingDescription =
                             !isEditingDescription; // Toggle editing state
                       });
                     },
-                    child: Text('Add description')),
-              ),
-              Visibility(
-                visible: isEditingDescription ||
-                    (widget.deck.description != null &&
-                        widget.deck.description!.isNotEmpty),
-                child: IconButton.filled(
-                  icon: Icon(isEditingDescription ? Icons.save : Icons.edit),
-                  onPressed: () async {
-                    if (isEditingDescription) {
-                      // Save the name here
-                      String newDeckDescription =
-                          descriptionController.text.trim();
-                      if (newDeckDescription != widget.deck.description) {
-                        try {
-                          await _saveDeckDescription();
-                        } on Exception catch (e) {
-                          _log.w('Error saving description', error: e);
-                          // show error in snackbar
-                          context.showErrorSnackbar(
-                              context.l10n.errorSavingDescriptionMessage);
-                        }
-                      }
-                    }
-                    setState(() {
-                      isEditingDescription =
-                          !isEditingDescription; // Toggle editing state
-                    });
-                  },
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

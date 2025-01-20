@@ -3,10 +3,8 @@ import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:flutter_flashcards/src/base_layout.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
-import 'package:flutter_flashcards/src/statistics/base_statistics_table.dart';
-import 'package:flutter_flashcards/src/statistics/decks_reviews_pie_chart.dart';
-import 'package:flutter_flashcards/src/statistics/review_hours_histogram.dart';
-import 'package:flutter_flashcards/src/widgets.dart';
+import 'package:flutter_flashcards/src/statistics/select_person_focus.dart';
+import 'package:flutter_flashcards/src/statistics/statistics_charts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +14,8 @@ class StudyStatisticsPage extends StatefulWidget {
 }
 
 class _StudyStatisticsPageState extends State<StudyStatisticsPage> {
+  ValueNotifier<String?> selectedUser = ValueNotifier(null);
+
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
@@ -24,69 +24,30 @@ class _StudyStatisticsPageState extends State<StudyStatisticsPage> {
         child: ChangeNotifierProvider(
           create: (context) => FiltersModel(),
           child: Column(
-            children: [StatisticsFilter(), Expanded(child: StatisticsCharts())],
+            children: [
+              Row(
+                children: [
+                  StatisticsFilter(),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  SelectPersonFocus(
+                    onUserChange: (uid) {
+                      selectedUser.value = uid;
+                    },
+                  ),
+                ],
+              ),
+              Expanded(
+                child: ValueListenableBuilder(
+                    valueListenable: selectedUser,
+                    builder: (context, uid, _) {
+                      return StatisticsCharts(uid);
+                    }),
+              )
+            ],
           ),
         ));
-  }
-}
-
-class StatisticsCharts extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<FiltersModel>(
-      builder: (BuildContext context, FiltersModel value, Widget? child) {
-        return RepositoryLoader(
-            fetcher: (repository) => repository.loadAnswers(
-                value.selectedDates.start.dayStart,
-                value.selectedDates.end.dayEnd),
-            builder: (context, result, _) {
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: AspectRatio(
-                      aspectRatio: 4,
-                      child: Row(
-                        children: [
-                          Flexible(
-                              flex: 1,
-                              child: Card(
-                                  child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: BaseStatisticsTable(result),
-                              ))),
-                          Flexible(
-                            flex: 2,
-                            child: Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: ReviewHoursHistogram(result),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        height: 400,
-                        child: Row(
-                          children: [
-                            DecksReviewsPieChart(result,
-                                type: SummaryType.count),
-                            DecksReviewsPieChart(result,
-                                type: SummaryType.time),
-                          ],
-                        ),
-                      )),
-                  Spacer()
-                ],
-              );
-            });
-      },
-    );
   }
 }
 
@@ -114,12 +75,12 @@ enum DateFilter {
     switch (this) {
       case lastWeek:
         return DateTimeRange(
-            start: DateTime.now().subtract(Duration(days: 7)),
-            end: DateTime.now());
+            start: currentClockDateTime.subtract(Duration(days: 7)),
+            end: currentClockDateTime);
       case DateFilter.lastMonth:
         return DateTimeRange(
-            start: DateTime.now().subtract(Duration(days: 30)),
-            end: DateTime.now());
+            start: currentClockDateTime.subtract(Duration(days: 30)),
+            end: currentClockDateTime);
       case DateFilter.custom:
         throw UnimplementedError();
     }
@@ -183,7 +144,7 @@ class StatisticsFilter extends StatelessWidget {
                               DateTimeRange? range = await showDateRangePicker(
                                   context: context,
                                   firstDate: DateTime(2024),
-                                  lastDate: DateTime.now());
+                                  lastDate: currentClockDateTime);
                               if (range != null) {
                                 model.selectedDates = range;
                               }

@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_flashcards/src/common/dates.dart';
+
+enum ImagePlacement { question, explanation }
 
 abstract class FirebaseSerializable<T> {
   Map<String, dynamic> toJson();
@@ -77,11 +80,11 @@ class Deck implements FirebaseSerializable {
     DeckOptions? deckOptions,
   }) {
     return Deck(
-      id: id != null ? id : this.id,
+      id: id ?? this.id,
       name: name ?? this.name,
-      description: description != null ? description : this.description,
-      parentDeckId: parentDeckId != null ? parentDeckId : this.parentDeckId,
-      deckOptions: deckOptions != null ? deckOptions : this.deckOptions,
+      description: description ?? this.description,
+      parentDeckId: parentDeckId ?? this.parentDeckId,
+      deckOptions: deckOptions ?? this.deckOptions,
     );
   }
 
@@ -349,7 +352,7 @@ class CardStats implements FirebaseSerializable {
       this.numberOfLapses = 0,
       this.dateAdded,
       this.state = State.newState}) {
-    dateAdded ??= DateTime.now();
+    dateAdded ??= currentClockDateTime;
   }
 
   double? getRetrievability(DateTime now) {
@@ -405,7 +408,7 @@ class CardStats implements FirebaseSerializable {
 
   int elapsedDays() => state == State.newState || lastReview == null
       ? 0
-      : DateTime.now().difference(lastReview!).inDays;
+      : currentClockDateTime.difference(lastReview!).inDays;
 
   static Iterable<CardStats> statsForCard(Card card) {
     if (card.options?.reverse == true) {
@@ -424,15 +427,14 @@ class CardStats implements FirebaseSerializable {
         variant: CardReviewVariant.fromString(variant),
         stability: data['stability'] as double? ?? 0,
         difficulty: data['difficulty'] as double? ?? 0,
-        lastReview:
-            (data['lastReview'] as Timestamp? ?? Timestamp.now()).toDate(),
+        lastReview: (data['lastReview'] as Timestamp? ?? currentClockTimestamp)
+            .toDate(),
         numberOfReviews: data['numberOfReviews'] as int? ?? 0,
         numberOfLapses: data['numberOfLapses'] as int? ?? 0,
         dateAdded:
-            (data['dateAdded'] as Timestamp? ?? Timestamp.now()).toDate(),
+            (data['dateAdded'] as Timestamp? ?? currentClockTimestamp).toDate(),
         interval: (data['interval'] ?? 0) as int? ?? 0,
-        nextReviewDate:
-            ((data['nextReviewDate'] ?? Timestamp.now()) as Timestamp).toDate(),
+        nextReviewDate: (data['nextReviewDate'] as Timestamp?)?.toDate(),
         state: data['state'] == null
             ? State.newState
             : State.fromName(data['state']),

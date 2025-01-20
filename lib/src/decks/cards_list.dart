@@ -29,17 +29,18 @@ class CardsList extends StatelessWidget {
                   itemCount: flashcards.length,
                   itemBuilder: (context, index) {
                     final card = flashcards[index];
-                    return Card(
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 4),
                       child: ListTile(
-                        title: InkWell(
-                          onTap: () async {
-                            await context
-                                .push('/decks/${deck.id}/cards/${card.id}');
-                          },
-                          child: GptMarkdown(
-                            card.question,
-                            maxLines: 5,
-                          ),
+                        onTap: () async {
+                          await context
+                              .push('/decks/${deck.id}/cards/${card.id}');
+                        },
+                        tileColor:
+                            Theme.of(context).colorScheme.surfaceContainerHigh,
+                        title: GptMarkdown(
+                          card.question,
+                          maxLines: 5,
                         ),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete),

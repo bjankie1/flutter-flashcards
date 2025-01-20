@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/collaboration/collaboration_page.dart';
 import 'package:flutter_flashcards/src/decks/card_edit_page.dart';
 import 'package:flutter_flashcards/src/decks/deck_details_page.dart';
 import 'package:flutter_flashcards/src/decks/decks_page.dart';
@@ -197,6 +198,13 @@ final router = GoRouter(
           name: 'settings',
           builder: (context, state) {
             return SettingsPage();
+          },
+        ),
+        GoRoute(
+          path: 'collaboration',
+          name: 'collaboration',
+          builder: (context, state) {
+            return CollaborationPage();
           },
         ),
       ],

@@ -1,3 +1,5 @@
+import 'package:clock/clock.dart';
+import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_flashcards/src/fsrs/fsrs.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
@@ -7,22 +9,24 @@ import 'matchers.dart';
 void main() {
   group('FSRS', () {
     test('calculateNextReview - first review - again', () {
-      final cardId = 'testCardId';
-      var f = FSRS();
-      var now = DateTime(2022, 11, 29, 12, 30, 0, 0);
-      var card = model.CardStats(cardId: cardId);
-      var schedulingCards = f.repeat(card, now);
-      final stats = schedulingCards[model.Rating.again]!.card;
+      withClock(Clock.fixed(DateTime(2022)), () {
+        final cardId = 'testCardId';
+        var f = FSRS();
+        var now = currentClockDateTime;
+        var card = model.CardStats(cardId: cardId);
+        var schedulingCards = f.repeat(card, now);
+        final stats = schedulingCards[model.Rating.again]!.card;
 
-      expect(stats.cardId, cardId);
-      expect(stats.stability, 0.4);
-      expect(stats.difficulty, 6.81);
-      expect(stats.lastReview, closeToTime(now));
-      expect(stats.numberOfReviews, 1);
-      expect(stats.dateAdded, closeToTime(DateTime.now()));
-      expect(stats.interval, 1);
-      expect(stats.nextReviewDate,
-          closeToTime(now, tolerance: Duration(hours: 1)));
+        expect(stats.cardId, cardId);
+        expect(stats.stability, 0.4);
+        expect(stats.difficulty, 6.81);
+        expect(stats.lastReview, now);
+        expect(stats.numberOfReviews, 1);
+        expect(stats.dateAdded, currentClockDateTime);
+        expect(stats.interval, 1);
+        expect(stats.nextReviewDate,
+            closeToTime(now, tolerance: Duration(hours: 1)));
+      });
     });
 
     test('calculateNextReview - first review - hard', () {

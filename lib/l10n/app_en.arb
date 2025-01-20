@@ -122,5 +122,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "collaboration": "Collaboration",
+  "sentInvitationsHeader": "Sent invitations",
+  "pendingInvitationsHeader": "Pending invitations",
+  "collaboratorsHeader": "Collaborators",
+  "inviteCollaboratorPrompt": "Enter collaborator email",
+  "invitationEmailHelperText": "Invitees email",
+  "invalidEmailMessage": "Please enter a valid email",
+  "sendInvitationButtonTooltip": "Send invitation",
+  "invitationSentMessage": "Invitation sent"
 }

@@ -41,6 +41,7 @@ class _DecksReviewsPieChartState extends State<DecksReviewsPieChart> {
   Future<Map<model.Deck, PieChartSectionData>> showingSections(
       CardsRepository repository) async {
     final data = await summarise(repository, widget.type);
+    if (data.isEmpty) return {};
     final total = data.values.reduce((a, b) => a + b);
     final colors = context.chartColors(data.keys.length);
     int colorIndex = 0;
@@ -65,57 +66,57 @@ class _DecksReviewsPieChartState extends State<DecksReviewsPieChart> {
   Widget build(BuildContext context) {
     return RepositoryLoader(
       fetcher: (repository) => showingSections(repository),
-      builder: (context, sections, _) => Expanded(
-        child: Card(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                    widget.type == SummaryType.count
-                        ? context.l10n.countCardsPerDeckChartTitle
-                        : context.l10n.timePerDeckChartTitle,
-                    style: Theme.of(context).textTheme.titleMedium),
-              ),
-              Expanded(
-                child: Row(
-                  children: [
-                    AspectRatio(
-                      aspectRatio: 1,
-                      child: PieChart(
-                        PieChartData(
-                          pieTouchData: PieTouchData(
-                              // touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                              //   setState(() {
-                              //     if (!event.isInterestedForInteractions ||
-                              //         pieTouchResponse == null ||
-                              //         pieTouchResponse.touchedSection == null) {
-                              //       touchedIndex = -1;
-                              //       return;
-                              //     }
-                              //     touchedIndex =
-                              //         pieTouchResponse.touchedSection!.touchedSectionIndex;
-                              //   });
-                              // },
-                              ),
-                          startDegreeOffset: 180,
-                          borderData: FlBorderData(
-                            show: false,
+      builder: (context, sections, _) => sections.isEmpty
+          ? Text('No data')
+          : Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                      widget.type == SummaryType.count
+                          ? context.l10n.countCardsPerDeckChartTitle
+                          : context.l10n.timePerDeckChartTitle,
+                      style: Theme.of(context).textTheme.titleMedium),
+                ),
+                SizedBox(
+                  height: 400,
+                  width: 600,
+                  child: Row(
+                    children: [
+                      AspectRatio(
+                        aspectRatio: 1,
+                        child: PieChart(
+                          PieChartData(
+                            pieTouchData: PieTouchData(
+                                // touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                                //   setState(() {
+                                //     if (!event.isInterestedForInteractions ||
+                                //         pieTouchResponse == null ||
+                                //         pieTouchResponse.touchedSection == null) {
+                                //       touchedIndex = -1;
+                                //       return;
+                                //     }
+                                //     touchedIndex =
+                                //         pieTouchResponse.touchedSection!.touchedSectionIndex;
+                                //   });
+                                // },
+                                ),
+                            startDegreeOffset: 180,
+                            borderData: FlBorderData(
+                              show: false,
+                            ),
+                            sectionsSpace: 0,
+                            centerSpaceRadius: 40,
+                            sections: sections.values.toList(),
                           ),
-                          sectionsSpace: 0,
-                          centerSpaceRadius: 40,
-                          sections: sections.values.toList(),
                         ),
                       ),
-                    ),
-                    ChartLegend(sections: sections),
-                  ],
+                      ChartLegend(sections: sections),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
+              ],
+            ),
     );
   }
 }

@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import 'authentication.dart';
 import 'package:go_router/go_router.dart';
 
-enum PageIndex { cards, learning, statistics, settings }
+enum PageIndex { cards, learning, statistics, settings, collaboration }
 
 extension PageIndexNavigation on PageIndex {
   void navigate(BuildContext context) {
@@ -25,6 +25,8 @@ extension PageIndexNavigation on PageIndex {
         context.goNamed('statistics');
       case PageIndex.settings:
         context.goNamed('settings');
+      case PageIndex.collaboration:
+        context.goNamed('collaboration');
     }
   }
 }
@@ -134,7 +136,7 @@ class LocaleSelection extends StatelessWidget {
                 .toList(),
             onSelectionChanged: (index) {
               Logger().i('Locale selected: ${index.first}');
-              context.read<AppState>().setLocale(index.first);
+              context.read<AppState>().locale = index.first;
             },
           );
         });
@@ -169,6 +171,11 @@ class LeftNavigation extends StatelessWidget {
           label: Text(context.l10n.statistics),
         ),
         NavigationRailDestination(
+          icon: Icon(Icons.people_alt_outlined),
+          selectedIcon: Icon(Icons.people_alt),
+          label: Text(context.l10n.collaboration),
+        ),
+        NavigationRailDestination(
           icon: Icon(Icons.settings_outlined),
           selectedIcon: Icon(Icons.settings),
           label: Text(context.l10n.settings),
@@ -186,6 +193,8 @@ class LeftNavigation extends StatelessWidget {
           case 2:
             context.goNamed('statistics');
           case 3:
+            context.goNamed('collaboration');
+          case 4:
             context.goNamed('settings');
         }
       },
