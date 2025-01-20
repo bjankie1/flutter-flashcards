@@ -36,19 +36,15 @@ class _StudyStatisticsPageState extends State<StudyStatisticsPage> {
                       selectedUser.value = uid;
                     },
                   ),
-                  ValueListenableBuilder(
-                      valueListenable: selectedUser,
-                      builder: (context, uid, _) {
-                        return Text(uid ?? '');
-                      })
                 ],
               ),
               Expanded(
-                  child: ValueListenableBuilder(
-                      valueListenable: selectedUser,
-                      builder: (context, uid, _) {
-                        return StatisticsCharts(uid);
-                      }))
+                child: ValueListenableBuilder(
+                    valueListenable: selectedUser,
+                    builder: (context, uid, _) {
+                      return StatisticsCharts(uid);
+                    }),
+              )
             ],
           ),
         ));

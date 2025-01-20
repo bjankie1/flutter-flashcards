@@ -17,13 +17,13 @@ class SelectPersonFocus extends StatelessWidget {
         builder: (context, users, _) {
           return ValueListenableBuilder(
             valueListenable: selectedUser,
-            builder: (context, selected, _) => Visibility(
+            builder: (context, uid, _) => Visibility(
               visible: users.isNotEmpty,
               child: ConstrainedBox(
                 key: Key('stat_person_choice_container'),
                 constraints: BoxConstraints(maxWidth: 400, minWidth: 200),
                 child: DropdownButton<String>(
-                  value: selected,
+                  value: uid,
                   items: [
                     DropdownMenuItem(
                         value: context.appState.userProfile?.id,
@@ -37,6 +37,7 @@ class SelectPersonFocus extends StatelessWidget {
                     })
                   ],
                   onChanged: (String? value) {
+                    selectedUser.value = value;
                     onUserChange(value);
                   },
                 ),
