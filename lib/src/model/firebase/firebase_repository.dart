@@ -36,6 +36,7 @@ extension ErrorReporting<T> on Future<T> {
 const usersCollectionName = 'users';
 const cardsCollectionName = 'cards';
 const cardStatsCollectionName = 'cardStats';
+const cardAnswersCollectionName = 'cardAnswers';
 const decksCollectionName = 'decks';
 
 class FirebaseCardsRepository extends CardsRepository {
@@ -60,18 +61,10 @@ class FirebaseCardsRepository extends CardsRepository {
   set user(User? user) => _user = user;
 
   Query<Map<String, dynamic>> _collection(String name) =>
-      _firestore.collection(name).where(Filter('userId', isEqualTo: userId));
+      _firestore.collection(name).withUserFilter(userId);
 
   Query<Map<String, dynamic>> get _cardsCollection =>
       _collection(cardsCollectionName);
-
-  Query<Map<String, dynamic>> get _cardStatsCollection =>
-      _collection(cardStatsCollectionName);
-
-  Query<CardAnswer> get _cardAnswersCollection =>
-      _collection('reviewLog').withConverter<CardAnswer>(
-          fromFirestore: (doc, _) => CardAnswer.fromJson(doc.id, doc.data()!),
-          toFirestore: (answer, _) => answer.toJson());
 
   Query<Deck> get _decksCollection =>
       _collection(decksCollectionName).withConverter<Deck>(
@@ -189,13 +182,13 @@ class FirebaseCardsRepository extends CardsRepository {
         .get();
     for (final doc in cardsSnapshot.docs) {
       batch.delete(doc.reference);
-      final cardStatsSnapshot = await _collection(cardsCollectionName)
+      final cardStatsSnapshot = await _collection(cardStatsCollectionName)
           .where('cardId', isEqualTo: doc.id)
           .get();
       for (final statDoc in cardStatsSnapshot.docs) {
         batch.delete(statDoc.reference);
       }
-      final cardAnswerSnapshot = await _collection('cardAnswers')
+      final cardAnswerSnapshot = await _collection(cardAnswersCollectionName)
           .where('cardId', isEqualTo: doc.id)
           .get();
       for (final answerDoc in cardAnswerSnapshot.docs) {
@@ -210,13 +203,13 @@ class FirebaseCardsRepository extends CardsRepository {
   Future<void> deleteCard(String cardId) async {
     final batch = _firestore.batch();
     batch.delete(_firestore.collection(cardsCollectionName).doc(cardId));
-    final cardStatsSnapshot = await _collection(cardsCollectionName)
+    final cardStatsSnapshot = await _collection(cardStatsCollectionName)
         .where('cardId', isEqualTo: cardId)
         .get();
     for (final doc in cardStatsSnapshot.docs) {
       batch.delete(doc.reference);
     }
-    final cardAnswerSnapshot = await _collection('cardAnswers')
+    final cardAnswerSnapshot = await _collection(cardAnswersCollectionName)
         .where(Filter('cardId', isEqualTo: cardId))
         .get();
     for (final doc in cardAnswerSnapshot.docs) {
@@ -350,7 +343,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       {int? reviewLimit = 200, int? newLimit = 200}) async {
     try {
       // Cards ready for review
-      final statsSnapshot = await _cardStatsCollection
+      final statsSnapshot = await _firestore
+          .collection(cardStatsCollectionName)
           .where(Filter('nextReviewDate',
               isLessThanOrEqualTo: currentClockDateTime))
           .withCardStatsConverter
@@ -361,7 +355,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       _log.d('Cards to review: ${toReview.length}');
 
       // New cards
-      final statsSnapshotNew = await _cardStatsCollection
+      final statsSnapshotNew = await _firestore
+          .collection(cardStatsCollectionName)
           .where(Filter('nextReviewDate', isNull: true))
           .withCardStatsConverter
           .limit(newLimit ?? 200)

@@ -23,11 +23,13 @@ class LeftNavigation extends StatelessWidget {
         ),
         NavigationRailDestination(
           icon: RepositoryLoader(
-              fetcher: (repository) => repository.cardsToReviewCount(),
+              fetcher: (repository) => repository.cardsToReviewCount().then(
+                  (value) =>
+                      value.values.reduce((total, element) => total + element)),
               builder: (context, count, _) {
                 return Badge.count(
-                  count:
-                      count.values.reduce((total, element) => total + element),
+                  isLabelVisible: count > 0,
+                  count: count,
                   child: const Icon(Icons.school_outlined),
                 );
               }),
