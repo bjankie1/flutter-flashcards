@@ -221,4 +221,10 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get invitationSentMessage => 'Zaproszenie wysłane';
+
+  @override
+  String get cardDeletedMessage => 'Karta usunięta';
+
+  @override
+  String get cardDeletionErrorMessage => 'Nie udało się usunąć karty';
 }

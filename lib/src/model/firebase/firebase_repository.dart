@@ -131,21 +131,17 @@ class FirebaseCardsRepository extends CardsRepository {
       final docRef = _firestore.collection(cardsCollectionName).doc(card.id);
       final stats = CardStats.statsForCard(card);
       final statsDocs = await Future.wait(stats.map((s) async =>
-          await _firestore
-              .collection(cardStatsCollectionName)
-              .doc(s.idValue)
-              .get()
-              .then((snapshot) => (s, snapshot.reference, snapshot.exists))));
+              await _firestore
+                  .collection(cardStatsCollectionName)
+                  .doc(s.idValue)
+                  .get()
+                  .then(
+                      (snapshot) => (s, snapshot.reference, snapshot.exists))))
+          .logError('Error loading stats for card ${card.id}');
       transaction.set(docRef, {'userId': userId, ...card.toJson()});
       for (final record in statsDocs) {
-        try {
-          if (!record.$3) {
-            transaction
-                .set(record.$2, {'userId': userId, ...record.$1.toJson()});
-          }
-        } on Exception catch (e) {
-          _log.e('Error updating card stats: $e');
-          rethrow;
+        if (!record.$3) {
+          transaction.set(record.$2, {'userId': userId, ...record.$1.toJson()});
         }
       }
     });
@@ -246,7 +242,7 @@ class FirebaseCardsRepository extends CardsRepository {
     } else {
       await _updateCard(card)
           .whenComplete(() => notifyCardChanged())
-          .logError('Error updating card');
+          .logError('Error saving card');
       return card;
     }
   }

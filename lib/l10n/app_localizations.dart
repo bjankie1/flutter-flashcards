@@ -490,6 +490,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invitation sent'**
   String get invitationSentMessage;
+
+  /// No description provided for @cardDeletedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Card deleted'**
+  String get cardDeletedMessage;
+
+  /// No description provided for @cardDeletionErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error deleting card'**
+  String get cardDeletionErrorMessage;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

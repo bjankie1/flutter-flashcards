@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app.dart';
+import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -72,5 +73,13 @@ class CardsList extends StatelessWidget {
     );
   }
 
-  _deleteCard(BuildContext context, model.Card card) async {}
+  _deleteCard(BuildContext context, model.Card card) async {
+    final repository = context.read<CardsRepository>();
+    await repository
+        .deleteCard(card.id!)
+        .then((_) => context.showInfoSnackbar(context.l10n.cardDeletedMessage),
+            onError: (e, stackTrace) {
+      context.showErrorSnackbar(context.l10n.cardDeletionErrorMessage);
+    });
+  }
 }

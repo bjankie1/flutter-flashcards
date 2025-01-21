@@ -221,4 +221,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invitationSentMessage => 'Invitation sent';
+
+  @override
+  String get cardDeletedMessage => 'Card deleted';
+
+  @override
+  String get cardDeletionErrorMessage => 'Error deleting card';
 }

@@ -74,7 +74,7 @@ service cloud.firestore {
 
     match /cardStats/{cardStat} {
       allow read: if request.auth.uid != null
-                         && (request.auth.uid == resource.data.userId
+                         && (resource == null || (resource.data.userId == request.auth.uid)
                              || (
                              	exists(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.uid))
                              	&& get(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.uid)).data.stats == true)

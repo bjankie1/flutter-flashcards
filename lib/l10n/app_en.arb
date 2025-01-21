@@ -131,5 +131,7 @@
   "invitationEmailHelperText": "Invitees email",
   "invalidEmailMessage": "Please enter a valid email",
   "sendInvitationButtonTooltip": "Send invitation",
-  "invitationSentMessage": "Invitation sent"
+  "invitationSentMessage": "Invitation sent",
+  "cardDeletedMessage": "Card deleted",
+  "cardDeletionErrorMessage": "Error deleting card"
 }

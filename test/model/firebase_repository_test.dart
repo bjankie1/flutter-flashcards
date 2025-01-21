@@ -80,6 +80,7 @@ void main() {
       final deckId = savedDeck.id!;
 
       await repository.saveCard(model.Card(
+        id: 'card1',
         deckId: deckId,
         question: 'Question 1',
         answer: "Answer 1",
