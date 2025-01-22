@@ -9,6 +9,68 @@
       ]
     },
     {
+      "collectionGroup": "collaborators",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "initiatorUserId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "cardStats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "cardId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "cardStats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "cardId", "order": "ASCENDING" },
+        { "fieldPath": "state", "order": "ASCENDING" },
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "nextReviewDate", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "cardStats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "nextReviewDate", "order": "ASCENDING" },
+        { "fieldPath": "state", "order": "ASCENDING" },
+        { "fieldPath": "userId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "collaborators",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "initiatorUserId", "order": "ASCENDING" },
+        { "fieldPath": "receivingUserEmail", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "cardStats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "nextReviewDate", "order": "ASCENDING" },
+        { "fieldPath": "userId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "cardStats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "cardId", "order": "ASCENDING" },
+        { "fieldPath": "nextReviewDate", "order": "ASCENDING" },
+        { "fieldPath": "state", "order": "ASCENDING" },
+        { "fieldPath": "userId", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "cardAnswers",
       "queryScope": "COLLECTION",
       "fields": [
