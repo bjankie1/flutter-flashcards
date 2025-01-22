@@ -6,6 +6,7 @@ import 'package:flutter_flashcards/src/common/indicator.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
+import 'package:logger/logger.dart';
 
 class DecksReviewsPieChart extends StatefulWidget {
   final Iterable<model.CardAnswer> answers;
@@ -25,16 +26,31 @@ enum SummaryType { count, time }
 class _DecksReviewsPieChartState extends State<DecksReviewsPieChart> {
   int touchedIndex = -1;
 
-  Future<Map<model.Deck, double>> summarise(
+  /// Summarises answers by mapping number of answers to deck
+  /// The resulting maps Deck to card count from answers.
+  /// Multiple answers count as many.
+  Future<Map<model.Deck, int>> summarise(
       CardsRepository repository, SummaryType type) async {
-    final cardIds = widget.answers.map((c) => c.cardId);
+    final cardIds = widget.answers.map((c) => c.cardId).toSet();
     final cardToDeck = await repository.mapCardsToDecks(cardIds);
-    final Map<model.Deck, double> result = widget.answers.fold(
-        {},
-        (agg, next) => {
-              ...agg,
-              cardToDeck[next.cardId]!: (agg[cardToDeck[next.cardId]] ?? 0) + 1
-            });
+    final Map<model.Deck, int> result = widget.answers.fold({}, (agg, next) {
+      if (cardToDeck[next.cardId] == null) {
+        // card that has been deleted
+        return agg;
+      }
+      if (type == SummaryType.time) {
+        return {
+          ...agg,
+          cardToDeck[next.cardId]!:
+              (agg[cardToDeck[next.cardId]] ?? 0) + next.timeSpent.inSeconds
+        };
+      } else {
+        return {
+          ...agg,
+          cardToDeck[next.cardId]!: (agg[cardToDeck[next.cardId]] ?? 0) + 1
+        };
+      }
+    });
     return result;
   }
 

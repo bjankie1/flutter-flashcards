@@ -60,53 +60,79 @@ class _CardEditState extends State<CardEdit> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Input widgets
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    spacing: 8.0,
-                    children: [
-                      _markdownWithImageInput(
-                          controller: cardQuestionTextController,
-                          hintText: context.l10n.questionHint,
-                          labelText: context.l10n.questionLabel,
-                          imagePlacement: model.ImagePlacement.question),
-                      _answerInput(),
-                      _markdownWithImageInput(
-                          controller: cardHintTextController,
-                          hintText: context.l10n.hintPrompt,
-                          labelText: context.l10n.hintLabel,
-                          imagePlacement: model.ImagePlacement.explanation),
-                    ],
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Input widgets
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      spacing: 8.0,
+                      children: [
+                        _markdownWithImageInput(
+                            controller: cardQuestionTextController,
+                            hintText: context.l10n.questionHint,
+                            labelText: context.l10n.questionLabel,
+                            imagePlacement: model.ImagePlacement.question),
+                        _answerInput(),
+                        _markdownWithImageInput(
+                            controller: cardHintTextController,
+                            hintText: context.l10n.hintPrompt,
+                            labelText: context.l10n.hintLabel,
+                            imagePlacement: model.ImagePlacement.explanation),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              // Preview widgets
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: 8.0,
-                    children: [
-                      _markdownPreview(cardQuestionTextController),
-                      _imagePreview(
-                          height: 200,
-                          imagePlacement: model.ImagePlacement.question),
-                      Divider(),
-                      _markdownPreview(cardHintTextController),
-                      _imagePreview(
-                          height: 200,
-                          imagePlacement: model.ImagePlacement.explanation),
-                    ],
+                // Preview widgets
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 8.0,
+                      children: [
+                        ConstrainedBox(
+                          constraints:
+                              BoxConstraints(maxHeight: 300, minHeight: 100),
+                          child: Column(
+                            children: [
+                              _markdownPreview(cardQuestionTextController),
+                              _imagePreview(
+                                  height: 200,
+                                  imagePlacement:
+                                      model.ImagePlacement.question),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Divider(),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        ConstrainedBox(
+                          constraints:
+                              BoxConstraints(maxHeight: 300, minHeight: 100),
+                          child: Column(
+                            children: [
+                              _markdownPreview(cardHintTextController),
+                              _imagePreview(
+                                  height: 200,
+                                  imagePlacement:
+                                      model.ImagePlacement.explanation),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),

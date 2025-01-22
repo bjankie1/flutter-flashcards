@@ -425,7 +425,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       {String? uid}) async {
     _log.d('Loading answers for $dayStart to $dayEnd');
 
-    final snapshot = await _collection('reviewLog')
+    final snapshot = await _firestore
+        .collection('reviewLog')
         .where(Filter.and(
             Filter('reviewStart', isGreaterThanOrEqualTo: dayStart),
             Filter('reviewStart', isLessThanOrEqualTo: dayEnd)))
@@ -486,11 +487,15 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
 
   @override
   Future<Iterable<Card>> loadCardsByIds(Iterable<String> cardIds) async {
-    final snapshot = await _cardsCollection
-        .where(Filter(FieldPath.documentId, whereIn: cardIds))
+    final snapshot = await _firestore
+        .collection(cardsCollectionName)
         .withCardsConverter
-        .get();
-    return snapshot.docs.map((e) => e.data());
+        // .where(FieldPath.documentId, whereIn: cardIds)
+        .getForUser(userId)
+        .logError('Error loading cards by ID');
+    return snapshot.docs
+        .map((e) => e.data())
+        .where((card) => cardIds.contains(card.id));
   }
 
   @override

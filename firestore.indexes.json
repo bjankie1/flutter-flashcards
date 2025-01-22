@@ -5,7 +5,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "deckId", "order": "ASCENDING" },
-        { "fieldPath": "nextReviewDate", "order": "ASCENDING" }
+        { "fieldPath": "userId", "order": "ASCENDING" }
       ]
     },
     {
