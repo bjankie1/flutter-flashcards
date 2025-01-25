@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
+import 'package:flutter_flashcards/src/genkit/functions.dart';
 
 enum ImagePlacement { question, explanation }
 
@@ -36,12 +37,23 @@ enum Rating {
   final int val;
 }
 
+enum DeckCategory {
+  language,
+  history,
+  science,
+  other;
+
+  factory DeckCategory.fromName(String name) =>
+      DeckCategory.values.firstWhere((element) => element.name == name);
+}
+
 class Deck implements FirebaseSerializable {
   final String? id;
   final String name;
   final String? description;
   final String? parentDeckId;
   final DeckOptions? deckOptions;
+  final DeckCategory? category;
 
   const Deck({
     this.id,
@@ -49,6 +61,7 @@ class Deck implements FirebaseSerializable {
     this.description,
     this.parentDeckId,
     this.deckOptions,
+    this.category = DeckCategory.other,
   });
 
   withId({required String id}) {
@@ -78,6 +91,7 @@ class Deck implements FirebaseSerializable {
     String? description,
     String? parentDeckId,
     DeckOptions? deckOptions,
+    DeckCategory? category,
   }) {
     return Deck(
       id: id ?? this.id,
@@ -85,6 +99,7 @@ class Deck implements FirebaseSerializable {
       description: description ?? this.description,
       parentDeckId: parentDeckId ?? this.parentDeckId,
       deckOptions: deckOptions ?? this.deckOptions,
+      category: category ?? this.category,
     );
   }
 
@@ -96,6 +111,9 @@ class Deck implements FirebaseSerializable {
         deckOptions: json['deckOptions'] != null
             ? _deckOptionsFromJson(json['deckOptions'] as Map<String, dynamic>)
             : null,
+        category: json['category'] != null
+            ? DeckCategory.fromName(json['category'])
+            : null,
       );
 
   @override
@@ -105,6 +123,7 @@ class Deck implements FirebaseSerializable {
         'parentDeckId': parentDeckId,
         'deckOptions':
             deckOptions != null ? _deckOptionsToJson(deckOptions!) : null,
+        'category': category?.name,
       };
 
   static DeckOptions _deckOptionsFromJson(Map<String, dynamic> json) =>

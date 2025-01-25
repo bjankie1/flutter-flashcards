@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:logger/logger.dart';
-import 'package:provider/provider.dart';
 
 class AppState extends ChangeNotifier {
   final _log = Logger(); // Create a Logger instance
@@ -110,8 +109,4 @@ class AppState extends ChangeNotifier {
   }
 
   UserProfile? get userProfile => _userProfile;
-}
-
-extension ContextAppState on BuildContext {
-  AppState get appState => Provider.of<AppState>(this);
 }

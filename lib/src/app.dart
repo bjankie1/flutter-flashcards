@@ -6,11 +6,6 @@ import 'package:flutter_flashcards/l10n/app_localizations.dart';
 
 import 'app_router.dart';
 
-extension ContextLocalization on BuildContext {
-  AppLocalizations get l10n => AppLocalizations.of(this)!;
-  MaterialLocalizations get ml10n => MaterialLocalizations.of(this);
-}
-
 /// The Widget that configures your application.
 class FlashcardsApp extends StatelessWidget {
   const FlashcardsApp({super.key});

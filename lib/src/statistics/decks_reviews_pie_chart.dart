@@ -1,12 +1,11 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/app.dart';
+import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/custom_theme.dart';
 import 'package:flutter_flashcards/src/common/indicator.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
-import 'package:logger/logger.dart';
 
 class DecksReviewsPieChart extends StatefulWidget {
   final Iterable<model.CardAnswer> answers;

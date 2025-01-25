@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/app.dart';
+import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/card_image.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
@@ -14,9 +14,9 @@ import '../model/cards.dart' as model;
 class CardEdit extends StatefulWidget {
   final model.Card? card;
 
-  final String deckId;
+  final model.Deck deck;
 
-  const CardEdit({this.card, required this.deckId, super.key});
+  const CardEdit({this.card, required this.deck, super.key});
 
   @override
   State<CardEdit> createState() => _CardEditState();
@@ -173,12 +173,39 @@ class _CardEditState extends State<CardEdit> {
   }
 
   Widget _answerInput() {
-    return TextFormField(
-      controller: cardAnswerTextController,
-      decoration: InputDecoration(
-          hintText: context.l10n.answerHint,
-          labelText: context.l10n.answerLabel,
-          border: OutlineInputBorder()),
+    return Row(
+      children: [
+        Expanded(
+          child: TextFormField(
+            controller: cardAnswerTextController,
+            decoration: InputDecoration(
+                hintText: context.l10n.answerHint,
+                labelText: context.l10n.answerLabel,
+                border: OutlineInputBorder()),
+          ),
+        ),
+        IconButton(
+            onPressed: () async {
+              final category = widget.deck.category ??
+                  await context.cloudFunctions.deckCategory(
+                    widget.deck.name,
+                    widget.deck.description ?? '',
+                  );
+              // persist the category in case it wasn't attached to deck earlier
+              if (widget.deck.category == null) {
+                await context.cardRepository
+                    .saveDeck(widget.deck.copyWith(category: category));
+              }
+              final result = await context.cloudFunctions.generateCardAnswer(
+                  category,
+                  widget.deck.name,
+                  widget.deck.description ?? '',
+                  cardQuestionTextController.text);
+              cardAnswerTextController.text = result.answer;
+              cardHintTextController.text = result.explanation;
+            },
+            icon: Icon(Icons.generating_tokens))
+      ],
     );
   }
 
@@ -240,7 +267,7 @@ class _CardEditState extends State<CardEdit> {
   _saveCard(BuildContext context, {bool addNew = false}) async {
     final cardToSave = model.Card(
         id: cardId,
-        deckId: widget.deckId,
+        deckId: widget.deck.id!,
         question: cardQuestionTextController.text,
         answer: cardAnswerTextController.text,
         explanation: cardHintTextController.text,

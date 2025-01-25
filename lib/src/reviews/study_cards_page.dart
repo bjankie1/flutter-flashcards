@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/app.dart';
+import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/reviews/cards_review_widget.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
 import '../layout/base_layout.dart';

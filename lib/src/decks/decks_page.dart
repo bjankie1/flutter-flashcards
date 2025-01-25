@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
+import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:provider/provider.dart';
 
 import 'decks_list.dart';

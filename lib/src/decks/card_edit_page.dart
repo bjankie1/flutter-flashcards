@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/app.dart';
+import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/decks/card_edit.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
@@ -24,7 +24,7 @@ class CardEditPage extends StatelessWidget {
         child: deck != null
             ? CardEdit(
                 card: card,
-                deckId: deckId,
+                deck: deck,
               )
             : Text('Deck not found'),
       ),
