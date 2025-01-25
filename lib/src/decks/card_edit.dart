@@ -177,6 +177,7 @@ class _CardEditState extends State<CardEdit> {
       children: [
         Expanded(
           child: TextFormField(
+            maxLines: 4,
             controller: cardAnswerTextController,
             decoration: InputDecoration(
                 hintText: context.l10n.answerHint,
@@ -184,27 +185,17 @@ class _CardEditState extends State<CardEdit> {
                 border: OutlineInputBorder()),
           ),
         ),
-        IconButton(
-            onPressed: () async {
-              final category = widget.deck.category ??
-                  await context.cloudFunctions.deckCategory(
-                    widget.deck.name,
-                    widget.deck.description ?? '',
-                  );
-              // persist the category in case it wasn't attached to deck earlier
-              if (widget.deck.category == null) {
-                await context.cardRepository
-                    .saveDeck(widget.deck.copyWith(category: category));
-              }
-              final result = await context.cloudFunctions.generateCardAnswer(
-                  category,
-                  widget.deck.name,
-                  widget.deck.description ?? '',
-                  cardQuestionTextController.text);
-              cardAnswerTextController.text = result.answer;
-              cardHintTextController.text = result.explanation;
-            },
-            icon: Icon(Icons.generating_tokens))
+        ValueListenableBuilder(
+            valueListenable: cardQuestionTextController,
+            builder: (context, value, _) {
+              return _GenerateAnswerButton(
+                  deck: widget.deck,
+                  question: value.text,
+                  onAnswer: (answer, hint) {
+                    cardAnswerTextController.text = answer;
+                    cardHintTextController.text = hint;
+                  });
+            })
       ],
     );
   }
@@ -310,6 +301,72 @@ class _CardEditState extends State<CardEdit> {
         },
         onError: () => context.showErrorSnackbar('Error uploading image'),
       );
+    }
+  }
+}
+
+class _GenerateAnswerButton extends StatefulWidget {
+  const _GenerateAnswerButton({
+    required this.deck,
+    required this.question,
+    required this.onAnswer,
+  });
+
+  final model.Deck deck;
+  final String question;
+  final Function(String, String) onAnswer;
+
+  @override
+  State<_GenerateAnswerButton> createState() => _GenerateAnswerButtonState();
+}
+
+class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
+  bool _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+        onPressed: _isLoading ? null : processLoading,
+        icon: _isLoading
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ),
+              )
+            : Icon(Icons.generating_tokens));
+  }
+
+  loadAnswer() async {
+    final category = widget.deck.category ??
+        await context.cloudFunctions.deckCategory(
+          widget.deck.name,
+          widget.deck.description ?? '',
+        );
+    // persist the category in case it wasn't attached to deck earlier
+    if (widget.deck.category == null) {
+      await context.cardRepository
+          .saveDeck(widget.deck.copyWith(category: category));
+    }
+    return await context.cloudFunctions.generateCardAnswer(category,
+        widget.deck.name, widget.deck.description ?? '', widget.question);
+  }
+
+  void processLoading() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      await loadAnswer().then((result) {
+        widget.onAnswer(result.answer, result.explanation);
+      }, onError: (e) {
+        context.showErrorSnackbar('Error generating answer: $e');
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 }

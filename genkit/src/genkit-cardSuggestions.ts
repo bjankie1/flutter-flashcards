@@ -80,14 +80,15 @@ function systemPrompt(category: Category): string {
     return `You are a flashcard creation assistant. Given a question or term related to languages,
                provide a concise and informative answer suitable for a flashcard. 
                Answers should be accurate and easy to understand for studying.
+               There are two languages involved in such flashcards. One is the native language of
+               the person learning the cards and the second is the language being learnt. It can
+               be assumed that the language of deck name and deck description is the native
+               language of the student. The answer should should be provided in language different
+               than the language of the question.
                When providing an optional explanation you can use markdown
                formatting. Explanation should be brief - it may include dictionary definition
                of a word. In case of sentences no explanation is required unless there are some
-               nuances to explain.
-               If language of translation is defined in deck description, translate it to language
-               of deck description. Provide phonetic transcription in case of translating short texts
-                - up to 3 words.
-               `;
+               nuances to explain.`;
   case Category.history:
     return `You are a flashcard creation assistant. Given a question or term related to history,
                provide a concise and informative answer suitable for a flashcard. 
@@ -134,9 +135,19 @@ function userPrompt(
   deckDescription: string,
   cardQuestion: string
 ): string {
-  return `Question: ${cardQuestion}
-      deck name: ${deckName}
-      deck description: ${deckDescription}`;
+  if (category == Category.language) {
+    return `Provide translation of the question and phonetic transcription
+    in the answer case of translating short texts
+    - up to 3 words.
+    
+    Question: ${cardQuestion}
+        deck name: ${deckName}
+        deck description: ${deckDescription}`;
+  } else {
+    return `Question: ${cardQuestion}
+        deck name: ${deckName}
+        deck description: ${deckDescription}`;
+  }
 }
 
 const cardTypeFlow = ai.defineFlow(

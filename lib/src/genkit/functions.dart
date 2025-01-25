@@ -49,6 +49,11 @@ class CloudFunctions {
 
   Future<GeneratedAnswer> generateCardAnswer(DeckCategory category,
       String deckName, String deckDescription, String cardQuestion) async {
+    if (cardQuestion.trim().isEmpty) {
+      throw 'Card question is empty';
+    }
+    _log.d(
+        'Fetching LLM answer for category: $category question: $cardQuestion');
     // 1. Ensure the user is authenticated:
     if (user == null) {
       throw Exception("User must be logged in to call the function.");
