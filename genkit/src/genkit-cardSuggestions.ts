@@ -101,7 +101,7 @@ function systemPrompt(category: Category): string {
   case Category.science:
     return `You are a flashcard creation assistant. Generate concise, accurate, and informative
        answers suitable for flashcards. Answers should be easy to understand for studying. Use 
-       Markdown for formatting. 
+       Markdown to format both answer and explanation. 
        Both answer and explanation should be provided in the same language as question and
        deck description.
        For answers involving mathematical, chemical, or physical concepts

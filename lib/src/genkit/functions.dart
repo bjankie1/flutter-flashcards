@@ -25,6 +25,7 @@ class CloudFunctions {
     if (user == null) {
       throw Exception("User must be logged in to call the function.");
     }
+    _log.d('Categorizing deck: $deckName with description: $deckDescription');
 
     // 3. Call the Cloud Function using the HttpsCallable class.
     final callable =

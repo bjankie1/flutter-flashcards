@@ -111,6 +111,8 @@ class _CardEditState extends State<CardEdit> {
                           height: 10,
                         ),
                         Divider(),
+                        _markdownPreview(cardAnswerTextController),
+                        Divider(),
                         SizedBox(
                           height: 10,
                         ),

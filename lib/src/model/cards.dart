@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
-import 'package:flutter_flashcards/src/genkit/functions.dart';
 
 enum ImagePlacement { question, explanation }
 
