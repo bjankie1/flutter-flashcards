@@ -16,7 +16,7 @@ class ReviewsPage extends StatelessWidget {
           return RepositoryLoader(
             fetcher: (repository) => groupedByDeck(cards, repository),
             builder: (context, cardsByDeck, _) => BaseLayout(
-                title: context.l10n.learning,
+                title: Text(context.l10n.learning),
                 child: ReviewsBreakdown(cardsByDeck)),
           );
         });

@@ -272,8 +272,8 @@ abstract class AppLocalizations {
   /// No description provided for @learnProgressMessage.
   ///
   /// In en, this message translates to:
-  /// **'Learning card {current} of {total}'**
-  String learnProgressMessage(int current, int total);
+  /// **'{total} cards to review'**
+  String learnProgressMessage(int total);
 
   /// No description provided for @learnEverything.
   ///
@@ -502,6 +502,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error deleting card'**
   String get cardDeletionErrorMessage;
+
+  /// No description provided for @allCardsReviewedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Well done!'**
+  String get allCardsReviewedMessage;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

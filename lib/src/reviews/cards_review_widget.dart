@@ -1,152 +1,32 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/card_image.dart';
-import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
-import 'package:flutter_flashcards/src/model/repository.dart';
+import 'package:flutter_flashcards/src/model/study_session.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
-import 'package:provider/provider.dart';
 
 class CardsReview extends StatefulWidget {
-  final List<model.Card> cards;
+  final StudySession session;
 
-  final ValueListenable<int> currentCardIndex;
-
-  final ValueChanged<int> onNextCard;
-
-  CardsReview(
-      {required Iterable<model.Card> cards,
-      required this.currentCardIndex,
-      required this.onNextCard})
-      : cards = cards.toList();
+  CardsReview({required this.session});
 
   @override
   State<StatefulWidget> createState() => _CardsReviewState();
 }
 
 class _CardsReviewState extends State<CardsReview> {
-  bool _answered = false;
+  bool _answerRevealed = false;
 
-  DateTime _reviewStart = currentClockDateTime;
-
-  void nextCard(int cardIndex) {
-    setState(() {
-      _answered = false;
-      _reviewStart = currentClockDateTime;
-      widget.onNextCard((cardIndex + 1) % widget.cards.length);
-    });
+  void revealAnswer() {
+    setState(() => _answerRevealed = true);
   }
 
-  void evaluateAnswer() {
-    setState(() => _answered = true);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: widget.currentCardIndex,
-      builder: (context, index, _) {
-        final card = widget.cards[index];
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: CardSideContent(
-                card: card,
-                front: true,
-              ),
-            ),
-            Visibility(
-              visible: !_answered,
-              child: Expanded(
-                child: Padding(
-                    padding: EdgeInsets.all(4.0),
-                    child: AnimatedContainer(
-                        duration: const Duration(seconds: 1),
-                        curve: Curves.easeIn,
-                        child: Material(
-                          color: Colors.lightGreenAccent,
-                          borderRadius: BorderRadius.circular(12.0),
-                          child: InkWell(
-                            onTap: evaluateAnswer,
-                            child: FittedBox(
-                              child: Text(
-                                '?',
-                                style: TextStyle(fontSize: 30),
-                              ),
-                            ),
-                          ),
-                        ))),
-              ),
-            ),
-            Visibility(
-              visible: _answered,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      card.answer,
-                      style: Theme.of(context).textTheme.headlineLarge,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Visibility(
-              visible: _answered &&
-                  card.explanation != null &&
-                  card.explanation != '',
-              child: CardSideContent(
-                card: card,
-                front: false,
-              ),
-            ),
-            Visibility(
-              visible: _answered,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: RateAnswer(
-                  card: card,
-                  onRated: () => nextCard(index),
-                  reviewStart: _reviewStart,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class RateAnswer extends StatefulWidget {
-  final model.Card card;
-
-  final void Function() onRated;
-
-  final DateTime reviewStart;
-
-  RateAnswer(
-      {required this.card, required this.onRated, required this.reviewStart});
-
-  @override
-  State<RateAnswer> createState() => _RateAnswerState();
-}
-
-class _RateAnswerState extends State<RateAnswer> {
-  model.Rating? _reviewRate;
-
-  updateStats(BuildContext context, CardsRepository repository,
-      model.Rating rating, model.Card card) async {
+  recordAnswerRating(BuildContext context, model.Rating rating) async {
     try {
-      final reviewStart = widget.reviewStart;
-      final duration = currentClockDateTime.difference(reviewStart);
-      await repository.recordAnswer(card.id!, model.CardReviewVariant.front,
-          rating, reviewStart, duration);
+      await widget.session.rateAnswer(rating);
+      setState(() {
+        _answerRevealed = false;
+      });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Theme.of(context).colorScheme.errorContainer,
@@ -161,6 +41,139 @@ class _RateAnswerState extends State<RateAnswer> {
           )));
     }
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: widget.session,
+      builder: (context, _) {
+        final card = widget.session.currentCard;
+        if (card != null) {
+          return ReviewWidget(
+              card: card,
+              answerRevealed: _answerRevealed,
+              tapRevealAnswer: revealAnswer,
+              tapRating: (rating) => recordAnswerRating(context, rating));
+        }
+        return Column(
+          children: [
+            Text(context.l10n.allCardsReviewedMessage,
+                style: Theme.of(context).textTheme.headlineLarge),
+            Expanded(
+              child: Center(
+                child: Image.asset('images/celebration2.jpg'),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class ReviewWidget extends StatelessWidget {
+  final model.Card card;
+
+  final bool answerRevealed;
+
+  final Function tapRevealAnswer;
+  final Function(model.Rating) tapRating;
+
+  ReviewWidget(
+      {required this.card,
+      required this.answerRevealed,
+      required this.tapRevealAnswer,
+      required this.tapRating});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: CardSideContent(
+            card: card,
+            front: true,
+          ),
+        ),
+        Visibility(
+          visible: !answerRevealed,
+          child: Expanded(
+            child: Padding(
+                padding: EdgeInsets.all(4.0),
+                child: AnimatedContainer(
+                    duration: const Duration(seconds: 1),
+                    curve: Curves.easeIn,
+                    child: Material(
+                      color: Colors.lightGreenAccent,
+                      borderRadius: BorderRadius.circular(12.0),
+                      child: InkWell(
+                        onTap: () {
+                          tapRevealAnswer();
+                        },
+                        child: FittedBox(
+                          child: Text(
+                            '?',
+                            style: TextStyle(fontSize: 30),
+                          ),
+                        ),
+                      ),
+                    ))),
+          ),
+        ),
+        Visibility(
+          visible: answerRevealed,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GptMarkdown(
+                  card.answer,
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Visibility(
+          visible: answerRevealed &&
+              card.explanation != null &&
+              card.explanation != '',
+          child: CardSideContent(
+            card: card,
+            front: false,
+          ),
+        ),
+        Visibility(
+          visible: answerRevealed,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: RateAnswer(
+              card: card,
+              onRated: tapRating,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class RateAnswer extends StatefulWidget {
+  final model.Card card;
+
+  final void Function(model.Rating) onRated;
+
+  RateAnswer({required this.card, required this.onRated});
+
+  @override
+  State<RateAnswer> createState() => _RateAnswerState();
+}
+
+class _RateAnswerState extends State<RateAnswer> {
+  model.Rating? _reviewRate;
 
   @override
   Widget build(BuildContext context) {
@@ -195,9 +208,7 @@ class _RateAnswerState extends State<RateAnswer> {
       selected: _reviewRate != null ? {_reviewRate!} : {},
       onSelectionChanged: (value) async {
         setState(() => _reviewRate = value.first);
-        final repository = context.read<CardsRepository>();
-        await updateStats(context, repository, value.first, widget.card);
-        widget.onRated();
+        widget.onRated(_reviewRate!);
       },
     );
   }

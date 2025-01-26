@@ -100,8 +100,8 @@ class AppLocalizationsPl extends AppLocalizations {
   String get showAnswer => 'Pokaż odpowiedź';
 
   @override
-  String learnProgressMessage(int current, int total) {
-    return 'Uczysz się karty $current z $total';
+  String learnProgressMessage(int total) {
+    return 'Pozostało $total kart do nauki';
   }
 
   @override
@@ -227,4 +227,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get cardDeletionErrorMessage => 'Nie udało się usunąć karty';
+
+  @override
+  String get allCardsReviewedMessage => 'Gratulacje!';
 }

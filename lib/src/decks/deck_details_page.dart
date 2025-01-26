@@ -18,7 +18,7 @@ class DeckDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
-      title: '',
+      title: Text(deck.name),
       currentPage: PageIndex.cards,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _addCard(context, null),

@@ -8,7 +8,7 @@ class CollaborationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
-        title: context.l10n.collaboration,
+        title: Text(context.l10n.collaboration),
         currentPage: PageIndex.collaboration,
         child: Padding(
           padding: const EdgeInsets.all(8.0),

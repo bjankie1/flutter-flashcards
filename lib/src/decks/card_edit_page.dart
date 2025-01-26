@@ -18,8 +18,8 @@ class CardEditPage extends StatelessWidget {
       fetcher: (repository) => repository.loadDeck(deckId),
       builder: (context, deck, _) => BaseLayout(
         title: card == null
-            ? context.l10n.createCardTitle(deck?.name ?? '')
-            : context.l10n.editCardTitle(deck?.name ?? ''),
+            ? Text(context.l10n.createCardTitle(deck?.name ?? ''))
+            : Text(context.l10n.editCardTitle(deck?.name ?? '')),
         currentPage: PageIndex.cards,
         child: deck != null
             ? CardEdit(

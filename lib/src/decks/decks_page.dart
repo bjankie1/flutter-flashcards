@@ -13,7 +13,7 @@ class DecksPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppState>(builder: (context, appState, _) {
       return BaseLayout(
-        title: 'Flashcard decks',
+        title: Text('Flashcard decks'),
         currentPage: PageIndex.cards,
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {

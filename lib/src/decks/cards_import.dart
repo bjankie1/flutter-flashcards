@@ -6,7 +6,7 @@ class CardsImportPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
-      title: context.l10n.cards,
+      title: Text(context.l10n.cards),
       currentPage: PageIndex.cards,
       child: CardsImportWidget(),
     );

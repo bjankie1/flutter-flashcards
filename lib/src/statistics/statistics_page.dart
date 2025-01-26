@@ -19,7 +19,7 @@ class _StudyStatisticsPageState extends State<StudyStatisticsPage> {
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
-        title: context.l10n.statistics,
+        title: Text(context.l10n.statistics),
         currentPage: PageIndex.statistics,
         child: ChangeNotifierProvider(
           create: (context) => FiltersModel(),
