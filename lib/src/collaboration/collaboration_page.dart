@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/app.dart';
+import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/collaboration/collaborators_list.dart';
 import 'package:flutter_flashcards/src/collaboration/invite_collaborator_input.dart';
@@ -8,7 +8,7 @@ class CollaborationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
-        title: context.l10n.collaboration,
+        title: Text(context.l10n.collaboration),
         currentPage: PageIndex.collaboration,
         child: Padding(
           padding: const EdgeInsets.all(8.0),

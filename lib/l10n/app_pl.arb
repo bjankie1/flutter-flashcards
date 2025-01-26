@@ -29,7 +29,7 @@
   "deckNamePrompt": "Proszę podać nazwę zestawu",
   "noCardsToLearn": "Brak kart do nauki",
   "showAnswer": "Pokaż odpowiedź",
-  "learnProgressMessage": "Uczysz się karty {current} z {total}",
+  "learnProgressMessage": "Pozostało {total} kart do nauki",
   "learnEverything": "Pełna powtórka",
   "hintPrompt": "Opcjonalna podpowiedź",
   "hintLabel": "Podpowiedź",
@@ -68,5 +68,6 @@
   "invalidEmailMessage": "Proszę podać poprawny adres email",
   "sendInvitationButtonTooltip": "Wyślij zaproszenie",
   "cardDeletedMessage": "Karta usunięta",
-  "cardDeletionErrorMessage": "Nie udało się usunąć karty"
+  "cardDeletionErrorMessage": "Nie udało się usunąć karty",
+  "allCardsReviewedMessage": "Gratulacje!"
 }

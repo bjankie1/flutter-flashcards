@@ -17,7 +17,7 @@ class SettingsPage extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: context.watch<AppState>().appTitle,
       builder: (context, title, _) => BaseLayout(
-        title: title,
+        title: Text(title),
         currentPage: PageIndex.settings,
         child: Padding(
           padding: const EdgeInsets.all(16),

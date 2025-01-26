@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/app.dart';
+import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/repository.dart';
@@ -16,7 +16,7 @@ class ReviewsPage extends StatelessWidget {
           return RepositoryLoader(
             fetcher: (repository) => groupedByDeck(cards, repository),
             builder: (context, cardsByDeck, _) => BaseLayout(
-                title: context.l10n.learning,
+                title: Text(context.l10n.learning),
                 child: ReviewsBreakdown(cardsByDeck)),
           );
         });

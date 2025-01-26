@@ -27,4 +27,5 @@ doc/api/
 .flutter-plugins-dependencies
 *.log
 
+.firebase
 .firebase/

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/app.dart';
+import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/decks/cards_list.dart';
 import 'package:flutter_flashcards/src/decks/deck_details.dart';
@@ -18,7 +18,7 @@ class DeckDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
-      title: '',
+      title: Text(deck.name),
       currentPage: PageIndex.cards,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _addCard(context, null),

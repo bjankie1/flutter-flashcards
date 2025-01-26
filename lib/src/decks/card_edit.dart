@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/app.dart';
+import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/card_image.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
@@ -14,9 +14,9 @@ import '../model/cards.dart' as model;
 class CardEdit extends StatefulWidget {
   final model.Card? card;
 
-  final String deckId;
+  final model.Deck deck;
 
-  const CardEdit({this.card, required this.deckId, super.key});
+  const CardEdit({this.card, required this.deck, super.key});
 
   @override
   State<CardEdit> createState() => _CardEditState();
@@ -111,6 +111,8 @@ class _CardEditState extends State<CardEdit> {
                           height: 10,
                         ),
                         Divider(),
+                        _markdownPreview(cardAnswerTextController),
+                        Divider(),
                         SizedBox(
                           height: 10,
                         ),
@@ -173,12 +175,30 @@ class _CardEditState extends State<CardEdit> {
   }
 
   Widget _answerInput() {
-    return TextFormField(
-      controller: cardAnswerTextController,
-      decoration: InputDecoration(
-          hintText: context.l10n.answerHint,
-          labelText: context.l10n.answerLabel,
-          border: OutlineInputBorder()),
+    return Row(
+      children: [
+        Expanded(
+          child: TextFormField(
+            maxLines: 4,
+            controller: cardAnswerTextController,
+            decoration: InputDecoration(
+                hintText: context.l10n.answerHint,
+                labelText: context.l10n.answerLabel,
+                border: OutlineInputBorder()),
+          ),
+        ),
+        ValueListenableBuilder(
+            valueListenable: cardQuestionTextController,
+            builder: (context, value, _) {
+              return _GenerateAnswerButton(
+                  deck: widget.deck,
+                  question: value.text,
+                  onAnswer: (answer, hint) {
+                    cardAnswerTextController.text = answer;
+                    cardHintTextController.text = hint;
+                  });
+            })
+      ],
     );
   }
 
@@ -240,7 +260,7 @@ class _CardEditState extends State<CardEdit> {
   _saveCard(BuildContext context, {bool addNew = false}) async {
     final cardToSave = model.Card(
         id: cardId,
-        deckId: widget.deckId,
+        deckId: widget.deck.id!,
         question: cardQuestionTextController.text,
         answer: cardAnswerTextController.text,
         explanation: cardHintTextController.text,
@@ -283,6 +303,72 @@ class _CardEditState extends State<CardEdit> {
         },
         onError: () => context.showErrorSnackbar('Error uploading image'),
       );
+    }
+  }
+}
+
+class _GenerateAnswerButton extends StatefulWidget {
+  const _GenerateAnswerButton({
+    required this.deck,
+    required this.question,
+    required this.onAnswer,
+  });
+
+  final model.Deck deck;
+  final String question;
+  final Function(String, String) onAnswer;
+
+  @override
+  State<_GenerateAnswerButton> createState() => _GenerateAnswerButtonState();
+}
+
+class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
+  bool _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+        onPressed: _isLoading ? null : processLoading,
+        icon: _isLoading
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ),
+              )
+            : Icon(Icons.generating_tokens));
+  }
+
+  loadAnswer() async {
+    final category = widget.deck.category ??
+        await context.cloudFunctions.deckCategory(
+          widget.deck.name,
+          widget.deck.description ?? '',
+        );
+    // persist the category in case it wasn't attached to deck earlier
+    if (widget.deck.category == null) {
+      await context.cardRepository
+          .saveDeck(widget.deck.copyWith(category: category));
+    }
+    return await context.cloudFunctions.generateCardAnswer(category,
+        widget.deck.name, widget.deck.description ?? '', widget.question);
+  }
+
+  void processLoading() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      await loadAnswer().then((result) {
+        widget.onAnswer(result.answer, result.explanation);
+      }, onError: (e) {
+        context.showErrorSnackbar('Error generating answer: $e');
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 }

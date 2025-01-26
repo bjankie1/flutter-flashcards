@@ -1,0 +1,28 @@
+---
+model: googleai/gemini-1.5-flash
+config:
+  temperature: 0.4
+  topK: 32
+  topP: 0.95
+input:
+  schema:
+    subject:
+      location: string
+      style?: string
+      name?: string
+tools: []
+
+---
+
+{{role "system"}}
+Classify flashcard based on provided information such as deckName,
+deckDescription and the question. Pick one of provided categories: language, history, science, other.
+Do not respond with null, always pick the best fitting category, if you are unsure select 'other'.
+
+{{role "user"}}
+Given the following information about a deck and a question, classify the question into one of the provided categories:
+
+                Deck Name: {{subject.deckName}}
+                Deck Description: {{subject.deckDescription}}
+                Question: {{subject.cardQuestion}}
+

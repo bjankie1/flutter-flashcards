@@ -36,12 +36,23 @@ enum Rating {
   final int val;
 }
 
+enum DeckCategory {
+  language,
+  history,
+  science,
+  other;
+
+  factory DeckCategory.fromName(String name) =>
+      DeckCategory.values.firstWhere((element) => element.name == name);
+}
+
 class Deck implements FirebaseSerializable {
   final String? id;
   final String name;
   final String? description;
   final String? parentDeckId;
   final DeckOptions? deckOptions;
+  final DeckCategory? category;
 
   const Deck({
     this.id,
@@ -49,6 +60,7 @@ class Deck implements FirebaseSerializable {
     this.description,
     this.parentDeckId,
     this.deckOptions,
+    this.category = DeckCategory.other,
   });
 
   withId({required String id}) {
@@ -78,6 +90,7 @@ class Deck implements FirebaseSerializable {
     String? description,
     String? parentDeckId,
     DeckOptions? deckOptions,
+    DeckCategory? category,
   }) {
     return Deck(
       id: id ?? this.id,
@@ -85,6 +98,7 @@ class Deck implements FirebaseSerializable {
       description: description ?? this.description,
       parentDeckId: parentDeckId ?? this.parentDeckId,
       deckOptions: deckOptions ?? this.deckOptions,
+      category: category ?? this.category,
     );
   }
 
@@ -96,6 +110,9 @@ class Deck implements FirebaseSerializable {
         deckOptions: json['deckOptions'] != null
             ? _deckOptionsFromJson(json['deckOptions'] as Map<String, dynamic>)
             : null,
+        category: json['category'] != null
+            ? DeckCategory.fromName(json['category'])
+            : null,
       );
 
   @override
@@ -105,6 +122,7 @@ class Deck implements FirebaseSerializable {
         'parentDeckId': parentDeckId,
         'deckOptions':
             deckOptions != null ? _deckOptionsToJson(deckOptions!) : null,
+        'category': category?.name,
       };
 
   static DeckOptions _deckOptionsFromJson(Map<String, dynamic> json) =>
@@ -166,19 +184,24 @@ class Attachment {
 }
 
 class CardOptions {
-  final bool reverse;
+  final bool learnBothSides;
   final bool inputRequired;
 
   CardOptions({
-    required this.reverse,
+    required this.learnBothSides,
     required this.inputRequired,
   });
-}
 
-CardOptions _cardOptionsFromJson(Map<String, dynamic> json) => CardOptions(
-      reverse: (json['reverse'] ?? false) as bool,
-      inputRequired: (json['inputRequire'] ?? false) as bool,
-    );
+  Map<String, dynamic> toJson() => {
+        'learnBothSides': learnBothSides,
+        'inputRequired': inputRequired,
+      };
+
+  factory CardOptions.fromJson(Map<String, dynamic> json) => CardOptions(
+        learnBothSides: (json['learnBothSides'] ?? false) as bool,
+        inputRequired: (json['inputRequire'] ?? false) as bool,
+      );
+}
 
 List<Tag> _tagsFromJson(List<String> data) =>
     data.map((tag) => Tag(name: tag)).toList();
@@ -272,17 +295,12 @@ class Card implements FirebaseSerializable {
         'deckId': deckId,
         'question': question,
         'answer': answer,
-        'options': _cardOptionsToJson(),
+        'options': options?.toJson(),
         'tags': tags?.map((tag) => tag.name).toSet(),
         'alternativeAnswers': alternativeAnswers,
         'explanation': explanation ?? '',
         'questionImageAttached': questionImageAttached,
         'explanationImageAttached': explanationImageAttached,
-      };
-
-  Map<String, dynamic> _cardOptionsToJson() => {
-        'reverse': options?.reverse,
-        'inputRequired': options?.inputRequired,
       };
 
   static String? _contentValue(dynamic value) {
@@ -302,7 +320,7 @@ class Card implements FirebaseSerializable {
       question: _contentValue(data['question']) ?? '',
       explanation: _contentValue(data['explanation']),
       answer: data['answer'],
-      options: _cardOptionsFromJson(data['options']),
+      options: CardOptions.fromJson(data['options']),
       tags: _tagsFromJson(data['tags'] ?? []),
       alternativeAnswers: data['alternativeAnswers'] ?? [],
       questionImageAttached: data['questionImageAttached'] ?? false,
@@ -411,7 +429,7 @@ class CardStats implements FirebaseSerializable {
       : currentClockDateTime.difference(lastReview!).inDays;
 
   static Iterable<CardStats> statsForCard(Card card) {
-    if (card.options?.reverse == true) {
+    if (card.options?.learnBothSides == true) {
       return [
         CardStats(cardId: card.id!, variant: CardReviewVariant.front),
         CardStats(cardId: card.id!, variant: CardReviewVariant.back)

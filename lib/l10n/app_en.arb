@@ -50,12 +50,9 @@
   "noCardsToLearn": "No cards to learn",
   "answerRecordedMessage": "Answer recorded",
   "showAnswer": "Show answer",
-  "learnProgressMessage": "Learning card {current} of {total}",
+  "learnProgressMessage": "{total} cards to review",
   "@learnProgressMessage": {
     "placeholders": {
-      "current": {
-        "type": "int"
-      },
       "total": {
         "type": "int"
       }
@@ -133,5 +130,6 @@
   "sendInvitationButtonTooltip": "Send invitation",
   "invitationSentMessage": "Invitation sent",
   "cardDeletedMessage": "Card deleted",
-  "cardDeletionErrorMessage": "Error deleting card"
+  "cardDeletionErrorMessage": "Error deleting card",
+  "allCardsReviewedMessage": "Well done!"
 }

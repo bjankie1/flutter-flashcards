@@ -10,5 +10,25 @@
   ],
   "adr.project.directory": "doc/adr",
   "adr.templates.directory": ".adr-templates",
-  "adr.templates.repo": "https://github.com/vincent-ledu/adr-template.git"
+  "adr.templates.repo": "https://github.com/vincent-ledu/adr-template.git",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/__pycache__": true
+  },
+  "eslint.workingDirectories": ["genkit"],
+  "eslint.format.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  }
 }

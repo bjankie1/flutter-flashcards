@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/app.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
+import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:provider/provider.dart';
 
 import 'decks_list.dart';
@@ -13,7 +13,7 @@ class DecksPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppState>(builder: (context, appState, _) {
       return BaseLayout(
-        title: 'Flashcard decks',
+        title: Text('Flashcard decks'),
         currentPage: PageIndex.cards,
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {

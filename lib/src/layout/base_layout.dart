@@ -5,7 +5,6 @@ import 'package:flutter_flashcards/l10n/app_localizations.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:flutter_flashcards/src/layout/left_navigation.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
-import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -34,7 +33,7 @@ extension PageIndexNavigation on PageIndex {
 class BaseLayout extends StatelessWidget {
   final Widget child;
 
-  final String title;
+  final Widget title;
 
   final FloatingActionButton? floatingActionButton;
 
@@ -63,7 +62,7 @@ class BaseLayout extends StatelessWidget {
             builder: (context, appState, child) {
               return Row(
                 children: [
-                  GptMarkdown(title),
+                  title,
                   Spacer(),
                   ValueListenableBuilder<ThemeMode>(
                     valueListenable: context.watch<AppState>().currentTheme,

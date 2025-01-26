@@ -6,6 +6,7 @@ import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/firebase_options.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
+import 'package:flutter_flashcards/src/genkit/functions.dart';
 import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
 import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
 import 'package:go_router/go_router.dart';
@@ -36,12 +37,15 @@ void main() async {
     repository.user = user;
   });
 
+  final cloudFunctions = CloudFunctions();
+
   runApp(
     MultiProvider(
       providers: [
         repositoryProvider,
         ChangeNotifierProvider(create: (context) => AppState(repository)),
         Provider(create: (context) => StorageService()),
+        Provider(create: (context) => cloudFunctions),
       ],
       child: const FlashcardsApp(),
     ),
