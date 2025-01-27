@@ -68,7 +68,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '264542271356',
     projectId: 'flashcards-521f0',
     storageBucket: 'flashcards-521f0.firebasestorage.app',
-    iosBundleId: 'com.example.flutterFlashcards',
+    iosBundleId: 'com.caseclass.flashcards',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -77,7 +77,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '264542271356',
     projectId: 'flashcards-521f0',
     storageBucket: 'flashcards-521f0.firebasestorage.app',
-    iosBundleId: 'com.example.flutterFlashcards',
+    iosBundleId: 'com.caseclass.flashcards',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

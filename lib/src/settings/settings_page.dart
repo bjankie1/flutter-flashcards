@@ -1,6 +1,6 @@
-import 'dart:html' as html show window;
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/app_info.dart';
 import 'package:flutter_flashcards/src/settings/theme_selector.dart';
 import 'package:provider/provider.dart';
 
@@ -40,14 +40,18 @@ class AppVersion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appInfo = Provider.of<AppInfo>(context);
+
     return Row(
+      spacing: 20,
       children: [
-        Text('App version: '),
-        ElevatedButton(
-            onPressed: () {
-              html.window.location.reload();
-            },
-            child: Text('Reload script')),
+        Text('${appInfo.version} build ${appInfo.buildNumber}'),
+        if (kIsWeb)
+          ElevatedButton(
+              onPressed: () {
+                // html.window.location.reload();
+              },
+              child: Text('Reload script')),
       ],
     );
   }
