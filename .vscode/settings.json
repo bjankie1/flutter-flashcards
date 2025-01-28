@@ -6,7 +6,8 @@
     "Dialog",
     "favorite",
     "Favorites",
-    "FSRS"
+    "FSRS",
+    "pubspec"
   ],
   "adr.project.directory": "doc/adr",
   "adr.templates.directory": ".adr-templates",

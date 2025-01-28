@@ -7,6 +7,7 @@ import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 // import 'package:image_picker_for_web/image_picker_for_web.dart'
 //     if (dart.library.html) 'package:image_picker_for_web/image_picker_for_web.dart';
 
@@ -293,30 +294,33 @@ class _CardEditState extends State<CardEdit> {
 
   void _uploadImageWeb(model.ImagePlacement placement) async {
     //   final ImagePickerPlugin picker = ImagePickerPlugin();
+    // final XFile? image =
+    //     await picker.getImageFromSource(source: ImageSource.gallery);
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null && result.count > 0) {
+      XFile image = result.files.first.xFile;
+      final service = context.read<StorageService>();
+      await service.uploadImage(
+        image,
+        cardId,
+        placement.name,
+        onSuccess: () async {
+          context.showInfoSnackbar('Image recorded');
+          // final url = await service.imageUrl(cardId, placement.name);
+          setState(() {
+            switch (placement) {
+              case model.ImagePlacement.question:
+                questionImageAttached = true;
+              case model.ImagePlacement.explanation:
+                explanationImageAttached = true;
+            }
+          });
+        },
+        onError: () => context.showErrorSnackbar('Error uploading image'),
+      );
+    }
+
     //   // Pick an image from the gallery
-    //   final XFile? image =
-    //       await picker.getImageFromSource(source: ImageSource.gallery);
-    //   final service = context.read<StorageService>();
-    //   if (image != null) {
-    //     await service.uploadImage(
-    //       image,
-    //       cardId,
-    //       placement.name,
-    //       onSuccess: () async {
-    //         context.showInfoSnackbar('Image recorded');
-    //         // final url = await service.imageUrl(cardId, placement.name);
-    //         setState(() {
-    //           switch (placement) {
-    //             case model.ImagePlacement.question:
-    //               questionImageAttached = true;
-    //             case model.ImagePlacement.explanation:
-    //               explanationImageAttached = true;
-    //           }
-    //         });
-    //       },
-    //       onError: () => context.showErrorSnackbar('Error uploading image'),
-    //     );
-    //   }
   }
 }
 
