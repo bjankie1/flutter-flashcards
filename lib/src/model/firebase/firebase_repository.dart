@@ -382,6 +382,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     // Load corresponding cards for each card ID from the tuple
     final cardIds =
         cardIdsWithVariants.map((t) => t.$1).toSet(); // unique card Ids
+    if (cardIds.isEmpty) return Iterable.empty();
     final cardsQuery = deckId != null
         ? _cardsCollection.where(Filter.and(
             Filter(FieldPath.documentId, whereIn: cardIds),
