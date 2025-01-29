@@ -169,6 +169,11 @@ void main() {
       expect(answers.first.rating, model.Rating.good);
       // TODO: evaluate stats and answers
     });
+
+    test('load cards to review when there are no cards yet', () async {
+      final cards = await repository.loadCardToReview();
+      expect(cards.length, 0);
+    });
   });
 
   group('Collaboration Invitations', () {
