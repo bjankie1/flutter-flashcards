@@ -320,7 +320,9 @@ class Card implements FirebaseSerializable {
       question: _contentValue(data['question']) ?? '',
       explanation: _contentValue(data['explanation']),
       answer: data['answer'],
-      options: CardOptions.fromJson(data['options']),
+      options: data['options'] != null
+          ? CardOptions.fromJson(data['options'])
+          : null,
       tags: _tagsFromJson(data['tags'] ?? []),
       alternativeAnswers: data['alternativeAnswers'] ?? [],
       questionImageAttached: data['questionImageAttached'] ?? false,

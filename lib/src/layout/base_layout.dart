@@ -94,7 +94,7 @@ class BaseLayout extends StatelessWidget {
                         await context.read<CardsRepository>().updateAllStats();
                       },
                     ),
-                  ),
+                  )
                 ],
               );
             },

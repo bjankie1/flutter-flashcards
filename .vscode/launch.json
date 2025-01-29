@@ -22,6 +22,11 @@
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"
+    },
+    {
+      "name": "Flutter attach (Chrome)",
+      "request": "attach",
+      "type": "dart"
     }
   ]
 }

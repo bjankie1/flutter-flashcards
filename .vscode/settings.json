@@ -6,7 +6,8 @@
     "Dialog",
     "favorite",
     "Favorites",
-    "FSRS"
+    "FSRS",
+    "pubspec"
   ],
   "adr.project.directory": "doc/adr",
   "adr.templates.directory": ".adr-templates",
@@ -30,5 +31,6 @@
   },
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-  }
+  },
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

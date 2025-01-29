@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/card_image.dart';
@@ -6,7 +7,10 @@ import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_for_web/image_picker_for_web.dart';
+import 'package:file_picker/file_picker.dart';
+// import 'package:image_picker_for_web/image_picker_for_web.dart'
+//     if (dart.library.html) 'package:image_picker_for_web/image_picker_for_web.dart';
+
 import 'package:provider/provider.dart';
 import '../model/repository.dart';
 import '../model/cards.dart' as model;
@@ -279,12 +283,23 @@ class _CardEditState extends State<CardEdit> {
   }
 
   void _uploadImage(model.ImagePlacement placement) async {
-    final ImagePickerPlugin picker = ImagePickerPlugin();
-    // Pick an image from the gallery
-    final XFile? image =
-        await picker.getImageFromSource(source: ImageSource.gallery);
-    final service = context.read<StorageService>();
-    if (image != null) {
+    if (kIsWeb) {
+      _uploadImageWeb(placement);
+    } else {
+      final ImagePicker picker = ImagePicker();
+      final XFile? pickedFile =
+          await picker.pickImage(source: ImageSource.gallery);
+    }
+  }
+
+  void _uploadImageWeb(model.ImagePlacement placement) async {
+    //   final ImagePickerPlugin picker = ImagePickerPlugin();
+    // final XFile? image =
+    //     await picker.getImageFromSource(source: ImageSource.gallery);
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null && result.count > 0) {
+      XFile image = result.files.first.xFile;
+      final service = context.read<StorageService>();
       await service.uploadImage(
         image,
         cardId,
@@ -304,6 +319,8 @@ class _CardEditState extends State<CardEdit> {
         onError: () => context.showErrorSnackbar('Error uploading image'),
       );
     }
+
+    //   // Pick an image from the gallery
   }
 }
 
