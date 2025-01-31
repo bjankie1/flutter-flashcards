@@ -131,5 +131,6 @@
   "invitationSentMessage": "Invitation sent",
   "cardDeletedMessage": "Card deleted",
   "cardDeletionErrorMessage": "Error deleting card",
-  "allCardsReviewedMessage": "Well done!"
+  "allCardsReviewedMessage": "Well done!",
+  "personFilterLabel": "You or friend"
 }

@@ -22,24 +22,33 @@ class SelectPersonFocus extends StatelessWidget {
               child: ConstrainedBox(
                 key: Key('stat_person_choice_container'),
                 constraints: BoxConstraints(maxWidth: 400, minWidth: 200),
-                child: DropdownButton<String>(
-                  value: uid,
-                  items: [
-                    DropdownMenuItem(
-                        value: context.appState.userProfile?.id,
-                        child: Text(context.appState.userProfile?.name ??
-                            'not logged')),
-                    ...users.map((user) {
-                      final String name =
-                          (user.name.isEmpty) == true ? user.email : user.name;
-                      return DropdownMenuItem(
-                          value: user.id, child: Text(name));
-                    })
-                  ],
-                  onChanged: (String? value) {
-                    selectedUser.value = value;
-                    onUserChange(value);
-                  },
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: context.l10n.personFilterLabel,
+                    border: OutlineInputBorder()
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      isDense: true,
+                      value: uid,
+                      items: [
+                        DropdownMenuItem(
+                            value: context.appState.userProfile?.id,
+                            child: Text(context.appState.userProfile?.name ??
+                                'not logged')),
+                        ...users.map((user) {
+                          final String name =
+                              (user.name.isEmpty) == true ? user.email : user.name;
+                          return DropdownMenuItem(
+                              value: user.id, child: Text(name));
+                        })
+                      ],
+                      onChanged: (String? value) {
+                        selectedUser.value = value;
+                        onUserChange(value);
+                      },
+                    ),
+                  ),
                 ),
               ),
             ),

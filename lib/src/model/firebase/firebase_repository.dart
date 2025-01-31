@@ -14,14 +14,17 @@ extension QueryExtensions<T> on Query<T> {
   Query<Card> get withCardsConverter => withConverter<Card>(
       fromFirestore: (doc, _) => Card.fromJson(doc.id, doc.data()!),
       toFirestore: (card, _) => card.toJson());
+
   Query<CardStats> get withCardStatsConverter => withConverter<CardStats>(
       fromFirestore: (doc, _) => CardStats.fromJson(doc.id, doc.data()!),
       toFirestore: (stats, _) => stats.toJson());
+
   Query<Deck> get withDecksConverter => withConverter<Deck>(
       fromFirestore: (doc, _) => Deck.fromJson(doc.id, doc.data()!),
       toFirestore: (deck, _) => deck.toJson());
 
   Query<T> withUserFilter(String userId) => where('userId', isEqualTo: userId);
+
   Future<QuerySnapshot<T>> getForUser(String userId) =>
       where('userId', isEqualTo: userId).get();
 }
@@ -698,5 +701,47 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         .logError('Error loading collaborators profiles');
     return usersSnapshot.docs
         .map((snapshot) => UserProfile.fromJson(snapshot.id, snapshot.data()));
+  }
+
+  @override
+  Future<void> grantAccessToDeck(
+      String deckId, String receivingUserEmail) async {
+    final emailDigest = receivingUserEmail.sha256Digest;
+    final snapshot =
+        await _firestore.collection('emailToUid').doc(emailDigest).get();
+    if (!snapshot.exists) {
+      throw Exception('Email not registered');
+    }
+    final receiverUid = snapshot.data()!['uid'];
+    final grantedAccessDoc = _firestore
+        .collection('sharedDecks')
+        .doc(deckId)
+        .collection('collaborators')
+        .doc(receiverUid);
+
+    await grantedAccessDoc.set({'createdAt': currentClockTimestamp});
+  }
+
+  @override
+  Future<void> revokeAccessToDeck(
+      String deckId, String receivingUserEmail) async {
+    final emailDigest = receivingUserEmail.sha256Digest;
+    final snapshot =
+        await _firestore.collection('emailToUid').doc(emailDigest).get();
+    if (!snapshot.exists) {
+      throw Exception('Email not registered');
+    }
+    final receiverUid = snapshot.data()!['uid'];
+    final grantedAccessDoc = _firestore
+        .collection('sharedDecks')
+        .doc(deckId)
+        .collection('collaborators')
+        .doc(receiverUid);
+    final grantSnapshot = await grantedAccessDoc.get();
+    if (grantSnapshot.exists) {
+      await grantedAccessDoc.delete();
+    } else {
+      _log.w('Access was not granted');
+    }
   }
 }

@@ -508,6 +508,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Well done!'**
   String get allCardsReviewedMessage;
+
+  /// No description provided for @personFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'You or friend'**
+  String get personFilterLabel;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

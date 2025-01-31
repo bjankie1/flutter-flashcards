@@ -28,6 +28,7 @@ void main() async {
     GoogleProvider(clientId: DefaultFirebaseOptions.GOOGLE_CLIENT_ID)
   ]);
 
+  // settings that cause the route to be represented in the URL
   GoRouter.optionURLReflectsImperativeAPIs = true;
   setPathUrlStrategy();
 

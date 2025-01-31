@@ -230,4 +230,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get allCardsReviewedMessage => 'Gratulacje!';
+
+  @override
+  String get personFilterLabel => 'Osoba';
 }

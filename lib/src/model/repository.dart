@@ -13,33 +13,47 @@ abstract class CardsRepository extends ChangeNotifier {
   final _log = Logger();
 
   final ValueNotifier<bool> _cardsUpdated = ValueNotifier<bool>(false);
+
   ValueListenable<bool> get cardsUpdated => _cardsUpdated;
   final ValueNotifier<bool> _decksUpdated = ValueNotifier<bool>(false);
+
   ValueListenable<bool> get decksUpdated => _decksUpdated;
+
   Future<model.Card?> loadCard(String cardId);
 
   String nextCardId();
+
   String nextDeckId();
 
   Future<void> saveDeck(model.Deck deck);
+
   Future<Iterable<model.Deck>> loadDecks();
+
   Future<model.Deck?> loadDeck(String deckId);
+
   Future<void> deleteDeck(String deckId);
 
   Future<Iterable<model.Card>> loadCards(String deckId);
+
   Future<Iterable<model.Card>> loadCardsByIds(Iterable<String> cardIds);
+
   Future<Iterable<model.Deck>> loadDecksByIds(Iterable<String> deckIds);
 
   Future<model.Card> saveCard(model.Card card);
+
   Future<void> deleteCard(String cardId);
 
   Future<Iterable<model.Card>> loadCardToReview({String? deckId});
+
   Future<Map<model.State, int>> cardsToReviewCount({String? deckId});
+
   Future<model.CardStats> loadCardStats(
       String cardId, model.CardReviewVariant variant);
+
   Future<int> getCardCount(String deckId);
 
   Future<void> recordCardAnswer(model.CardAnswer answer);
+
   Future<Iterable<model.CardAnswer>> loadAnswers(
       DateTime dayStart, DateTime dayEnd,
       {String? uid});
@@ -48,6 +62,7 @@ abstract class CardsRepository extends ChangeNotifier {
   Future<void> saveCardStats(model.CardStats stats);
 
   Future<UserProfile?> loadUser(String userId);
+
   Future<void> saveUser(UserProfile user);
 
   Future<void> updateAllStats();
@@ -112,9 +127,15 @@ abstract class CardsRepository extends ChangeNotifier {
       String invitationId, InvitationStatus status);
 
   Future<void> grantStatsAccess(String receivingUserEmail);
+
   Future<void> revokeStatsAccess(String userId);
 
+  Future<void> grantAccessToDeck(String deckId, String receivingUserEmail);
+
+  Future<void> revokeAccessToDeck(String deckId, String receivingUserEmail);
+
   Future<Iterable<UserProfile>> listOwnStatsGrants();
+
   Future<Iterable<UserProfile>> listGivenStatsGrants();
 }
 

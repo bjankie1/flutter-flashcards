@@ -28,13 +28,14 @@ class _StudyStatisticsPageState extends State<StudyStatisticsPage> {
               Row(
                 children: [
                   StatisticsFilter(),
-                  SizedBox(
-                    width: 20,
-                  ),
+                  Spacer(),
                   SelectPersonFocus(
                     onUserChange: (uid) {
                       selectedUser.value = uid;
                     },
+                  ),
+                  SizedBox(
+                    width: 20,
                   ),
                 ],
               ),

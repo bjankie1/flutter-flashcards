@@ -34,6 +34,7 @@ class ReportLabel extends StatelessWidget {
 
 class BaseStatisticsTable extends StatelessWidget {
   final Iterable<model.CardAnswer> result;
+
   const BaseStatisticsTable(this.result);
 
   String printDuration(BuildContext context, Duration duration) {
@@ -55,45 +56,32 @@ class BaseStatisticsTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      spacing: 8,
-      children: <Widget>[
-        Row(
-          children: [
-            ReportLabel(
-              'Answers:',
-              alignRight: true,
-              bold: true,
-            ),
-            ReportLabel(result.length.toString()),
-          ],
+    return Row(
+      children: [
+        ReportLabel(
+          'Answers:',
+          alignRight: true,
+          bold: true,
         ),
-        Row(
-          children: [
-            ReportLabel(
-              'Total time:',
-              alignRight: true,
-              bold: true,
-            ),
-            ReportLabel(printDuration(
-                context,
-                result.fold<Duration>(
-                    Duration.zero, (agg, next) => agg + next.timeSpent))),
-          ],
+        ReportLabel(result.length.toString()),
+        ReportLabel(
+          'Total time:',
+          alignRight: true,
+          bold: true,
         ),
-        Row(
-          children: [
-            ReportLabel(
-              'Average (s):',
-              alignRight: true,
-              bold: true,
-            ),
-            ReportLabel(printDuration(
-                context,
-                result.fold<Duration>(
-                    Duration.zero, (agg, next) => agg + next.timeSpent))),
-          ],
+        ReportLabel(printDuration(
+            context,
+            result.fold<Duration>(
+                Duration.zero, (agg, next) => agg + next.timeSpent))),
+        ReportLabel(
+          'Average (s):',
+          alignRight: true,
+          bold: true,
         ),
+        ReportLabel(printDuration(
+            context,
+            result.fold<Duration>(
+                Duration.zero, (agg, next) => agg + next.timeSpent))),
       ],
     );
   }
