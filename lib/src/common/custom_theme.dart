@@ -43,7 +43,10 @@ ThemeData getDarkThemeFlexSeed() {
 }
 
 ThemeData getLightThemeFlexColor() {
-  return FlexThemeData.light(scheme: FlexScheme.dellGenoa, useMaterial3: true);
+  return FlexThemeData.light(
+    scheme: FlexScheme.dellGenoa,
+    useMaterial3: true,
+  );
 }
 
 ThemeData getDarkThemeFlexColor() {
@@ -98,5 +101,6 @@ extension ColorsGenerator on BuildContext {
   }
 
   ThemeData get theme => Theme.of(this);
+
   TextStyle get primaryText => TextStyle(color: theme.primaryColor);
 }

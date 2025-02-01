@@ -15,7 +15,7 @@ service cloud.firestore {
     }
 
     function isSharedDeck() {
-      return exists(/databases/$(database)/documents/sharedDecks/$(resource.data.deckId)/collaborators/$(request.auth.uid));
+      return exists(/databases/$(database)/documents/deckCollaborators/$(resource.data.deckId)/collaborators/$(request.auth.uid));
     }
 
     function statsSharedWith() {
@@ -82,10 +82,16 @@ service cloud.firestore {
       allow create: if isSigned() && isAuthor();
     }
 
-    match /sharedDecks/{deckId} {
-      allow read: if isSigned() && (request.auth.uid == resource.data.ownerUserId || request.auth.uid == resource.data.sharedWithUserId);
+    match /deckCollaborators/{deckId=**} {
+      allow read: if isSigned(); // && isOwnDeck(deckId);
       // allow write for deck owners so that they can share their decks with other users
-      allow write: if isSigned() && isOwnDeck(deckId) && request.auth.uid == resource.data.ownerUserId;
+      allow write: if isSigned();
+    }
+
+    match /sharedDecks/{userId=**} {
+      allow read: if isSigned() && request.auth.uid == userId;
+      // allow write for deck owners so that they can share their decks with other users
+      allow write: if isSigned();
     }
 
     match /cardAnswers/{cardAnswer} {

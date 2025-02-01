@@ -85,6 +85,7 @@ abstract class CardsRepository extends ChangeNotifier {
   Future<void> recordAnswer(String cardId, model.CardReviewVariant variant,
       model.Rating rating, DateTime reviewStart, Duration duration) async {
     _log.d('Recording answer for card $cardId with variant $variant');
+    // add answer to review log
     recordCardAnswer(model.CardAnswer(
         cardId: cardId,
         variant: variant,
@@ -133,6 +134,8 @@ abstract class CardsRepository extends ChangeNotifier {
   Future<void> grantAccessToDeck(String deckId, String receivingUserEmail);
 
   Future<void> revokeAccessToDeck(String deckId, String receivingUserEmail);
+
+  Future<Iterable<UserProfile>> listGrantedDeckAccess(String deckId);
 
   Future<Iterable<UserProfile>> listOwnStatsGrants();
 

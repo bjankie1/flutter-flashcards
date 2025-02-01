@@ -514,6 +514,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You or friend'**
   String get personFilterLabel;
+
+  /// No description provided for @deckSharedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck has been shared'**
+  String get deckSharedMessage;
+
+  /// No description provided for @deckSharedFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed sharing deck'**
+  String get deckSharedFailedMessage;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

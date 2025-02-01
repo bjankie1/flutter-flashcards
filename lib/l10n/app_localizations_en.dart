@@ -233,4 +233,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get personFilterLabel => 'You or friend';
+
+  @override
+  String get deckSharedMessage => 'Deck has been shared';
+
+  @override
+  String get deckSharedFailedMessage => 'Failed sharing deck';
 }

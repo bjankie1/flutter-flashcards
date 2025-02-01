@@ -70,5 +70,7 @@
   "timePerDeckChartTitle": "Czas poświęcony na każdy zestaw",
   "userNotLoggedIn": "Musisz być zalogowany",
   "weekDurationFilterLabel": "Ostatnie 7 dni",
-  "personFilterLabel": "Osoba"
+  "personFilterLabel": "Osoba",
+  "deckSharedMessage": "Deck udostępniony",
+  "deckSharedFailedMessage": "Wystąpił błąd podczas udostępniania"
 }

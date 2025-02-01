@@ -233,4 +233,10 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get personFilterLabel => 'Osoba';
+
+  @override
+  String get deckSharedMessage => 'Deck udostępniony';
+
+  @override
+  String get deckSharedFailedMessage => 'Wystąpił błąd podczas udostępniania';
 }

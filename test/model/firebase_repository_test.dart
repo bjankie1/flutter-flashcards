@@ -3,17 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'
     show AuthCredential, GoogleAuthProvider, User;
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_flashcards/src/common/crypto.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
-import 'package:flutter_flashcards/src/model/users_collaboration.dart';
-import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
-import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
+import 'package:flutter_flashcards/src/model/users_collaboration.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
 
 const loggedInUserId = 'logged_in_user_id';
 const loggedInUserEmail = 'bob@somedomain.com';
@@ -374,6 +373,45 @@ void main() {
       final usersList = await repository.listOwnStatsGrants();
       expect(usersList.length, 1);
       expect(usersList.first.email, userLogged.email);
+    });
+  });
+
+  group('Deck grants', () {
+    final userLogged = UserProfile(
+        id: loggedInUserId,
+        email: loggedInUserEmail,
+        name: 'john',
+        theme: ThemeMode.system,
+        locale: Locale('pl'),
+        photoUrl: '');
+    final user1 = UserProfile(
+        id: 'id1',
+        email: 'user1@example.com',
+        name: 'john',
+        theme: ThemeMode.system,
+        locale: Locale('pl'),
+        photoUrl: '');
+    final user2 = UserProfile(
+        id: 'id2',
+        email: 'user2@example.com',
+        name: 'john',
+        theme: ThemeMode.system,
+        locale: Locale('pl'),
+        photoUrl: '');
+
+    test('grant access to deck', () async {
+      await repository.saveUser(userLogged);
+      await repository.saveUser(user1);
+      final deck = model.Deck(name: 'Test Deck 3');
+      final savedDeck = await repository.saveDeck(deck);
+      final deckId = savedDeck.id!;
+      await repository.grantAccessToDeck(deckId, user1.email);
+      final granted = await repository.listGrantedDeckAccess(deckId);
+      final shared = await repository.listSharedDecks();
+      expect(granted.length, 1);
+      expect(granted.first.email, user1.email);
+      expect(shared.length, 1);
+      expect(shared.first.id, deckId);
     });
   });
 }
