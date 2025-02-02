@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/firebase_options.dart';
 import 'package:flutter_flashcards/src/app_info.dart';
@@ -32,6 +33,15 @@ void main() async {
   GoRouter.optionURLReflectsImperativeAPIs = true;
   setPathUrlStrategy();
 
+  if (kDebugMode) {
+    // Connect to the Firestore emulator
+    FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+    await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+
+    log.d('Connected to Firestore emulator');
+  } else {
+    log.d('Connected to production Firestore');
+  }
   final repository = FirebaseCardsRepository(FirebaseFirestore.instance, null);
   final repositoryProvider = CardsRepositoryProvider(repository);
   FirebaseAuth.instance.authStateChanges().listen((user) {
@@ -39,7 +49,7 @@ void main() async {
     repository.user = user;
   });
 
-  final cloudFunctions = CloudFunctions();
+  final cloudFunctions = CloudFunctions(useEmulator: kDebugMode);
   final appInfo = AppInfo();
   await appInfo.init();
 

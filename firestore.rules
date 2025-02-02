@@ -6,28 +6,27 @@ service cloud.firestore {
       return request.auth.uid != null;
     }
 
-    function isAuthor() {
-      return isSigned() && resource.data.userId == request.auth.uid;
+    function isAuthor(userId) {
+      return isSigned() && request.auth.uid == userId;
     }
 
     function isOwnDeck(deckId) {
-      return get(/databases/$(database)/documents/decks/$(deckId)).data.userId == request.auth.uid;
+      return exists(/databases/$(database)/documents/decks/$(request.auth.uid)/userDecks/$(deckId));
     }
 
     function isSharedDeck() {
-      return exists(/databases/$(database)/documents/deckCollaborators/$(resource.data.deckId)/collaborators/$(request.auth.uid));
+      return exists(/databases/$(database)/documents/deckCollaborators/$(resource.data.deckId)/deckCollaborators/$(request.auth.uid));
     }
 
-    function statsSharedWith() {
-      return exists(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.uid))
-             && get(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.uid)).data.stats == true;
+    function statsSharedWith(userId) {
+      return exists(/databases/$(database)/documents/users/$(userId)/collaborators/$(request.auth.uid));
     }
 
     match /users/{userId} {
       allow read, write: if isSigned() 
                             && (request.auth.uid == userId
                                || exists(/databases/$(database)/documents/users/$(userId)/grantedStatsAccess/$(request.auth.uid))
-                               || exists(/databases/$(database)/documents/users/$(userId)/collaborators/$(request.auth.uid)));
+                               || statsSharedWith(userId));
       allow create: if request.auth.uid != null && request.auth.uid == userId;
 
       match /collaborators/{collaboratorId} {
@@ -37,9 +36,9 @@ service cloud.firestore {
       }
       
       match /grantedStatsAccess/{grantorId} {
-        allow read: if request.auth.uid != null 
+        allow read: if isSigned()
                       && (request.auth.uid == userId || request.auth.uid == grantorId);
-        allow write: if request.auth.uid != null && request.auth.uid == grantorId;
+        allow write: if isSigned() && request.auth.uid == grantorId;
       }
     }
     
@@ -72,14 +71,14 @@ service cloud.firestore {
                       || resource.data.receivingUserEmail == request.auth.token.email);
     }
 
-    match /cards/{card} {
-      allow read, write: if isSigned() && (resource == null || request.auth.uid == resource.data.userId);
-      allow create: if isSigned() && isAuthor();
+    match /cards/{userId}/userCards/{cardId=**} {
+        allow read, write: if isSigned() && (resource == null || isAuthor(userId));
+        allow create: if isAuthor(userId);
     }
 
-    match /decks/{deck} {
-      allow read, write: if isSigned() && isAuthor();
-      allow create: if isSigned() && isAuthor();
+    match /decks/{userId}/userDecks/{deckId} {
+      allow read, write: if isAuthor(userId);
+      allow create: if isAuthor(userId);
     }
 
     match /deckCollaborators/{deckId=**} {
@@ -88,33 +87,16 @@ service cloud.firestore {
       allow write: if isSigned();
     }
 
-    match /sharedDecks/{userId=**} {
-      allow read: if isSigned() && request.auth.uid == userId;
-      // allow write for deck owners so that they can share their decks with other users
-      allow write: if isSigned();
+    match /reviewLog/{userId}/userReviewLog/{logId=**} {
+      allow read: if (isAuthor(userId) || statsSharedWith(userId));
+      allow write: if isAuthor(userId);
     }
 
-    match /cardAnswers/{cardAnswer} {
-      allow read: if isSigned() && (isAuthor() || statsSharedWith());
-      allow write: if isSigned() && isAuthor();
-    }
-
-    match /cardStats/{cardStat} {
-      allow read: if isSigned()
-                         && (resource == null || isAuthor()
-                             || (
-                             	exists(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.uid))
-                             	&& get(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.uid)).data.stats == true)
-                             );
-      allow write: if isSigned() && isAuthor();
-      allow create: if isSigned() && isAuthor();
-    }
-
-    match /reviewLog/{reviewLog} {
-      allow read: if isSigned()
-                         && (request.auth.uid == resource.data.userId
-                             || get(/databases/$(database)/documents/users/$(resource.data.userId)/collaborators/$(request.auth.uid)).data.stats == true);
-      allow write: if isSigned() && isAuthor();
+    match /cardStats/{userId}/userCardStats/{cardStatId=**} {
+      allow read: if (resource == null || isAuthor(userId)
+                             || statsSharedWith(userId));
+      allow write: if isAuthor(userId);
+      allow create: if isAuthor(userId);
     }
 
   }

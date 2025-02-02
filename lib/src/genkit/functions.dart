@@ -1,6 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart'; // For authentication
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // For authentication
 import 'package:logger/logger.dart';
+
 import '../model/cards.dart';
 
 class GeneratedAnswer {
@@ -13,11 +14,30 @@ class GeneratedAnswer {
 class CloudFunctions {
   final _log = Logger();
 
-  User? get user => FirebaseAuth.instance.currentUser;
+  final bool useEmulator;
+
+  final String emulatorHost;
+
+  final int emulatorPort;
+
+  final String region;
 
   // Create a Firebase Functions instance (optional, but recommended)
   // - or use FirebaseFunctions.instance in place of functions everywhere
-  final functions = FirebaseFunctions.instanceFor(region: "europe-central2");
+  late FirebaseFunctions functions;
+
+  CloudFunctions(
+      {this.useEmulator = false,
+      this.region = "europe-central2",
+      this.emulatorHost = 'localhost',
+      this.emulatorPort = 5001}) {
+    functions = FirebaseFunctions.instanceFor(region: region);
+    if (useEmulator) {
+      functions.useFunctionsEmulator(emulatorHost, emulatorPort);
+    }
+  }
+
+  User? get user => FirebaseAuth.instance.currentUser;
 
   Future<DeckCategory> deckCategory(
       String deckName, String deckDescription) async {

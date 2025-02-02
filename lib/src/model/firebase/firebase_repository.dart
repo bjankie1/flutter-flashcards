@@ -24,10 +24,28 @@ extension QueryExtensions<T> on Query<T> {
       fromFirestore: (doc, _) => Deck.fromJson(doc.id, doc.data()!),
       toFirestore: (deck, _) => deck.toJson());
 
-  Query<T> withUserFilter(String userId) => where('userId', isEqualTo: userId);
-
   Future<QuerySnapshot<T>> getForUser(String userId) =>
       where('userId', isEqualTo: userId).get();
+}
+
+extension CollectionReferenceExtensions<T> on CollectionReference<T> {
+  CollectionReference<Card> get withCardsConverter => withConverter<Card>(
+      fromFirestore: (doc, _) => Card.fromJson(doc.id, doc.data()!),
+      toFirestore: (card, _) => card.toJson());
+
+  CollectionReference<CardStats> get withCardStatsConverter =>
+      withConverter<CardStats>(
+          fromFirestore: (doc, _) => CardStats.fromJson(doc.id, doc.data()!),
+          toFirestore: (stats, _) => stats.toJson());
+
+  CollectionReference<Deck> get withDecksConverter => withConverter<Deck>(
+      fromFirestore: (doc, _) => Deck.fromJson(doc.id, doc.data()!),
+      toFirestore: (deck, _) => deck.toJson());
+
+  CollectionReference<CardAnswer> get withCardAnswerConverter =>
+      withConverter<CardAnswer>(
+          fromFirestore: (doc, _) => CardAnswer.fromJson(doc.id, doc.data()!),
+          toFirestore: (cardAnswer, _) => cardAnswer.toJson());
 }
 
 extension ErrorReporting<T> on Future<T> {
@@ -40,7 +58,7 @@ extension ErrorReporting<T> on Future<T> {
 const usersCollectionName = 'users';
 const cardsCollectionName = 'cards';
 const cardStatsCollectionName = 'cardStats';
-const cardAnswersCollectionName = 'cardAnswers';
+const cardAnswersCollectionName = 'reviewLog';
 const decksCollectionName = 'decks';
 
 class FirebaseCardsRepository extends CardsRepository {
@@ -71,16 +89,17 @@ class FirebaseCardsRepository extends CardsRepository {
   CollectionReference<Map<String, dynamic>> _collection(String name) =>
       _firestore.collection(name).doc(userId).collection(userPrefix(name));
 
-  CollectionReference<Map<String, dynamic>> get _cardsCollection =>
-      _collection(cardsCollectionName);
+  CollectionReference<Card> get _cardsCollection =>
+      _collection(cardsCollectionName).withCardsConverter;
 
-  CollectionReference<Map<String, dynamic>> get _cardStatsCollection =>
-      _collection(cardStatsCollectionName);
+  CollectionReference<CardStats> get _cardStatsCollection =>
+      _collection(cardStatsCollectionName).withCardStatsConverter;
+
+  CollectionReference<CardAnswer> get _cardAnswersCollection =>
+      _collection(cardAnswersCollectionName).withCardAnswerConverter;
 
   CollectionReference<Deck> get _decksCollection =>
-      _collection(decksCollectionName).withConverter<Deck>(
-          fromFirestore: (doc, _) => Deck.fromJson(doc.id, doc.data()!),
-          toFirestore: (deck, _) => deck.toJson());
+      _collection(decksCollectionName).withDecksConverter;
 
   CollectionReference<UserProfile> get _usersCollection =>
       _firestore.collection(usersCollectionName).withConverter<UserProfile>(
@@ -90,16 +109,15 @@ class FirebaseCardsRepository extends CardsRepository {
   Future<Deck> _addDeck(Deck deck) async {
     _log.d("Saving new deck ${deck.name}");
     final docRef = _decksCollection.doc();
-    await docRef.set(deck.toJson()).then(
-        (value) => _log.d("Deck successfully added!"),
+    await docRef.set(deck).then((value) => _log.d("Deck successfully added!"),
         onError: (e) => _log.e("Error adding deck: $e"));
     final newDeck = deck.withId(id: docRef.id);
     return newDeck;
   }
 
   Future<Deck> _updateDeck(Deck deck) async {
-    final docRef = _firestore.collection(decksCollectionName).doc(deck.id);
-    await docRef.update(deck.toJson()).then(
+    final docRef = _decksCollection.doc(deck.id);
+    await docRef.set(deck, SetOptions(merge: true)).then(
         (value) => _log.d("Deck successfully updated!"),
         onError: (e) => _log.e("Error updating deck: $e"));
     return deck;
@@ -123,13 +141,12 @@ class FirebaseCardsRepository extends CardsRepository {
 
   Future<Card> _addCard(Card card) async {
     _log.d('Adding card');
-    final docRef = _firestore.collection(cardsCollectionName).doc();
+    final docRef = _cardsCollection.doc();
     await _firestore.runTransaction((transaction) async {
-      transaction.set(docRef, {'userId': userId, ...card.toJson()});
+      transaction.set(docRef, card);
       for (final s in CardStats.statsForCard(card.withId(id: docRef.id))) {
-        final sDoc =
-            _firestore.collection(cardStatsCollectionName).doc(s.idValue);
-        transaction.set(sDoc, {'userId': userId, ...s.toJson()});
+        final sDoc = _cardStatsCollection.doc(s.idValue);
+        transaction.set(sDoc, s);
       }
     });
     return card.withId(id: docRef.id);
@@ -139,20 +156,16 @@ class FirebaseCardsRepository extends CardsRepository {
     _log.d('Updating card');
     await _firestore.runTransaction((transaction) async {
       // Firestore transactions require all reads to be executed before all writes.
-      final docRef = _firestore.collection(cardsCollectionName).doc(card.id);
+      final docRef = _cardsCollection.doc(card.id);
       final stats = CardStats.statsForCard(card);
       final statsDocs = await Future.wait(stats.map((s) async =>
-              await _firestore
-                  .collection(cardStatsCollectionName)
-                  .doc(s.idValue)
-                  .get()
-                  .then(
-                      (snapshot) => (s, snapshot.reference, snapshot.exists))))
+              await _cardStatsCollection.doc(s.idValue).get().then(
+                  (snapshot) => (s, snapshot.reference, snapshot.exists))))
           .logError('Error loading stats for card ${card.id}');
-      transaction.set(docRef, {'userId': userId, ...card.toJson()});
+      transaction.set(docRef, card);
       for (final record in statsDocs) {
         if (!record.$3) {
-          transaction.set(record.$2, {'userId': userId, ...record.$1.toJson()});
+          transaction.set(record.$2, record.$1);
         }
       }
     });
@@ -161,19 +174,18 @@ class FirebaseCardsRepository extends CardsRepository {
   @override
   Future<void> updateAllStats() async {
     _log.d('Updating card');
-    final cardsSnapshot = await _cardsCollection.withCardsConverter.get();
+    final cardsSnapshot = await _cardsCollection.get();
 
     for (final snapshot in cardsSnapshot.docs) {
       final stats = CardStats.statsForCard(snapshot.data());
       final statsDocs = await Future.wait(stats.map((s) async =>
-          await _firestore
-              .collection(cardStatsCollectionName)
+          await _cardStatsCollection
               .doc(s.idValue)
               .get()
               .then((snapshot) => (s, snapshot.reference, snapshot.exists))));
       for (final record in statsDocs) {
         if (!record.$3) {
-          await record.$2.set({'userId': userId, ...record.$1.toJson()});
+          await record.$2.set(record.$1);
         }
       }
     }
@@ -183,21 +195,18 @@ class FirebaseCardsRepository extends CardsRepository {
   Future<void> deleteDeck(String deckId) async {
     _log.d('Deleting deck: $deckId');
     final batch = _firestore.batch();
-    batch.delete(_firestore.collection(decksCollectionName).doc(deckId));
-    final cardsSnapshot = await _collection(cardsCollectionName)
-        .where('deckId', isEqualTo: deckId)
-        .get();
+    batch.delete(_decksCollection.doc(deckId));
+    final cardsSnapshot =
+        await _cardsCollection.where('deckId', isEqualTo: deckId).get();
     for (final doc in cardsSnapshot.docs) {
       batch.delete(doc.reference);
-      final cardStatsSnapshot = await _collection(cardStatsCollectionName)
-          .where('cardId', isEqualTo: doc.id)
-          .get();
+      final cardStatsSnapshot =
+          await _cardStatsCollection.where('cardId', isEqualTo: doc.id).get();
       for (final statDoc in cardStatsSnapshot.docs) {
         batch.delete(statDoc.reference);
       }
-      final cardAnswerSnapshot = await _collection(cardAnswersCollectionName)
-          .where('cardId', isEqualTo: doc.id)
-          .get();
+      final cardAnswerSnapshot =
+          await _cardAnswersCollection.where('cardId', isEqualTo: doc.id).get();
       for (final answerDoc in cardAnswerSnapshot.docs) {
         batch.delete(answerDoc.reference);
       }
@@ -209,16 +218,14 @@ class FirebaseCardsRepository extends CardsRepository {
   @override
   Future<void> deleteCard(String cardId) async {
     final batch = _firestore.batch();
-    batch.delete(_firestore.collection(cardsCollectionName).doc(cardId));
-    final cardStatsSnapshot = await _collection(cardStatsCollectionName)
-        .where('cardId', isEqualTo: cardId)
-        .get();
+    batch.delete(_cardsCollection.doc(cardId));
+    final cardStatsSnapshot =
+        await _cardStatsCollection.where('cardId', isEqualTo: cardId).get();
     for (final doc in cardStatsSnapshot.docs) {
       batch.delete(doc.reference);
     }
-    final cardAnswerSnapshot = await _collection(cardAnswersCollectionName)
-        .where(Filter('cardId', isEqualTo: cardId))
-        .get();
+    final cardAnswerSnapshot =
+        await _cardAnswersCollection.where('cardId', isEqualTo: cardId).get();
     for (final doc in cardAnswerSnapshot.docs) {
       batch.delete(doc.reference);
     }
@@ -228,13 +235,9 @@ class FirebaseCardsRepository extends CardsRepository {
   @override
   Future<List<Card>> loadCards(String deckId) async {
     _log.d('Loading cards');
-    final snapshot = await _collection(cardsCollectionName)
-        .where(Filter.and(Filter('userId', isEqualTo: userId),
-            Filter('deckId', isEqualTo: deckId)))
-        .get();
-    return snapshot.docs
-        .map((doc) => Card.fromJson(doc.id, doc.data()))
-        .toList();
+    final snapshot =
+        await _cardsCollection.where('deckId', isEqualTo: deckId).get();
+    return snapshot.docs.map((doc) => doc.data()).toList();
   }
 
   void _validateUser() {
@@ -276,20 +279,17 @@ class FirebaseCardsRepository extends CardsRepository {
   @override
   Future<CardStats> loadCardStats(
       String cardId, CardReviewVariant variant) async {
-    final snapshot = await _firestore
-        .collection(cardStatsCollectionName)
-        .doc('$cardId::${variant.name}')
-        .get();
+    final statsId = CardStats(cardId: cardId, variant: variant).idValue;
+    final snapshot = await _cardStatsCollection.doc(statsId).get();
     if (snapshot.exists) {
-      return CardStats.fromJson(snapshot.id, snapshot.data()!);
+      return snapshot.data()!;
     }
     throw Exception('No card stats for $cardId and variant $variant');
   }
 
   Future<Iterable<String>> _deckCardsIds(String deckId) async {
-    final snapshots = await _collection(cardsCollectionName)
-        .where('deckId', isEqualTo: deckId)
-        .get();
+    final snapshots =
+        await _cardsCollection.where('deckId', isEqualTo: deckId).get();
     return snapshots.docs.map((doc) => doc.id);
   }
 
@@ -297,14 +297,10 @@ class FirebaseCardsRepository extends CardsRepository {
   @override
   Future<Map<State, int>> cardsToReviewCount({String? deckId}) async {
     _log.d('Loading cards to review count');
-
     // Cards ready for review
-    var baseQuery = _firestore
-        .collection(cardStatsCollectionName)
-        .where(Filter.or(
-            Filter('nextReviewDate', isLessThanOrEqualTo: currentClockDateTime),
-            Filter('nextReviewDate', isNull: true)))
-        .withUserFilter(userId);
+    var baseQuery = _cardStatsCollection.where(Filter.or(
+        Filter('nextReviewDate', isLessThanOrEqualTo: currentClockDateTime),
+        Filter('nextReviewDate', isNull: true)));
 
     if (deckId != null) {
       final cardIds = await _deckCardsIds(deckId);
@@ -350,24 +346,19 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       {int? reviewLimit = 200, int? newLimit = 200}) async {
     try {
       // Cards ready for review
-      final statsSnapshot = await _firestore
-          .collection(cardStatsCollectionName)
-          .where(Filter('nextReviewDate',
-              isLessThanOrEqualTo: currentClockDateTime))
-          .withCardStatsConverter
+      final statsSnapshot = await _cardStatsCollection
+          .where('nextReviewDate', isLessThanOrEqualTo: currentClockDateTime)
           .limit(reviewLimit ?? 200)
-          .getForUser(userId)
+          .get()
           .logError('Error querying cards to review');
       final toReview = statsSnapshot.docs.map((doc) => doc.data()).toList();
       _log.d('Cards to review: ${toReview.length}');
 
       // New cards
-      final statsSnapshotNew = await _firestore
-          .collection(cardStatsCollectionName)
-          .where(Filter('nextReviewDate', isNull: true))
-          .withCardStatsConverter
+      final statsSnapshotNew = await _cardStatsCollection
+          .where('nextReviewDate', isNull: true)
           .limit(newLimit ?? 200)
-          .getForUser(userId)
+          .get()
           .logError('Error querying new cards to review');
       final newCards = statsSnapshotNew.docs.map((doc) => doc.data()).toList();
       _log.d('New cards to review: ${newCards.length}');
@@ -400,7 +391,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
             Filter('deckId', isEqualTo: deckId)))
         : _cardsCollection
             .where(Filter(FieldPath.documentId, whereIn: cardIds));
-    final cardsSnapshot = await cardsQuery.withCardsConverter.get();
+    final cardsSnapshot = await cardsQuery.get();
     final cards = cardsSnapshot.docs.map((doc) => doc.data());
     final cardsMappedToId =
         Map.fromEntries(cards.map((card) => MapEntry(card.id, card)));
@@ -414,9 +405,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   Future<void> saveCardStats(CardStats stats) async {
     _log.d(
         'Saving card stats ${stats.cardId}::${stats.variant.name} with next review on ${stats.nextReviewDate}');
-    final docRef =
-        _firestore.collection(cardStatsCollectionName).doc(stats.idValue);
-    await docRef.set({'userId': userId, ...stats.toJson()}).then(
+    final docRef = _cardStatsCollection.doc(stats.idValue);
+    await docRef.set(stats).then(
         (value) => _log.d("Review answer successfully recorded!"),
         onError: (e) => _log.w("Error recording review answer: $e"));
   }
@@ -437,22 +427,20 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       {String? uid}) async {
     _log.d('Loading answers for $dayStart to $dayEnd');
 
-    final snapshot = await _firestore
-        .collection('reviewLog')
+    final snapshot = await _cardAnswersCollection
         .where(Filter.and(
             Filter('reviewStart', isGreaterThanOrEqualTo: dayStart),
             Filter('reviewStart', isLessThanOrEqualTo: dayEnd)))
-        .getForUser(uid ?? userId)
+        .get()
         .logError('Loading reviewLog failed');
     _log.d('Loaded ${snapshot.docs.length} answers');
-    return snapshot.docs.map((doc) => CardAnswer.fromJson(doc.id, doc.data()));
+    return snapshot.docs.map((doc) => doc.data());
   }
 
   @override
   Future<void> recordCardAnswer(CardAnswer answer) async {
     _log.d("Recording answer for card ${answer.cardId}");
-    final collection = _firestore.collection('reviewLog');
-    collection.add({'userId': userId, ...answer.toJson()}).then(
+    await _cardAnswersCollection.add(answer).then(
         (value) => _log.d("Answer saved"),
         onError: (e) => _log.e("Error saving answer: $e"));
   }
@@ -489,25 +477,21 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   @override
   Future<Card?> loadCard(String cardId) async {
     _log.d('Loading card $cardId');
-    final snapshot =
-        await _firestore.collection(cardsCollectionName).doc(cardId).get();
+    final snapshot = await _cardsCollection.doc(cardId).get();
     if (!snapshot.exists) {
-      return null;
+      _log.d('Card $cardId not found');
     }
-    return Card.fromJson(snapshot.id, snapshot.data()!);
+    return snapshot.data();
   }
 
   @override
   Future<Iterable<Card>> loadCardsByIds(Iterable<String> cardIds) async {
-    final snapshot = await _firestore
-        .collection(cardsCollectionName)
-        .withCardsConverter
-        // .where(FieldPath.documentId, whereIn: cardIds)
-        .getForUser(userId)
+    final snapshot = await _cardsCollection
+        .where(FieldPath.documentId, whereIn: cardIds)
+        .get()
         .logError('Error loading cards by ID');
-    return snapshot.docs
-        .map((e) => e.data())
-        .where((card) => cardIds.contains(card.id));
+    return snapshot.docs.map((e) => e.data());
+    // .where((card) => cardIds.contains(card.id));
   }
 
   @override
@@ -724,17 +708,10 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     final grantedAccessDoc = _firestore
         .collection('deckCollaborators')
         .doc(deckId)
-        .collection('collaborators')
+        .collection('deckCollaborators')
         .doc(receiverUid);
-    final sharedDeckDoc = _firestore
-        .collection('sharedDecks')
-        .doc(receiverUid)
-        .collection('decks')
-        .doc(deckId);
-    final batch = _firestore.batch();
-    batch.set(grantedAccessDoc, {'createdAt': currentClockTimestamp});
-    batch.set(sharedDeckDoc, {'createdAt': currentClockTimestamp});
-    await batch.commit();
+    await grantedAccessDoc
+        .set({'createdAt': currentClockTimestamp, 'ownerId': userId});
   }
 
   @override
@@ -750,23 +727,9 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     final grantedAccessDoc = _firestore
         .collection('deckCollaborators')
         .doc(deckId)
-        .collection('collaborators')
+        .collection('deckCollaborators')
         .doc(receiverUid);
-    final sharedDeckDoc = _firestore
-        .collection('sharedDecks')
-        .doc(receiverUid)
-        .collection('decks')
-        .doc(deckId);
-    final grantSnapshot = await grantedAccessDoc.get();
-    // if (grantSnapshot.exists) {
-    //   await grantedAccessDoc.delete();
-    // } else {
-    //   _log.w('Access was not granted');
-    // }
-    final batch = _firestore.batch();
-    batch.delete(grantedAccessDoc);
-    batch.delete(sharedDeckDoc);
-    await batch.commit();
+    await grantedAccessDoc.delete();
   }
 
   @override
@@ -774,7 +737,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     final snapshot = await _firestore
         .collection('deckCollaborators')
         .doc(deckId)
-        .collection('collaborators')
+        .collection('deckCollaborators')
         .get()
         .logError('Error loading decks collaborators');
     if (snapshot.docs.isEmpty) {
@@ -790,22 +753,29 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         .map((snapshot) => UserProfile.fromJson(snapshot.id, snapshot.data()));
   }
 
+  /// List of decks shared with other users
+  Future<Iterable<String>> getSharedDeckIds() async {
+    final querySnapshot = await _firestore
+        .collectionGroup('deckCollaborators')
+        .where(FieldPath.documentId, isEqualTo: userId)
+        .get();
+
+    return querySnapshot.docs.map((doc) => doc.reference.parent.parent!.id);
+  }
+
   Future<Iterable<Deck>> listSharedDecks() async {
-    final snapshot = await _firestore
-        .collection('sharedDecks')
-        .doc(userId)
-        .collection('decks')
-        .get()
-        .logError('Error loading shared decks');
-    if (snapshot.docs.isEmpty) {
+    final deckIds =
+        await getSharedDeckIds().logError('Error loading shared decks');
+    if (deckIds.isEmpty) {
+      _log.d('No shared decks');
       return [];
     }
-    final deckIds = snapshot.docs.map((doc) => doc.id);
     final decksSnapshot = await _firestore
-        .collection(decksCollectionName)
+        .collectionGroup(userPrefix(decksCollectionName))
         .where(FieldPath.documentId, whereIn: deckIds)
-        .getForUser(userId)
+        .withDecksConverter
+        .get()
         .logError('Error loading decks');
-    return decksSnapshot.docs.map((s) => Deck.fromJson(s.id, s.data()));
+    return decksSnapshot.docs.map((s) => s.data());
   }
 }

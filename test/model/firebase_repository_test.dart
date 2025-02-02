@@ -48,6 +48,11 @@ void main() {
   late FirebaseFirestore firestore;
   late FirebaseCardsRepository repository;
 
+  Future<void> changeLogin(UserProfile newUser) async {
+    User? newUserLogged = await mockSignIn(newUser.id, newUser.email);
+    repository = FirebaseCardsRepository(firestore, newUserLogged);
+  }
+
   setUp(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
     // TODO: maybe later test the rules. Now the problem is that
@@ -197,11 +202,6 @@ void main() {
         theme: ThemeMode.system,
         locale: Locale('pl'),
         photoUrl: '');
-
-    Future<void> changeLogin(UserProfile newUser) async {
-      User? newUserLogged = await mockSignIn(newUser.id, newUser.email);
-      repository = FirebaseCardsRepository(firestore, newUserLogged);
-    }
 
     setUp(() async {
       await repository.saveUser(userLogged);
@@ -399,9 +399,16 @@ void main() {
         locale: Locale('pl'),
         photoUrl: '');
 
-    test('grant access to deck', () async {
+    setUp(() async {
       await repository.saveUser(userLogged);
+      await changeLogin(user1);
       await repository.saveUser(user1);
+      await changeLogin(user2);
+      await repository.saveUser(user2);
+      await changeLogin(userLogged);
+    });
+
+    test('grant access to deck', () async {
       final deck = model.Deck(name: 'Test Deck 3');
       final savedDeck = await repository.saveDeck(deck);
       final deckId = savedDeck.id!;
@@ -410,8 +417,11 @@ void main() {
       final shared = await repository.listSharedDecks();
       expect(granted.length, 1);
       expect(granted.first.email, user1.email);
-      expect(shared.length, 1);
-      expect(shared.first.id, deckId);
+      expect(shared.length, 0);
+      changeLogin(user1);
+      final sharedWithUser1 = await repository.listSharedDecks();
+      expect(sharedWithUser1.length, 1);
+      expect(sharedWithUser1.first.id, deckId);
     });
   });
 }
