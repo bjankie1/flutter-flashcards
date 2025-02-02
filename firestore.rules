@@ -19,14 +19,24 @@ service cloud.firestore {
     }
 
     function statsSharedWith(userId) {
-      return exists(/databases/$(database)/documents/users/$(userId)/collaborators/$(request.auth.uid));
+      return exists(/databases/$(database)/documents/users/$(userId)/collaborators/$(request.auth.uid))
+        || exists(/databases/$(database)/documents/users/$(userId)/grantedStatsAccess/$(request.auth.uid));
+    }
+
+    // Is logged in user collaborator of given userId
+    function isCollaborator(userId) {
+      return exists(/databases/$(database)/documents/userCollaborators/$(userId)/collaborators/$(request.auth.uid)) ||
+      exists(/databases/$(database)/documents/userCollaborators/$(request.auth.uid)/collaborators/$(userId));
+    }
+
+    match /userCollaborators/{userId}/collaborators/{grantedToId} {
+      allow read: if isSigned() && (request.auth.uid == userId || request.auth.uid == grantedToId);
+      allow write: if isSigned() && request.auth.uid == userId;
     }
 
     match /users/{userId} {
       allow read, write: if isSigned() 
-                            && (request.auth.uid == userId
-                               || exists(/databases/$(database)/documents/users/$(userId)/grantedStatsAccess/$(request.auth.uid))
-                               || statsSharedWith(userId));
+                            && (isAuthor(userId) || statsSharedWith(userId)) || isCollaborator(userId);
       allow create: if request.auth.uid != null && request.auth.uid == userId;
 
       match /collaborators/{collaboratorId} {
@@ -81,7 +91,7 @@ service cloud.firestore {
       allow create: if isAuthor(userId);
     }
 
-    match /deckCollaborators/{deckId=**} {
+    match /deckCollaborators/{deckId}/deckCollaborators/{userId} {
       allow read: if isSigned(); // && isOwnDeck(deckId);
       // allow write for deck owners so that they can share their decks with other users
       allow write: if isSigned();

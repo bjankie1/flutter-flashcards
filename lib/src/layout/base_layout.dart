@@ -5,11 +5,11 @@ import 'package:flutter_flashcards/l10n/app_localizations.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:flutter_flashcards/src/layout/left_navigation.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 import '../authentication.dart';
-import 'package:go_router/go_router.dart';
 
 enum PageIndex { cards, learning, statistics, settings, collaboration }
 
@@ -85,6 +85,10 @@ class BaseLayout extends StatelessWidget {
                           FirebaseAuth.instance.signOut();
                           context.go('/');
                         }),
+                  ),
+                  Consumer<AppState>(
+                    builder: (context, appState, _) =>
+                        Text(appState.userProfile?.email ?? ''),
                   ),
                   Visibility(
                     visible: false,

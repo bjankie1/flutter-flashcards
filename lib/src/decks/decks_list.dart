@@ -105,7 +105,7 @@ class DeckListItem extends StatelessWidget {
           SizedBox(
             width: 20,
           ),
-          DeckSharing(deck),
+          SizedBox(width: 300, child: DeckSharing(deck)),
           Spacer(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -236,7 +236,12 @@ class DeckGrants extends StatelessWidget {
             padding: const EdgeInsets.only(left: 8.0),
             child: Row(
               children: data
-                  .map((grant) => CircleAvatar(child: Text(grant.name[0])))
+                  .map((grant) => Tooltip(
+                        message: grant.email,
+                        child: CircleAvatar(
+                            child: Text(
+                                grant.name.isNotEmpty ? grant.name[0] : '?')),
+                      ))
                   .toList(),
             ),
           );

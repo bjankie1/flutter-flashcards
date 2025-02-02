@@ -705,13 +705,22 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       throw Exception('Email not registered');
     }
     final receiverUid = snapshot.data()!['uid'];
+    final batch = _firestore.batch();
     final grantedAccessDoc = _firestore
         .collection('deckCollaborators')
         .doc(deckId)
         .collection('deckCollaborators')
         .doc(receiverUid);
-    await grantedAccessDoc
-        .set({'createdAt': currentClockTimestamp, 'ownerId': userId});
+    final userCollaborators = _firestore
+        .collection('userCollaborators')
+        .doc(userId)
+        .collection('collaborators')
+        .doc(receiverUid);
+    batch.set(grantedAccessDoc,
+        {'createdAt': currentClockTimestamp, 'ownerId': userId});
+    batch.set(userCollaborators, {'createdAt': currentClockTimestamp},
+        SetOptions(merge: true));
+    await batch.commit();
   }
 
   @override

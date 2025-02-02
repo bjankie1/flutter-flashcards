@@ -12,10 +12,9 @@
     <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Granting access">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/firestore.rules" beforeDir="false" afterPath="$PROJECT_DIR$/firestore.rules" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/genkit/functions.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/genkit/functions.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/decks_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/decks_list.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/layout/base_layout.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/layout/base_layout.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/model/firebase_repository_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/firebase_repository_test.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -165,7 +164,15 @@
       <option name="project" value="LOCAL" />
       <updated>1738433361247</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Granting access">
+      <option name="closed" value="true" />
+      <created>1738519369775</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1738519369775</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
