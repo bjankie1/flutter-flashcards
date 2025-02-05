@@ -134,5 +134,6 @@
   "allCardsReviewedMessage": "Well done!",
   "personFilterLabel": "You or friend",
   "deckSharedMessage": "Deck has been shared",
-  "deckSharedFailedMessage": "Failed sharing deck"
+  "deckSharedFailedMessage": "Failed sharing deck",
+  "decksTitle": "My decks"
 }

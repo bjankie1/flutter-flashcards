@@ -21,6 +21,63 @@ Collaborator can be granted permissions to:
 - access all decks
 - modify and add decks
 
+#### Document structure:
+
+The document structure needs to enable the following operations effectively:
+
+Granting user:
+
+- fetch all shared resources including the receiving user information.
+- Revoke grant for single resource.
+
+Receiving user:
+
+- fetch all shared resources including the granting user information.
+- secure access to shared resources based on the grant collection structure.
+
+Therefore both the resource identifier and receiving user need to be part of the document path.
+
+The structure proposal:
+
+`sharing/{userId}/resourceType/{resourceId}/grantedTo/{receivingUserId}`
+
+where `resourceType` sub-collection is one of:
+
+- `sharedDecks` - read-only access to decks. `resourceId = deckId`
+- `sharedStats` - access to progress statistics (`reviewLog`) of the user.
+  `resourceId = 'stats'`
+
+Documents need to include the following field to enable querying:
+
+- `grantedTo` - receiving userId
+
+It will not be possible to fetch information for single resource (ia. deck) due to Firebase
+limitation of such structure. At the same time it will be possible to fetch all grants of a user
+which is sufficient.
+It will be also possible to fetch information for the receiving user using `collectionGroup`
+query.
+
+**Operations execution:**
+
+Granting user - fetch all shared resources:
+
+```
+collection: sharing/{userId}/sharedDecks
+collection: sharing/{userId}/sharedStats
+```
+
+Receiving user:
+
+```
+collectionGroup: sharedDecks {grantedTo == userId}
+security rule:
+  read: decks/{userId}/userDecks/{deckId} if exists(shared/$(userId)/sharedDecks/$(deckId)/grantedTo/{request.auth.uid})
+  write: shared/{userId}/sharedDecks/{deckId} if isAuthor(userId) && ownDeck(deckId)
+
+collectionGroup: sharedStats {grantedTo == userId}
+security rule: 
+```
+
 ### Classrooms
 
 Classrooms are managed by a teacher who can also delegate the management to other users.
@@ -50,6 +107,7 @@ In future:
 
 ### Marketplace and subscriptions
 
-- [ ] Offer deck in the marketplace (https://medium.com/codingmountain-blog/flutter-in-app-purchase-00111a48a1e9)
+- [ ] Offer deck in the
+  marketplace (https://medium.com/codingmountain-blog/flutter-in-app-purchase-00111a48a1e9)
 - [ ] Subscription https://medium.com/codingmountain-blog/flutter-in-app-purchase-00111a48a1e9
 - [ ]

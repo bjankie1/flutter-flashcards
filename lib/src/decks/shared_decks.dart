@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 
+import '../common/build_context_extensions.dart';
 import '../model/cards.dart' as model;
 import '../widgets.dart';
 
-class DeckListWidget extends StatelessWidget {
+class SharedDeckListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryLoader<Iterable<model.Deck>>(
-      fetcher: (repository) => repository.loadDecks(),
+      fetcher: (repository) => repository.listSharedDecks(),
       builder: (context, decksIterable, repository) {
         final decks = decksIterable.toList();
         decks.sort((deck1, deck2) => deck1.name.compareTo(deck2.name));

@@ -418,10 +418,21 @@ void main() {
       expect(granted.length, 1);
       expect(granted.first.email, user1.email);
       expect(shared.length, 0);
-      changeLogin(user1);
+      await changeLogin(user1);
       final sharedWithUser1 = await repository.listSharedDecks();
       expect(sharedWithUser1.length, 1);
       expect(sharedWithUser1.first.id, deckId);
+    });
+
+    test('grant access and verify of other user can load deck', () async {
+      final deck = model.Deck(name: 'Test Deck 3');
+      final savedDeck = await repository.saveDeck(deck);
+      final deckId = savedDeck.id!;
+      await repository.grantAccessToDeck(deckId, user1.email);
+      await changeLogin(user1);
+      final loadedDecks = await repository.listSharedDecks();
+      expect(loadedDecks.length, 1);
+      expect(loadedDecks.first.id, deckId);
     });
   });
 }

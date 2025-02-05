@@ -239,4 +239,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deckSharedFailedMessage => 'Failed sharing deck';
+
+  @override
+  String get decksTitle => 'My decks';
 }

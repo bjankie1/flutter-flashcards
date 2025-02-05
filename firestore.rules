@@ -19,8 +19,7 @@ service cloud.firestore {
     }
 
     function statsSharedWith(userId) {
-      return exists(/databases/$(database)/documents/users/$(userId)/collaborators/$(request.auth.uid))
-        || exists(/databases/$(database)/documents/users/$(userId)/grantedStatsAccess/$(request.auth.uid));
+      return exists(/databases/$(database)/documents/sharing/$(userId)/sharedStats/stats/grantedTo/$(request.auth.uid));
     }
 
     // Is logged in user collaborator of given userId
@@ -38,18 +37,6 @@ service cloud.firestore {
       allow read, write: if isSigned() 
                             && (isAuthor(userId) || statsSharedWith(userId)) || isCollaborator(userId);
       allow create: if request.auth.uid != null && request.auth.uid == userId;
-
-      match /collaborators/{collaboratorId} {
-        allow read: if request.auth.uid != null 
-                      && (request.auth.uid == userId || request.auth.uid == collaboratorId);
-        allow write: if request.auth.uid != null && request.auth.uid == userId;
-      }
-      
-      match /grantedStatsAccess/{grantorId} {
-        allow read: if isSigned()
-                      && (request.auth.uid == userId || request.auth.uid == grantorId);
-        allow write: if isSigned() && request.auth.uid == grantorId;
-      }
     }
     
     // Email-to-uid mapping collection
@@ -62,23 +49,18 @@ service cloud.firestore {
                                    || (request.auth.uid != null && request.auth.uid == request.resource.data.uid);
     }
 
+    match /sharing/{userId}/{resources=**} {
+        allow read: if isSigned() && request.auth.uid == userId;
+        allow write: if isSigned() && request.auth.uid == userId;
+    }
+
     // `collaborators` collection connect users. Records can be created by any user but the creating user's ID needs to
     // reflected in `initiatorUserId` field. User can modify the record either when their ID is `initiatorUserId` or
     // `receivingUserId`. The same rule applies to querying - user ID needs to be in either `initiatorUserId` or 
     // `receivingUserId` fields.
-    match /collaborators/{invitation} {
-      allow create: if request.auth.uid != null 
-                       && request.resource.data.initiatorUserId == request.auth.uid;
-      allow delete: if request.auth.uid != null 
-                    && resource.data.initiatorUserId == request.auth.uid;
-      allow update: if request.auth.uid != null
-                    && (request.auth.uid == resource.data.initiatorUserId || request.auth.token.email == resource.data.receivingUserEmail)
-                    && (request.resource.data.diff(resource.data).affectedKeys()
-                      .hasOnly(['receivingUserId', 'status', 'lastChangeTimestamp']));
-      allow read: if request.auth.uid != null
-                  && (resource.data.initiatorUserId == request.auth.uid 
-                      || resource.data.receivingUserId == request.auth.uid
-                      || resource.data.receivingUserEmail == request.auth.token.email);
+    match /userCollaborators/{userId} {
+      allow write: if isSigned() && request.auth.uid == userId;
+      allow read: if isSigned() && request.auth.uid == userId;
     }
 
     match /cards/{userId}/userCards/{cardId=**} {

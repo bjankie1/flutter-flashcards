@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/cards.dart';
 
+typedef UserId = String;
+
 class UserProfile extends FirebaseSerializable {
-  final String id;
+  final UserId id;
   final String name;
   final String email;
   final ThemeMode theme;

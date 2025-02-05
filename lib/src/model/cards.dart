@@ -8,6 +8,7 @@ enum ImagePlacement { question, explanation }
 
 abstract class FirebaseSerializable<T> {
   Map<String, dynamic> toJson();
+
   String? get idValue;
 }
 
@@ -46,8 +47,10 @@ enum DeckCategory {
       DeckCategory.values.firstWhere((element) => element.name == name);
 }
 
+typedef DeckId = String;
+
 class Deck implements FirebaseSerializable {
-  final String? id;
+  final DeckId? id;
   final String name;
   final String? description;
   final String? parentDeckId;
@@ -564,6 +567,7 @@ class ReviewLog {
 
   ReviewLog(this.rating, this.scheduledDays, this.elapsedDays, this.review,
       this.state);
+
   @override
   String toString() {
     return jsonEncode({

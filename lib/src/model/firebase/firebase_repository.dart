@@ -622,49 +622,53 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       throw Exception('Email not registered');
     }
     final receiverUid = snapshot.data()!['uid'];
-    final collaboratorDoc = _usersCollection
+    final statsGrantDoc = _firestore
+        .collection('sharing')
+        .doc(userId)
+        .collection('sharedStats')
+        .doc('stats')
+        .collection('grantedTo')
+        .doc(receiverUid);
+    final userCollaborators = _firestore
+        .collection('userCollaborators')
         .doc(userId)
         .collection('collaborators')
         .doc(receiverUid);
-    final grantedAccessDoc = _usersCollection
-        .doc(receiverUid)
-        .collection('grantedStatsAccess')
-        .doc(userId);
+
     final batch = _firestore.batch();
+    batch.set(statsGrantDoc,
+        {'createdAt': currentClockTimestamp, 'grantedTo': receiverUid});
     batch.set(
-        collaboratorDoc, {'stats': true, 'createdAt': currentClockTimestamp});
-    batch.set(
-        grantedAccessDoc, {'stats': true, 'createdAt': currentClockTimestamp});
+        userCollaborators, {'stats': true, 'createdAt': currentClockTimestamp});
     await batch.commit();
   }
 
   @override
   Future<void> revokeStatsAccess(String userId) async {
-    final collaboratorDoc =
-        _usersCollection.doc(userId).collection('collaborators').doc(userId);
-    final grantedAccessDoc = _usersCollection
+    final grantedAccessDoc = _firestore
+        .collection('sharing')
         .doc(userId)
-        .collection('grantedStatsAccess')
+        .collection('sharedStats')
+        .doc('stats')
+        .collection('grantedTo')
         .doc(userId);
-    final batch = _firestore.batch();
-    batch.delete(collaboratorDoc);
-    batch.delete(grantedAccessDoc);
-    await batch.commit();
+    await grantedAccessDoc.delete();
   }
 
   @override
   Future<Iterable<UserProfile>> listOwnStatsGrants() async {
-    final snapshot = await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('grantedStatsAccess')
+    final querySnapshot = await _firestore
+        .collectionGroup('grantedTo')
+        .where('grantedTo', isEqualTo: userId)
         .get()
         .logError('Error loading granted user IDs');
-    if (snapshot.docs.isEmpty) {
-      _log.d('No grants available');
+    final statsGrantReferences = querySnapshot.docs
+        .where((doc) => doc.reference.path.contains('sharedStats'));
+    if (statsGrantReferences.isEmpty) {
+      _log.d('No stats grants available');
       return [];
     }
-    final userIds = snapshot.docs.map((doc) => doc.id);
+    final userIds = statsGrantReferences.map((doc) => doc.id);
     final usersSnapshot = await _firestore
         .collection(usersCollectionName)
         .where(FieldPath.documentId, whereIn: userIds)
@@ -707,17 +711,22 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     final receiverUid = snapshot.data()!['uid'];
     final batch = _firestore.batch();
     final grantedAccessDoc = _firestore
-        .collection('deckCollaborators')
+        .collection('sharing')
+        .doc(userId)
+        .collection('sharedDecks')
         .doc(deckId)
-        .collection('deckCollaborators')
+        .collection('grantedTo')
         .doc(receiverUid);
     final userCollaborators = _firestore
         .collection('userCollaborators')
         .doc(userId)
         .collection('collaborators')
         .doc(receiverUid);
-    batch.set(grantedAccessDoc,
-        {'createdAt': currentClockTimestamp, 'ownerId': userId});
+    batch.set(grantedAccessDoc, {
+      'createdAt': currentClockTimestamp,
+      'ownerId': userId,
+      'grantedTo': receiverUid
+    });
     batch.set(userCollaborators, {'createdAt': currentClockTimestamp},
         SetOptions(merge: true));
     await batch.commit();
@@ -734,9 +743,11 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     }
     final receiverUid = snapshot.data()!['uid'];
     final grantedAccessDoc = _firestore
-        .collection('deckCollaborators')
+        .collection('sharing')
+        .doc(userId)
+        .collection('sharedDecks')
         .doc(deckId)
-        .collection('deckCollaborators')
+        .collection('grantedTo')
         .doc(receiverUid);
     await grantedAccessDoc.delete();
   }
@@ -744,9 +755,11 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   @override
   Future<Iterable<UserProfile>> listGrantedDeckAccess(String deckId) async {
     final snapshot = await _firestore
-        .collection('deckCollaborators')
+        .collection('sharing')
+        .doc(userId)
+        .collection('sharedDecks')
         .doc(deckId)
-        .collection('deckCollaborators')
+        .collection('grantedTo')
         .get()
         .logError('Error loading decks collaborators');
     if (snapshot.docs.isEmpty) {
@@ -762,16 +775,22 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         .map((snapshot) => UserProfile.fromJson(snapshot.id, snapshot.data()));
   }
 
-  /// List of decks shared with other users
-  Future<Iterable<String>> getSharedDeckIds() async {
+  /// List of decks shared with the user
+  /// Function returns a collection of tuples of owner and the deck ID
+  Future<Iterable<(UserId, DeckId)>> getSharedDeckIds() async {
     final querySnapshot = await _firestore
-        .collectionGroup('deckCollaborators')
-        .where(FieldPath.documentId, isEqualTo: userId)
+        .collectionGroup('grantedTo')
+        .where('grantedTo', isEqualTo: userId)
         .get();
-
-    return querySnapshot.docs.map((doc) => doc.reference.parent.parent!.id);
+    final deckReferences = querySnapshot.docs
+        .where((doc) => doc.reference.path.contains('sharedDecks'));
+    return deckReferences.map((doc) => (
+          doc.reference.parent.parent!.parent.parent!.id,
+          doc.reference.parent.parent!.id
+        ));
   }
 
+  @override
   Future<Iterable<Deck>> listSharedDecks() async {
     final deckIds =
         await getSharedDeckIds().logError('Error loading shared decks');
@@ -779,12 +798,30 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       _log.d('No shared decks');
       return [];
     }
-    final decksSnapshot = await _firestore
-        .collectionGroup(userPrefix(decksCollectionName))
-        .where(FieldPath.documentId, whereIn: deckIds)
-        .withDecksConverter
-        .get()
-        .logError('Error loading decks');
-    return decksSnapshot.docs.map((s) => s.data());
+    final Map<UserId, Iterable<DeckId>> groupedDecks =
+        deckIds.fold({}, (map, next) {
+      if (map.containsKey(next.$1)) {
+        map[next.$1] = [...map[next.$1]!, next.$2];
+      } else {
+        map[next.$1] = [next.$2];
+      }
+      return map;
+    });
+    final decks = await Future.wait(groupedDecks.entries.map((entry) async {
+      final ownerId = entry.key;
+      final deckIds = entry.value;
+      _log.d('Loading decks for user $ownerId with IDs $deckIds');
+      final decksSnapshot = await _firestore
+          .collection(decksCollectionName)
+          .doc(ownerId)
+          .collection(userPrefix(decksCollectionName))
+          .where(FieldPath.documentId, whereIn: deckIds)
+          .withDecksConverter
+          .get();
+      return decksSnapshot.docs.map((s) => s.data());
+    }));
+    final Iterable<Deck> result =
+        decks.fold([], (agg, next) => [...agg, ...next]);
+    return result;
   }
 }

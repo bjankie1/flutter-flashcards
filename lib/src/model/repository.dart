@@ -135,11 +135,15 @@ abstract class CardsRepository extends ChangeNotifier {
 
   Future<void> revokeAccessToDeck(String deckId, String receivingUserEmail);
 
+  /// List users who have been granted access to given deck.
   Future<Iterable<UserProfile>> listGrantedDeckAccess(String deckId);
 
   Future<Iterable<UserProfile>> listOwnStatsGrants();
 
   Future<Iterable<UserProfile>> listGivenStatsGrants();
+
+  /// List of decks shared with the user logged in
+  Future<Iterable<model.Deck>> listSharedDecks();
 }
 
 extension CardRepositoryProvider on BuildContext {

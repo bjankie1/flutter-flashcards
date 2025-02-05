@@ -526,6 +526,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed sharing deck'**
   String get deckSharedFailedMessage;
+
+  /// No description provided for @decksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My decks'**
+  String get decksTitle;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

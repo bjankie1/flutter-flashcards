@@ -72,5 +72,6 @@
   "weekDurationFilterLabel": "Ostatnie 7 dni",
   "personFilterLabel": "Osoba",
   "deckSharedMessage": "Deck udostępniony",
-  "deckSharedFailedMessage": "Wystąpił błąd podczas udostępniania"
+  "deckSharedFailedMessage": "Wystąpił błąd podczas udostępniania",
+  "decksTitle": "Moje zestawy"
 }

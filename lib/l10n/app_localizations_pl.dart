@@ -239,4 +239,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get deckSharedFailedMessage => 'Wystąpił błąd podczas udostępniania';
+
+  @override
+  String get decksTitle => 'Moje zestawy';
 }

@@ -105,7 +105,7 @@ class DeckListItem extends StatelessWidget {
           SizedBox(
             width: 20,
           ),
-          SizedBox(width: 300, child: DeckSharing(deck)),
+          SizedBox(width: 400, child: DeckSharing(deck)),
           Spacer(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
