@@ -49,9 +49,19 @@ service cloud.firestore {
                                    || (request.auth.uid != null && request.auth.uid == request.resource.data.uid);
     }
 
-    match /sharing/{userId}/{resources=**} {
-        allow read: if isSigned() && request.auth.uid == userId;
-        allow write: if isSigned() && request.auth.uid == userId;
+//    match /sharing/{userId}/{resources=**} {
+//        allow read: if isSigned(); // && (request.auth.uid == userId || resource.data.grantedTo == request.auth.uid);
+//        allow write: if isSigned() && request.auth.uid == userId;
+//    }
+
+    match /sharing/{userId}/decks/{deckId}/grantedTo/{grantedToUid} {
+      allow read: if isSigned(); // && (isAuthor(userId) || resource.data.grantedTo == request.auth.uid);
+      allow write: if request.auth.uid == userId;
+    }
+
+    match /{path=**}/grantedTo/{grantedToUid} {
+      allow read: if isSigned(); // && (isAuthor(userId) || resource.data.grantedTo == request.auth.uid);
+      allow write: if request.auth.uid == userId;
     }
 
     // `collaborators` collection connect users. Records can be created by any user but the creating user's ID needs to
@@ -69,14 +79,9 @@ service cloud.firestore {
     }
 
     match /decks/{userId}/userDecks/{deckId} {
-      allow read, write: if isAuthor(userId);
+      allow read, write: if isAuthor(userId)
+        || exists(/databases/$(database)/documents/sharing/$(userId)/sharedDecks/$(deckId)/grantedTo/$(request.auth.uid));
       allow create: if isAuthor(userId);
-    }
-
-    match /deckCollaborators/{deckId}/deckCollaborators/{userId} {
-      allow read: if isSigned(); // && isOwnDeck(deckId);
-      // allow write for deck owners so that they can share their decks with other users
-      allow write: if isSigned();
     }
 
     match /reviewLog/{userId}/userReviewLog/{logId=**} {

@@ -792,12 +792,14 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
 
   @override
   Future<Iterable<Deck>> listSharedDecks() async {
+    _log.d('Loading shared decks');
     final deckIds =
         await getSharedDeckIds().logError('Error loading shared decks');
     if (deckIds.isEmpty) {
       _log.d('No shared decks');
       return [];
     }
+    _log.d('Loaded ${deckIds.length} shared decks');
     final Map<UserId, Iterable<DeckId>> groupedDecks =
         deckIds.fold({}, (map, next) {
       if (map.containsKey(next.$1)) {
@@ -817,7 +819,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
           .collection(userPrefix(decksCollectionName))
           .where(FieldPath.documentId, whereIn: deckIds)
           .withDecksConverter
-          .get();
+          .get()
+          .logError('Failed loading shared decks from $ownerId');
       return decksSnapshot.docs.map((s) => s.data());
     }));
     final Iterable<Deck> result =
