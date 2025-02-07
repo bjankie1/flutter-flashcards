@@ -102,5 +102,7 @@ extension ColorsGenerator on BuildContext {
 
   ThemeData get theme => Theme.of(this);
 
+  TextTheme get textTheme => TextTheme.of(this);
+
   TextStyle get primaryText => TextStyle(color: theme.primaryColor);
 }

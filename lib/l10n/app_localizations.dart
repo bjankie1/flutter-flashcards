@@ -532,6 +532,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'My decks'**
   String get decksTitle;
+
+  /// No description provided for @noDecksMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No decks found. Add your first deck'**
+  String get noDecksMessage;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

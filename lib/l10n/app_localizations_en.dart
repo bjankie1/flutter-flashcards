@@ -242,4 +242,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get decksTitle => 'My decks';
+
+  @override
+  String get noDecksMessage => 'No decks found. Add your first deck';
 }

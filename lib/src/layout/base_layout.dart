@@ -1,15 +1,16 @@
-import 'package:firebase_auth/firebase_auth.dart'
-    hide EmailAuthProvider, GoogleAuthProvider;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/l10n/app_localizations.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
+import 'package:flutter_flashcards/src/common/UserAvatar.dart';
+import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
+import 'package:flutter_flashcards/src/layout/UserMenu.dart';
 import 'package:flutter_flashcards/src/layout/left_navigation.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
+import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
-
-import '../authentication.dart';
 
 enum PageIndex { cards, learning, statistics, settings, collaboration }
 
@@ -64,11 +65,11 @@ class BaseLayout extends StatelessWidget {
                 children: [
                   title,
                   Spacer(),
-                  ValueListenableBuilder<ThemeMode>(
-                    valueListenable: context.watch<AppState>().currentTheme,
-                    builder: (context, currentTheme, _) => IconButton(
+                  ValueListenableBuilder<UserProfile?>(
+                    valueListenable: context.appState.userProfile,
+                    builder: (context, userProfile, _) => IconButton(
                       icon: Icon(// Your icon based on current theme
-                          currentTheme == ThemeMode.light
+                          userProfile?.theme == ThemeMode.light
                               ? Icons.dark_mode
                               : Icons.light_mode),
                       onPressed: () {
@@ -78,25 +79,26 @@ class BaseLayout extends StatelessWidget {
                     ),
                   ),
                   LocaleSelection(),
-                  Consumer<AppState>(
-                    builder: (context, appState, _) => AuthFunc(
-                        loggedIn: appState.loggedIn,
-                        signOut: () {
-                          FirebaseAuth.instance.signOut();
-                          context.go('/');
-                        }),
-                  ),
-                  Consumer<AppState>(
-                    builder: (context, appState, _) =>
-                        Text(appState.userProfile?.email ?? ''),
-                  ),
+                  if (kDebugMode)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: UserMenu(
+                          child: UserAvatar(
+                        size: 30,
+                      )),
+                    ),
                   Visibility(
                     visible: false,
-                    child: IconButton(
-                      icon: const Icon(Icons.refresh),
-                      onPressed: () async {
-                        await context.read<CardsRepository>().updateAllStats();
-                      },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: IconButton(
+                        icon: const Icon(Icons.refresh),
+                        onPressed: () async {
+                          await context
+                              .read<CardsRepository>()
+                              .updateAllStats();
+                        },
+                      ),
                     ),
                   )
                 ],
@@ -123,12 +125,15 @@ class LocaleSelection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-        valueListenable: context.watch<AppState>().currentLocale,
-        builder: (context, locale, _) {
+        valueListenable: context.appState.userProfile,
+        builder: (context, userProfile, _) {
           final locales = AppLocalizations.supportedLocales;
-          final selectedIndices = {
-            locales.firstWhere((l) => l.languageCode == locale.languageCode)
-          }; // Calculate selected here
+          final selectedIndices = userProfile != null
+              ? {
+                  locales.firstWhere(
+                      (l) => l.languageCode == userProfile.locale.languageCode)
+                }
+              : {locales.first}; // Calculate selected here
           return SegmentedButton(
             multiSelectionEnabled: false,
             selected: selectedIndices,
@@ -139,7 +144,7 @@ class LocaleSelection extends StatelessWidget {
                 .toList(),
             onSelectionChanged: (index) {
               Logger().i('Locale selected: ${index.first}');
-              context.read<AppState>().locale = index.first;
+              context.appState.locale = index.first;
             },
           );
         });

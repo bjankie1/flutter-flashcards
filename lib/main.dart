@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/foundation.dart';
@@ -33,11 +34,11 @@ void main() async {
   GoRouter.optionURLReflectsImperativeAPIs = true;
   setPathUrlStrategy();
 
-  if (kDebugMode) {
+  if (false && kDebugMode) {
     // Connect to the Firestore emulator
     FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-
+    await FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
     log.d('Connected to Firestore emulator');
   } else {
     log.d('Connected to production Firestore');
@@ -50,6 +51,7 @@ void main() async {
   });
 
   final cloudFunctions = CloudFunctions(useEmulator: kDebugMode);
+  var storageService = StorageService();
   final appInfo = AppInfo();
   await appInfo.init();
 
@@ -57,8 +59,11 @@ void main() async {
     MultiProvider(
       providers: [
         repositoryProvider,
-        ChangeNotifierProvider(create: (context) => AppState(repository)),
-        Provider(create: (context) => StorageService()),
+        Provider(create: (context) {
+          return storageService;
+        }),
+        ChangeNotifierProvider(
+            create: (context) => AppState(repository, storageService)),
         Provider(create: (context) => cloudFunctions),
         Provider(create: (context) => appInfo),
       ],

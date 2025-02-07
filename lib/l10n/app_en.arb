@@ -135,5 +135,6 @@
   "personFilterLabel": "You or friend",
   "deckSharedMessage": "Deck has been shared",
   "deckSharedFailedMessage": "Failed sharing deck",
-  "decksTitle": "My decks"
+  "decksTitle": "My decks",
+  "noDecksMessage": "No decks found. Add your first deck"
 }

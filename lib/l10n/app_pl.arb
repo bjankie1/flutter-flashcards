@@ -73,5 +73,6 @@
   "personFilterLabel": "Osoba",
   "deckSharedMessage": "Deck udostępniony",
   "deckSharedFailedMessage": "Wystąpił błąd podczas udostępniania",
-  "decksTitle": "Moje zestawy"
+  "decksTitle": "Moje zestawy",
+  "noDecksMessage": "Nie masz jeszcze zestawów. Dodaj swój pierwszy."
 }

@@ -46,7 +46,7 @@ class SharedDeckItem extends StatelessWidget {
         children: [
           ElevatedButton.icon(
             onPressed: () {},
-            icon: const Icon(Icons.pin),
+            icon: const Icon(Icons.push_pin),
             label: Text('Select deck'),
           )
         ],

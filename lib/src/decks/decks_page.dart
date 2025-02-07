@@ -38,6 +38,7 @@ class _DecksPageState extends State<DecksPage> {
         child: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(_ownDecks ? 'Own decks' : 'Shared decks'),
                 Switch(

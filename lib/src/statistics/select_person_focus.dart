@@ -24,21 +24,21 @@ class SelectPersonFocus extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: 400, minWidth: 200),
                 child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: context.l10n.personFilterLabel,
-                    border: OutlineInputBorder()
-                  ),
+                      labelText: context.l10n.personFilterLabel,
+                      border: OutlineInputBorder()),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       isDense: true,
                       value: uid,
                       items: [
                         DropdownMenuItem(
-                            value: context.appState.userProfile?.id,
-                            child: Text(context.appState.userProfile?.name ??
-                                'not logged')),
+                            value: context.appState.userProfile.value!.id,
+                            child:
+                                Text(context.appState.userProfile.value!.name)),
                         ...users.map((user) {
-                          final String name =
-                              (user.name.isEmpty) == true ? user.email : user.name;
+                          final String name = (user.name.isEmpty) == true
+                              ? user.email
+                              : user.name;
                           return DropdownMenuItem(
                               value: user.id, child: Text(name));
                         })

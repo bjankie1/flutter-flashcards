@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
-import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
+import 'package:flutter_flashcards/src/layout/base_layout.dart';
+import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:flutter_flashcards/src/statistics/select_person_focus.dart';
 import 'package:flutter_flashcards/src/statistics/statistics_charts.dart';
 import 'package:intl/intl.dart';
@@ -59,6 +59,7 @@ enum PartOfDay {
   night(24);
 
   final int lastHour;
+
   const PartOfDay(this.lastHour);
 
   static fromHour(int hour) =>
@@ -94,6 +95,7 @@ class FiltersModel extends ChangeNotifier {
   DateFilter _dateFilter = DateFilter.lastWeek;
 
   DateTimeRange get selectedDates => _selectedDates;
+
   DateFilter get dateFilter => _dateFilter;
 
   set dateFilter(DateFilter value) {
@@ -112,11 +114,11 @@ class FiltersModel extends ChangeNotifier {
 class StatisticsFilter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Locale>(
+    return ValueListenableBuilder<UserProfile?>(
         // Add this ValueListenableBuilder
-        valueListenable: context.watch<AppState>().currentLocale,
-        builder: (context, currentLocale, _) {
-          final locale = currentLocale;
+        valueListenable: context.appState.userProfile,
+        builder: (context, userProfile, _) {
+          final locale = userProfile!.locale;
           final dateFormat = DateFormat.yMEd(locale.toLanguageTag());
 
           return Consumer<FiltersModel>(builder: (context, model, child) {

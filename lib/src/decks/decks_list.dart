@@ -1,5 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/common/UserAvatar.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:go_router/go_router.dart';
@@ -25,7 +26,7 @@ class DeckListWidget extends StatelessWidget {
             itemCount: decks.isEmpty ? 1 : decks.length,
             itemBuilder: (context, index) {
               if (decks.isEmpty) {
-                return Center(child: Text(context.l10n.noCardsMessage));
+                return Center(child: Text(context.l10n.noDecksMessage));
               }
               final deck = decks[index];
               return DeckListItem(deck: deck);
@@ -237,11 +238,8 @@ class DeckGrants extends StatelessWidget {
             child: Row(
               children: data
                   .map((grant) => Tooltip(
-                        message: grant.email,
-                        child: CircleAvatar(
-                            child: Text(
-                                grant.name.isNotEmpty ? grant.name[0] : '?')),
-                      ))
+                      message: grant.name.isEmpty ? grant.email : grant.name,
+                      child: UserAvatar(size: 20, userId: grant.id)))
                   .toList(),
             ),
           );

@@ -242,4 +242,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get decksTitle => 'Moje zestawy';
+
+  @override
+  String get noDecksMessage => 'Nie masz jeszcze zestawów. Dodaj swój pierwszy.';
 }

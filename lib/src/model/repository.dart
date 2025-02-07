@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
+import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -146,7 +147,10 @@ abstract class CardsRepository extends ChangeNotifier {
   Future<Iterable<model.Deck>> listSharedDecks();
 }
 
-extension CardRepositoryProvider on BuildContext {
+extension ContextProviders on BuildContext {
   CardsRepository get cardRepository =>
       Provider.of<CardsRepository>(this, listen: false);
+
+  StorageService get storageService =>
+      Provider.of<StorageService>(this, listen: false);
 }

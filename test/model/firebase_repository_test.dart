@@ -186,22 +186,19 @@ void main() {
         email: loggedInUserEmail,
         name: 'john',
         theme: ThemeMode.system,
-        locale: Locale('pl'),
-        photoUrl: '');
+        locale: Locale('pl'));
     final user1 = UserProfile(
         id: 'id1',
         email: 'user1@example.com',
         name: 'john',
         theme: ThemeMode.system,
-        locale: Locale('pl'),
-        photoUrl: '');
+        locale: Locale('pl'));
     final user2 = UserProfile(
         id: 'id2',
         email: 'user2@example.com',
         name: 'john',
         theme: ThemeMode.system,
-        locale: Locale('pl'),
-        photoUrl: '');
+        locale: Locale('pl'));
 
     setUp(() async {
       await repository.saveUser(userLogged);
@@ -382,22 +379,19 @@ void main() {
         email: loggedInUserEmail,
         name: 'john',
         theme: ThemeMode.system,
-        locale: Locale('pl'),
-        photoUrl: '');
+        locale: Locale('pl'));
     final user1 = UserProfile(
         id: 'id1',
         email: 'user1@example.com',
         name: 'john',
         theme: ThemeMode.system,
-        locale: Locale('pl'),
-        photoUrl: '');
+        locale: Locale('pl'));
     final user2 = UserProfile(
         id: 'id2',
         email: 'user2@example.com',
         name: 'john',
         theme: ThemeMode.system,
-        locale: Locale('pl'),
-        photoUrl: '');
+        locale: Locale('pl'));
 
     setUp(() async {
       await repository.saveUser(userLogged);
