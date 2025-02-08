@@ -118,8 +118,8 @@ class StatisticsFilter extends StatelessWidget {
         // Add this ValueListenableBuilder
         valueListenable: context.appState.userProfile,
         builder: (context, userProfile, _) {
-          final locale = userProfile!.locale;
-          final dateFormat = DateFormat.yMEd(locale.toLanguageTag());
+          final locale = userProfile?.locale;
+          final dateFormat = DateFormat.yMEd(locale?.toLanguageTag());
 
           return Consumer<FiltersModel>(builder: (context, model, child) {
             return Padding(

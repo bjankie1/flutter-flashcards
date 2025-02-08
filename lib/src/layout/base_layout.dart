@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/l10n/app_localizations.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
@@ -79,14 +78,13 @@ class BaseLayout extends StatelessWidget {
                     ),
                   ),
                   LocaleSelection(),
-                  if (kDebugMode)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: UserMenu(
-                          child: Avatar(
-                        size: 30,
-                      )),
-                    ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: UserMenu(
+                        child: Avatar(
+                      size: 30,
+                    )),
+                  ),
                   Visibility(
                     visible: false,
                     child: Padding(

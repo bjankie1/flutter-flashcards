@@ -547,7 +547,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   }
 
   @override
-  Future<Set<String>> loadCollaborators() async {
+  Future<Set<String>> listCollaborators() async {
     // Even though accepted invitations should have `receivingUserId` field
     // the filter is applied to `receivingUserEmail` to avoid creating
     // another index
@@ -655,6 +655,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     await grantedAccessDoc.delete();
   }
 
+  /// List users who have granted access to stats
   @override
   Future<Iterable<UserProfile>> listOwnStatsGrants() async {
     final querySnapshot = await _firestore
@@ -668,7 +669,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       _log.d('No stats grants available');
       return [];
     }
-    final userIds = statsGrantReferences.map((doc) => doc.id);
+    final userIds = statsGrantReferences
+        .map((doc) => doc.reference.parent.parent!.parent.parent!.id);
     final usersSnapshot = await _firestore
         .collection(usersCollectionName)
         .where(FieldPath.documentId, whereIn: userIds)
@@ -681,9 +683,11 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   @override
   Future<Iterable<UserProfile>> listGivenStatsGrants() async {
     final snapshot = await _firestore
-        .collection('users')
+        .collection('sharing')
         .doc(userId)
-        .collection('collaborators')
+        .collection('sharedStats')
+        .doc('stats')
+        .collection('grantedTo')
         .get()
         .logError('Error loading collaborator IDs');
     if (snapshot.docs.isEmpty) {

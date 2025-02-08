@@ -54,7 +54,12 @@ service cloud.firestore {
 //        allow write: if isSigned() && request.auth.uid == userId;
 //    }
 
-    match /sharing/{userId}/decks/{deckId}/grantedTo/{grantedToUid} {
+    match /sharing/{userId}/sharedDecks/{deckId}/grantedTo/{grantedToUid} {
+      allow read: if isSigned(); // && (isAuthor(userId) || resource.data.grantedTo == request.auth.uid);
+      allow write: if request.auth.uid == userId;
+    }
+
+    match /sharing/{userId}/sharedStats/stats/grantedTo/{grantedToUid} {
       allow read: if isSigned(); // && (isAuthor(userId) || resource.data.grantedTo == request.auth.uid);
       allow write: if request.auth.uid == userId;
     }

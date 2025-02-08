@@ -12,21 +12,13 @@
     <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="        Granting access">
       <change beforePath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" beforeDir="false" afterPath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/firestore.indexes.json" beforeDir="false" afterPath="$PROJECT_DIR$/firestore.indexes.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_en.arb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_en.arb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_pl.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_pl.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_pl.arb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_pl.arb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/common/UserAvatar.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/common/avatar.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/decks_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/decks_list.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/shared_decks.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/shared_decks.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/layout/UserMenu.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/layout/UserMenu.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firestore.rules" beforeDir="false" afterPath="$PROJECT_DIR$/firestore.rules" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/card_edit.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/card_edit.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/layout/base_layout.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/layout/base_layout.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/model/repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/repository.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/settings/settings_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/settings/settings_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/statistics/select_person_focus.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/statistics/select_person_focus.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/statistics/statistics_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/statistics/statistics_page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/model/firebase_repository_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/firebase_repository_test.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
@@ -96,6 +88,7 @@
     "Flutter Test.grant access and verify of other user can load deck.executor": "Run",
     "Flutter Test.grant access to deck.executor": "Run",
     "Flutter Test.grant permission to stats to user1 and user1 can get list of collaborators.executor": "Run",
+    "Flutter Test.grant permission to stats to user1 and verify if added to /sharing collection.executor": "Run",
     "Flutter Test.tests in firebase_repository_test.dart.executor": "Run",
     "Flutter.main.dart.executor": "Run",
     "ResourceManagerPrefKey.ResourceType": "DRAWABLE",
@@ -121,19 +114,7 @@
       <recent name="$PROJECT_DIR$/assets/images" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter Test.tests in firebase_repository_test.dart">
-    <configuration name="Collaboration Invitations" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="Collaboration Invitations" />
-      <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
-      <option name="useRegexp" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Decks management" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="Decks management" />
-      <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
-      <option name="useRegexp" value="false" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Flutter.main.dart">
     <configuration name="grant access and verify of other user can load deck" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
       <option name="testName" value="grant access and verify of other user can load deck" />
       <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
@@ -146,6 +127,18 @@
       <option name="useRegexp" value="false" />
       <method v="2" />
     </configuration>
+    <configuration name="grant permission to stats to user1 and user1 can get list of collaborators" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="grant permission to stats to user1 and user1 can get list of collaborators" />
+      <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
+      <option name="useRegexp" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="grant permission to stats to user1 and verify if added to /sharing collection" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="grant permission to stats to user1 and verify if added to /sharing collection" />
+      <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
+      <option name="useRegexp" value="false" />
+      <method v="2" />
+    </configuration>
     <configuration name="tests in firebase_repository_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
       <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
       <option name="useRegexp" value="false" />
@@ -153,11 +146,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Flutter Test.grant permission to stats to user1 and user1 can get list of collaborators" />
         <item itemvalue="Flutter Test.tests in firebase_repository_test.dart" />
+        <item itemvalue="Flutter Test.grant permission to stats to user1 and verify if added to /sharing collection" />
         <item itemvalue="Flutter Test.grant access to deck" />
         <item itemvalue="Flutter Test.grant access and verify of other user can load deck" />
-        <item itemvalue="Flutter Test.Decks management" />
-        <item itemvalue="Flutter Test.Collaboration Invitations" />
       </list>
     </recent_temporary>
   </component>
@@ -226,7 +219,15 @@
       <option name="project" value="LOCAL" />
       <updated>1738925883143</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="        Granting access">
+      <option name="closed" value="true" />
+      <created>1739008617359</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1739008617359</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="ToolWindowManager">

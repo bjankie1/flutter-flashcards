@@ -237,7 +237,7 @@ void main() {
       withClock(Clock.fixed(DateTime(2021)), () async {
         await repository.saveCollaborationInvitation(user2.email);
 
-        final collaborators = await repository.loadCollaborators();
+        final collaborators = await repository.listCollaborators();
         expect(collaborators.length, 0);
 
         // Log as user2
@@ -251,7 +251,7 @@ void main() {
         expect(invitations.first.sentTimestamp,
             currentClockDateTime.toTimestamp());
 
-        final collaborators2 = await repository.loadCollaborators();
+        final collaborators2 = await repository.listCollaborators();
         expect(collaborators2.length, 0);
       });
     });
@@ -259,8 +259,6 @@ void main() {
     test(
         'changeInvitationStatus updates invitation status both users start collaboration',
         () async {
-      await repository.saveUser(userLogged);
-      await repository.saveUser(user1);
       await repository.saveCollaborationInvitation(user1.email);
       await repository.saveCollaborationInvitation(user2.email);
 
@@ -272,7 +270,7 @@ void main() {
           invitations.first.id, InvitationStatus.accepted);
       final invitationsAgain = await repository.pendingInvitations();
       expect(invitationsAgain.length, 0);
-      final collaborators1 = await repository.loadCollaborators();
+      final collaborators1 = await repository.listCollaborators();
       expect(collaborators1.length, 1);
       expect(collaborators1, contains(userLogged.id));
       await expectLater(
@@ -298,7 +296,7 @@ void main() {
       await changeLogin(userLogged);
       final sentInvitations = await repository.pendingInvitations(sent: true);
       expect(sentInvitations.length, 1);
-      final collaborators = await repository.loadCollaborators();
+      final collaborators = await repository.listCollaborators();
       expect(collaborators.length, 1);
       expect(collaborators, contains(user1.id));
     });
@@ -328,42 +326,26 @@ void main() {
     });
 
     test(
-        'grant permission to stats to user1 and verify if added to /users/{loggedInUser}/collaborators/{user1}',
+        'grant permission to stats to user1 and verify if added to /sharing collection',
         () async {
       // save user1 requires them to be logged in
       await changeLogin(user1);
-      await repository.saveUser(user1);
 
       // login back to default user
       await changeLogin(userLogged);
       await repository.grantStatsAccess(user1.email);
-      await expectLater(
-          firestore
-              .collection('users')
-              .doc(loggedInUserId)
-              .collection('collaborators')
-              .doc(user1.id)
-              .get()
-              .then((doc) => doc.exists),
-          completion(isTrue));
-      await expectLater(
-          firestore
-              .collection('users')
-              .doc(user1.id)
-              .collection('grantedStatsAccess')
-              .doc(loggedInUserId)
-              .get()
-              .then((doc) => doc.exists),
-          completion(isTrue));
+      final grantedList = await repository.listGivenStatsGrants();
+      expect(grantedList, hasLength(1));
+      expect(grantedList.first.id, equals(user1.id));
+      await changeLogin(user1);
+      final grants = await repository.listOwnStatsGrants();
+      expect(grants, hasLength(1));
+      expect(grants.first.id, equals(loggedInUserId));
     });
 
     test(
         'grant permission to stats to user1 and user1 can get list of collaborators',
         () async {
-      await repository.saveUser(userLogged);
-      await changeLogin(user1);
-      await repository.saveUser(user1);
-      await changeLogin(userLogged);
       await repository.grantStatsAccess(user1.email);
 
       await changeLogin(user1);

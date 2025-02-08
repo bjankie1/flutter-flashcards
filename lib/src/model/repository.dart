@@ -120,7 +120,7 @@ abstract class CardsRepository extends ChangeNotifier {
 
   Future<void> saveCollaborationInvitation(String receivingUserEmail);
 
-  Future<Set<String>> loadCollaborators();
+  Future<Set<String>> listCollaborators();
 
   Future<Iterable<CollaborationInvitation>> pendingInvitations(
       {bool sent = false});

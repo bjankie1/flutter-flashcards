@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/common/avatar.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
 
@@ -33,14 +34,29 @@ class SelectPersonFocus extends StatelessWidget {
                       items: [
                         DropdownMenuItem(
                             value: context.appState.userProfile.value!.id,
-                            child:
-                                Text(context.appState.userProfile.value!.name)),
+                            child: SizedBox(
+                              width: 200,
+                              child: ListTile(
+                                  dense: true,
+                                  leading: Avatar(
+                                    size: 25,
+                                  ),
+                                  title: Text(context
+                                      .appState.userProfile.value!.name)),
+                            )),
                         ...users.map((user) {
                           final String name = (user.name.isEmpty) == true
                               ? user.email
                               : user.name;
                           return DropdownMenuItem(
-                              value: user.id, child: Text(name));
+                              value: user.id,
+                              child: SizedBox(
+                                width: 200,
+                                child: ListTile(
+                                    dense: true,
+                                    leading: Avatar(size: 25, userId: user.id),
+                                    title: Text(name)),
+                              ));
                         })
                       ],
                       onChanged: (String? value) {
