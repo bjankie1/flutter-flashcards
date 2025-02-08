@@ -425,9 +425,16 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   @override
   Future<Iterable<CardAnswer>> loadAnswers(DateTime dayStart, DateTime dayEnd,
       {String? uid}) async {
-    _log.d('Loading answers for $dayStart to $dayEnd');
+    _log.d('Loading answers for $dayStart to $dayEnd for user $uid');
 
-    final snapshot = await _cardAnswersCollection
+    final collection = uid != null
+        ? _firestore
+            .collection(cardAnswersCollectionName)
+            .doc(uid)
+            .collection(userPrefix(cardAnswersCollectionName))
+            .withCardAnswerConverter
+        : _cardAnswersCollection;
+    final snapshot = await collection
         .where(Filter.and(
             Filter('reviewStart', isGreaterThanOrEqualTo: dayStart),
             Filter('reviewStart', isLessThanOrEqualTo: dayEnd)))

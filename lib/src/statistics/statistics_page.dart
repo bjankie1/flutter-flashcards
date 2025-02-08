@@ -6,6 +6,7 @@ import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:flutter_flashcards/src/statistics/select_person_focus.dart';
 import 'package:flutter_flashcards/src/statistics/statistics_charts.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class StudyStatisticsPage extends StatefulWidget {
@@ -14,7 +15,9 @@ class StudyStatisticsPage extends StatefulWidget {
 }
 
 class _StudyStatisticsPageState extends State<StudyStatisticsPage> {
-  ValueNotifier<String?> selectedUser = ValueNotifier(null);
+  final _log = Logger();
+
+  String? selectedUser;
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +33,12 @@ class _StudyStatisticsPageState extends State<StudyStatisticsPage> {
                   StatisticsFilter(),
                   Spacer(),
                   SelectPersonFocus(
+                    userId: selectedUser,
                     onUserChange: (uid) {
-                      selectedUser.value = uid;
+                      setState(() {
+                        _log.d('Changed focus to user $uid');
+                        selectedUser = uid;
+                      });
                     },
                   ),
                   SizedBox(
@@ -40,11 +47,7 @@ class _StudyStatisticsPageState extends State<StudyStatisticsPage> {
                 ],
               ),
               Expanded(
-                child: ValueListenableBuilder(
-                    valueListenable: selectedUser,
-                    builder: (context, uid, _) {
-                      return StatisticsCharts(uid);
-                    }),
+                child: StatisticsCharts(selectedUser),
               )
             ],
           ),
