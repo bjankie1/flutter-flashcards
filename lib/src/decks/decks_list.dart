@@ -1,6 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/common/UserAvatar.dart';
+import 'package:flutter_flashcards/src/common/avatar.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:go_router/go_router.dart';
@@ -14,27 +14,31 @@ import '../widgets.dart';
 class DeckListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return RepositoryLoader<Iterable<model.Deck>>(
-      fetcher: (repository) => repository.loadDecks(),
-      builder: (context, decksIterable, repository) {
-        final decks = decksIterable.toList();
-        decks.sort((deck1, deck2) => deck1.name.compareTo(deck2.name));
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: decks.isEmpty ? 1 : decks.length,
-            itemBuilder: (context, index) {
-              if (decks.isEmpty) {
-                return Center(child: Text(context.l10n.noDecksMessage));
-              }
-              final deck = decks[index];
-              return DeckListItem(deck: deck);
+    return ValueListenableBuilder(
+        valueListenable: context.cardRepository.decksUpdated,
+        builder: (context, value, _) {
+          return RepositoryLoader<Iterable<model.Deck>>(
+            fetcher: (repository) => repository.loadDecks(),
+            builder: (context, decksIterable, repository) {
+              final decks = decksIterable.toList();
+              decks.sort((deck1, deck2) => deck1.name.compareTo(deck2.name));
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: decks.isEmpty ? 1 : decks.length,
+                  itemBuilder: (context, index) {
+                    if (decks.isEmpty) {
+                      return Center(child: Text(context.l10n.noDecksMessage));
+                    }
+                    final deck = decks[index];
+                    return DeckListItem(deck: deck);
+                  },
+                ),
+              );
             },
-          ),
-        );
-      },
-    );
+          );
+        });
   }
 
   Future<void> deleteDeck(BuildContext context, model.Deck deck) async {
@@ -239,7 +243,7 @@ class DeckGrants extends StatelessWidget {
               children: data
                   .map((grant) => Tooltip(
                       message: grant.name.isEmpty ? grant.email : grant.name,
-                      child: UserAvatar(size: 20, userId: grant.id)))
+                      child: Avatar(size: 20, userId: grant.id)))
                   .toList(),
             ),
           );

@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/common/UserAvatar.dart';
+import 'package:flutter_flashcards/src/common/avatar.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:go_router/go_router.dart';
 
@@ -20,7 +20,7 @@ class UserMenu extends StatelessWidget {
         PopupMenuItem<int>(
             child: ListTile(
           title: Text(context.appState.userProfile.value?.email ?? '-'),
-          leading: UserAvatar(
+          leading: Avatar(
             size: 20,
           ),
         )),

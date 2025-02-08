@@ -3,13 +3,13 @@ import 'package:flutter_flashcards/src/common/assets.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 
-class UserAvatar extends StatelessWidget {
+class Avatar extends StatelessWidget {
   final double size;
 
   /// Alternative userId to show avatars of other users
   final String? userId;
 
-  UserAvatar({this.size = 50, this.userId});
+  Avatar({this.size = 50, this.userId});
 
   Future<void> loadAvatarUrl(BuildContext context) async {
     if (userId != null) {

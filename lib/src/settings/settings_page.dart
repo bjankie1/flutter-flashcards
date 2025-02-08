@@ -232,6 +232,7 @@ class _NameInputState extends State<NameInput> {
                   context.appState
                       .updateUserProfile(name: _nameController.text);
                   _onTextChanged();
+                  context.showInfoSnackbar(context.l10n.profileNameChanged);
                 },
                 icon: Icon(Icons.check))
         ],

@@ -136,5 +136,7 @@
   "deckSharedMessage": "Deck has been shared",
   "deckSharedFailedMessage": "Failed sharing deck",
   "decksTitle": "My decks",
-  "noDecksMessage": "No decks found. Add your first deck"
+  "noDecksMessage": "No decks found. Add your first deck",
+  "profileNameChanged": "Profile name changed",
+  "noSharedDecksMessage": "No shared decks found"
 }

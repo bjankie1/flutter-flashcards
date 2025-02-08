@@ -245,4 +245,10 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get noDecksMessage => 'Nie masz jeszcze zestawów. Dodaj swój pierwszy.';
+
+  @override
+  String get profileNameChanged => 'Nazwa profilu zmieniona';
+
+  @override
+  String get noSharedDecksMessage => 'Nie ma udostępnionych zestawów kart';
 }

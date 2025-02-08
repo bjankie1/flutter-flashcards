@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/l10n/app_localizations.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
-import 'package:flutter_flashcards/src/common/UserAvatar.dart';
+import 'package:flutter_flashcards/src/common/avatar.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/layout/UserMenu.dart';
 import 'package:flutter_flashcards/src/layout/left_navigation.dart';
@@ -83,7 +83,7 @@ class BaseLayout extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: UserMenu(
-                          child: UserAvatar(
+                          child: Avatar(
                         size: 30,
                       )),
                     ),

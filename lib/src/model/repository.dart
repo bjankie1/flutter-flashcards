@@ -144,7 +144,7 @@ abstract class CardsRepository extends ChangeNotifier {
   Future<Iterable<UserProfile>> listGivenStatsGrants();
 
   /// List of decks shared with the user logged in
-  Future<Iterable<model.Deck>> listSharedDecks();
+  Future<Map<UserId, Iterable<model.Deck>>> listSharedDecks();
 }
 
 extension ContextProviders on BuildContext {

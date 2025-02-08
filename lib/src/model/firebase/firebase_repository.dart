@@ -791,13 +791,13 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   }
 
   @override
-  Future<Iterable<Deck>> listSharedDecks() async {
+  Future<Map<UserId, Iterable<Deck>>> listSharedDecks() async {
     _log.d('Loading shared decks');
     final deckIds =
         await getSharedDeckIds().logError('Error loading shared decks');
     if (deckIds.isEmpty) {
       _log.d('No shared decks');
-      return [];
+      return {};
     }
     _log.d('Loaded ${deckIds.length} shared decks');
     final Map<UserId, Iterable<DeckId>> groupedDecks =
@@ -809,7 +809,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       }
       return map;
     });
-    final decks = await Future.wait(groupedDecks.entries.map((entry) async {
+    final entries = await Future.wait(groupedDecks.entries.map((entry) async {
       final ownerId = entry.key;
       final deckIds = entry.value;
       _log.d('Loading decks for user $ownerId with IDs $deckIds');
@@ -821,10 +821,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
           .withDecksConverter
           .get()
           .logError('Failed loading shared decks from $ownerId');
-      return decksSnapshot.docs.map((s) => s.data());
+      return MapEntry(ownerId, decksSnapshot.docs.map((s) => s.data()));
     }));
-    final Iterable<Deck> result =
-        decks.fold([], (agg, next) => [...agg, ...next]);
-    return result;
+    return Map.fromEntries(entries);
   }
 }

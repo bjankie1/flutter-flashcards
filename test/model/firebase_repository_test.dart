@@ -415,7 +415,8 @@ void main() {
       await changeLogin(user1);
       final sharedWithUser1 = await repository.listSharedDecks();
       expect(sharedWithUser1.length, 1);
-      expect(sharedWithUser1.first.id, deckId);
+      expect(sharedWithUser1, contains(loggedInUserId));
+      expect(sharedWithUser1[loggedInUserId]!.first.id, deckId);
     });
 
     test('grant access and verify of other user can load deck', () async {
@@ -425,8 +426,8 @@ void main() {
       await repository.grantAccessToDeck(deckId, user1.email);
       await changeLogin(user1);
       final loadedDecks = await repository.listSharedDecks();
-      expect(loadedDecks.length, 1);
-      expect(loadedDecks.first.id, deckId);
+      expect(loadedDecks, contains(loggedInUserId));
+      expect(loadedDecks[loggedInUserId]!.first.id, deckId);
     });
   });
 }

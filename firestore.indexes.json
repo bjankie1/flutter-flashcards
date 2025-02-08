@@ -15,7 +15,7 @@
       ]
     },
     {
-      "collectionGroup": "cardStats",
+      "collectionGroup": "userCardStats",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -33,7 +33,7 @@
       ]
     },
     {
-      "collectionGroup": "cardStats",
+      "collectionGroup": "userCardStats",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -65,7 +65,7 @@
       ]
     },
     {
-      "collectionGroup": "cardStats",
+      "collectionGroup": "userCardStats",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -83,25 +83,7 @@
       ]
     },
     {
-      "collectionGroup": "cardStats",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "cardId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "state",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "nextReviewDate",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "cardStats",
+      "collectionGroup": "userCardStats",
       "queryScope": "COLLECTION",
       "fields": [
         {

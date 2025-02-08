@@ -74,5 +74,7 @@
   "deckSharedMessage": "Deck udostępniony",
   "deckSharedFailedMessage": "Wystąpił błąd podczas udostępniania",
   "decksTitle": "Moje zestawy",
-  "noDecksMessage": "Nie masz jeszcze zestawów. Dodaj swój pierwszy."
+  "noDecksMessage": "Nie masz jeszcze zestawów. Dodaj swój pierwszy.",
+  "profileNameChanged": "Nazwa profilu zmieniona",
+  "noSharedDecksMessage": "Nie ma udostępnionych zestawów kart"
 }

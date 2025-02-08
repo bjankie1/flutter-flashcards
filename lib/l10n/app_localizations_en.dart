@@ -245,4 +245,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noDecksMessage => 'No decks found. Add your first deck';
+
+  @override
+  String get profileNameChanged => 'Profile name changed';
+
+  @override
+  String get noSharedDecksMessage => 'No shared decks found';
 }

@@ -538,6 +538,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No decks found. Add your first deck'**
   String get noDecksMessage;
+
+  /// No description provided for @profileNameChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile name changed'**
+  String get profileNameChanged;
+
+  /// No description provided for @noSharedDecksMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No shared decks found'**
+  String get noSharedDecksMessage;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
