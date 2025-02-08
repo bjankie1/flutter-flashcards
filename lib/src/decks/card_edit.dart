@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
@@ -7,13 +8,14 @@ import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:logger/logger.dart';
 // import 'package:image_picker_for_web/image_picker_for_web.dart'
 //     if (dart.library.html) 'package:image_picker_for_web/image_picker_for_web.dart';
 
 import 'package:provider/provider.dart';
-import '../model/repository.dart';
+
 import '../model/cards.dart' as model;
+import '../model/repository.dart';
 
 class CardEdit extends StatefulWidget {
   final model.Card? card;
@@ -27,6 +29,8 @@ class CardEdit extends StatefulWidget {
 }
 
 class _CardEditState extends State<CardEdit> {
+  final _log = Logger();
+
   final GlobalKey<FormState> formKey = GlobalKey();
 
   final cardQuestionTextController = TextEditingController();
@@ -39,10 +43,17 @@ class _CardEditState extends State<CardEdit> {
   late bool explanationImageAttached;
 
   void reset() {
-    cardQuestionTextController.text = '';
-    cardAnswerTextController.text = '';
-    cardHintTextController.text = '';
-    cardId = '';
+    _log.d('reset() called');
+
+    setState(() {
+      cardQuestionTextController.text = '';
+      cardAnswerTextController.text = '';
+      cardHintTextController.text = '';
+      cardId = context.cardRepository.nextCardId();
+      questionImageAttached = false;
+      explanationImageAttached = false;
+    });
+    FocusScope.of(context).unfocus();
   }
 
   @override
@@ -54,7 +65,7 @@ class _CardEditState extends State<CardEdit> {
     questionImageAttached = widget.card?.questionImageAttached ?? false;
     explanationImageAttached = widget.card?.explanationImageAttached ?? false;
 
-    cardId = widget.card?.id ?? context.read<CardsRepository>().nextCardId();
+    cardId = widget.card?.id ?? context.cardRepository.nextCardId();
   }
 
   @override
@@ -293,14 +304,11 @@ class _CardEditState extends State<CardEdit> {
   }
 
   void _uploadImageWeb(model.ImagePlacement placement) async {
-    //   final ImagePickerPlugin picker = ImagePickerPlugin();
-    // final XFile? image =
-    //     await picker.getImageFromSource(source: ImageSource.gallery);
     FilePickerResult? result = await FilePicker.platform.pickFiles();
     if (result != null && result.count > 0) {
       XFile image = result.files.first.xFile;
       final service = context.read<StorageService>();
-      await service.uploadImage(
+      await service.uploadCardIllustration(
         image,
         cardId,
         placement.name,

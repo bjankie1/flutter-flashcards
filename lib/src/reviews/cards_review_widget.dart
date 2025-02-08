@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/common/assets.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/card_image.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
@@ -61,7 +62,7 @@ class _CardsReviewState extends State<CardsReview> {
                 style: Theme.of(context).textTheme.headlineLarge),
             Expanded(
               child: Center(
-                child: Image.asset('images/celebration2.jpg'),
+                child: Image(image: celebrationImage),
               ),
             ),
           ],

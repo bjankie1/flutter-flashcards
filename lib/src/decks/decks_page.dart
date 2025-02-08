@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
+import 'package:flutter_flashcards/src/decks/shared_decks.dart';
 import 'package:provider/provider.dart';
 
-import 'decks_list.dart';
 import '../layout/base_layout.dart';
 import '../model/cards.dart' as model;
 import '../model/repository.dart';
+import 'decks_list.dart';
 
-class DecksPage extends StatelessWidget {
+class DecksPage extends StatefulWidget {
+  @override
+  State<DecksPage> createState() => _DecksPageState();
+}
+
+class _DecksPageState extends State<DecksPage> {
+  bool _ownDecks = true;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AppState>(builder: (context, appState, _) {
       return BaseLayout(
-        title: Text('Flashcard decks'),
+        title: Text(context.l10n.decksTitle),
         currentPage: PageIndex.cards,
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {
@@ -22,7 +35,24 @@ class DecksPage extends StatelessWidget {
           label: Text(context.l10n.addDeck),
           icon: const Icon(Icons.add),
         ),
-        child: DeckListWidget(),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(_ownDecks ? 'Own decks' : 'Shared decks'),
+                Switch(
+                    value: _ownDecks,
+                    onChanged: (value) {
+                      setState(() {
+                        _ownDecks = value;
+                      });
+                    }),
+              ],
+            ),
+            _ownDecks ? DeckListWidget() : SharedDeckListWidget(),
+          ],
+        ),
       );
     });
   }

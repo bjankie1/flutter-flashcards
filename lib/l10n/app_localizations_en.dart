@@ -230,4 +230,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allCardsReviewedMessage => 'Well done!';
+
+  @override
+  String get personFilterLabel => 'You or friend';
+
+  @override
+  String get deckSharedMessage => 'Deck has been shared';
+
+  @override
+  String get deckSharedFailedMessage => 'Failed sharing deck';
+
+  @override
+  String get decksTitle => 'My decks';
+
+  @override
+  String get noDecksMessage => 'No decks found. Add your first deck';
+
+  @override
+  String get profileNameChanged => 'Profile name changed';
+
+  @override
+  String get noSharedDecksMessage => 'No shared decks found';
 }

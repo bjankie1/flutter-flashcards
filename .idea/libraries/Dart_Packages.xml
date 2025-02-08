@@ -250,7 +250,7 @@
         <entry key="dart_style">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/dart_style-2.3.7/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/dart_style-2.3.8/lib" />
             </list>
           </value>
         </entry>
@@ -328,6 +328,13 @@
           <value>
             <list>
               <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/file-7.0.1/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="file_picker">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/file_picker-8.3.1/lib" />
             </list>
           </value>
         </entry>
@@ -579,7 +586,7 @@
         <entry key="flutter_markdown">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_markdown-0.7.5/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_markdown-0.7.6/lib" />
             </list>
           </value>
         </entry>
@@ -663,7 +670,7 @@
         <entry key="go_router">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/go_router-14.7.1/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/go_router-14.7.2/lib" />
             </list>
           </value>
         </entry>
@@ -978,7 +985,7 @@
         <entry key="package_info_plus">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/package_info_plus-8.1.3/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/package_info_plus-8.1.4/lib" />
             </list>
           </value>
         </entry>
@@ -1216,7 +1223,7 @@
         <entry key="vector_graphics">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/vector_graphics-1.1.15/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/vector_graphics-1.1.17/lib" />
             </list>
           </value>
         </entry>
@@ -1307,14 +1314,14 @@
         <entry key="webview_flutter_wkwebview">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/webview_flutter_wkwebview-3.17.0/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/webview_flutter_wkwebview-3.18.0/lib" />
             </list>
           </value>
         </entry>
         <entry key="win32">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/win32-5.10.0/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/win32-5.10.1/lib" />
             </list>
           </value>
         </entry>
@@ -1369,7 +1376,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/cross_file-0.3.4+2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/crypto-3.0.6/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/dart_jsonwebtoken-2.16.0/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/dart_style-2.3.7/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/dart_style-2.3.8/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/ed25519_edwards-0.3.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/email_validator-2.1.17/lib" />
@@ -1381,6 +1388,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/fake_firebase_security_rules-0.5.3/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/ffi-2.1.3/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file-7.0.1/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file_picker-8.3.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file_selector_linux-0.9.3+2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file_selector_macos-0.9.4+2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file_selector_platform_interface-2.6.2/lib" />
@@ -1414,7 +1422,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flex_color_scheme-8.1.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flex_seed_scheme-3.5.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_lints-5.0.0/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_markdown-0.7.5/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_markdown-0.7.6/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_math_fork-0.7.3/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.24/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_svg-2.0.17/lib" />
@@ -1424,7 +1432,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/frontend_server_client-4.0.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/fsrs-1.1.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/glob-2.1.3/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/go_router-14.7.1/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/go_router-14.7.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_identity_services_web-0.3.3/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_sign_in-6.2.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_sign_in_android-6.1.34/lib" />
@@ -1469,7 +1477,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/more-4.4.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/nested-1.0.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/package_config-2.1.1/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/package_info_plus-8.1.3/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/package_info_plus-8.1.4/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/package_info_plus_platform_interface-3.0.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path-1.9.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_parsing-1.1.0/lib" />
@@ -1502,7 +1510,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/typed_data-1.4.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/url_strategy-0.3.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/uuid-4.5.1/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/vector_graphics-1.1.15/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/vector_graphics-1.1.17/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/vector_graphics_codec-1.1.13/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/vector_graphics_compiler-1.1.16/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/vector_math-2.1.4/lib" />
@@ -1515,8 +1523,8 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/webview_flutter_android-4.3.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/webview_flutter_platform_interface-2.10.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/webview_flutter_plus-0.4.10/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/webview_flutter_wkwebview-3.17.0/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/win32-5.10.0/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/webview_flutter_wkwebview-3.18.0/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/win32-5.10.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/xml-6.5.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/yaml-3.1.3/lib" />
       <root url="file:///opt/homebrew/Caskroom/flutter/3.27.3/flutter/bin/cache/dart-sdk/pkg/_macros/lib" />

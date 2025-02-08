@@ -508,6 +508,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Well done!'**
   String get allCardsReviewedMessage;
+
+  /// No description provided for @personFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'You or friend'**
+  String get personFilterLabel;
+
+  /// No description provided for @deckSharedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck has been shared'**
+  String get deckSharedMessage;
+
+  /// No description provided for @deckSharedFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed sharing deck'**
+  String get deckSharedFailedMessage;
+
+  /// No description provided for @decksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My decks'**
+  String get decksTitle;
+
+  /// No description provided for @noDecksMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No decks found. Add your first deck'**
+  String get noDecksMessage;
+
+  /// No description provided for @profileNameChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile name changed'**
+  String get profileNameChanged;
+
+  /// No description provided for @noSharedDecksMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No shared decks found'**
+  String get noSharedDecksMessage;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

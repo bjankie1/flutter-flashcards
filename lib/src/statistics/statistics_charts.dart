@@ -24,18 +24,17 @@ class StatisticsCharts extends StatelessWidget {
             builder: (context, result, _) {
               return ListView(
                 children: [
+                  IntrinsicWidth(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: BaseStatisticsTable(result),
+                      )),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: AspectRatio(
                       aspectRatio: 4,
                       child: Row(
                         children: [
-                          Flexible(
-                              flex: 1,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: BaseStatisticsTable(result),
-                              )),
                           Flexible(
                             flex: 2,
                             child: Container(

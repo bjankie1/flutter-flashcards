@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/app_state.dart';
-import 'package:flutter_flashcards/src/common/custom_theme.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_flashcards/l10n/app_localizations.dart';
+import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
+import 'package:flutter_flashcards/src/common/custom_theme.dart';
+import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 
 import 'app_router.dart';
 
@@ -12,21 +12,17 @@ class FlashcardsApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<ThemeMode>(
-        valueListenable: context.watch<AppState>().currentTheme,
-        builder: (context, currentTheme, _) => ValueListenableBuilder<Locale>(
-              // Add this ValueListenableBuilder
-              valueListenable: context.watch<AppState>().currentLocale,
-              builder: (context, currentLocale, _) => MaterialApp.router(
-                title: 'Flashcards ${currentLocale.languageCode}',
-                theme: getLightThemeFlexColor(),
-                darkTheme: getDarkThemeFlexColor(),
-                themeMode: currentTheme,
-                routerConfig: router,
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                supportedLocales: AppLocalizations.supportedLocales,
-                locale: currentLocale,
-              ),
+    return ValueListenableBuilder<UserProfile?>(
+        valueListenable: context.appState.userProfile,
+        builder: (context, userProfile, _) => MaterialApp.router(
+              title: 'Flashcards',
+              theme: getLightThemeFlexColor(),
+              darkTheme: getDarkThemeFlexColor(),
+              themeMode: userProfile?.theme ?? ThemeMode.system,
+              routerConfig: router,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: userProfile?.locale,
             ));
   }
 }

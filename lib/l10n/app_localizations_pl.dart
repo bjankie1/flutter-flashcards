@@ -230,4 +230,25 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get allCardsReviewedMessage => 'Gratulacje!';
+
+  @override
+  String get personFilterLabel => 'Osoba';
+
+  @override
+  String get deckSharedMessage => 'Deck udostępniony';
+
+  @override
+  String get deckSharedFailedMessage => 'Wystąpił błąd podczas udostępniania';
+
+  @override
+  String get decksTitle => 'Moje zestawy';
+
+  @override
+  String get noDecksMessage => 'Nie masz jeszcze zestawów. Dodaj swój pierwszy.';
+
+  @override
+  String get profileNameChanged => 'Nazwa profilu zmieniona';
+
+  @override
+  String get noSharedDecksMessage => 'Nie ma udostępnionych zestawów kart';
 }

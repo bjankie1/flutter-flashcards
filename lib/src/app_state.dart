@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
+import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:logger/logger.dart';
@@ -10,49 +12,57 @@ class AppState extends ChangeNotifier {
 
   final CardsRepository cardRepository;
 
+  final StorageService storageService;
+
   bool get loggedIn => _authenticatedUser.value != null;
-  UserProfile? _userProfile;
+
+  ValueNotifier<UserProfile?> _userProfile = ValueNotifier(null);
+
+  ValueListenable<UserProfile?> get userProfile => _userProfile;
+
   ValueNotifier<User?> _authenticatedUser = ValueNotifier(null);
+
   ValueListenable<User?> get authenticatedUser => _authenticatedUser;
 
-  final ValueNotifier<Locale> _currentLocale =
-      ValueNotifier(WidgetsBinding.instance.platformDispatcher.locale);
-  ValueListenable<Locale> get currentLocale => _currentLocale;
+  final _appTitle = ValueNotifier<String>('Flashcards');
 
-  final ValueNotifier<String> _appTitle = ValueNotifier<String>('Flashcards');
   ValueListenable<String> get appTitle => _appTitle;
 
-  AppState(this.cardRepository) {
+  final _userAvatarUrl = ValueNotifier<String?>(null);
+
+  ValueListenable<String?> get userAvatarUrl => _userAvatarUrl;
+
+  AppState(this.cardRepository, this.storageService) {
     _log.i('Initializing Firebase authentication');
     FirebaseAuth.instance.userChanges().listen((user) async {
       if (user != null) {
         _log.d('user in instance: ${FirebaseAuth.instance.currentUser?.email}');
         await loadUserProfile(user.uid);
         _authenticatedUser.value = user;
+        await reloadAvatarUrl();
       } else {
         resetState(); // Debug log for logout
       }
     });
-    currentTheme.addListener(() async {
-      if (_userProfile != null && _userProfile?.theme != currentTheme.value) {
-        _userProfile = _userProfile!.copyWith(theme: currentTheme.value);
-        await cardRepository.saveUser(_userProfile!);
+    userProfile.addListener(() async {
+      if (_userProfile.value != null) {
+        _log.d('Saving new value of user profile');
+        await cardRepository.saveUser(_userProfile.value!);
+        if (_userProfile.value!.avatarUploadTime != null) {
+          await reloadAvatarUrl();
+        }
+      } else {
+        _log.d('Not saving null value of user profile');
       }
-    });
-    currentLocale.addListener(() async {
-      if (_userProfile != null && _userProfile?.locale != currentLocale.value) {
-        _userProfile = _userProfile!.copyWith(locale: currentLocale.value);
-        await cardRepository.saveUser(_userProfile!);
-      }
+      notifyListeners();
     });
   }
 
   void resetState() {
     _authenticatedUser.value = null;
     _log.d('User logged out'); // Debug log for logout
-    setTheme(ThemeMode.system);
-    _userProfile = null;
-    _currentLocale.value = WidgetsBinding.instance.platformDispatcher.locale;
+    _userProfile.value = null;
+    _userAvatarUrl.value = null;
     notifyListeners();
   }
 
@@ -60,53 +70,76 @@ class AppState extends ChangeNotifier {
   /// from firestore and restores state data based on that.
   Future<void> loadUserProfile(String userId) async {
     _log.d('User logged in: $userId'); // Debug log for user ID
-    _userProfile = await cardRepository.loadUser(userId);
-    if (_userProfile == null) {
+    var userProfile = await cardRepository.loadUser(userId);
+    var authUser = FirebaseAuth.instance.currentUser!;
+    if (userProfile == null) {
       _log.i('User profile not found, creating new one');
-      _userProfile = UserProfile(
-          id: userId,
-          name: '',
-          email: FirebaseAuth.instance.currentUser!.email ?? '',
-          theme: currentTheme.value,
-          locale: _currentLocale.value,
-          photoUrl: '');
-      await cardRepository.saveUser(_userProfile!);
-    } else if (_userProfile != null &&
-        (_userProfile?.email == null || _userProfile!.email.isEmpty)) {
-      _userProfile = _userProfile!.copyWith(
-        email: FirebaseAuth.instance.currentUser!.email ?? '',
+      userProfile = UserProfile(
+        id: userId,
+        name: authUser.displayName ?? '',
+        email: authUser.email ?? '',
+        theme: ThemeMode.system,
+        locale: WidgetsBinding.instance.platformDispatcher.locale,
       );
-      await cardRepository.saveUser(_userProfile!);
-    } else {
-      _log.i('Loaded theme ${_userProfile?.theme.name}');
-      _log.i('Loaded locale ${_userProfile?.locale.languageCode}');
-      setTheme(_userProfile!.theme);
-      _currentLocale.value = _userProfile!.locale;
+      await cardRepository.saveUser(userProfile);
     }
+    _userProfile.value = userProfile;
+    _log.i('Loaded theme ${userProfile.theme.name}');
+    _log.i('Loaded locale ${userProfile.locale.languageCode}');
     notifyListeners();
   }
 
-  final ValueNotifier<ThemeMode> _currentTheme =
-      ValueNotifier(ThemeMode.system);
-  ValueListenable<ThemeMode> get currentTheme => _currentTheme;
+  set locale(Locale locale) {
+    updateUserProfile(locale: locale);
+  }
 
-  void setTheme(ThemeMode newTheme) {
-    _currentTheme.value = newTheme;
+  set theme(ThemeMode newTheme) {
+    updateUserProfile(theme: newTheme);
   }
 
   void toggleTheme() {
-    _currentTheme.value = _currentTheme.value == ThemeMode.light
+    theme = userProfile.value!.theme == ThemeMode.light
         ? ThemeMode.dark
         : ThemeMode.light;
   }
 
-  set locale(Locale newLocale) {
-    _currentLocale.value = newLocale;
+  void updateUserProfile(
+      {Locale? locale,
+      ThemeMode? theme,
+      String? name,
+      bool newAvatar = false}) {
+    var newProfile = _userProfile.value!;
+    if (locale != null) {
+      _log.d('Updating locale to ${locale.languageCode}');
+      newProfile = _userProfile.value!.copyWith(locale: locale);
+    }
+    if (theme != null) {
+      _log.d('Updating theme to ${theme.name}');
+      newProfile = _userProfile.value!.copyWith(theme: theme);
+    }
+    if (name != null) {
+      _log.d('Updating name to: $name');
+      newProfile = _userProfile.value!.copyWith(name: name);
+    }
+    if (newAvatar) {
+      _log.d('Updated avatar');
+      newProfile =
+          _userProfile.value!.copyWith(avatarUploadTime: DateTime.now());
+    }
+    _userProfile.value = newProfile;
   }
 
   set title(String newTitle) {
     _appTitle.value = newTitle;
   }
 
-  UserProfile? get userProfile => _userProfile;
+  Future<void> reloadAvatarUrl() async {
+    _log.d('Reloading avatar url');
+    _userAvatarUrl.value = await storageService
+        .userAvatarUrl()
+        .then((value) => value != null
+            ? '$value?v=${userProfile.value?.avatarUploadTime}' // add timestamp to URL to force reload
+            : null)
+        .logError('Error loading avatar URL');
+  }
 }

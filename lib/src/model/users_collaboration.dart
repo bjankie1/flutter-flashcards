@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/cards.dart';
 
+typedef UserId = String;
+
 class UserProfile extends FirebaseSerializable {
-  final String id;
+  final UserId id;
   final String name;
   final String email;
   final ThemeMode theme;
   final Locale locale;
-  final String photoUrl;
+  final DateTime? avatarUploadTime;
 
   UserProfile(
       {required this.id,
@@ -17,21 +19,21 @@ class UserProfile extends FirebaseSerializable {
       required this.name,
       required this.theme,
       required this.locale,
-      required this.photoUrl});
+      this.avatarUploadTime});
 
   UserProfile copyWith(
       {String? email,
       String? name,
       ThemeMode? theme,
       Locale? locale,
-      String? photoUrl}) {
+      DateTime? avatarUploadTime}) {
     return UserProfile(
       id: id,
       email: email ?? this.email,
       name: name ?? this.name,
       theme: theme ?? this.theme,
       locale: locale ?? this.locale,
-      photoUrl: photoUrl ?? this.photoUrl,
+      avatarUploadTime: avatarUploadTime ?? this.avatarUploadTime,
     );
   }
 
@@ -41,7 +43,7 @@ class UserProfile extends FirebaseSerializable {
         'email': email,
         'themeIndex': theme.index,
         'locale': locale.languageCode,
-        'photoUrl': photoUrl,
+        'avatarUploadTime': avatarUploadTime,
       };
 
   factory UserProfile.fromJson(String id, Map<String, dynamic> data) =>
@@ -51,7 +53,7 @@ class UserProfile extends FirebaseSerializable {
           name: data['name'],
           theme: ThemeMode.values[data['themeIndex']],
           locale: Locale(data['locale']),
-          photoUrl: data['photoUrl']);
+          avatarUploadTime: (data['avatarUploadTime'] as Timestamp?)?.toDate());
 
   @override
   String? get idValue => id;
@@ -65,7 +67,11 @@ class UserProfile extends FirebaseSerializable {
       other is UserProfile &&
           runtimeType == other.runtimeType &&
           id == other.id &&
-          email == other.email;
+          email == other.email &&
+          name == other.name &&
+          theme == other.theme &&
+          locale == other.locale &&
+          avatarUploadTime == other.avatarUploadTime;
 }
 
 /// The object will serve both purpose of initiating the collaboration
