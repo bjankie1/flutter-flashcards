@@ -149,6 +149,35 @@ void main() {
           throwsA(isA<Exception>()));
     });
 
+    test('Save double-sided card and verify the stats include both sides',
+        () async {
+      final deck = model.Deck(name: 'Test Deck 3');
+      await repository.saveDeck(deck);
+
+      final card = model.Card(
+          id: 'card1',
+          deckId: 'deck1',
+          question: 'Question 1',
+          answer: 'Answer 1',
+          options: model.CardOptions(learnBothSides: true));
+      await repository.saveCard(card);
+
+      final frontStats = await repository.loadCardStats(
+          card.id!, model.CardReviewVariant.front);
+      expect(frontStats.cardId, card.id);
+      expect(frontStats.variant, model.CardReviewVariant.front);
+      expect(frontStats.state, model.State.newState);
+      expect(frontStats.nextReviewDate, null);
+      expect(frontStats.stability, 0);
+      final backStats = await repository.loadCardStats(
+          card.id!, model.CardReviewVariant.back);
+      expect(backStats.cardId, card.id);
+      expect(backStats.variant, model.CardReviewVariant.back);
+      expect(backStats.state, model.State.newState);
+      expect(backStats.nextReviewDate, null);
+      expect(backStats.stability, 0);
+    });
+
     test('recorded answer reflected ins tats', () async {
       final deck = model.Deck(name: 'Test Deck 3');
       await repository.saveDeck(deck);

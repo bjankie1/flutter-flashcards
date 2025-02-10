@@ -550,6 +550,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No shared decks found'**
   String get noSharedDecksMessage;
+
+  /// No description provided for @deckNotFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck not found'**
+  String get deckNotFoundMessage;
+
+  /// No description provided for @cardOptionDoubleSided.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn both sides'**
+  String get cardOptionDoubleSided;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

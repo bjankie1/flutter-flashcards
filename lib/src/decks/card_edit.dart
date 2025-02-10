@@ -8,7 +8,6 @@ import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:logger/logger.dart';
 // import 'package:image_picker_for_web/image_picker_for_web.dart'
 //     if (dart.library.html) 'package:image_picker_for_web/image_picker_for_web.dart';
 
@@ -29,22 +28,18 @@ class CardEdit extends StatefulWidget {
 }
 
 class _CardEditState extends State<CardEdit> {
-  final _log = Logger();
-
-  final GlobalKey<FormState> formKey = GlobalKey();
-
   final cardQuestionTextController = TextEditingController();
   final cardAnswerTextController = TextEditingController();
   final cardHintTextController = TextEditingController();
 
   late String cardId;
 
-  late bool questionImageAttached;
-  late bool explanationImageAttached;
+  bool questionImageAttached = false;
+  bool explanationImageAttached = false;
+
+  bool learnBothSides = false;
 
   void reset() {
-    _log.d('reset() called');
-
     setState(() {
       cardQuestionTextController.text = '';
       cardAnswerTextController.text = '';
@@ -52,6 +47,7 @@ class _CardEditState extends State<CardEdit> {
       cardId = context.cardRepository.nextCardId();
       questionImageAttached = false;
       explanationImageAttached = false;
+      learnBothSides = false;
     });
     FocusScope.of(context).unfocus();
   }
@@ -64,7 +60,7 @@ class _CardEditState extends State<CardEdit> {
     cardHintTextController.text = widget.card?.explanation ?? '';
     questionImageAttached = widget.card?.questionImageAttached ?? false;
     explanationImageAttached = widget.card?.explanationImageAttached ?? false;
-
+    learnBothSides = widget.card?.options?.learnBothSides ?? false;
     cardId = widget.card?.id ?? context.cardRepository.nextCardId();
   }
 
@@ -75,6 +71,16 @@ class _CardEditState extends State<CardEdit> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CardOptions(
+                value: learnBothSides,
+                onChanged: (value) {
+                  setState(() {
+                    learnBothSides = value;
+                  });
+                }),
+          ),
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -109,38 +115,38 @@ class _CardEditState extends State<CardEdit> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 8.0,
                       children: [
-                        ConstrainedBox(
-                          constraints:
-                              BoxConstraints(maxHeight: 300, minHeight: 100),
+                        Expanded(
+                          flex: 2,
                           child: Column(
                             children: [
-                              _markdownPreview(cardQuestionTextController),
-                              _imagePreview(
-                                  height: 200,
-                                  imagePlacement:
-                                      model.ImagePlacement.question),
+                              MarkdownPreview(cardQuestionTextController),
+                              ImagePreview(
+                                imagePlacement: model.ImagePlacement.question,
+                                questionImageAttached: questionImageAttached,
+                                explanationImageAttached:
+                                    explanationImageAttached,
+                                cardId: cardId,
+                              ),
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
                         Divider(),
-                        _markdownPreview(cardAnswerTextController),
+                        Expanded(
+                            child: MarkdownPreview(cardAnswerTextController)),
                         Divider(),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        ConstrainedBox(
-                          constraints:
-                              BoxConstraints(maxHeight: 300, minHeight: 100),
+                        Expanded(
+                          flex: 2,
                           child: Column(
                             children: [
-                              _markdownPreview(cardHintTextController),
-                              _imagePreview(
-                                  height: 200,
-                                  imagePlacement:
-                                      model.ImagePlacement.explanation),
+                              MarkdownPreview(cardHintTextController),
+                              ImagePreview(
+                                imagePlacement:
+                                    model.ImagePlacement.explanation,
+                                questionImageAttached: questionImageAttached,
+                                explanationImageAttached:
+                                    explanationImageAttached,
+                                cardId: cardId,
+                              ),
                             ],
                           ),
                         ),
@@ -181,54 +187,34 @@ class _CardEditState extends State<CardEdit> {
     );
   }
 
-  Widget _markdownPreview(TextEditingController controller) {
-    return ValueListenableBuilder(
-        valueListenable: controller,
-        builder: (context, value, _) {
-          return GptMarkdown(value.text);
-        });
-  }
-
   Widget _answerInput() {
-    return Row(
-      children: [
-        Expanded(
-          child: TextFormField(
-            maxLines: 4,
-            controller: cardAnswerTextController,
-            decoration: InputDecoration(
-                hintText: context.l10n.answerHint,
-                labelText: context.l10n.answerLabel,
-                border: OutlineInputBorder()),
+    return Expanded(
+      child: Row(
+        children: [
+          Expanded(
+            child: TextFormField(
+              maxLines: 4,
+              controller: cardAnswerTextController,
+              decoration: InputDecoration(
+                  hintText: context.l10n.answerHint,
+                  labelText: context.l10n.answerLabel,
+                  border: OutlineInputBorder()),
+            ),
           ),
-        ),
-        ValueListenableBuilder(
-            valueListenable: cardQuestionTextController,
-            builder: (context, value, _) {
-              return _GenerateAnswerButton(
-                  deck: widget.deck,
-                  question: value.text,
-                  onAnswer: (answer, hint) {
-                    cardAnswerTextController.text = answer;
-                    cardHintTextController.text = hint;
-                  });
-            })
-      ],
+          ValueListenableBuilder(
+              valueListenable: cardQuestionTextController,
+              builder: (context, value, _) {
+                return _GenerateAnswerButton(
+                    deck: widget.deck,
+                    question: value.text,
+                    onAnswer: (answer, hint) {
+                      cardAnswerTextController.text = answer;
+                      cardHintTextController.text = hint;
+                    });
+              })
+        ],
+      ),
     );
-  }
-
-  Widget _imagePreview(
-      {double height = 200.0, required model.ImagePlacement imagePlacement}) {
-    return Visibility(
-        visible: imagePlacement == model.ImagePlacement.question &&
-                questionImageAttached ||
-            imagePlacement == model.ImagePlacement.explanation &&
-                explanationImageAttached,
-        child: CardImage(
-          cardId: cardId,
-          placement: imagePlacement,
-          height: height,
-        ));
   }
 
   Widget _markdownWithImageInput(
@@ -236,8 +222,8 @@ class _CardEditState extends State<CardEdit> {
       required String hintText,
       required String labelText,
       required model.ImagePlacement imagePlacement}) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: 300, minHeight: 100),
+    return Expanded(
+      flex: 2,
       child: Stack(
         alignment: Alignment.topRight,
         children: [
@@ -280,7 +266,8 @@ class _CardEditState extends State<CardEdit> {
         answer: cardAnswerTextController.text,
         explanation: cardHintTextController.text,
         questionImageAttached: questionImageAttached,
-        explanationImageAttached: explanationImageAttached);
+        explanationImageAttached: explanationImageAttached,
+        options: model.CardOptions(learnBothSides: learnBothSides));
 
     await context.cardRepository.saveCard(cardToSave).then(
         (value) => context.showInfoSnackbar(context.l10n.cardSavedMessage),
@@ -297,9 +284,9 @@ class _CardEditState extends State<CardEdit> {
     if (kIsWeb) {
       _uploadImageWeb(placement);
     } else {
-      final ImagePicker picker = ImagePicker();
-      final XFile? pickedFile =
-          await picker.pickImage(source: ImageSource.gallery);
+      // final ImagePicker picker = ImagePicker();
+      // final XFile? pickedFile =
+      //     await picker.pickImage(source: ImageSource.gallery);
     }
   }
 
@@ -327,8 +314,28 @@ class _CardEditState extends State<CardEdit> {
         onError: () => context.showErrorSnackbar('Error uploading image'),
       );
     }
+  }
+}
 
-    //   // Pick an image from the gallery
+class CardOptions extends StatelessWidget {
+  final ValueChanged<bool> onChanged;
+  final bool value;
+
+  const CardOptions({required this.value, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            Text(context.l10n.cardOptionDoubleSided),
+            Switch(value: value, onChanged: onChanged)
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -395,5 +402,52 @@ class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
         _isLoading = false;
       });
     }
+  }
+}
+
+class MarkdownPreview extends StatelessWidget {
+  final TextEditingController controller;
+
+  const MarkdownPreview(this.controller);
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+        valueListenable: controller,
+        builder: (context, value, _) {
+          return GptMarkdown(value.text);
+        });
+  }
+}
+
+class ImagePreview extends StatelessWidget {
+  final double height;
+
+  final model.ImagePlacement imagePlacement;
+
+  final bool questionImageAttached;
+  final bool explanationImageAttached;
+
+  final String cardId;
+
+  const ImagePreview(
+      {this.height = 200.0,
+      required this.imagePlacement,
+      required this.questionImageAttached,
+      required this.explanationImageAttached,
+      required this.cardId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+        visible: imagePlacement == model.ImagePlacement.question &&
+                questionImageAttached ||
+            imagePlacement == model.ImagePlacement.explanation &&
+                explanationImageAttached,
+        child: CardImage(
+          cardId: cardId,
+          placement: imagePlacement,
+          height: height,
+        ));
   }
 }

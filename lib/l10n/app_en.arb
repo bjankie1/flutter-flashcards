@@ -138,5 +138,7 @@
   "decksTitle": "My decks",
   "noDecksMessage": "No decks found. Add your first deck",
   "profileNameChanged": "Profile name changed",
-  "noSharedDecksMessage": "No shared decks found"
+  "noSharedDecksMessage": "No shared decks found",
+  "deckNotFoundMessage": "Deck not found",
+  "cardOptionDoubleSided": "Learn both sides"
 }
