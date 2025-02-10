@@ -76,5 +76,7 @@
   "decksTitle": "Moje zestawy",
   "noDecksMessage": "Nie masz jeszcze zestawów. Dodaj swój pierwszy.",
   "profileNameChanged": "Nazwa profilu zmieniona",
-  "noSharedDecksMessage": "Nie ma udostępnionych zestawów kart"
+  "noSharedDecksMessage": "Nie ma udostępnionych zestawów kart",
+  "deckNotFoundMessage": "Nie ma takiego zestawu",
+  "cardOptionDoubleSided": "Nauka obu stron karty"
 }

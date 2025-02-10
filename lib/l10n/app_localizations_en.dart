@@ -251,4 +251,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noSharedDecksMessage => 'No shared decks found';
+
+  @override
+  String get deckNotFoundMessage => 'Deck not found';
+
+  @override
+  String get cardOptionDoubleSided => 'Learn both sides';
 }

@@ -251,4 +251,10 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get noSharedDecksMessage => 'Nie ma udostępnionych zestawów kart';
+
+  @override
+  String get deckNotFoundMessage => 'Nie ma takiego zestawu';
+
+  @override
+  String get cardOptionDoubleSided => 'Nauka obu stron karty';
 }

@@ -191,8 +191,8 @@ class CardOptions {
   final bool inputRequired;
 
   CardOptions({
-    required this.learnBothSides,
-    required this.inputRequired,
+    this.learnBothSides = false,
+    this.inputRequired = false,
   });
 
   Map<String, dynamic> toJson() => {
