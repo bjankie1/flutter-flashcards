@@ -6,6 +6,7 @@ import 'package:flutter_flashcards/src/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:provider/provider.dart';
+
 import '../model/cards.dart' as model;
 
 class CardsList extends StatelessWidget {
@@ -32,24 +33,10 @@ class CardsList extends StatelessWidget {
                     final card = flashcards[index];
                     return Padding(
                       padding: EdgeInsets.symmetric(vertical: 4),
-                      child: ListTile(
-                        onTap: () async {
-                          await context
-                              .push('/decks/${deck.id}/cards/${card.id}');
-                        },
-                        tileColor:
-                            Theme.of(context).colorScheme.surfaceContainerHigh,
-                        title: GptMarkdown(
-                          card.question,
-                          maxLines: 5,
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () async {
-                            await _deleteCard(context, card);
-                          },
-                        ),
-                      ),
+                      child: CardTile(
+                          deck: deck,
+                          card: card,
+                          onDelete: () => _deleteCard(context, card)),
                     );
                   },
                 ),
@@ -81,5 +68,38 @@ class CardsList extends StatelessWidget {
             onError: (e, stackTrace) {
       context.showErrorSnackbar(context.l10n.cardDeletionErrorMessage);
     });
+  }
+}
+
+class CardTile extends StatelessWidget {
+  final model.Deck deck;
+  final model.Card card;
+  final Function onDelete;
+
+  CardTile({required this.deck, required this.card, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      onTap: () async {
+        await context.push('/decks/${deck.id}/cards/${card.id}');
+      },
+      tileColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+      title: GptMarkdown(
+        card.question,
+        maxLines: 5,
+      ),
+      subtitle: Row(
+        children: [
+          if (card.options?.learnBothSides ?? false) Icon(Icons.swap_vert)
+        ],
+      ),
+      trailing: IconButton(
+        icon: const Icon(Icons.delete),
+        onPressed: () {
+          onDelete();
+        },
+      ),
+    );
   }
 }
