@@ -50,8 +50,8 @@ class StudySession with ChangeNotifier {
     }
     final card = _cards[(_currentIndex) % _cards.length];
     final duration = currentClockDateTime.difference(_reviewStart);
-    await repository.recordAnswer(card.id!, model.CardReviewVariant.front,
-        rating, _reviewStart, duration);
+    await repository.recordAnswer(
+        card.id, model.CardReviewVariant.front, rating, _reviewStart, duration);
     // Remove cards that have been learnt
     if (rating != model.Rating.again) {
       _cards.removeAt(_currentIndex);

@@ -10,14 +10,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Two-sided cards">
+      <change beforePath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" beforeDir="false" afterPath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/decks/cards_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/cards_list.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/model/cards.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/cards.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/model/repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/model/firebase_repository_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/firebase_repository_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/index.html-e" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html-e" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,6 +72,16 @@
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;git@github.com:bjankie1/flutter-flashcards.git&quot;,
     &quot;accountId&quot;: &quot;402fe4e2-fdba-435a-82f7-2b707e69531a&quot;
+  },
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
+    },
+    &quot;owner&quot;: &quot;bjankie1&quot;,
+    &quot;repository&quot;: &quot;flutter-flashcards&quot;
   }
 }</component>
   <component name="OptimizeOnSaveOptions">
@@ -99,6 +113,7 @@
     "Flutter Test.Save and load card stats.executor": "Run",
     "Flutter Test.Save double-sided card and verify the stats include both sides.executor": "Run",
     "Flutter Test.changeInvitationStatus updates invitation status both users start collaboration.executor": "Run",
+    "Flutter Test.grant access and other user incorporates shared deck into learning list.executor": "Run",
     "Flutter Test.grant access and verify of other user can load deck.executor": "Run",
     "Flutter Test.grant access to deck.executor": "Run",
     "Flutter Test.grant permission to stats to user1 and user1 can get list of collaborators.executor": "Run",
@@ -113,8 +128,7 @@
     "cidr.known.project.marker": "true",
     "com.android.tools.idea.streaming.zoom.toolbar.visible": "false",
     "com.google.services.firebase.aqiPopupShown": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "26-support-for-learning-both-sides-of-a-card",
+    "git-widget-placeholder": "13-grouping-decks-into-categories",
     "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards",
@@ -131,15 +145,15 @@
       <recent name="$PROJECT_DIR$/assets/images" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter.main.dart">
-    <configuration name="Save and load card stats" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="Save and load card stats" />
+  <component name="RunManager" selected="Flutter Test.grant access and other user incorporates shared deck into learning list">
+    <configuration name="grant access and other user incorporates shared deck into learning list" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="grant access and other user incorporates shared deck into learning list" />
       <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
       <option name="useRegexp" value="false" />
       <method v="2" />
     </configuration>
-    <configuration name="Save double-sided card and verify the stats include both sides" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="Save double-sided card and verify the stats include both sides" />
+    <configuration name="grant access to deck" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="grant access to deck" />
       <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
       <option name="useRegexp" value="false" />
       <method v="2" />
@@ -163,11 +177,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Flutter Test.Save double-sided card and verify the stats include both sides" />
-        <item itemvalue="Flutter Test.Save and load card stats" />
-        <item itemvalue="Flutter Test.grant permission to stats to user1 and user1 can get list of collaborators" />
+        <item itemvalue="Flutter Test.grant access and other user incorporates shared deck into learning list" />
         <item itemvalue="Flutter Test.tests in firebase_repository_test.dart" />
         <item itemvalue="Flutter Test.grant permission to stats to user1 and verify if added to /sharing collection" />
+        <item itemvalue="Flutter Test.grant permission to stats to user1 and user1 can get list of collaborators" />
+        <item itemvalue="Flutter Test.grant access to deck" />
       </list>
     </recent_temporary>
   </component>
@@ -284,7 +298,15 @@
       <option name="project" value="LOCAL" />
       <updated>1739181406509</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Two-sided cards">
+      <option name="closed" value="true" />
+      <created>1739212336411</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1739212336411</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="ToolWindowManager">

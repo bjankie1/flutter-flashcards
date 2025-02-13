@@ -114,8 +114,8 @@ abstract class CardsRepository extends ChangeNotifier {
         await loadCardsByIds(cardIds).logError('Error loading cards by ID');
     final decks = await loadDecksByIds(cards.map((c) => c.deckId).toSet())
         .logError('Error loading decks for cards');
-    return Map.fromEntries(cards.map(
-        (c) => MapEntry(c.id!, decks.firstWhere((d) => d.id == c.deckId))));
+    return Map.fromEntries(cards
+        .map((c) => MapEntry(c.id, decks.firstWhere((d) => d.id == c.deckId))));
   }
 
   Future<void> saveCollaborationInvitation(String receivingUserEmail);
@@ -145,6 +145,9 @@ abstract class CardsRepository extends ChangeNotifier {
 
   /// List of decks shared with the user logged in
   Future<Map<UserId, Iterable<model.Deck>>> listSharedDecks();
+
+  /// Incorporate deck into own progress tracking
+  Future<void> incorporateSharedDeck(String deckId);
 }
 
 extension ContextProviders on BuildContext {

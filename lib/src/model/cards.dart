@@ -210,7 +210,7 @@ List<Tag> _tagsFromJson(List<String> data) =>
     data.map((tag) => Tag(name: tag)).toList();
 
 class Card implements FirebaseSerializable {
-  final String? id;
+  final String id;
   final String deckId;
   final String question;
   final bool questionImageAttached;
@@ -222,7 +222,7 @@ class Card implements FirebaseSerializable {
   final bool explanationImageAttached;
 
   const Card({
-    this.id,
+    required this.id,
     required this.deckId,
     required this.question,
     required this.answer,
@@ -291,11 +291,13 @@ class Card implements FirebaseSerializable {
   }
 
   @override
-  String get idValue => id!;
+  String get idValue => id;
 
   @override
   Map<String, dynamic> toJson() => {
         'deckId': deckId,
+        // regrettable redundancy due to limitation of collectionGroup filtering
+        'cardId': id,
         'question': question,
         'answer': answer,
         'options': options?.toJson(),
@@ -436,11 +438,11 @@ class CardStats implements FirebaseSerializable {
   static Iterable<CardStats> statsForCard(Card card) {
     if (card.options?.learnBothSides == true) {
       return [
-        CardStats(cardId: card.id!, variant: CardReviewVariant.front),
-        CardStats(cardId: card.id!, variant: CardReviewVariant.back)
+        CardStats(cardId: card.id, variant: CardReviewVariant.front),
+        CardStats(cardId: card.id, variant: CardReviewVariant.back)
       ];
     }
-    return [CardStats(cardId: card.id!, variant: CardReviewVariant.front)];
+    return [CardStats(cardId: card.id, variant: CardReviewVariant.front)];
   }
 
   factory CardStats.fromJson(String id, Map<String, dynamic> data) {

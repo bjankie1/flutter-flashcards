@@ -63,7 +63,7 @@ class CardsList extends StatelessWidget {
   _deleteCard(BuildContext context, model.Card card) async {
     final repository = context.read<CardsRepository>();
     await repository
-        .deleteCard(card.id!)
+        .deleteCard(card.id)
         .then((_) => context.showInfoSnackbar(context.l10n.cardDeletedMessage),
             onError: (e, stackTrace) {
       context.showErrorSnackbar(context.l10n.cardDeletionErrorMessage);

@@ -1,9 +1,9 @@
 import 'package:clock/clock.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/model/study_session.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockCardsRepository extends Mock implements CardsRepository {}
@@ -94,7 +94,7 @@ void main() {
     });
 
     verify(() => mockRepository.recordAnswer(
-        card.id!,
+        card.id,
         model.CardReviewVariant.front,
         model.Rating.good,
         startTime,
@@ -123,7 +123,7 @@ void main() {
       await studySession.rateAnswer(model.Rating.again);
     });
     verify(() => mockRepository.recordAnswer(
-        card.id!,
+        card.id,
         model.CardReviewVariant.front,
         model.Rating.again,
         responseTime,
@@ -170,15 +170,15 @@ void main() {
     // may change. As there is no guarantee it's assumed that chance of
     // no change at all in 100 tries is negligible.
     final initialOrder = [];
-    initialOrder.add(studySession.currentCard?.id!);
+    initialOrder.add(studySession.currentCard?.id);
     await studySession.rateAnswer(model.Rating.again);
-    initialOrder.add(studySession.currentCard?.id!);
+    initialOrder.add(studySession.currentCard?.id);
     await studySession.rateAnswer(model.Rating.again);
-    initialOrder.add(studySession.currentCard?.id!);
+    initialOrder.add(studySession.currentCard?.id);
     await studySession.rateAnswer(model.Rating.again);
     final newOrder = [];
     for (var i = 0; i < 100; i++) {
-      newOrder.add(studySession.currentCard?.id!);
+      newOrder.add(studySession.currentCard?.id);
       await studySession.rateAnswer(model.Rating.again);
       if (newOrder.length == initialOrder.length) {
         if (ListEquality().equals(newOrder, initialOrder)) {

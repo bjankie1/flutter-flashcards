@@ -139,19 +139,6 @@ class FirebaseCardsRepository extends CardsRepository {
     return snapshot.docs.map((s) => s.data());
   }
 
-  Future<Card> _addCard(Card card) async {
-    _log.d('Adding card');
-    final docRef = _cardsCollection.doc();
-    await _firestore.runTransaction((transaction) async {
-      transaction.set(docRef, card);
-      for (final s in CardStats.statsForCard(card.withId(id: docRef.id))) {
-        final sDoc = _cardStatsCollection.doc(s.idValue);
-        transaction.set(sDoc, s);
-      }
-    });
-    return card.withId(id: docRef.id);
-  }
-
   Future<void> _updateCard(Card card) async {
     _log.d('Updating card');
     await _firestore.runTransaction((transaction) async {
@@ -249,16 +236,10 @@ class FirebaseCardsRepository extends CardsRepository {
 
   @override
   Future<Card> saveCard(Card card) async {
-    if (card.id == null) {
-      return await _addCard(card)
-          .whenComplete(() => notifyCardChanged())
-          .logError('Error adding card');
-    } else {
-      await _updateCard(card)
-          .whenComplete(() => notifyCardChanged())
-          .logError('Error saving card');
-      return card;
-    }
+    await _updateCard(card)
+        .whenComplete(() => notifyCardChanged())
+        .logError('Error saving card');
+    return card;
   }
 
   @override
@@ -385,12 +366,13 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     final cardIds =
         cardIdsWithVariants.map((t) => t.$1).toSet(); // unique card Ids
     if (cardIds.isEmpty) return Iterable.empty();
+    final collectionGroup = _firestore
+        .collectionGroup(userPrefix(cardsCollectionName))
+        .withCardsConverter;
     final cardsQuery = deckId != null
-        ? _cardsCollection.where(Filter.and(
-            Filter(FieldPath.documentId, whereIn: cardIds),
+        ? collectionGroup.where(Filter.and(Filter('cardId', whereIn: cardIds),
             Filter('deckId', isEqualTo: deckId)))
-        : _cardsCollection
-            .where(Filter(FieldPath.documentId, whereIn: cardIds));
+        : collectionGroup.where('cardId', whereIn: cardIds);
     final cardsSnapshot = await cardsQuery.get();
     final cards = cardsSnapshot.docs.map((doc) => doc.data());
     final cardsMappedToId =
@@ -835,5 +817,29 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       return MapEntry(ownerId, decksSnapshot.docs.map((s) => s.data()));
     }));
     return Map.fromEntries(entries);
+  }
+
+  @override
+  Future<void> incorporateSharedDeck(String deckId) async {
+    final cards = await _firestore
+        .collectionGroup(userPrefix(cardsCollectionName))
+        .where('deckId', isEqualTo: deckId)
+        .withCardsConverter
+        .get();
+    _log.d('There are ${cards.size} to incorporate from $deckId');
+    for (final card in cards.docs) {
+      final stats = CardStats.statsForCard(card.data());
+      final statsDocs = await Future.wait(stats.map((s) async =>
+          await _cardStatsCollection
+              .doc(s.idValue)
+              .get()
+              .then((snapshot) => (s, snapshot.reference, snapshot.exists))));
+      for (final record in statsDocs) {
+        if (!record.$3) {
+          _log.d('Added card ${record.$1.idValue} to review stats');
+          await record.$2.set(record.$1);
+        }
+      }
+    }
   }
 }

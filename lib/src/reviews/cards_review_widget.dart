@@ -262,7 +262,7 @@ class CardSideContent extends StatelessWidget {
                       flex: 1,
                       child: LayoutBuilder(
                         builder: (context, constraints) => CardImage(
-                          cardId: card.id!,
+                          cardId: card.id,
                           placement: placement,
                           height: constraints.maxHeight,
                         ),

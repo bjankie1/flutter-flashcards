@@ -2,12 +2,12 @@ import 'package:clock/clock.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
+import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../matchers.dart';
 import 'firebase_repository_test.dart';
-import 'package:flutter_flashcards/src/model/cards.dart' as model;
 
 void main() {
   final firestore = FakeFirebaseFirestore();
@@ -63,10 +63,10 @@ void main() {
         expect(cardsToReviewDay1.length, 1);
         expect(cardsToReviewDay1.first, card);
         final reviewTime1 = currentClockDateTime;
-        await repository.recordAnswer(card.id!, model.CardReviewVariant.front,
+        await repository.recordAnswer(card.id, model.CardReviewVariant.front,
             model.Rating.hard, reviewTime1, Duration(minutes: 1));
         final stats = await repository.loadCardStats(
-            card.id!, model.CardReviewVariant.front);
+            card.id, model.CardReviewVariant.front);
         expect(stats, isNotNull);
         expect(stats.nextReviewDate, isNotNull);
       });
@@ -80,10 +80,10 @@ void main() {
       await withClock(Clock.fixed(day2), () async {
         final cardsToReviewDay2 = await repository.loadCardToReview();
         expect(cardsToReviewDay2.length, 1);
-        expect(cardsToReviewDay2.first.id, card.id!);
+        expect(cardsToReviewDay2.first.id, card.id);
 
         final stats1 = await repository.loadCardStats(
-            card.id!, model.CardReviewVariant.front);
+            card.id, model.CardReviewVariant.front);
         expect(stats1.nextReviewDate, isNotNull);
         expect(stats1.nextReviewDate!, isAfter(day1));
         expect(await repository.cardsToReviewCount(), {
@@ -92,7 +92,7 @@ void main() {
           model.State.relearning: 0,
           model.State.review: 0
         });
-        await repository.recordAnswer(card.id!, model.CardReviewVariant.front,
+        await repository.recordAnswer(card.id, model.CardReviewVariant.front,
             model.Rating.good, day2, Duration(minutes: 1));
       });
 
@@ -105,7 +105,7 @@ void main() {
       final day3 = day2.add(Duration(days: 1));
       await withClock(Clock.fixed(day3), () async {
         final stats2 = await repository.loadCardStats(
-            card.id!, model.CardReviewVariant.front);
+            card.id, model.CardReviewVariant.front);
         expect(stats2.nextReviewDate, isNotNull);
         expect(stats2.nextReviewDate, isNot(isBefore(day3)));
         expect(await repository.cardsToReviewCount(), {
@@ -160,14 +160,14 @@ void main() {
     await withClock(Clock.fixed(day2), () async {
       final cardsToReviewDay2 = await repository.loadCardToReview();
       expect(cardsToReviewDay2.length, 2);
-      await repository.recordAnswer(card1.id!, model.CardReviewVariant.front,
+      await repository.recordAnswer(card1.id, model.CardReviewVariant.front,
           model.Rating.good, day2, Duration(minutes: 1));
-      await repository.recordAnswer(card2.id!, model.CardReviewVariant.front,
+      await repository.recordAnswer(card2.id, model.CardReviewVariant.front,
           model.Rating.easy, day2, Duration(minutes: 1));
       final statsCard1 = await repository.loadCardStats(
-          card1.id!, model.CardReviewVariant.front);
+          card1.id, model.CardReviewVariant.front);
       final statsCard2 = await repository.loadCardStats(
-          card2.id!, model.CardReviewVariant.front);
+          card2.id, model.CardReviewVariant.front);
       expect(statsCard1.nextReviewDate, isNotNull);
       expect(statsCard2.nextReviewDate, isNotNull);
       expect(statsCard2.nextReviewDate!, isAfter(statsCard1.nextReviewDate!));
@@ -180,7 +180,7 @@ void main() {
     await withClock(Clock.fixed(day3), () async {
       final cardsToReviewDay3 = await repository.loadCardToReview();
       expect(cardsToReviewDay3.length, 1);
-      expect(cardsToReviewDay3.first.id, card1.id!);
+      expect(cardsToReviewDay3.first.id, card1.id);
     });
 
     // Day 5 (or later, depending on Card 1's scheduling):
@@ -190,7 +190,7 @@ void main() {
     await withClock(Clock.fixed(day5), () async {
       final cardsToReviewDay5 = await repository.loadCardToReview();
       expect(cardsToReviewDay5.length, 1);
-      expect(cardsToReviewDay5.first.id, card1.id!);
+      expect(cardsToReviewDay5.first.id, card1.id);
     });
 
     // Day 10 (or later, depending on scheduling):
@@ -220,8 +220,8 @@ void main() {
     await withClock(Clock.fixed(day2), () async {
       final cardsToReview = await repository.loadCardToReview();
       expect(cardsToReview.length, 1);
-      expect(cardsToReview.first.id, card1.id!);
-      await repository.recordAnswer(card1.id!, model.CardReviewVariant.front,
+      expect(cardsToReview.first.id, card1.id);
+      await repository.recordAnswer(card1.id, model.CardReviewVariant.front,
           model.Rating.good, day2, Duration(minutes: 1));
     });
 
@@ -234,13 +234,13 @@ void main() {
     await withClock(Clock.fixed(day5), () async {
       final cardsToReview = await repository.loadCardToReview();
       final statsBefore = await repository.loadCardStats(
-          card1.id!, model.CardReviewVariant.front);
+          card1.id, model.CardReviewVariant.front);
       expect(cardsToReview.length, 1);
-      expect(cardsToReview.first.id, card1.id!);
-      await repository.recordAnswer(card1.id!, model.CardReviewVariant.front,
+      expect(cardsToReview.first.id, card1.id);
+      await repository.recordAnswer(card1.id, model.CardReviewVariant.front,
           model.Rating.again, day2, Duration(minutes: 1));
       final statsAfter = await repository.loadCardStats(
-          card1.id!, model.CardReviewVariant.front);
+          card1.id, model.CardReviewVariant.front);
       expect(statsBefore.stability, greaterThan(statsAfter.stability));
       expect(statsAfter.nextReviewDate, isNotNull);
       expect(statsAfter.nextReviewDate!, isAfter(day5));
