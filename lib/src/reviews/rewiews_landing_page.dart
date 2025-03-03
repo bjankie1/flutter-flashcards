@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
+import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -10,8 +11,8 @@ class ReviewsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryLoader(
-        fetcher: (repository) =>
-            repository.loadCardToReview(), // Loading all cards to review
+        fetcher: (repository) => repository.loadCardToReview().logError(
+            'Error loading cards to review'), // Loading all cards to review
         builder: (context, cards, repository) {
           return RepositoryLoader(
             fetcher: (repository) => groupedByDeck(cards, repository),
@@ -31,7 +32,12 @@ class ReviewsPage extends StatelessWidget {
     final decksMap =
         Map.fromEntries(decks.nonNulls.map((deck) => MapEntry(deck.id, deck)));
     for (final card in cards) {
-      deckGroups.putIfAbsent(decksMap[card.deckId]!, () => []).add(card);
+      var deck = decksMap[card.deckId];
+      if (deck == null) {
+        print('No Deck for ${card.id}');
+        continue;
+      }
+      deckGroups.putIfAbsent(deck, () => []).add(card);
     }
     return deckGroups;
   }

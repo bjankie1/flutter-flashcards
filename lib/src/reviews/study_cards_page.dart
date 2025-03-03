@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
+import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
 import 'package:flutter_flashcards/src/model/study_session.dart';
 import 'package:flutter_flashcards/src/reviews/cards_review_widget.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
+
 import '../layout/base_layout.dart';
 
 class StudyCardsPage extends StatelessWidget {
@@ -16,7 +18,7 @@ class StudyCardsPage extends StatelessWidget {
     return RepositoryLoader(
       fetcher: (repository) async {
         final session = StudySession(repository: repository, deckId: deckId);
-        await session.startStudySession();
+        await session.startStudySession().logError('Error starting session');
         return session;
       },
       builder: (context, session, repository) {

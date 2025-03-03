@@ -562,6 +562,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Learn both sides'**
   String get cardOptionDoubleSided;
+
+  /// No description provided for @decksWithoutGroupHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Decks without group'**
+  String get decksWithoutGroupHeader;
+
+  /// No description provided for @sharedDecksHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Decks sheared by other users'**
+  String get sharedDecksHeader;
+
+  /// No description provided for @addDeckToGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Add deck to group'**
+  String get addDeckToGroup;
+
+  /// No description provided for @saveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveButton;
+
+  /// No description provided for @newDeckGroupName.
+  ///
+  /// In en, this message translates to:
+  /// **'New deck group'**
+  String get newDeckGroupName;
+
+  /// No description provided for @newDeckGroupHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter new deck group name'**
+  String get newDeckGroupHelper;
+
+  /// No description provided for @newDeckGroupAddedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'New deck group added'**
+  String get newDeckGroupAddedMessage;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

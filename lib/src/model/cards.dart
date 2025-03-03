@@ -48,6 +48,7 @@ enum DeckCategory {
 }
 
 typedef DeckId = String;
+typedef DeckGroupId = String;
 
 class Deck implements FirebaseSerializable {
   final DeckId? id;
@@ -121,6 +122,7 @@ class Deck implements FirebaseSerializable {
   @override
   Map<String, dynamic> toJson() => {
         'name': name,
+        'deckId': id,
         'description': description,
         'parentDeckId': parentDeckId,
         'deckOptions':
@@ -160,21 +162,54 @@ class DeckOptions {
   });
 }
 
-class Tag {
+class DeckGroup {
+  final DeckGroupId id;
   final String name;
+  final String? description;
+  final Set<DeckId>? decks;
 
-  const Tag({
+  const DeckGroup({
+    required this.id,
     required this.name,
+    this.description,
+    this.decks = const {},
   });
 
   @override
-  int get hashCode => name.hashCode;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DeckGroup && runtimeType == other.runtimeType && id == other.id;
 
   @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        other is Tag && runtimeType == other.runtimeType && name == other.name;
+  int get hashCode => id.hashCode;
+
+  DeckGroup copyWith({
+    String? id,
+    String? name,
+    String? description,
+    Set<DeckId>? decks,
+  }) {
+    return DeckGroup(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        description: description ?? this.description,
+        decks: decks ?? this.decks);
   }
+
+  factory DeckGroup.fromJson(String id, Map<String, dynamic> json) => DeckGroup(
+        id: id,
+        name: json['name'] as String,
+        description: json['description'] as String?,
+        decks:
+            (json['decks'] as List<dynamic>).map((id) => id.toString()).toSet(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'name__lowercase': name.toLowerCase(),
+        'description': description,
+        'decks': decks == null ? [] : decks!.toList(),
+      };
 }
 
 class Attachment {
@@ -206,9 +241,6 @@ class CardOptions {
       );
 }
 
-List<Tag> _tagsFromJson(List<String> data) =>
-    data.map((tag) => Tag(name: tag)).toList();
-
 class Card implements FirebaseSerializable {
   final String id;
   final String deckId;
@@ -216,7 +248,6 @@ class Card implements FirebaseSerializable {
   final bool questionImageAttached;
   final String answer;
   final CardOptions? options;
-  final List<Tag>? tags;
   final List<String>? alternativeAnswers;
   final String? explanation;
   final bool explanationImageAttached;
@@ -227,7 +258,6 @@ class Card implements FirebaseSerializable {
     required this.question,
     required this.answer,
     this.options,
-    this.tags,
     this.alternativeAnswers,
     this.explanation,
     this.questionImageAttached = false,
@@ -241,7 +271,6 @@ class Card implements FirebaseSerializable {
       question: question,
       answer: answer,
       options: options,
-      tags: tags,
       alternativeAnswers: alternativeAnswers,
       explanation: explanation,
       questionImageAttached: questionImageAttached,
@@ -255,7 +284,6 @@ class Card implements FirebaseSerializable {
     String? question,
     String? answer,
     CardOptions? options,
-    List<Tag>? tags,
     List<String>? alternativeAnswers,
     String? explanation,
     bool? questionImageAttached,
@@ -267,7 +295,6 @@ class Card implements FirebaseSerializable {
         question: question ?? this.question,
         answer: answer ?? this.answer,
         options: options ?? this.options,
-        tags: tags ?? this.tags,
         alternativeAnswers: alternativeAnswers ?? this.alternativeAnswers,
         explanation: explanation ?? this.explanation,
         questionImageAttached:
@@ -301,7 +328,6 @@ class Card implements FirebaseSerializable {
         'question': question,
         'answer': answer,
         'options': options?.toJson(),
-        'tags': tags?.map((tag) => tag.name).toSet(),
         'alternativeAnswers': alternativeAnswers,
         'explanation': explanation ?? '',
         'questionImageAttached': questionImageAttached,
@@ -328,7 +354,6 @@ class Card implements FirebaseSerializable {
       options: data['options'] != null
           ? CardOptions.fromJson(data['options'])
           : null,
-      tags: _tagsFromJson(data['tags'] ?? []),
       alternativeAnswers: data['alternativeAnswers'] ?? [],
       questionImageAttached: data['questionImageAttached'] ?? false,
       explanationImageAttached: data['explanationImageAttached'] ?? false);

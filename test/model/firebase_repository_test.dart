@@ -120,6 +120,47 @@ void main() {
       final loadedCardsAfterUpdate = await repository.loadCard(savedCard3.id);
       expect(loadedCardsAfterUpdate?.answer, 'New answer');
     });
+
+    test('Assign deck to groups', () async {
+      await repository.saveDeck(model.Deck(name: 'Test Deck 1', id: 'deck1'));
+      await repository.saveDeck(model.Deck(name: 'Test Deck 2', id: 'deck2'));
+      await repository.saveDeck(model.Deck(name: 'Test Deck 3', id: 'deck3'));
+      await repository.saveDeck(model.Deck(name: 'Test Deck 4', id: 'deck4'));
+      await repository.saveDeck(model.Deck(name: 'Test Deck 5', id: 'deck5'));
+      await repository.saveDeck(model.Deck(name: 'Test Deck 6', id: 'deck6'));
+      final group1 = await repository.createDeckGroup('name 1', null);
+      final group2 = await repository.createDeckGroup('name 2', null);
+      await repository.addDeckToGroup('deck1', group1.id);
+      await repository.addDeckToGroup('deck2', group1.id);
+      await repository.addDeckToGroup('deck2', group2.id);
+      await repository.addDeckToGroup('deck3', group2.id);
+      final groupedDecks = await repository.loadDecksInGroups();
+      expect(groupedDecks, hasLength(3));
+      final group1Decks =
+          groupedDecks.firstWhere((p) => p.$1?.id == group1.id).$2;
+      final group2Decks =
+          groupedDecks.firstWhere((p) => p.$1?.id == group2.id).$2;
+      final remainingDecks = groupedDecks.firstWhere((p) => p.$1 == null).$2;
+      expect(group1Decks, hasLength(2));
+      expect(group2Decks, hasLength(2));
+      expect(remainingDecks, hasLength(3));
+    });
+
+    test('Should fail creating deck group with same or invalid name', () async {
+      await repository.createDeckGroup('name 1', null);
+      await expectLater(
+          repository.createDeckGroup('name 1', null), throwsA(isA<String>()));
+      await expectLater(
+          repository.createDeckGroup('', null), throwsA(isA<String>()));
+    });
+
+    test('Should fail adding deck to a non existing group', () async {
+      final deck = model.Deck(name: 'Test Deck 1', id: 'deck1');
+      await repository.saveDeck(deck);
+      await expectLater(
+          repository.addDeckToGroup(deck.id!, 'non-existing-group-id'),
+          throwsA(isA<String>()));
+    });
   });
 
   group('Card reviews', () {

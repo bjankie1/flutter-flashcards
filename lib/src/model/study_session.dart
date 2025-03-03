@@ -3,6 +3,7 @@ import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
+import 'package:logger/logger.dart';
 
 /// State used to track progress on a selected set of cards.
 /// It aims to load set of cards either for all decks or for
@@ -12,6 +13,8 @@ import 'package:flutter_flashcards/src/model/repository.dart';
 /// It may happen that a single card can be reviewed multiple
 /// times during a session in case of lapses.
 class StudySession with ChangeNotifier {
+  final _log = Logger();
+
   final CardsRepository repository;
 
   final String? deckId;
@@ -30,6 +33,7 @@ class StudySession with ChangeNotifier {
       _cards.isEmpty ? null : _cards[_currentIndex % _cards.length];
 
   Future<void> startStudySession() async {
+    _log.d('Starting session');
     _cards = await repository
         .loadCardToReview(deckId: deckId)
         .then((result) => result.toList())

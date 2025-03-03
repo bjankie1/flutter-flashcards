@@ -42,6 +42,11 @@ extension CollectionReferenceExtensions<T> on CollectionReference<T> {
       fromFirestore: (doc, _) => Deck.fromJson(doc.id, doc.data()!),
       toFirestore: (deck, _) => deck.toJson());
 
+  CollectionReference<DeckGroup> get withDeckGroupsConverter =>
+      withConverter<DeckGroup>(
+          fromFirestore: (doc, _) => DeckGroup.fromJson(doc.id, doc.data()!),
+          toFirestore: (deckGroup, _) => deckGroup.toJson());
+
   CollectionReference<CardAnswer> get withCardAnswerConverter =>
       withConverter<CardAnswer>(
           fromFirestore: (doc, _) => CardAnswer.fromJson(doc.id, doc.data()!),
@@ -60,6 +65,7 @@ const cardsCollectionName = 'cards';
 const cardStatsCollectionName = 'cardStats';
 const cardAnswersCollectionName = 'reviewLog';
 const decksCollectionName = 'decks';
+const deckGroupsCollectionName = 'deckGroups';
 
 class FirebaseCardsRepository extends CardsRepository {
   final FirebaseFirestore _firestore;
@@ -101,27 +107,13 @@ class FirebaseCardsRepository extends CardsRepository {
   CollectionReference<Deck> get _decksCollection =>
       _collection(decksCollectionName).withDecksConverter;
 
+  CollectionReference<DeckGroup> get _deckGroupsCollection =>
+      _collection(deckGroupsCollectionName).withDeckGroupsConverter;
+
   CollectionReference<UserProfile> get _usersCollection =>
       _firestore.collection(usersCollectionName).withConverter<UserProfile>(
           fromFirestore: (doc, _) => UserProfile.fromJson(doc.id, doc.data()!),
           toFirestore: (user, _) => user.toJson());
-
-  Future<Deck> _addDeck(Deck deck) async {
-    _log.d("Saving new deck ${deck.name}");
-    final docRef = _decksCollection.doc();
-    await docRef.set(deck).then((value) => _log.d("Deck successfully added!"),
-        onError: (e) => _log.e("Error adding deck: $e"));
-    final newDeck = deck.withId(id: docRef.id);
-    return newDeck;
-  }
-
-  Future<Deck> _updateDeck(Deck deck) async {
-    final docRef = _decksCollection.doc(deck.id);
-    await docRef.set(deck, SetOptions(merge: true)).then(
-        (value) => _log.d("Deck successfully updated!"),
-        onError: (e) => _log.e("Error updating deck: $e"));
-    return deck;
-  }
 
   @override
   String nextCardId() => _firestore.collection(cardsCollectionName).doc().id;
@@ -244,17 +236,14 @@ class FirebaseCardsRepository extends CardsRepository {
 
   @override
   Future<Deck> saveDeck(Deck deck) async {
-    if (deck.id == null) {
-      final result =
-          await _addDeck(deck).whenComplete(() => notifyDeckChanged());
-      notifyDeckChanged();
-      return result;
-    } else {
-      final result =
-          await _updateDeck(deck).whenComplete(() => notifyDeckChanged());
-      notifyDeckChanged();
-      return result;
-    }
+    if (deck.name.trim().isEmpty) throw 'Deck name cannot be empty';
+    final docRef = _decksCollection.doc(deck.id);
+    final savedDeck = deck.id == null ? deck.copyWith(id: docRef.id) : deck;
+    await docRef.set(savedDeck, SetOptions(merge: true)).then(
+        (value) => _log.d("Deck successfully updated!"),
+        onError: (e) => _log.e("Error updating deck: $e"));
+    notifyDeckChanged();
+    return savedDeck;
   }
 
   @override
@@ -333,7 +322,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
           .get()
           .logError('Error querying cards to review');
       final toReview = statsSnapshot.docs.map((doc) => doc.data()).toList();
-      _log.d('Cards to review: ${toReview.length}');
+      _log.d('Identified ${toReview.length} to review');
 
       // New cards
       final statsSnapshotNew = await _cardStatsCollection
@@ -345,7 +334,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       _log.d('New cards to review: ${newCards.length}');
 
       final allCards = [...toReview, ...newCards];
-      _log.d('All cards to review: ${statsSnapshot.docs.length}');
+      _log.d('All cards to review: ${allCards.length}');
 
       _log.d('Loading cards to review');
       // Load cards to review
@@ -360,7 +349,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   @override
   Future<Iterable<Card>> loadCardToReview({String? deckId}) async {
     // Load cards to review IDs and corresponding card review variant.
-    final cardIdsWithVariants = await _cardIdsToReview();
+    final cardIdsWithVariants =
+        await _cardIdsToReview().logError('Error identifying cards to review');
     _log.d('Cards to review: ${cardIdsWithVariants.length}');
     // Load corresponding cards for each card ID from the tuple
     final cardIds =
@@ -373,7 +363,9 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         ? collectionGroup.where(Filter.and(Filter('cardId', whereIn: cardIds),
             Filter('deckId', isEqualTo: deckId)))
         : collectionGroup.where('cardId', whereIn: cardIds);
-    final cardsSnapshot = await cardsQuery.get();
+    final cardsSnapshot =
+        await cardsQuery.get().logError('Error loading cards to review');
+    _log.d('Loaded ${cardsSnapshot.docs.length} cards to review');
     final cards = cardsSnapshot.docs.map((doc) => doc.data());
     final cardsMappedToId =
         Map.fromEntries(cards.map((card) => MapEntry(card.id, card)));
@@ -437,9 +429,12 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   @override
   Future<Deck?> loadDeck(String deckId) async {
     _log.d('Loading deck $deckId');
-    final snapshot = await _decksCollection
-        .where(FieldPath.documentId, isEqualTo: deckId)
-        .get();
+    final snapshot = await _firestore
+        .collectionGroup(userPrefix(decksCollectionName))
+        .withDecksConverter
+        .where('deckId', isEqualTo: deckId)
+        .get()
+        .logError('Error loading deck $deckId');
     return snapshot.docs.firstOrNull?.data();
   }
 
@@ -841,5 +836,80 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         }
       }
     }
+  }
+
+  @override
+  Future<void> addDeckToGroup(String deckId, String groupId) async {
+    _log.d('Adding deck $deckId to group $groupId');
+    final doc = _deckGroupsCollection.doc(groupId);
+    final data = await doc.get().then((snapshot) => snapshot.data());
+    if (data == null) {
+      _log.d('Group $groupId not found');
+      throw 'Group $groupId not found';
+    }
+    if (data.decks!.contains(deckId)) {
+      _log.d('Deck $deckId already in group $groupId');
+      return;
+    }
+    final List<DeckId> deckIds = [...data.decks ?? [], deckId];
+
+    await doc.update({'decks': deckIds});
+    notifyDeckGroupChanged();
+  }
+
+  @override
+  Future<DeckGroup> createDeckGroup(String name, String? description) async {
+    if (name.trim().isEmpty) {
+      throw 'Group name cannot be empty and needs to contain non-whitespace characters';
+    }
+    _log.d('Creating deck group $name');
+    final existing = await _deckGroupsCollection.get();
+    if (existing.docs
+        .where((doc) => doc.data().name.toLowerCase() == name.toLowerCase())
+        .isNotEmpty) {
+      throw 'Group of name $name already exists';
+    }
+    final docRef = _deckGroupsCollection.doc();
+    final group =
+        DeckGroup(id: docRef.id, name: name, description: description);
+    await docRef.set(group).logError('Error creating deck group');
+    return group;
+  }
+
+  @override
+  Future<void> deleteDeckGroup(String groupId) async {
+    _log.d('Deleting deck group $groupId');
+    await _deckGroupsCollection
+        .doc(groupId)
+        .delete()
+        .logError('Error deleting deck group');
+  }
+
+  @override
+  Future<Iterable<DeckGroup>> loadDeckGroups() async {
+    _log.d('Loading deck groups');
+    return await _deckGroupsCollection
+        .get()
+        .then((snapshot) => snapshot.docs.map((doc) => doc.data()))
+        .logError('Error loading deck groups');
+  }
+
+  @override
+  Future<void> removeDeckFromGroup(String deckId, String groupId) async {
+    _log.d('Removing deck $deckId from group $groupId');
+    final doc = _deckGroupsCollection.doc(groupId);
+    final group = await doc.get().then((snapshot) => snapshot.data());
+    if (group == null) {
+      _log.d('Group $groupId not found');
+      return;
+    }
+    if (group.decks == null) {
+      _log.d('Group $groupId has no decks');
+      return;
+    }
+    final deckIds = [...group.decks!]..remove(deckId);
+    await doc.update({'decks': deckIds}).logError(
+        'Error removing deck $deckId from group $groupId');
+    notifyDeckGroupChanged();
   }
 }

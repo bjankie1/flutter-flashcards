@@ -4,7 +4,7 @@ description: "Flashcards app for my kids."
 # Prevent accidental publishing to pub.dev.
 publish_to: 'none'
 
-version: 1.0.1+52
+version: 1.0.1+57
 
 environment:
   sdk: ^3.6.0

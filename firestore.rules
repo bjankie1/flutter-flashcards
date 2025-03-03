@@ -22,6 +22,10 @@ service cloud.firestore {
       return exists(/databases/$(database)/documents/sharing/$(userId)/sharedStats/stats/grantedTo/$(request.auth.uid));
     }
 
+    function deckSharedWith(deckId, userId) {
+        return exists(/databases/$(database)/documents/sharing/$(userId)/sharedDecks/$(deckId)/grantedTo/$(request.auth.uid));
+    }
+
     // Is logged in user collaborator of given userId
     function isCollaborator(userId) {
       return exists(/databases/$(database)/documents/userCollaborators/$(userId)/collaborators/$(request.auth.uid)) ||
@@ -79,13 +83,26 @@ service cloud.firestore {
     }
 
     match /cards/{userId}/userCards/{cardId=**} {
-        allow read, write: if isSigned() && (resource == null || isAuthor(userId));
-        allow create: if isAuthor(userId);
+        allow read: if isSigned() && (resource == null || isAuthor(userId));
+        allow write: if isAuthor(userId);
+    }
+
+    match /{path=**}/userCards/{cardId} {
+      allow read: if isSigned();
     }
 
     match /decks/{userId}/userDecks/{deckId} {
-      allow read, write: if isAuthor(userId)
-        || exists(/databases/$(database)/documents/sharing/$(userId)/sharedDecks/$(deckId)/grantedTo/$(request.auth.uid));
+      allow read, write: if isAuthor(userId) || deckSharedWith(deckId, userId);
+      allow create: if isAuthor(userId);
+    }
+
+    match /{path=**}/userDecks/{deckId} {
+      allow read: if isSigned(); // && (isAuthor(userId) || deckSharedWith(deckId, userId));
+    }
+
+    match /deckGroups/{userId}/userDeckGroups/{deckGroupId=**} {
+      allow read: if isAuthor(userId);
+      allow write: if isAuthor(userId);
       allow create: if isAuthor(userId);
     }
 

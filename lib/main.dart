@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/firebase_options.dart';
 import 'package:flutter_flashcards/src/app_info.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
+import 'package:flutter_flashcards/src/drawer_state.dart';
 import 'package:flutter_flashcards/src/genkit/functions.dart';
 import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
 import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
@@ -44,7 +45,6 @@ void main() async {
     log.d('Connected to production Firestore');
   }
   final repository = FirebaseCardsRepository(FirebaseFirestore.instance, null);
-  final repositoryProvider = CardsRepositoryProvider(repository);
   FirebaseAuth.instance.authStateChanges().listen((user) {
     log.i('User logged in as ${user?.email}');
     repository.user = user;
@@ -58,12 +58,13 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        repositoryProvider,
+        CardsRepositoryProvider(repository),
         Provider(create: (context) {
           return storageService;
         }),
         ChangeNotifierProvider(
             create: (context) => AppState(repository, storageService)),
+        ChangeNotifierProvider(create: (context) => DrawerState()),
         Provider(create: (context) => cloudFunctions),
         Provider(create: (context) => appInfo),
       ],

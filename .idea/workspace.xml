@@ -9,15 +9,38 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Two-sided cards">
+    <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Grouping decks into categories">
+      <change afterPath="$PROJECT_DIR$/lib/src/decks/deck_group.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/src/decks/deck_group_selection.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/src/decks/deck_groups.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/src/decks/deck_list_item.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/src/decks/deck_sharing.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/src/drawer_state.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" beforeDir="false" afterPath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firestore.indexes.json" beforeDir="false" afterPath="$PROJECT_DIR$/firestore.indexes.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firestore.rules" beforeDir="false" afterPath="$PROJECT_DIR$/firestore.rules" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_en.arb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_en.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_pl.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_pl.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_pl.arb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_pl.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app_router.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app_router.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/decks/cards_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/cards_list.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_details_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_details_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/decks_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/decks_list.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/decks_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/decks_page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/model/cards.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/cards.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/model/repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/model/study_session.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/study_session.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/reviews/rewiews_landing_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/reviews/rewiews_landing_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/reviews/study_cards_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/reviews/study_cards_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/model/firebase_repository_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/firebase_repository_test.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
@@ -108,10 +131,13 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Flutter Test.Assign deck to groups.executor": "Run",
     "Flutter Test.Collaboration Invitations.executor": "Run",
     "Flutter Test.Decks management.executor": "Run",
     "Flutter Test.Save and load card stats.executor": "Run",
     "Flutter Test.Save double-sided card and verify the stats include both sides.executor": "Run",
+    "Flutter Test.Should fail adding deck to a non existing group.executor": "Run",
+    "Flutter Test.Should fail creating deck group with same or invalid name.executor": "Run",
     "Flutter Test.changeInvitationStatus updates invitation status both users start collaboration.executor": "Run",
     "Flutter Test.grant access and other user incorporates shared deck into learning list.executor": "Run",
     "Flutter Test.grant access and verify of other user can load deck.executor": "Run",
@@ -128,6 +154,7 @@
     "cidr.known.project.marker": "true",
     "com.android.tools.idea.streaming.zoom.toolbar.visible": "false",
     "com.google.services.firebase.aqiPopupShown": "true",
+    "dart.analysis.tool.window.visible": "false",
     "git-widget-placeholder": "13-grouping-decks-into-categories",
     "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
@@ -135,7 +162,7 @@
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.17",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "flutter.settings",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "show.migrate.to.gradle.popup": "false",
     "structure.view.defaults.are.configured": "true"
   }
@@ -145,27 +172,27 @@
       <recent name="$PROJECT_DIR$/assets/images" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter Test.grant access and other user incorporates shared deck into learning list">
+  <component name="RunManager" selected="Flutter.main.dart">
+    <configuration name="Assign deck to groups" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="Assign deck to groups" />
+      <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
+      <option name="useRegexp" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Should fail adding deck to a non existing group" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="Should fail adding deck to a non existing group" />
+      <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
+      <option name="useRegexp" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Should fail creating deck group with same or invalid name" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="Should fail creating deck group with same or invalid name" />
+      <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
+      <option name="useRegexp" value="false" />
+      <method v="2" />
+    </configuration>
     <configuration name="grant access and other user incorporates shared deck into learning list" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
       <option name="testName" value="grant access and other user incorporates shared deck into learning list" />
-      <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
-      <option name="useRegexp" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration name="grant access to deck" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="grant access to deck" />
-      <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
-      <option name="useRegexp" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration name="grant permission to stats to user1 and user1 can get list of collaborators" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="grant permission to stats to user1 and user1 can get list of collaborators" />
-      <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
-      <option name="useRegexp" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration name="grant permission to stats to user1 and verify if added to /sharing collection" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="grant permission to stats to user1 and verify if added to /sharing collection" />
       <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
       <option name="useRegexp" value="false" />
       <method v="2" />
@@ -177,11 +204,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Flutter Test.Assign deck to groups" />
+        <item itemvalue="Flutter Test.Should fail adding deck to a non existing group" />
+        <item itemvalue="Flutter Test.Should fail creating deck group with same or invalid name" />
         <item itemvalue="Flutter Test.grant access and other user incorporates shared deck into learning list" />
         <item itemvalue="Flutter Test.tests in firebase_repository_test.dart" />
-        <item itemvalue="Flutter Test.grant permission to stats to user1 and verify if added to /sharing collection" />
-        <item itemvalue="Flutter Test.grant permission to stats to user1 and user1 can get list of collaborators" />
-        <item itemvalue="Flutter Test.grant access to deck" />
       </list>
     </recent_temporary>
   </component>
@@ -306,7 +333,15 @@
       <option name="project" value="LOCAL" />
       <updated>1739212336411</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Grouping decks into categories">
+      <option name="closed" value="true" />
+      <created>1739483639868</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1739483639868</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -322,6 +357,7 @@
     <MESSAGE value="Granting access" />
     <MESSAGE value="        Granting access" />
     <MESSAGE value="Two-sided cards" />
-    <option name="LAST_COMMIT_MESSAGE" value="Two-sided cards" />
+    <MESSAGE value="Grouping decks into categories" />
+    <option name="LAST_COMMIT_MESSAGE" value="Grouping decks into categories" />
   </component>
 </project>

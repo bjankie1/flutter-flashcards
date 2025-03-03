@@ -78,5 +78,12 @@
   "profileNameChanged": "Nazwa profilu zmieniona",
   "noSharedDecksMessage": "Nie ma udostępnionych zestawów kart",
   "deckNotFoundMessage": "Nie ma takiego zestawu",
-  "cardOptionDoubleSided": "Nauka obu stron karty"
+  "cardOptionDoubleSided": "Nauka obu stron karty",
+  "decksWithoutGroupHeader": "Zestawy bez grupy",
+  "sharedDecksHeader": "Zestawy udostępnione tobie",
+  "addDeckToGroup": "Dodaj zestaw do grupy",
+  "saveButton": "Zapisz",
+  "newDeckGroupName": "Nowa grupa kart",
+  "newDeckGroupHelper": "Podaj nazwę nowej grupy",
+  "newDeckGroupAddedMessage": "Grupa została dodana"
 }

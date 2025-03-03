@@ -97,5 +97,32 @@
       ]
     }
   ],
-  "fieldOverrides": []
+  "fieldOverrides": [
+    {
+      "collectionGroup": "grantedTo",
+      "fieldPath": "grantedTo",
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION_GROUP"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "userCards",
+      "fieldPath": "cardId"
+    },
+    {
+      "collectionGroup": "userDecks",
+      "fieldPath": "deckId"
+    }
+  ]
 }
