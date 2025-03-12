@@ -10,14 +10,16 @@ import '../layout/base_layout.dart';
 class StudyCardsPage extends StatelessWidget {
   // Optional filter for deckId
   final String? deckId;
+  final String? deckGroupId;
 
-  const StudyCardsPage({this.deckId});
+  const StudyCardsPage({this.deckId, this.deckGroupId});
 
   @override
   Widget build(BuildContext context) {
     return RepositoryLoader(
       fetcher: (repository) async {
-        final session = StudySession(repository: repository, deckId: deckId);
+        final session = StudySession(
+            repository: repository, deckId: deckId, deckGroupId: deckGroupId);
         await session.startStudySession().logError('Error starting session');
         return session;
       },

@@ -5,6 +5,7 @@ import 'package:flutter_flashcards/src/decks/deck_group.dart';
 import 'package:flutter_flashcards/src/model/cards.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
+import 'package:go_router/go_router.dart';
 
 class DeckGroups extends StatelessWidget {
   @override
@@ -13,8 +14,11 @@ class DeckGroups extends StatelessWidget {
       valueListenable: context.cardRepository.decksGroupUpdated,
       builder: (context, _, __) => RepositoryLoader(
         fetcher: (repository) => repository.loadDecksInGroups(),
-        builder: (context, groups, _) => ListView(
-          children: _groupsWidgets(context, groups),
+        builder: (context, groups, _) => Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: ListView(
+            children: _groupsWidgets(context, groups),
+          ),
         ),
       ),
     );
@@ -25,13 +29,32 @@ class DeckGroups extends StatelessWidget {
       ...groups.map((t) {
         final (group, decks) = t;
         return [
-          Text(
-            group == null ? context.l10n.decksWithoutGroupHeader : group.name,
-            style: context.textTheme.headlineMedium,
+          Row(
+            spacing: 10,
+            children: [
+              Text(
+                group == null
+                    ? context.l10n.decksWithoutGroupHeader
+                    : group.name,
+                style: context.textTheme.headlineMedium,
+              ),
+              if (group != null)
+                DeckGroupReviewButton(
+                  deckGroup: group,
+                )
+            ],
           ),
-          ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 200),
-              child: DeckGroupHorizontalList(decks: decks))
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.0),
+                // Adjust radius as needed
+                border: Border.all(
+                    color: Colors.grey, width: 1.0) // Optional border
+                ),
+            child: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 200),
+                child: DeckGroupHorizontalList(decks: decks)),
+          )
         ];
       }).expand((l) => l),
       Text(
@@ -48,5 +71,25 @@ class DeckGroups extends StatelessWidget {
             );
           })
     ];
+  }
+}
+
+class DeckGroupReviewButton extends StatelessWidget {
+  final DeckGroup deckGroup;
+
+  const DeckGroupReviewButton({super.key, required this.deckGroup});
+
+  @override
+  Widget build(BuildContext context) {
+    return RepositoryLoader(
+        fetcher: (repository) =>
+            repository.cardsToReviewCount(deckGroupId: deckGroup.id),
+        builder: (context, countStat, _) {
+          final count = countStat.values.fold(0, (p, c) => p + c);
+          return FilledButton(
+              onPressed: () async => await context
+                  .push('/study/learn?deckGroupId=${deckGroup.id}'),
+              child: Text(context.l10n.cardsToReview(count)));
+        });
   }
 }

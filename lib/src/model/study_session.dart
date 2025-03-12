@@ -18,8 +18,9 @@ class StudySession with ChangeNotifier {
   final CardsRepository repository;
 
   final String? deckId;
+  final String? deckGroupId;
 
-  StudySession({required this.repository, this.deckId});
+  StudySession({required this.repository, this.deckId, this.deckGroupId});
 
   List<model.Card> _cards = [];
   int _currentIndex = 0;
@@ -35,7 +36,7 @@ class StudySession with ChangeNotifier {
   Future<void> startStudySession() async {
     _log.d('Starting session');
     _cards = await repository
-        .loadCardToReview(deckId: deckId)
+        .loadCardToReview(deckId: deckId, deckGroupId: deckGroupId)
         .then((result) => result.toList())
         .logError('Error loading cards to review');
     _cards.shuffle();

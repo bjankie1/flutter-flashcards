@@ -183,9 +183,9 @@ final router = GoRouter(
                 name: 'learn',
                 builder: (context, state) {
                   final deckId = state.uri.queryParameters['deckId'];
+                  final deckGroupId = state.uri.queryParameters['deckGroupId'];
                   return StudyCardsPage(
-                    deckId: deckId,
-                  );
+                      deckId: deckId, deckGroupId: deckGroupId);
                 },
               ),
             ]),

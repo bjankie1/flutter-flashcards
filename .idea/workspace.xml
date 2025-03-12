@@ -11,10 +11,11 @@
   <component name="ChangeListManager">
     <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Grouping decks into categories">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_list_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_list_item.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app_router.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app_router.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_groups.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_groups.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/model/repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/repository.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/model/firebase_repository_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/firebase_repository_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/model/study_session.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/study_session.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/reviews/study_cards_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/reviews/study_cards_page.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -146,7 +147,7 @@
       <recent name="$PROJECT_DIR$/assets/images" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter Test.load cards to review for a deck group">
+  <component name="RunManager" selected="Flutter.main.dart">
     <configuration name="Assign deck to groups" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
       <option name="testName" value="Assign deck to groups" />
       <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
@@ -324,7 +325,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741023572574</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Grouping decks into categories">
+      <option name="closed" value="true" />
+      <created>1741767695695</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1741767695695</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="ToolWindowManager">
