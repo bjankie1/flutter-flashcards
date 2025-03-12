@@ -221,7 +221,7 @@ void main() {
       expect(backStats.stability, 0);
     });
 
-    test('recorded answer reflected ins tats', () async {
+    test('recorded answer reflected in stats', () async {
       final deck = model.Deck(name: 'Test Deck 3');
       await repository.saveDeck(deck);
 
@@ -249,6 +249,57 @@ void main() {
     test('load cards to review when there are no cards yet', () async {
       final cards = await repository.loadCardToReview();
       expect(cards.length, 0);
+    });
+
+    test('load cards to review for a deck', () async {
+      await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
+      await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
+      await repository.saveCard(model.Card(
+          id: 'card1',
+          deckId: 'deck1',
+          question: 'Question 1',
+          answer: 'Answer 1'));
+      await repository.saveCard(model.Card(
+          id: 'card2',
+          deckId: 'deck1',
+          question: 'Question 2',
+          answer: 'Answer 2'));
+      final cards1 = await repository.loadCardToReview(deckId: 'deck1');
+      expect(cards1.length, 2);
+      final cards2 = await repository.loadCardToReview(deckId: 'deck2');
+      expect(cards2.length, 0);
+    });
+
+    test('load cards to review for a deck group', () async {
+      await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
+      await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
+      await repository.saveDeck(model.Deck(id: 'deck3', name: 'Test Deck 3'));
+      await repository.saveCard(model.Card(
+          id: 'card1',
+          deckId: 'deck1',
+          question: 'Question 1',
+          answer: 'Answer 1'));
+      await repository.saveCard(model.Card(
+          id: 'card2',
+          deckId: 'deck2',
+          question: 'Question 2',
+          answer: 'Answer 2'));
+      await repository.saveCard(model.Card(
+          id: 'card3',
+          deckId: 'deck3',
+          question: 'Question 3',
+          answer: 'Answer 3'));
+
+      final group = await repository.createDeckGroup('name 1', null);
+      await repository.addDeckToGroup('deck1', group.id);
+      await repository.addDeckToGroup('deck2', group.id);
+      final group2 = await repository.createDeckGroup('name 2', null);
+      await repository.addDeckToGroup('deck3', group2.id);
+
+      final cards1 = await repository.loadCardToReview(deckGroupId: group.id);
+      expect(cards1.length, 2);
+      final cards2 = await repository.loadCardToReview(deckGroupId: group2.id);
+      expect(cards2.length, 1);
     });
   });
 

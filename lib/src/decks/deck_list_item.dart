@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
-import 'package:flutter_flashcards/src/decks/deck_group_selection.dart';
-import 'package:flutter_flashcards/src/decks/deck_sharing.dart';
-import 'package:flutter_flashcards/src/decks/decks_list.dart';
-import 'package:flutter_flashcards/src/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import '../common/build_context_extensions.dart';
 import '../model/cards.dart' as model;
+import '../widgets.dart';
+import 'deck_group_selection.dart';
+import 'deck_sharing.dart';
+import 'decks_list.dart';
 
 class DeckListItem extends StatelessWidget {
   const DeckListItem({
