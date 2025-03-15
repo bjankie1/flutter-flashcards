@@ -26,35 +26,40 @@ class CardsList extends StatelessWidget {
             final flashcards = data.toList();
             return data.isEmpty
                 ? Text('No Cards')
-                : Column(
-                    children: [
-                      ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: flashcards.length,
-                        itemBuilder: (context, index) {
-                          final card = flashcards[index];
-                          return Padding(
-                            padding: EdgeInsets.symmetric(vertical: 4),
-                            child: CardTile(
-                                deck: deck,
-                                card: card,
-                                onDelete: () => _deleteCard(context, card)),
-                          );
-                        },
-                      ),
-                      Padding(
-                        // Now always visible
-                        padding: const EdgeInsets.all(8.0),
-                        child: FilledButton(
-                          onPressed: () async {
-                            await context.pushNamed('addCard', pathParameters: {
-                              'deckId': deck.id!,
-                            });
-                          },
-                          child: Text(context.l10n.addCard),
+                : Expanded(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: flashcards.length,
+                            itemBuilder: (context, index) {
+                              final card = flashcards[index];
+                              return Padding(
+                                padding: EdgeInsets.symmetric(vertical: 4),
+                                child: CardTile(
+                                    deck: deck,
+                                    card: card,
+                                    onDelete: () => _deleteCard(context, card)),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                        Padding(
+                          // Now always visible
+                          padding: const EdgeInsets.all(8.0),
+                          child: FilledButton(
+                            onPressed: () async {
+                              await context
+                                  .pushNamed('addCard', pathParameters: {
+                                'deckId': deck.id!,
+                              });
+                            },
+                            child: Text(context.l10n.addCard),
+                          ),
+                        ),
+                      ],
+                    ),
                   );
           },
         );

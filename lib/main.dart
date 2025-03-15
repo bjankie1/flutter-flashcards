@@ -42,6 +42,10 @@ void main() async {
     await FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
     log.d('Connected to Firestore emulator');
   } else {
+    FirebaseFirestore.instance.settings = Settings(
+      persistenceEnabled: true,
+      cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+    );
     log.d('Connected to production Firestore');
   }
   final repository = FirebaseCardsRepository(FirebaseFirestore.instance, null);

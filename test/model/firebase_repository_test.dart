@@ -270,6 +270,66 @@ void main() {
       expect(cards2.length, 0);
     });
 
+    test('count cards to review for all decks', () async {
+      await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
+      await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
+      await repository.saveCard(model.Card(
+          id: 'card1',
+          deckId: 'deck1',
+          question: 'Question 1',
+          answer: 'Answer 1'));
+      await repository.saveCard(model.Card(
+          id: 'card2',
+          deckId: 'deck1',
+          question: 'Question 2',
+          answer: 'Answer 2'));
+      final cardsCount = await repository.cardsToReviewCount();
+      expect(cardsCount[model.State.newState], 2);
+      expect(cardsCount[model.State.learning], 0);
+      expect(cardsCount[model.State.review], 0);
+      expect(cardsCount[model.State.relearning], 0);
+    });
+
+    test('count cards to review for a deck', () async {
+      await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
+      await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
+      await repository.saveCard(model.Card(
+          id: 'card1',
+          deckId: 'deck1',
+          question: 'Question 1',
+          answer: 'Answer 1'));
+      await repository.saveCard(model.Card(
+          id: 'card2',
+          deckId: 'deck1',
+          question: 'Question 2',
+          answer: 'Answer 2'));
+      final cardsCount = await repository.cardsToReviewCount(deckId: 'deck1');
+      expect(cardsCount[model.State.newState], 2);
+      expect(cardsCount[model.State.learning], 0);
+      expect(cardsCount[model.State.review], 0);
+      expect(cardsCount[model.State.relearning], 0);
+    });
+
+    test('count cards to review for an empty deck', () async {
+      await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
+      await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
+      await repository.saveCard(model.Card(
+          id: 'card1',
+          deckId: 'deck1',
+          question: 'Question 1',
+          answer: 'Answer 1'));
+      await repository.saveCard(model.Card(
+          id: 'card2',
+          deckId: 'deck1',
+          question: 'Question 2',
+          answer: 'Answer 2'));
+      final cardsCount = await repository.cardsToReviewCount(deckId: 'deck2');
+      expect(cardsCount[model.State.newState], 0);
+      expect(cardsCount[model.State.learning], 0);
+      expect(cardsCount[model.State.review], 0);
+      expect(cardsCount[model.State.relearning], 0);
+    });
+
     test('load cards to review for a deck group', () async {
       await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
       await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
