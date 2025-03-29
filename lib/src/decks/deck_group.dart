@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/common/containers.dart';
 import 'package:flutter_flashcards/src/decks/deck_list_item.dart';
 
 import '../model/cards.dart' as model;
@@ -27,9 +28,14 @@ class DeckGroupHorizontalList extends StatelessWidget {
                 //           userId: 'TODO',
                 //         ))
                 //     :
-                ConstrainedBox(
-                    constraints: BoxConstraints(maxHeight: 100, maxWidth: 300),
-                    child: DeckListItem(deck: deck)))
+                CardsContainer(
+                  secondary: true,
+                  margin: EdgeInsets.symmetric(horizontal: 10),
+                  child: ConstrainedBox(
+                      constraints:
+                          BoxConstraints(maxHeight: 100, maxWidth: 330),
+                      child: DeckListItem(deck: deck)),
+                ))
             .toList());
   }
 }

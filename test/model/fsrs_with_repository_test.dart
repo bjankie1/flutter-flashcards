@@ -59,7 +59,7 @@ void main() {
       // No cards available for review on Day 1 after the initial review.
       final day1 = DateTime(2000);
       await withClock(Clock.fixed(day1), () async {
-        final cardsToReviewDay1 = await repository.loadCardToReview();
+        final cardsToReviewDay1 = await repository.loadCardsToReview();
         expect(cardsToReviewDay1.length, 1);
         expect(cardsToReviewDay1.first, card);
         final reviewTime1 = currentClockDateTime;
@@ -78,9 +78,9 @@ void main() {
       // 1 card available for review on Day 2.
       final day2 = day1.add(Duration(days: 1));
       await withClock(Clock.fixed(day2), () async {
-        final cardsToReviewDay2 = await repository.loadCardToReview();
+        final cardsToReviewDay2 = await repository.loadCardsToReview();
         expect(cardsToReviewDay2.length, 1);
-        expect(cardsToReviewDay2.first.id, card.id);
+        expect(cardsToReviewDay2.first.$2.id, card.id);
 
         final stats1 = await repository.loadCardStats(
             card.id, model.CardReviewVariant.front);
@@ -158,7 +158,7 @@ void main() {
     // 1 cards available for review on Day 2.
     final day2 = day1.add(Duration(days: 1));
     await withClock(Clock.fixed(day2), () async {
-      final cardsToReviewDay2 = await repository.loadCardToReview();
+      final cardsToReviewDay2 = await repository.loadCardsToReview();
       expect(cardsToReviewDay2.length, 2);
       await repository.recordAnswer(card1.id, model.CardReviewVariant.front,
           model.Rating.good, day2, Duration(minutes: 1));
@@ -178,9 +178,9 @@ void main() {
     // 1 card (Card 1) available for review on Day 3.
     final day3 = day2.add(Duration(days: 1));
     await withClock(Clock.fixed(day3), () async {
-      final cardsToReviewDay3 = await repository.loadCardToReview();
+      final cardsToReviewDay3 = await repository.loadCardsToReview();
       expect(cardsToReviewDay3.length, 1);
-      expect(cardsToReviewDay3.first.id, card1.id);
+      expect(cardsToReviewDay3.first.$2.id, card1.id);
     });
 
     // Day 5 (or later, depending on Card 1's scheduling):
@@ -188,9 +188,9 @@ void main() {
     // 1 card (Card 1) available for review.
     final day5 = day3.add(Duration(days: 2));
     await withClock(Clock.fixed(day5), () async {
-      final cardsToReviewDay5 = await repository.loadCardToReview();
+      final cardsToReviewDay5 = await repository.loadCardsToReview();
       expect(cardsToReviewDay5.length, 1);
-      expect(cardsToReviewDay5.first.id, card1.id);
+      expect(cardsToReviewDay5.first.$2.id, card1.id);
     });
 
     // Day 10 (or later, depending on scheduling):
@@ -198,7 +198,7 @@ void main() {
     // 2 cards available for review.
     final day10 = day3.add(Duration(days: 6));
     await withClock(Clock.fixed(day10), () async {
-      final cardsToReviewDay5 = await repository.loadCardToReview();
+      final cardsToReviewDay5 = await repository.loadCardsToReview();
       expect(cardsToReviewDay5.length, 2);
     });
   });
@@ -218,9 +218,9 @@ void main() {
     // Review Card 1, score "Good".
     final day2 = day1.add(Duration(days: 1));
     await withClock(Clock.fixed(day2), () async {
-      final cardsToReview = await repository.loadCardToReview();
+      final cardsToReview = await repository.loadCardsToReview();
       expect(cardsToReview.length, 1);
-      expect(cardsToReview.first.id, card1.id);
+      expect(cardsToReview.first.$2.id, card1.id);
       await repository.recordAnswer(card1.id, model.CardReviewVariant.front,
           model.Rating.good, day2, Duration(minutes: 1));
     });
@@ -232,11 +232,11 @@ void main() {
     // Card 1 is scheduled for review sooner than it would have been if scored "Good" (likely within the next day or two).
     final day5 = day1.add(Duration(days: 4));
     await withClock(Clock.fixed(day5), () async {
-      final cardsToReview = await repository.loadCardToReview();
+      final cardsToReview = await repository.loadCardsToReview();
       final statsBefore = await repository.loadCardStats(
           card1.id, model.CardReviewVariant.front);
       expect(cardsToReview.length, 1);
-      expect(cardsToReview.first.id, card1.id);
+      expect(cardsToReview.first.$2.id, card1.id);
       await repository.recordAnswer(card1.id, model.CardReviewVariant.front,
           model.Rating.again, day2, Duration(minutes: 1));
       final statsAfter = await repository.loadCardStats(

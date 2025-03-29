@@ -54,6 +54,12 @@ extension CollectionReferenceExtensions<T> on CollectionReference<T> {
           toFirestore: (cardAnswer, _) => cardAnswer.toJson());
 }
 
+extension FirestoreExtensions on FirebaseFirestore {
+  CollectionReference<Map<String, dynamic>> userCollection(
+          String name, String userId) =>
+      collection(name).doc(userId).collection(userPrefix(name));
+}
+
 extension ErrorReporting<T> on Future<T> {
   Future<T> logError(String message) => onError((e, stackTrace) {
         _log.w('$message: $e', error: e, stackTrace: stackTrace);
@@ -67,6 +73,10 @@ const cardStatsCollectionName = 'cardStats';
 const cardAnswersCollectionName = 'reviewLog';
 const decksCollectionName = 'decks';
 const deckGroupsCollectionName = 'deckGroups';
+
+/// Add `user` prefix and make first letter of `name` upper case. Eg.
+/// for `decks` returns `userDecks`
+String userPrefix(String name) => 'user${name.capitalize}';
 
 class FirebaseCardsRepository extends CardsRepository {
   final FirebaseFirestore _firestore;
@@ -89,27 +99,23 @@ class FirebaseCardsRepository extends CardsRepository {
 
   set user(User? user) => _user = user;
 
-  /// Add `user` prefix and make first letter of `name` upper case. Eg.
-  /// for `decks` returns `userDecks`
-  String userPrefix(String name) => 'user${name.capitalize}';
-
-  CollectionReference<Map<String, dynamic>> _collection(String name) =>
-      _firestore.collection(name).doc(userId).collection(userPrefix(name));
-
   CollectionReference<Card> get _cardsCollection =>
-      _collection(cardsCollectionName).withCardsConverter;
+      _firestore.userCollection(cardsCollectionName, userId).withCardsConverter;
 
-  CollectionReference<CardStats> get _cardStatsCollection =>
-      _collection(cardStatsCollectionName).withCardStatsConverter;
+  CollectionReference<CardStats> get _cardStatsCollection => _firestore
+      .userCollection(cardStatsCollectionName, userId)
+      .withCardStatsConverter;
 
-  CollectionReference<CardAnswer> get _cardAnswersCollection =>
-      _collection(cardAnswersCollectionName).withCardAnswerConverter;
+  CollectionReference<CardAnswer> get _cardAnswersCollection => _firestore
+      .userCollection(cardAnswersCollectionName, userId)
+      .withCardAnswerConverter;
 
   CollectionReference<Deck> get _decksCollection =>
-      _collection(decksCollectionName).withDecksConverter;
+      _firestore.userCollection(decksCollectionName, userId).withDecksConverter;
 
-  CollectionReference<DeckGroup> get _deckGroupsCollection =>
-      _collection(deckGroupsCollectionName).withDeckGroupsConverter;
+  CollectionReference<DeckGroup> get _deckGroupsCollection => _firestore
+      .userCollection(deckGroupsCollectionName, userId)
+      .withDeckGroupsConverter;
 
   CollectionReference<UserProfile> get _usersCollection =>
       _firestore.collection(usersCollectionName).withConverter<UserProfile>(
@@ -379,7 +385,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   }
 
   @override
-  Future<Iterable<Card>> loadCardToReview(
+  Future<Iterable<(CardReviewVariant, Card)>> loadCardsToReview(
       {DeckId? deckId, DeckGroupId? deckGroupId}) async {
     // First step:
     // load cards to review IDs and corresponding card review variant.
@@ -416,7 +422,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         Map.fromEntries(cards.map((card) => MapEntry(card.id, card)));
     final result = cardIdsWithVariants
         .where((pair) => cardsMappedToId.containsKey(pair.$1))
-        .map((pair) => cardsMappedToId[pair.$1]!);
+        .map((pair) => (pair.$2, cardsMappedToId[pair.$1]!));
     return result;
   }
 

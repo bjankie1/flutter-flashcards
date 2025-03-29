@@ -48,10 +48,12 @@ class _CardsReviewState extends State<CardsReview> {
     return ListenableBuilder(
       listenable: widget.session,
       builder: (context, _) {
-        final card = widget.session.currentCard;
-        if (card != null) {
+        final current = widget.session.currentCard;
+        if (current != null) {
+          final (variant, card) = current;
           return ReviewWidget(
               card: card,
+              variant: variant,
               answerRevealed: _answerRevealed,
               tapRevealAnswer: revealAnswer,
               tapRating: (rating) => recordAnswerRating(context, rating));
@@ -72,16 +74,23 @@ class _CardsReviewState extends State<CardsReview> {
   }
 }
 
+/// Widget displays card to learn and asks for answer.
+/// When user clicks on question mark answer is revealed along with the
+/// explanation.
 class ReviewWidget extends StatelessWidget {
   final model.Card card;
+
+  final model.CardReviewVariant variant;
 
   final bool answerRevealed;
 
   final Function tapRevealAnswer;
+
   final Function(model.Rating) tapRating;
 
   ReviewWidget(
       {required this.card,
+      required this.variant,
       required this.answerRevealed,
       required this.tapRevealAnswer,
       required this.tapRating});
@@ -94,7 +103,7 @@ class ReviewWidget extends StatelessWidget {
         Expanded(
           child: CardSideContent(
             card: card,
-            front: true,
+            front: variant == model.CardReviewVariant.front,
           ),
         ),
         Visibility(
@@ -105,9 +114,11 @@ class ReviewWidget extends StatelessWidget {
                 child: AnimatedContainer(
                     duration: const Duration(seconds: 1),
                     curve: Curves.easeIn,
-                    child: Material(
-                      color: Colors.lightGreenAccent,
-                      borderRadius: BorderRadius.circular(12.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.0),
+                        color: Colors.lightGreenAccent,
+                      ),
                       child: InkWell(
                         onTap: () {
                           tapRevealAnswer();
@@ -126,7 +137,7 @@ class ReviewWidget extends StatelessWidget {
           visible: answerRevealed,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Card(
+            child: Container(
               color: Theme.of(context).colorScheme.primaryContainer,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -271,6 +282,37 @@ class CardSideContent extends StatelessWidget {
                 ],
               )
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class QuestionAnswerContainer extends StatelessWidget {
+  final Color color;
+
+  final String text;
+
+  final Function onTap;
+
+  const QuestionAnswerContainer(
+      {super.key,
+      required this.color,
+      required this.text,
+      required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        color: color,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GptMarkdown(
+            text,
+            style: Theme.of(context).textTheme.headlineLarge,
           ),
         ),
       ),

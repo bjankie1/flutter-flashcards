@@ -22,7 +22,7 @@ class StudySession with ChangeNotifier {
 
   StudySession({required this.repository, this.deckId, this.deckGroupId});
 
-  List<model.Card> _cards = [];
+  List<(model.CardReviewVariant, model.Card)> _cards = [];
   int _currentIndex = 0;
   DateTime _reviewStart = currentClockDateTime;
   int _reviewsSinceLastShuffle = 0;
@@ -30,13 +30,13 @@ class StudySession with ChangeNotifier {
 
   int get remainingCards => _cards.length;
 
-  model.Card? get currentCard =>
-      _cards.isEmpty ? null : _cards[_currentIndex % _cards.length];
+  (model.CardReviewVariant, model.Card)? get currentCard =>
+      _cards.isEmpty ? null : _cards[_currentIndex];
 
   Future<void> startStudySession() async {
     _log.d('Starting session');
     _cards = await repository
-        .loadCardToReview(deckId: deckId, deckGroupId: deckGroupId)
+        .loadCardsToReview(deckId: deckId, deckGroupId: deckGroupId)
         .then((result) => result.toList())
         .logError('Error loading cards to review');
     _cards.shuffle();
@@ -53,20 +53,29 @@ class StudySession with ChangeNotifier {
     if (!_sessionStarted) {
       throw 'Session has not been started';
     }
-    final card = _cards[(_currentIndex) % _cards.length];
+    final (variant, card) = _cards[(_currentIndex)];
     final duration = currentClockDateTime.difference(_reviewStart);
     await repository.recordAnswer(
-        card.id, model.CardReviewVariant.front, rating, _reviewStart, duration);
+        card.id, variant, rating, _reviewStart, duration);
+    _progressToNextCard(rating);
+  }
+
+  /// Rating only one card as `again` leaves this card in the list otherwise
+  /// card is removed from the list which impacts pointer modification.
+  _progressToNextCard(model.Rating rating) {
     // Remove cards that have been learnt
     if (rating != model.Rating.again) {
       _cards.removeAt(_currentIndex);
     }
-    _progressToNextCard();
-  }
-
-  _progressToNextCard() {
     if (_cards.isEmpty) {
       return;
+    }
+    if (rating == model.Rating.again) {
+      _currentIndex = (_currentIndex + 1) % _cards.length;
+    } else {
+      // card has been removed from list therefore the current index can
+      // be exceeding the list length.
+      _currentIndex = _currentIndex % _cards.length;
     }
     if (_reviewsSinceLastShuffle > _cards.length) {
       _cards.shuffle();
@@ -74,7 +83,6 @@ class StudySession with ChangeNotifier {
     } else {
       _reviewsSinceLastShuffle++;
     }
-    _currentIndex = (_currentIndex + 1) % _cards.length;
     _reviewStart = currentClockDateTime;
     notifyListeners();
   }

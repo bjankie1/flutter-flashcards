@@ -49,7 +49,7 @@ abstract class CardsRepository extends ChangeNotifier {
 
   Future<void> deleteCard(String cardId);
 
-  Future<Iterable<model.Card>> loadCardToReview(
+  Future<Iterable<(model.CardReviewVariant, model.Card)>> loadCardsToReview(
       {model.DeckId? deckId, model.DeckGroupId? deckGroupId});
 
   Future<Map<model.State, int>> cardsToReviewCount(

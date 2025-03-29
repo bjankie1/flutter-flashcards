@@ -247,7 +247,7 @@ void main() {
     });
 
     test('load cards to review when there are no cards yet', () async {
-      final cards = await repository.loadCardToReview();
+      final cards = await repository.loadCardsToReview();
       expect(cards.length, 0);
     });
 
@@ -264,9 +264,9 @@ void main() {
           deckId: 'deck1',
           question: 'Question 2',
           answer: 'Answer 2'));
-      final cards1 = await repository.loadCardToReview(deckId: 'deck1');
+      final cards1 = await repository.loadCardsToReview(deckId: 'deck1');
       expect(cards1.length, 2);
-      final cards2 = await repository.loadCardToReview(deckId: 'deck2');
+      final cards2 = await repository.loadCardsToReview(deckId: 'deck2');
       expect(cards2.length, 0);
     });
 
@@ -356,9 +356,9 @@ void main() {
       final group2 = await repository.createDeckGroup('name 2', null);
       await repository.addDeckToGroup('deck3', group2.id);
 
-      final cards1 = await repository.loadCardToReview(deckGroupId: group.id);
+      final cards1 = await repository.loadCardsToReview(deckGroupId: group.id);
       expect(cards1.length, 2);
-      final cards2 = await repository.loadCardToReview(deckGroupId: group2.id);
+      final cards2 = await repository.loadCardsToReview(deckGroupId: group2.id);
       expect(cards2.length, 1);
     });
   });

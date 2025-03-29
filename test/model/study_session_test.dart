@@ -33,13 +33,17 @@ void main() {
 
   test('startStudySession loads and shuffles cards', () async {
     final studySession = StudySession(repository: mockRepository);
-    final cards = [MockCard(), MockCard(), MockCard()];
-    when(() => mockRepository.loadCardToReview(deckId: null))
+    final cards = [
+      (model.CardReviewVariant.front, MockCard()),
+      (model.CardReviewVariant.front, MockCard()),
+      (model.CardReviewVariant.front, MockCard())
+    ];
+    when(() => mockRepository.loadCardsToReview(deckId: null))
         .thenAnswer((_) async => cards);
 
     await studySession.startStudySession();
 
-    verify(() => mockRepository.loadCardToReview(deckId: null)).called(1);
+    verify(() => mockRepository.loadCardsToReview(deckId: null)).called(1);
     expect(studySession.remainingCards, 3);
     expect(studySession.currentCard, isNotNull);
   });
@@ -47,15 +51,19 @@ void main() {
   test(
       'startStudySession with deckId loads and shuffles cards from specific deck',
       () async {
-    final cards = [MockCard(), MockCard(), MockCard()];
-    when(() => mockRepository.loadCardToReview(deckId: 'testDeckId'))
+    final cards = [
+      (model.CardReviewVariant.front, MockCard()),
+      (model.CardReviewVariant.front, MockCard()),
+      (model.CardReviewVariant.front, MockCard())
+    ];
+    when(() => mockRepository.loadCardsToReview(deckId: 'testDeckId'))
         .thenAnswer((_) async => cards);
 
     final deckIdStudySession =
         StudySession(repository: mockRepository, deckId: 'testDeckId');
     await deckIdStudySession.startStudySession();
 
-    verify(() => mockRepository.loadCardToReview(deckId: 'testDeckId'))
+    verify(() => mockRepository.loadCardsToReview(deckId: 'testDeckId'))
         .called(1);
     expect(deckIdStudySession.remainingCards, 3);
     expect(deckIdStudySession.currentCard, isNotNull);
@@ -63,12 +71,12 @@ void main() {
 
   test('startStudySession handles empty card list', () async {
     final studySession = StudySession(repository: mockRepository);
-    when(() => mockRepository.loadCardToReview(deckId: null))
+    when(() => mockRepository.loadCardsToReview(deckId: null))
         .thenAnswer((_) async => []);
 
     await studySession.startStudySession();
 
-    verify(() => mockRepository.loadCardToReview(deckId: null)).called(1);
+    verify(() => mockRepository.loadCardsToReview(deckId: null)).called(1);
     expect(studySession.remainingCards, 0);
     expect(studySession.currentCard, isNull);
   });
@@ -76,8 +84,8 @@ void main() {
   test('rateAnswer records answer and removes card', () async {
     final studySession = StudySession(repository: mockRepository);
     final card = MockCard.withId('cardId');
-    when(() => mockRepository.loadCardToReview(deckId: null))
-        .thenAnswer((_) async => [card]);
+    when(() => mockRepository.loadCardsToReview(deckId: null))
+        .thenAnswer((_) async => [(model.CardReviewVariant.back, card)]);
     when(() => mockRepository.recordAnswer(any(), any(), any(), any(), any()))
         .thenAnswer((_) async {});
 
@@ -105,8 +113,8 @@ void main() {
   test('rateAnswer records answer and keeps card if rated again', () async {
     final studySession = StudySession(repository: mockRepository);
     final card = MockCard.withId('cardId');
-    when(() => mockRepository.loadCardToReview(deckId: null))
-        .thenAnswer((_) async => [card]);
+    when(() => mockRepository.loadCardsToReview(deckId: null))
+        .thenAnswer((_) async => [(model.CardReviewVariant.front, card)]);
 
     when(() => mockRepository.recordAnswer(any(), any(), any(), any(), any()))
         .thenAnswer((_) async {});
@@ -135,32 +143,33 @@ void main() {
       () async {
     final studySession = StudySession(repository: mockRepository);
     final cards = [
-      MockCard.withId('c1'),
-      MockCard.withId('c2'),
-      MockCard.withId('c3')
+      (model.CardReviewVariant.front, MockCard.withId('c1')),
+      (model.CardReviewVariant.back, MockCard.withId('c2')),
+      (model.CardReviewVariant.front, MockCard.withId('c3'))
     ];
-    when(() => mockRepository.loadCardToReview(deckId: null))
+    when(() => mockRepository.loadCardsToReview(deckId: null))
         .thenAnswer((_) async => cards);
     when(() => mockRepository.recordAnswer(any(), any(), any(), any(), any()))
         .thenAnswer((_) async {});
 
     await studySession.startStudySession();
+    final againCard = studySession.currentCard!;
     await studySession.rateAnswer(model.Rating.again);
     await studySession.rateAnswer(model.Rating.hard);
     await studySession.rateAnswer(model.Rating.good);
 
     expect(studySession.remainingCards, 1);
-    expect(studySession.currentCard?.id, 'c1');
+    expect(studySession.currentCard?.$2.id, againCard.$2.id);
   });
 
   test('card should be shuffled after reviewing all of them', () async {
     final studySession = StudySession(repository: mockRepository);
     final cards = [
-      MockCard.withId('c1'),
-      MockCard.withId('c2'),
-      MockCard.withId('c3')
+      (model.CardReviewVariant.back, MockCard.withId('c1')),
+      (model.CardReviewVariant.front, MockCard.withId('c2')),
+      (model.CardReviewVariant.back, MockCard.withId('c3'))
     ];
-    when(() => mockRepository.loadCardToReview(deckId: null))
+    when(() => mockRepository.loadCardsToReview(deckId: null))
         .thenAnswer((_) async => cards);
     when(() => mockRepository.recordAnswer(any(), any(), any(), any(), any()))
         .thenAnswer((_) async {});
@@ -170,15 +179,15 @@ void main() {
     // may change. As there is no guarantee it's assumed that chance of
     // no change at all in 100 tries is negligible.
     final initialOrder = [];
-    initialOrder.add(studySession.currentCard?.id);
+    initialOrder.add(studySession.currentCard?.$2.id);
     await studySession.rateAnswer(model.Rating.again);
-    initialOrder.add(studySession.currentCard?.id);
+    initialOrder.add(studySession.currentCard?.$2.id);
     await studySession.rateAnswer(model.Rating.again);
-    initialOrder.add(studySession.currentCard?.id);
+    initialOrder.add(studySession.currentCard?.$2.id);
     await studySession.rateAnswer(model.Rating.again);
     final newOrder = [];
     for (var i = 0; i < 100; i++) {
-      newOrder.add(studySession.currentCard?.id);
+      newOrder.add(studySession.currentCard?.$2.id);
       await studySession.rateAnswer(model.Rating.again);
       if (newOrder.length == initialOrder.length) {
         if (ListEquality().equals(newOrder, initialOrder)) {
@@ -193,7 +202,7 @@ void main() {
 
   test('progressToNextCard handles empty card list', () async {
     final studySession = StudySession(repository: mockRepository);
-    when(() => mockRepository.loadCardToReview(deckId: null))
+    when(() => mockRepository.loadCardsToReview(deckId: null))
         .thenAnswer((_) async => []);
 
     await studySession.startStudySession();

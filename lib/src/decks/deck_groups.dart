@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
-import 'package:flutter_flashcards/src/common/custom_theme.dart';
+import 'package:flutter_flashcards/src/common/containers.dart';
+import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/decks/deck_group.dart';
 import 'package:flutter_flashcards/src/model/cards.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
@@ -29,32 +30,32 @@ class DeckGroups extends StatelessWidget {
       ...groups.map((t) {
         final (group, decks) = t;
         return [
-          Row(
-            spacing: 10,
-            children: [
-              Text(
-                group == null
-                    ? context.l10n.decksWithoutGroupHeader
-                    : group.name,
-                style: context.textTheme.headlineMedium,
-              ),
-              if (group != null)
-                DeckGroupReviewButton(
-                  deckGroup: group,
-                )
-            ],
-          ),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12.0),
-                // Adjust radius as needed
-                border: Border.all(
-                    color: Colors.grey, width: 1.0) // Optional border
+          CardsContainer(
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.symmetric(vertical: 10),
+            child: Column(
+              children: [
+                Row(
+                  spacing: 10,
+                  children: [
+                    Text(
+                      group == null
+                          ? context.l10n.decksWithoutGroupHeader
+                          : group.name,
+                      style: context.textTheme.headlineMedium,
+                    ),
+                    if (group != null)
+                      DeckGroupReviewButton(
+                        deckGroup: group,
+                      )
+                  ],
                 ),
-            child: ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: 200),
-                child: DeckGroupHorizontalList(decks: decks)),
-          )
+                ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: 200),
+                    child: DeckGroupHorizontalList(decks: decks))
+              ],
+            ),
+          ),
         ];
       }).expand((l) => l),
       Text(
