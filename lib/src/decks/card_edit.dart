@@ -68,100 +68,105 @@ class _CardEditState extends State<CardEdit> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CardOptions(
-                value: learnBothSides,
-                onChanged: (value) {
-                  setState(() {
-                    learnBothSides = value;
-                  });
-                }),
-          ),
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Input widgets
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      spacing: 8.0,
-                      children: [
-                        _markdownWithImageInput(
-                            controller: cardQuestionTextController,
-                            hintText: context.l10n.questionHint,
-                            labelText: context.l10n.questionLabel,
-                            imagePlacement: model.ImagePlacement.question),
-                        _answerInput(),
-                        _markdownWithImageInput(
-                            controller: cardHintTextController,
-                            hintText: context.l10n.hintPrompt,
-                            labelText: context.l10n.hintLabel,
-                            imagePlacement: model.ImagePlacement.explanation),
-                      ],
-                    ),
-                  ),
-                ),
-                // Preview widgets
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 8.0,
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: Column(
-                            children: [
-                              MarkdownPreview(cardQuestionTextController),
-                              ImagePreview(
-                                imagePlacement: model.ImagePlacement.question,
-                                questionImageAttached: questionImageAttached,
-                                explanationImageAttached:
-                                    explanationImageAttached,
-                                cardId: cardId,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Divider(),
-                        Expanded(
-                            child: MarkdownPreview(cardAnswerTextController)),
-                        Divider(),
-                        Expanded(
-                          flex: 2,
-                          child: Column(
-                            children: [
-                              MarkdownPreview(cardHintTextController),
-                              ImagePreview(
-                                imagePlacement:
-                                    model.ImagePlacement.explanation,
-                                questionImageAttached: questionImageAttached,
-                                explanationImageAttached:
-                                    explanationImageAttached,
-                                cardId: cardId,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              ],
+      child: FocusTraversalGroup(
+        policy: OrderedTraversalPolicy(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CardOptions(
+                  value: learnBothSides,
+                  onChanged: (value) {
+                    setState(() {
+                      learnBothSides = value;
+                    });
+                  }),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _actions(context),
-          )
-        ],
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Input widgets
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        spacing: 8.0,
+                        children: [
+                          _markdownWithImageInput(
+                              controller: cardQuestionTextController,
+                              focusOrder: 1,
+                              hintText: context.l10n.questionHint,
+                              labelText: context.l10n.questionLabel,
+                              imagePlacement: model.ImagePlacement.question),
+                          _answerInput(),
+                          _markdownWithImageInput(
+                              controller: cardHintTextController,
+                              focusOrder: 3,
+                              hintText: context.l10n.hintPrompt,
+                              labelText: context.l10n.hintLabel,
+                              imagePlacement: model.ImagePlacement.explanation),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Preview widgets
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 8.0,
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              children: [
+                                MarkdownPreview(cardQuestionTextController),
+                                ImagePreview(
+                                  imagePlacement: model.ImagePlacement.question,
+                                  questionImageAttached: questionImageAttached,
+                                  explanationImageAttached:
+                                      explanationImageAttached,
+                                  cardId: cardId,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Divider(),
+                          Expanded(
+                              child: MarkdownPreview(cardAnswerTextController)),
+                          Divider(),
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              children: [
+                                MarkdownPreview(cardHintTextController),
+                                ImagePreview(
+                                  imagePlacement:
+                                      model.ImagePlacement.explanation,
+                                  questionImageAttached: questionImageAttached,
+                                  explanationImageAttached:
+                                      explanationImageAttached,
+                                  cardId: cardId,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _actions(context),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -192,13 +197,16 @@ class _CardEditState extends State<CardEdit> {
       child: Row(
         children: [
           Expanded(
-            child: TextFormField(
-              maxLines: 4,
-              controller: cardAnswerTextController,
-              decoration: InputDecoration(
-                  hintText: context.l10n.answerHint,
-                  labelText: context.l10n.answerLabel,
-                  border: OutlineInputBorder()),
+            child: FocusTraversalOrder(
+              order: const NumericFocusOrder(2),
+              child: TextFormField(
+                maxLines: 4,
+                controller: cardAnswerTextController,
+                decoration: InputDecoration(
+                    hintText: context.l10n.answerHint,
+                    labelText: context.l10n.answerLabel,
+                    border: OutlineInputBorder()),
+              ),
             ),
           ),
           ValueListenableBuilder(
@@ -219,6 +227,7 @@ class _CardEditState extends State<CardEdit> {
 
   Widget _markdownWithImageInput(
       {required TextEditingController controller,
+      required double focusOrder,
       required String hintText,
       required String labelText,
       required model.ImagePlacement imagePlacement}) {
@@ -227,17 +236,19 @@ class _CardEditState extends State<CardEdit> {
       child: Stack(
         alignment: Alignment.topRight,
         children: [
-          TextFormField(
-            expands: true,
-            maxLines: null,
-            minLines: null,
-            textAlignVertical: TextAlignVertical.top,
-            controller: controller,
-            decoration: InputDecoration(
-                hintText: hintText,
-                labelText: labelText,
-                border: OutlineInputBorder()),
-          ),
+          FocusTraversalOrder(
+              order: NumericFocusOrder(focusOrder),
+              child: TextFormField(
+                expands: true,
+                maxLines: null,
+                minLines: null,
+                textAlignVertical: TextAlignVertical.top,
+                controller: controller,
+                decoration: InputDecoration(
+                    hintText: hintText,
+                    labelText: labelText,
+                    border: OutlineInputBorder()),
+              )),
           Positioned(
             top: 8,
             right: 8,
@@ -255,6 +266,7 @@ class _CardEditState extends State<CardEdit> {
   void dispose() {
     cardQuestionTextController.dispose();
     cardAnswerTextController.dispose();
+    cardHintTextController.dispose();
     super.dispose();
   }
 
@@ -331,7 +343,9 @@ class CardOptions extends StatelessWidget {
         child: Row(
           children: [
             Text(context.l10n.cardOptionDoubleSided),
-            Switch(value: value, onChanged: onChanged)
+            FocusTraversalOrder(
+                order: const NumericFocusOrder(0),
+                child: Switch(value: value, onChanged: onChanged))
           ],
         ),
       ),
