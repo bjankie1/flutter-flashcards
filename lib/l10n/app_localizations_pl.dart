@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -257,4 +259,28 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get cardOptionDoubleSided => 'Nauka obu stron karty';
+
+  @override
+  String get decksWithoutGroupHeader => 'Zestawy bez grupy';
+
+  @override
+  String get sharedDecksHeader => 'Zestawy udostępnione tobie';
+
+  @override
+  String get addDeckToGroup => 'Dodaj zestaw do grupy';
+
+  @override
+  String get saveButton => 'Zapisz';
+
+  @override
+  String get newDeckGroupName => 'Nowa grupa kart';
+
+  @override
+  String get newDeckGroupHelper => 'Podaj nazwę nowej grupy';
+
+  @override
+  String get newDeckGroupAddedMessage => 'Grupa została dodana';
+
+  @override
+  String get explanationLabel => 'Wyjaśnienie';
 }

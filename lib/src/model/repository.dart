@@ -16,9 +16,14 @@ abstract class CardsRepository extends ChangeNotifier {
   final ValueNotifier<bool> _cardsUpdated = ValueNotifier<bool>(false);
 
   ValueListenable<bool> get cardsUpdated => _cardsUpdated;
+
   final ValueNotifier<bool> _decksUpdated = ValueNotifier<bool>(false);
 
   ValueListenable<bool> get decksUpdated => _decksUpdated;
+
+  final ValueNotifier<bool> _decksGroupUpdated = ValueNotifier<bool>(false);
+
+  ValueListenable<bool> get decksGroupUpdated => _decksGroupUpdated;
 
   Future<model.Card?> loadCard(String cardId);
 
@@ -44,9 +49,11 @@ abstract class CardsRepository extends ChangeNotifier {
 
   Future<void> deleteCard(String cardId);
 
-  Future<Iterable<model.Card>> loadCardToReview({String? deckId});
+  Future<Iterable<(model.CardReviewVariant, model.Card)>> loadCardsToReview(
+      {model.DeckId? deckId, model.DeckGroupId? deckGroupId});
 
-  Future<Map<model.State, int>> cardsToReviewCount({String? deckId});
+  Future<Map<model.State, int>> cardsToReviewCount(
+      {model.DeckId? deckId, model.DeckGroupId? deckGroupId});
 
   Future<model.CardStats> loadCardStats(
       String cardId, model.CardReviewVariant variant);
@@ -77,6 +84,12 @@ abstract class CardsRepository extends ChangeNotifier {
   @protected
   void notifyDeckChanged() {
     _decksUpdated.value = !_decksUpdated.value;
+    notifyListeners();
+  }
+
+  @protected
+  void notifyDeckGroupChanged() {
+    _decksGroupUpdated.value = !_decksGroupUpdated.value;
     notifyListeners();
   }
 
@@ -114,8 +127,8 @@ abstract class CardsRepository extends ChangeNotifier {
         await loadCardsByIds(cardIds).logError('Error loading cards by ID');
     final decks = await loadDecksByIds(cards.map((c) => c.deckId).toSet())
         .logError('Error loading decks for cards');
-    return Map.fromEntries(cards.map(
-        (c) => MapEntry(c.id!, decks.firstWhere((d) => d.id == c.deckId))));
+    return Map.fromEntries(cards
+        .map((c) => MapEntry(c.id, decks.firstWhere((d) => d.id == c.deckId))));
   }
 
   Future<void> saveCollaborationInvitation(String receivingUserEmail);
@@ -145,6 +158,59 @@ abstract class CardsRepository extends ChangeNotifier {
 
   /// List of decks shared with the user logged in
   Future<Map<UserId, Iterable<model.Deck>>> listSharedDecks();
+
+  /// Incorporate deck into own progress tracking
+  Future<void> incorporateSharedDeck(String deckId);
+
+  /// Move card to another deck
+  Future<void> moveCard(String cardId, String newDeckId) async {
+    final card = await loadCard(cardId);
+    await saveCard(card!.copyWith(deckId: newDeckId));
+  }
+
+  Future<model.DeckGroup> createDeckGroup(String name, String? description);
+
+  Future<void> addDeckToGroup(String deckId, model.DeckGroupId groupId);
+
+  Future<void> removeDeckFromGroup(String deckId, model.DeckGroupId groupId);
+
+  Future<model.DeckGroup?> loadDeckGroup(model.DeckGroupId groupId);
+
+  Future<Iterable<model.DeckGroup>> loadDeckGroups();
+
+  Future<void> deleteDeckGroup(model.DeckGroupId groupId);
+
+  /// Associates decks with corresponding `DeckGroup`. Same `Deck` can be
+  /// associated with none or multiple groups. `Deck` not associated with any
+  /// `DeckGroup` is associated with tuple `(null, [])`.
+  Future<List<(model.DeckGroup?, List<model.Deck>)>> loadDecksInGroups() async {
+    final groups = await loadDeckGroups();
+    final decks = await loadDecks();
+    final decksMap = decks.fold(<String, model.Deck>{}, (map, deck) {
+      map[deck.id!] = deck;
+      return map;
+    });
+    final remainingDecks = decks.map((deck) => deck.id!).toSet();
+    final List<(model.DeckGroup?, List<model.Deck>)> groupedDecks =
+        List.empty(growable: true);
+    for (final group in groups) {
+      if (group.decks == null || group.decks!.isEmpty) continue;
+      remainingDecks.removeAll(group.decks!);
+      // Not decided yet, if deck deletion should be cleaned from DeckGroup
+      // Therefore it's better to deal with non-existing decks.
+      final groupDecks = group.decks!
+          .map((deckId) => decksMap[deckId])
+          .where((deck) => deck != null)
+          .map((deck) => deck!)
+          .toList();
+      groupedDecks.add((group, groupDecks));
+    }
+    if (remainingDecks.isNotEmpty) {
+      groupedDecks.add(
+          (null, remainingDecks.map((deckId) => decksMap[deckId]!).toList()));
+    }
+    return groupedDecks;
+  }
 }
 
 extension ContextProviders on BuildContext {

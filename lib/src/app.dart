@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/l10n/app_localizations.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
-import 'package:flutter_flashcards/src/common/custom_theme.dart';
+import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 
 import 'app_router.dart';

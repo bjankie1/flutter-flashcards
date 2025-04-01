@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
+import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -10,8 +11,8 @@ class ReviewsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryLoader(
-        fetcher: (repository) =>
-            repository.loadCardToReview(), // Loading all cards to review
+        fetcher: (repository) => repository.loadCardsToReview().logError(
+            'Error loading cards to review'), // Loading all cards to review
         builder: (context, cards, repository) {
           return RepositoryLoader(
             fetcher: (repository) => groupedByDeck(cards, repository),
@@ -22,23 +23,31 @@ class ReviewsPage extends StatelessWidget {
         });
   }
 
-  Future<Map<model.Deck, List<model.Card>>> groupedByDeck(
-      Iterable<model.Card> cards, CardsRepository repository) async {
-    final deckGroups = <model.Deck, List<model.Card>>{};
-    final deckIds = cards.map((card) => card.deckId).toSet();
+  Future<Map<model.Deck, List<(model.CardReviewVariant, model.Card)>>>
+      groupedByDeck(Iterable<(model.CardReviewVariant, model.Card)> cards,
+          CardsRepository repository) async {
+    final deckGroups =
+        <model.Deck, List<(model.CardReviewVariant, model.Card)>>{};
+    final deckIds = cards.map((card) => card.$2.deckId).toSet();
     final decks =
         await Future.wait(deckIds.map((id) => repository.loadDeck(id)));
     final decksMap =
         Map.fromEntries(decks.nonNulls.map((deck) => MapEntry(deck.id, deck)));
-    for (final card in cards) {
-      deckGroups.putIfAbsent(decksMap[card.deckId]!, () => []).add(card);
+    for (final tuple in cards) {
+      var deck = decksMap[tuple.$2.deckId];
+      if (deck == null) {
+        print('No Deck for ${tuple.$2.id}');
+        continue;
+      }
+      deckGroups.putIfAbsent(deck, () => []).add(tuple);
     }
     return deckGroups;
   }
 }
 
 class ReviewsBreakdown extends StatelessWidget {
-  final Map<model.Deck, List<model.Card>> cardsByDeck;
+  final Map<model.Deck, List<(model.CardReviewVariant, model.Card)>>
+      cardsByDeck;
 
   ReviewsBreakdown(this.cardsByDeck);
 

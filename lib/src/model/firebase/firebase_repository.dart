@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter_flashcards/src/common/crypto.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
+import 'package:flutter_flashcards/src/common/iterable_extensions.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:logger/logger.dart';
 
@@ -42,10 +43,21 @@ extension CollectionReferenceExtensions<T> on CollectionReference<T> {
       fromFirestore: (doc, _) => Deck.fromJson(doc.id, doc.data()!),
       toFirestore: (deck, _) => deck.toJson());
 
+  CollectionReference<DeckGroup> get withDeckGroupsConverter =>
+      withConverter<DeckGroup>(
+          fromFirestore: (doc, _) => DeckGroup.fromJson(doc.id, doc.data()!),
+          toFirestore: (deckGroup, _) => deckGroup.toJson());
+
   CollectionReference<CardAnswer> get withCardAnswerConverter =>
       withConverter<CardAnswer>(
           fromFirestore: (doc, _) => CardAnswer.fromJson(doc.id, doc.data()!),
           toFirestore: (cardAnswer, _) => cardAnswer.toJson());
+}
+
+extension FirestoreExtensions on FirebaseFirestore {
+  CollectionReference<Map<String, dynamic>> userCollection(
+          String name, String userId) =>
+      collection(name).doc(userId).collection(userPrefix(name));
 }
 
 extension ErrorReporting<T> on Future<T> {
@@ -60,6 +72,11 @@ const cardsCollectionName = 'cards';
 const cardStatsCollectionName = 'cardStats';
 const cardAnswersCollectionName = 'reviewLog';
 const decksCollectionName = 'decks';
+const deckGroupsCollectionName = 'deckGroups';
+
+/// Add `user` prefix and make first letter of `name` upper case. Eg.
+/// for `decks` returns `userDecks`
+String userPrefix(String name) => 'user${name.capitalize}';
 
 class FirebaseCardsRepository extends CardsRepository {
   final FirebaseFirestore _firestore;
@@ -82,46 +99,28 @@ class FirebaseCardsRepository extends CardsRepository {
 
   set user(User? user) => _user = user;
 
-  /// Add `user` prefix and make first letter of `name` upper case. Eg.
-  /// for `decks` returns `userDecks`
-  String userPrefix(String name) => 'user${name.capitalize}';
-
-  CollectionReference<Map<String, dynamic>> _collection(String name) =>
-      _firestore.collection(name).doc(userId).collection(userPrefix(name));
-
   CollectionReference<Card> get _cardsCollection =>
-      _collection(cardsCollectionName).withCardsConverter;
+      _firestore.userCollection(cardsCollectionName, userId).withCardsConverter;
 
-  CollectionReference<CardStats> get _cardStatsCollection =>
-      _collection(cardStatsCollectionName).withCardStatsConverter;
+  CollectionReference<CardStats> get _cardStatsCollection => _firestore
+      .userCollection(cardStatsCollectionName, userId)
+      .withCardStatsConverter;
 
-  CollectionReference<CardAnswer> get _cardAnswersCollection =>
-      _collection(cardAnswersCollectionName).withCardAnswerConverter;
+  CollectionReference<CardAnswer> get _cardAnswersCollection => _firestore
+      .userCollection(cardAnswersCollectionName, userId)
+      .withCardAnswerConverter;
 
   CollectionReference<Deck> get _decksCollection =>
-      _collection(decksCollectionName).withDecksConverter;
+      _firestore.userCollection(decksCollectionName, userId).withDecksConverter;
+
+  CollectionReference<DeckGroup> get _deckGroupsCollection => _firestore
+      .userCollection(deckGroupsCollectionName, userId)
+      .withDeckGroupsConverter;
 
   CollectionReference<UserProfile> get _usersCollection =>
       _firestore.collection(usersCollectionName).withConverter<UserProfile>(
           fromFirestore: (doc, _) => UserProfile.fromJson(doc.id, doc.data()!),
           toFirestore: (user, _) => user.toJson());
-
-  Future<Deck> _addDeck(Deck deck) async {
-    _log.d("Saving new deck ${deck.name}");
-    final docRef = _decksCollection.doc();
-    await docRef.set(deck).then((value) => _log.d("Deck successfully added!"),
-        onError: (e) => _log.e("Error adding deck: $e"));
-    final newDeck = deck.withId(id: docRef.id);
-    return newDeck;
-  }
-
-  Future<Deck> _updateDeck(Deck deck) async {
-    final docRef = _decksCollection.doc(deck.id);
-    await docRef.set(deck, SetOptions(merge: true)).then(
-        (value) => _log.d("Deck successfully updated!"),
-        onError: (e) => _log.e("Error updating deck: $e"));
-    return deck;
-  }
 
   @override
   String nextCardId() => _firestore.collection(cardsCollectionName).doc().id;
@@ -139,36 +138,23 @@ class FirebaseCardsRepository extends CardsRepository {
     return snapshot.docs.map((s) => s.data());
   }
 
-  Future<Card> _addCard(Card card) async {
-    _log.d('Adding card');
-    final docRef = _cardsCollection.doc();
-    await _firestore.runTransaction((transaction) async {
-      transaction.set(docRef, card);
-      for (final s in CardStats.statsForCard(card.withId(id: docRef.id))) {
-        final sDoc = _cardStatsCollection.doc(s.idValue);
-        transaction.set(sDoc, s);
-      }
-    });
-    return card.withId(id: docRef.id);
-  }
-
   Future<void> _updateCard(Card card) async {
     _log.d('Updating card');
-    await _firestore.runTransaction((transaction) async {
-      // Firestore transactions require all reads to be executed before all writes.
-      final docRef = _cardsCollection.doc(card.id);
-      final stats = CardStats.statsForCard(card);
-      final statsDocs = await Future.wait(stats.map((s) async =>
-              await _cardStatsCollection.doc(s.idValue).get().then(
-                  (snapshot) => (s, snapshot.reference, snapshot.exists))))
-          .logError('Error loading stats for card ${card.id}');
-      transaction.set(docRef, card);
-      for (final record in statsDocs) {
-        if (!record.$3) {
-          transaction.set(record.$2, record.$1);
-        }
+    final docRef = _cardsCollection.doc(card.id);
+    final stats = CardStats.statsForCard(card);
+    final statsDocs = await Future.wait(stats.map((s) async =>
+            await _cardStatsCollection
+                .doc(s.idValue)
+                .get()
+                .then((snapshot) => (s, snapshot.reference, snapshot.exists))))
+        .logError('Error loading stats for card ${card.id}');
+    await docRef.set(card);
+    for (final record in statsDocs) {
+      if (!record.$3) {
+        _log.d('Creating stats for card ${card.id} ${record.$1.variant}');
+        await record.$2.set(record.$1);
       }
-    });
+    }
   }
 
   @override
@@ -233,11 +219,9 @@ class FirebaseCardsRepository extends CardsRepository {
   }
 
   @override
-  Future<List<Card>> loadCards(String deckId) async {
-    _log.d('Loading cards');
-    final snapshot =
-        await _cardsCollection.where('deckId', isEqualTo: deckId).get();
-    return snapshot.docs.map((doc) => doc.data()).toList();
+  Future<Iterable<Card>> loadCards(String deckId) async {
+    _log.d('Loading cards for deck $deckId');
+    return await _loadCards(deckIds: {deckId});
   }
 
   void _validateUser() {
@@ -249,31 +233,22 @@ class FirebaseCardsRepository extends CardsRepository {
 
   @override
   Future<Card> saveCard(Card card) async {
-    if (card.id == null) {
-      return await _addCard(card)
-          .whenComplete(() => notifyCardChanged())
-          .logError('Error adding card');
-    } else {
-      await _updateCard(card)
-          .whenComplete(() => notifyCardChanged())
-          .logError('Error saving card');
-      return card;
-    }
+    await _updateCard(card)
+        .whenComplete(() => notifyCardChanged())
+        .logError('Error saving card');
+    return card;
   }
 
   @override
   Future<Deck> saveDeck(Deck deck) async {
-    if (deck.id == null) {
-      final result =
-          await _addDeck(deck).whenComplete(() => notifyDeckChanged());
-      notifyDeckChanged();
-      return result;
-    } else {
-      final result =
-          await _updateDeck(deck).whenComplete(() => notifyDeckChanged());
-      notifyDeckChanged();
-      return result;
-    }
+    if (deck.name.trim().isEmpty) throw 'Deck name cannot be empty';
+    final docRef = _decksCollection.doc(deck.id);
+    final savedDeck = deck.id == null ? deck.copyWith(id: docRef.id) : deck;
+    await docRef.set(savedDeck, SetOptions(merge: true)).then(
+        (value) => _log.d("Deck successfully updated!"),
+        onError: (e) => _log.e("Error updating deck: $e"));
+    notifyDeckChanged();
+    return savedDeck;
   }
 
   @override
@@ -287,47 +262,21 @@ class FirebaseCardsRepository extends CardsRepository {
     throw Exception('No card stats for $cardId and variant $variant');
   }
 
-  Future<Iterable<String>> _deckCardsIds(String deckId) async {
-    final snapshots =
-        await _cardsCollection.where('deckId', isEqualTo: deckId).get();
-    return snapshots.docs.map((doc) => doc.id);
-  }
-
   /// Loads identifiers and review variants of cards to review based on `nextReviewDate`
   @override
-  Future<Map<State, int>> cardsToReviewCount({String? deckId}) async {
+  Future<Map<State, int>> cardsToReviewCount(
+      {DeckId? deckId, DeckGroupId? deckGroupId}) async {
     _log.d('Loading cards to review count');
-    // Cards ready for review
-    var baseQuery = _cardStatsCollection.where(Filter.or(
-        Filter('nextReviewDate', isLessThanOrEqualTo: currentClockDateTime),
-        Filter('nextReviewDate', isNull: true)));
 
-    if (deckId != null) {
-      final cardIds = await _deckCardsIds(deckId);
-      if (cardIds.isEmpty) {
-        return {
-          State.newState: 0,
-          State.learning: 0,
-          State.relearning: 0,
-          State.review: 0
-        };
-      }
-      baseQuery = baseQuery.where('cardId', whereIn: cardIds);
-    }
+    final cardsWithStats = await _loadCardsWithStatsToReview(
+        deckId: deckId, deckGroupId: deckGroupId);
+    countState(State state) =>
+        cardsWithStats.where((item) => item.$1.state == state).length;
 
-    countState(State state) async {
-      var countQuery = baseQuery.where('state', isEqualTo: state.name).count();
-      final result = await countQuery.get().then((value) {
-        _log.d('Loaded ${value.count} $state cards');
-        return value;
-      }).logError('Error counting cards to review');
-      return result.count ?? 0;
-    }
-
-    final newState = await countState(State.newState);
-    final learningState = await countState(State.learning);
-    final relearningState = await countState(State.relearning);
-    final reviewState = await countState(State.review);
+    final newState = countState(State.newState);
+    final learningState = countState(State.learning);
+    final relearningState = countState(State.relearning);
+    final reviewState = countState(State.review);
 
     _log.d('''
 Successfully loaded cards to review count. 
@@ -341,64 +290,106 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     };
   }
 
-  /// Loads identifiers and review variants of cards to review based on `nextReviewDate`
-  Future<Iterable<(String, CardReviewVariant)>> _cardIdsToReview(
-      {int? reviewLimit = 200, int? newLimit = 200}) async {
-    try {
-      // Cards ready for review
-      final statsSnapshot = await _cardStatsCollection
-          .where('nextReviewDate', isLessThanOrEqualTo: currentClockDateTime)
-          .limit(reviewLimit ?? 200)
-          .get()
-          .logError('Error querying cards to review');
-      final toReview = statsSnapshot.docs.map((doc) => doc.data()).toList();
-      _log.d('Cards to review: ${toReview.length}');
+  Future<Iterable<(CardStats, Card)>> _loadCardsWithStatsToReview(
+      {DeckId? deckId, DeckGroupId? deckGroupId}) async {
+    _log.d(
+        'Loading cards stats with cards to review for deck: $deckId deckGroup: $deckGroupId');
 
-      // New cards
-      final statsSnapshotNew = await _cardStatsCollection
-          .where('nextReviewDate', isNull: true)
-          .limit(newLimit ?? 200)
-          .get()
-          .logError('Error querying new cards to review');
-      final newCards = statsSnapshotNew.docs.map((doc) => doc.data()).toList();
-      _log.d('New cards to review: ${newCards.length}');
+    final bool applyDeckFiltering = deckId != null || deckGroupId != null;
 
-      final allCards = [...toReview, ...newCards];
-      _log.d('All cards to review: ${statsSnapshot.docs.length}');
-
-      _log.d('Loading cards to review');
-      // Load cards to review
-      final cardsIdsToReview = allCards.map((cs) => (cs.cardId, cs.variant));
-      return cardsIdsToReview;
-    } on Exception catch (e, stackTrace) {
-      _log.w('Error querying cards to review: $e', stackTrace: stackTrace);
-      rethrow;
+    Future<Iterable<Card>> getCards() async {
+      final cards = deckId != null
+          ? await _loadCards(deckIds: {deckId})
+          : await _loadCardsInDeckGroup(deckGroupId!);
+      return cards;
     }
+
+    // Cards ready for review
+    final cardStatsToReview = await _cardStatsCollection
+        .where(Filter.or(
+            Filter('nextReviewDate', isLessThanOrEqualTo: currentClockDateTime),
+            Filter('nextReviewDate', isNull: true)))
+        .get()
+        .then((snapshot) => snapshot.docs.map((doc) => doc.data()));
+    final cardIdsToReview = cardStatsToReview.map((cs) => cs.cardId).toSet();
+    _log.d('Found ${cardStatsToReview.length} cards to review');
+    if (cardStatsToReview.isEmpty) return Iterable.empty();
+    final cards = applyDeckFiltering
+        ? await getCards()
+        : await _loadCards(cardIds: cardIdsToReview);
+    _log.d('Found ${cards.length} matching cards');
+    if (cards.isEmpty) return Iterable.empty();
+    final cardsById =
+        Map.fromEntries(cards.map((card) => MapEntry(card.id, card)));
+
+    return cardStatsToReview
+        .where((cs) => cardsById.containsKey(cs.cardId))
+        .map((cs) => (cs, cardsById[cs.cardId]!));
   }
 
   @override
-  Future<Iterable<Card>> loadCardToReview({String? deckId}) async {
-    // Load cards to review IDs and corresponding card review variant.
-    final cardIdsWithVariants = await _cardIdsToReview();
-    _log.d('Cards to review: ${cardIdsWithVariants.length}');
-    // Load corresponding cards for each card ID from the tuple
-    final cardIds =
-        cardIdsWithVariants.map((t) => t.$1).toSet(); // unique card Ids
-    if (cardIds.isEmpty) return Iterable.empty();
-    final cardsQuery = deckId != null
-        ? _cardsCollection.where(Filter.and(
-            Filter(FieldPath.documentId, whereIn: cardIds),
-            Filter('deckId', isEqualTo: deckId)))
-        : _cardsCollection
-            .where(Filter(FieldPath.documentId, whereIn: cardIds));
-    final cardsSnapshot = await cardsQuery.get();
-    final cards = cardsSnapshot.docs.map((doc) => doc.data());
-    final cardsMappedToId =
-        Map.fromEntries(cards.map((card) => MapEntry(card.id, card)));
-    final result = cardIdsWithVariants
-        .where((pair) => cardsMappedToId.containsKey(pair.$1))
-        .map((pair) => cardsMappedToId[pair.$1]!);
-    return result;
+  Future<Iterable<(CardReviewVariant, Card)>> loadCardsToReview(
+      {DeckId? deckId, DeckGroupId? deckGroupId}) async {
+    _log.d('Loading cards to review');
+
+    final result = await _loadCardsWithStatsToReview(
+        deckId: deckId, deckGroupId: deckGroupId);
+    return result.map((cs) => (cs.$1.variant, cs.$2));
+  }
+
+  /// Executes query by splitting ids into batches. The method does not verify
+  /// if the query includes other criteria that would impact the firebase OR
+  /// size limitation of 30.
+  Future<Iterable<T>> _batchQuery<T>(
+      {required Query<T> query,
+      required String field,
+      required Iterable<String> ids,
+      int batchSize = 30}) async {
+    final batches = ids.splitIterable(batchSize);
+    final result = await Future.wait(
+        batches.map((batch) => query.where(field, whereIn: batch).get()));
+    return result.expand((element) => element.docs.map((doc) => doc.data()));
+  }
+
+  /// Loads cards for given decks or card IDs. If decks are empty, it is
+  /// expected that cardIds are not empty. If deckIds are not empty the cardIds
+  /// are ignored.
+  /// The method batches the query to overcome firebase limit on OR queries by
+  /// splitting deckIds or cardIds into batches of 30.
+  /// The method overcomes firebase limit on OR queries
+  /// https://firebase.google.com/docs/firestore/query-data/queries#limits_on_or_queries
+  Future<Iterable<Card>> _loadCards(
+      {Set<String>? deckIds, Set<String>? cardIds}) async {
+    if ((cardIds ?? {}).isEmpty && (deckIds ?? {}).isEmpty) {
+      throw "Either deckIds or cardIds must be provided";
+    }
+    final collectionGroup = _firestore
+        .collectionGroup(userPrefix(cardsCollectionName))
+        .withCardsConverter;
+    final result = deckIds != null && deckIds.isNotEmpty
+        ? _batchQuery(query: collectionGroup, field: 'deckId', ids: deckIds)
+        : _batchQuery(query: collectionGroup, field: 'cardId', ids: cardIds!);
+    final cards = await result.logError('Error loading cards to review');
+    _log.d(
+        'Loaded ${cards.length} cards based on filter decks: $deckIds, cards: $cardIds');
+    return cards;
+  }
+
+  Future<Iterable<Card>> _loadCardsInDeckGroup(String deckGroupId) async {
+    final deckGroup = await loadDeckGroup(deckGroupId);
+    if (deckGroup == null) {
+      return Iterable.empty();
+    }
+    final deckIds = deckGroup.decks ?? {};
+    final collectionGroup = _firestore
+        .collectionGroup(userPrefix(cardsCollectionName))
+        .withCardsConverter;
+    if (deckIds.isEmpty) return Iterable.empty();
+    final result =
+        _batchQuery(query: collectionGroup, field: 'deckId', ids: deckIds);
+    final cards = await result.logError('Error loading cards to review');
+    _log.d('Loaded ${cards.length} cards to review');
+    return cards;
   }
 
   @override
@@ -407,8 +398,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         'Saving card stats ${stats.cardId}::${stats.variant.name} with next review on ${stats.nextReviewDate}');
     final docRef = _cardStatsCollection.doc(stats.idValue);
     await docRef.set(stats).then(
-        (value) => _log.d("Review answer successfully recorded!"),
-        onError: (e) => _log.w("Error recording review answer: $e"));
+        (value) => _log.d('Review answer successfully recorded!'),
+        onError: (e) => _log.w('Error recording review answer: $e'));
   }
 
   @override
@@ -455,9 +446,12 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   @override
   Future<Deck?> loadDeck(String deckId) async {
     _log.d('Loading deck $deckId');
-    final snapshot = await _decksCollection
-        .where(FieldPath.documentId, isEqualTo: deckId)
-        .get();
+    final snapshot = await _firestore
+        .collectionGroup(userPrefix(decksCollectionName))
+        .withDecksConverter
+        .where('deckId', isEqualTo: deckId)
+        .get()
+        .logError('Error loading deck $deckId');
     return snapshot.docs.firstOrNull?.data();
   }
 
@@ -492,14 +486,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   }
 
   @override
-  Future<Iterable<Card>> loadCardsByIds(Iterable<String> cardIds) async {
-    final snapshot = await _cardsCollection
-        .where(FieldPath.documentId, whereIn: cardIds)
-        .get()
-        .logError('Error loading cards by ID');
-    return snapshot.docs.map((e) => e.data());
-    // .where((card) => cardIds.contains(card.id));
-  }
+  Future<Iterable<Card>> loadCardsByIds(Iterable<String> cardIds) async =>
+      await _loadCards(deckIds: {}, cardIds: cardIds.toSet());
 
   @override
   Future<Iterable<Deck>> loadDecksByIds(Iterable<String> deckIds) async {
@@ -835,5 +823,114 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       return MapEntry(ownerId, decksSnapshot.docs.map((s) => s.data()));
     }));
     return Map.fromEntries(entries);
+  }
+
+  @override
+  Future<void> incorporateSharedDeck(String deckId) async {
+    final cards = await _firestore
+        .collectionGroup(userPrefix(cardsCollectionName))
+        .where('deckId', isEqualTo: deckId)
+        .withCardsConverter
+        .get();
+    _log.d('There are ${cards.size} to incorporate from $deckId');
+    for (final card in cards.docs) {
+      final stats = CardStats.statsForCard(card.data());
+      final statsDocs = await Future.wait(stats.map((s) async =>
+          await _cardStatsCollection
+              .doc(s.idValue)
+              .get()
+              .then((snapshot) => (s, snapshot.reference, snapshot.exists))));
+      for (final record in statsDocs) {
+        if (!record.$3) {
+          _log.d('Added card ${record.$1.idValue} to review stats');
+          await record.$2.set(record.$1);
+        }
+      }
+    }
+  }
+
+  @override
+  Future<void> addDeckToGroup(String deckId, String groupId) async {
+    _log.d('Adding deck $deckId to group $groupId');
+    final doc = _deckGroupsCollection.doc(groupId);
+    final data = await doc.get().then((snapshot) => snapshot.data());
+    if (data == null) {
+      _log.d('Group $groupId not found');
+      throw 'Group $groupId not found';
+    }
+    if (data.decks!.contains(deckId)) {
+      _log.d('Deck $deckId already in group $groupId');
+      return;
+    }
+    final List<DeckId> deckIds = [...data.decks ?? [], deckId];
+
+    await doc.update({'decks': deckIds});
+    notifyDeckGroupChanged();
+  }
+
+  @override
+  Future<DeckGroup> createDeckGroup(String name, String? description) async {
+    if (name.trim().isEmpty) {
+      throw 'Group name cannot be empty and needs to contain non-whitespace characters';
+    }
+    _log.d('Creating deck group $name');
+    final existing = await _deckGroupsCollection.get();
+    if (existing.docs
+        .where((doc) => doc.data().name.toLowerCase() == name.toLowerCase())
+        .isNotEmpty) {
+      throw 'Group of name $name already exists';
+    }
+    final docRef = _deckGroupsCollection.doc();
+    final group =
+        DeckGroup(id: docRef.id, name: name, description: description);
+    await docRef.set(group).logError('Error creating deck group');
+    return group;
+  }
+
+  @override
+  Future<void> deleteDeckGroup(String groupId) async {
+    _log.d('Deleting deck group $groupId');
+    await _deckGroupsCollection
+        .doc(groupId)
+        .delete()
+        .logError('Error deleting deck group');
+  }
+
+  @override
+  Future<DeckGroup?> loadDeckGroup(DeckGroupId deckGroupId) async {
+    _log.d('Loading deck group $deckGroupId');
+    return await _deckGroupsCollection
+        .doc(deckGroupId)
+        .get()
+        .then((snapshot) => snapshot.data())
+        .logError('Error loading deck group');
+  }
+
+  @override
+  Future<Iterable<DeckGroup>> loadDeckGroups() async {
+    _log.d('Loading deck groups');
+    return await _deckGroupsCollection
+        .get()
+        .then((snapshot) => snapshot.docs.map((doc) => doc.data()))
+        .logError('Error loading deck groups');
+  }
+
+  @override
+  Future<void> removeDeckFromGroup(String deckId, String groupId) async {
+    _log.d('Removing deck $deckId from group $groupId');
+    final doc = _deckGroupsCollection.doc(groupId);
+    final group = await doc.get().then((snapshot) => snapshot.data());
+    if (group == null) {
+      _log.d('Group $groupId not found');
+      return;
+    }
+    if (group.decks == null) {
+      _log.d('Group $groupId has no decks');
+      return;
+    }
+    final deckIds = [...group.decks!]..remove(deckId);
+    await doc.update({'decks': deckIds}).logError(
+        'Error removing deck $deckId from group $groupId');
+    notifyDeckGroupChanged();
   }
 }

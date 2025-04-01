@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
-import 'package:flutter_flashcards/src/decks/shared_decks.dart';
+import 'package:flutter_flashcards/src/decks/deck_groups.dart';
 import 'package:provider/provider.dart';
 
 import '../layout/base_layout.dart';
 import '../model/cards.dart' as model;
 import '../model/repository.dart';
-import 'decks_list.dart';
 
 class DecksPage extends StatefulWidget {
   @override
@@ -35,24 +34,9 @@ class _DecksPageState extends State<DecksPage> {
           label: Text(context.l10n.addDeck),
           icon: const Icon(Icons.add),
         ),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(_ownDecks ? 'Own decks' : 'Shared decks'),
-                Switch(
-                    value: _ownDecks,
-                    onChanged: (value) {
-                      setState(() {
-                        _ownDecks = value;
-                      });
-                    }),
-              ],
-            ),
-            _ownDecks ? DeckListWidget() : SharedDeckListWidget(),
-          ],
-        ),
+        child: ListenableBuilder(
+            listenable: context.appState.cardRepository.decksUpdated,
+            builder: (context, _) => DeckGroups()),
       );
     });
   }

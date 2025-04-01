@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/avatar.dart';
-import 'package:flutter_flashcards/src/common/custom_theme.dart';
+import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 
 import '../common/build_context_extensions.dart';

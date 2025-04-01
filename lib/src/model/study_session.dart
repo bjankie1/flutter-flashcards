@@ -3,6 +3,7 @@ import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
+import 'package:logger/logger.dart';
 
 /// State used to track progress on a selected set of cards.
 /// It aims to load set of cards either for all decks or for
@@ -12,13 +13,16 @@ import 'package:flutter_flashcards/src/model/repository.dart';
 /// It may happen that a single card can be reviewed multiple
 /// times during a session in case of lapses.
 class StudySession with ChangeNotifier {
+  final _log = Logger();
+
   final CardsRepository repository;
 
   final String? deckId;
+  final String? deckGroupId;
 
-  StudySession({required this.repository, this.deckId});
+  StudySession({required this.repository, this.deckId, this.deckGroupId});
 
-  List<model.Card> _cards = [];
+  List<(model.CardReviewVariant, model.Card)> _cards = [];
   int _currentIndex = 0;
   DateTime _reviewStart = currentClockDateTime;
   int _reviewsSinceLastShuffle = 0;
@@ -26,12 +30,13 @@ class StudySession with ChangeNotifier {
 
   int get remainingCards => _cards.length;
 
-  model.Card? get currentCard =>
-      _cards.isEmpty ? null : _cards[_currentIndex % _cards.length];
+  (model.CardReviewVariant, model.Card)? get currentCard =>
+      _cards.isEmpty ? null : _cards[_currentIndex];
 
   Future<void> startStudySession() async {
+    _log.d('Starting session');
     _cards = await repository
-        .loadCardToReview(deckId: deckId)
+        .loadCardsToReview(deckId: deckId, deckGroupId: deckGroupId)
         .then((result) => result.toList())
         .logError('Error loading cards to review');
     _cards.shuffle();
@@ -48,20 +53,29 @@ class StudySession with ChangeNotifier {
     if (!_sessionStarted) {
       throw 'Session has not been started';
     }
-    final card = _cards[(_currentIndex) % _cards.length];
+    final (variant, card) = _cards[(_currentIndex)];
     final duration = currentClockDateTime.difference(_reviewStart);
-    await repository.recordAnswer(card.id!, model.CardReviewVariant.front,
-        rating, _reviewStart, duration);
+    await repository.recordAnswer(
+        card.id, variant, rating, _reviewStart, duration);
+    _progressToNextCard(rating);
+  }
+
+  /// Rating only one card as `again` leaves this card in the list otherwise
+  /// card is removed from the list which impacts pointer modification.
+  _progressToNextCard(model.Rating rating) {
     // Remove cards that have been learnt
     if (rating != model.Rating.again) {
       _cards.removeAt(_currentIndex);
     }
-    _progressToNextCard();
-  }
-
-  _progressToNextCard() {
     if (_cards.isEmpty) {
       return;
+    }
+    if (rating == model.Rating.again) {
+      _currentIndex = (_currentIndex + 1) % _cards.length;
+    } else {
+      // card has been removed from list therefore the current index can
+      // be exceeding the list length.
+      _currentIndex = _currentIndex % _cards.length;
     }
     if (_reviewsSinceLastShuffle > _cards.length) {
       _cards.shuffle();
@@ -69,7 +83,6 @@ class StudySession with ChangeNotifier {
     } else {
       _reviewsSinceLastShuffle++;
     }
-    _currentIndex = (_currentIndex + 1) % _cards.length;
     _reviewStart = currentClockDateTime;
     notifyListeners();
   }

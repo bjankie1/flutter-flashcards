@@ -10,6 +10,7 @@ import 'package:flutter_flashcards/src/common/crypto.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
+import 'package:flutter_flashcards/src/model/study_session.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
@@ -100,6 +101,7 @@ void main() {
 
     test('Add, delete and update card', () async {
       final card = model.Card(
+        id: 'card1',
         deckId: 'deck1',
         question: 'Question',
         answer: 'Answer',
@@ -109,14 +111,55 @@ void main() {
       var loadedCards = await repository.loadCards('deck1');
       expect(loadedCards.length, 1);
 
-      await repository.deleteCard(addedCard.id!);
-      final loadedCardsAfterDelete = await repository.loadCard(addedCard.id!);
+      await repository.deleteCard(addedCard.id);
+      final loadedCardsAfterDelete = await repository.loadCard(addedCard.id);
       expect(loadedCardsAfterDelete, null);
 
       final savedCard3 =
           await repository.saveCard(card.copyWith(answer: 'New answer'));
-      final loadedCardsAfterUpdate = await repository.loadCard(savedCard3.id!);
+      final loadedCardsAfterUpdate = await repository.loadCard(savedCard3.id);
       expect(loadedCardsAfterUpdate?.answer, 'New answer');
+    });
+
+    test('Assign deck to groups', () async {
+      await repository.saveDeck(model.Deck(name: 'Test Deck 1', id: 'deck1'));
+      await repository.saveDeck(model.Deck(name: 'Test Deck 2', id: 'deck2'));
+      await repository.saveDeck(model.Deck(name: 'Test Deck 3', id: 'deck3'));
+      await repository.saveDeck(model.Deck(name: 'Test Deck 4', id: 'deck4'));
+      await repository.saveDeck(model.Deck(name: 'Test Deck 5', id: 'deck5'));
+      await repository.saveDeck(model.Deck(name: 'Test Deck 6', id: 'deck6'));
+      final group1 = await repository.createDeckGroup('name 1', null);
+      final group2 = await repository.createDeckGroup('name 2', null);
+      await repository.addDeckToGroup('deck1', group1.id);
+      await repository.addDeckToGroup('deck2', group1.id);
+      await repository.addDeckToGroup('deck2', group2.id);
+      await repository.addDeckToGroup('deck3', group2.id);
+      final groupedDecks = await repository.loadDecksInGroups();
+      expect(groupedDecks, hasLength(3));
+      final group1Decks =
+          groupedDecks.firstWhere((p) => p.$1?.id == group1.id).$2;
+      final group2Decks =
+          groupedDecks.firstWhere((p) => p.$1?.id == group2.id).$2;
+      final remainingDecks = groupedDecks.firstWhere((p) => p.$1 == null).$2;
+      expect(group1Decks, hasLength(2));
+      expect(group2Decks, hasLength(2));
+      expect(remainingDecks, hasLength(3));
+    });
+
+    test('Should fail creating deck group with same or invalid name', () async {
+      await repository.createDeckGroup('name 1', null);
+      await expectLater(
+          repository.createDeckGroup('name 1', null), throwsA(isA<String>()));
+      await expectLater(
+          repository.createDeckGroup('', null), throwsA(isA<String>()));
+    });
+
+    test('Should fail adding deck to a non existing group', () async {
+      final deck = model.Deck(name: 'Test Deck 1', id: 'deck1');
+      await repository.saveDeck(deck);
+      await expectLater(
+          repository.addDeckToGroup(deck.id!, 'non-existing-group-id'),
+          throwsA(isA<String>()));
     });
   });
 
@@ -138,14 +181,14 @@ void main() {
       await repository.saveCard(card);
 
       final frontStats = await repository.loadCardStats(
-          card.id!, model.CardReviewVariant.front);
+          card.id, model.CardReviewVariant.front);
       expect(frontStats.cardId, card.id);
       expect(frontStats.variant, model.CardReviewVariant.front);
       expect(frontStats.state, model.State.newState);
       expect(frontStats.nextReviewDate, null);
       expect(frontStats.stability, 0);
       await expectLater(
-          repository.loadCardStats(card.id!, model.CardReviewVariant.back),
+          repository.loadCardStats(card.id, model.CardReviewVariant.back),
           throwsA(isA<Exception>()));
     });
 
@@ -163,14 +206,14 @@ void main() {
       await repository.saveCard(card);
 
       final frontStats = await repository.loadCardStats(
-          card.id!, model.CardReviewVariant.front);
+          card.id, model.CardReviewVariant.front);
       expect(frontStats.cardId, card.id);
       expect(frontStats.variant, model.CardReviewVariant.front);
       expect(frontStats.state, model.State.newState);
       expect(frontStats.nextReviewDate, null);
       expect(frontStats.stability, 0);
-      final backStats = await repository.loadCardStats(
-          card.id!, model.CardReviewVariant.back);
+      final backStats =
+          await repository.loadCardStats(card.id, model.CardReviewVariant.back);
       expect(backStats.cardId, card.id);
       expect(backStats.variant, model.CardReviewVariant.back);
       expect(backStats.state, model.State.newState);
@@ -178,7 +221,7 @@ void main() {
       expect(backStats.stability, 0);
     });
 
-    test('recorded answer reflected ins tats', () async {
+    test('recorded answer reflected in stats', () async {
       final deck = model.Deck(name: 'Test Deck 3');
       await repository.saveDeck(deck);
 
@@ -191,11 +234,11 @@ void main() {
       final duration = Duration(seconds: 15);
       final reviewTime = clock.agoBy(duration);
       await repository.saveCard(card);
-      repository.recordAnswer(card.id!, model.CardReviewVariant.front,
+      repository.recordAnswer(card.id, model.CardReviewVariant.front,
           model.Rating.good, reviewTime, duration);
 
       final stats = await repository.loadCardStats(
-          card.id!, model.CardReviewVariant.front);
+          card.id, model.CardReviewVariant.front);
       final answers = await repository.loadAnswers(reviewTime, reviewTime);
       expect(stats.difficulty, 0);
       expect(answers.length, 1);
@@ -204,8 +247,119 @@ void main() {
     });
 
     test('load cards to review when there are no cards yet', () async {
-      final cards = await repository.loadCardToReview();
+      final cards = await repository.loadCardsToReview();
       expect(cards.length, 0);
+    });
+
+    test('load cards to review for a deck', () async {
+      await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
+      await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
+      await repository.saveCard(model.Card(
+          id: 'card1',
+          deckId: 'deck1',
+          question: 'Question 1',
+          answer: 'Answer 1'));
+      await repository.saveCard(model.Card(
+          id: 'card2',
+          deckId: 'deck1',
+          question: 'Question 2',
+          answer: 'Answer 2'));
+      final cards1 = await repository.loadCardsToReview(deckId: 'deck1');
+      expect(cards1.length, 2);
+      final cards2 = await repository.loadCardsToReview(deckId: 'deck2');
+      expect(cards2.length, 0);
+    });
+
+    test('count cards to review for all decks', () async {
+      await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
+      await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
+      await repository.saveCard(model.Card(
+          id: 'card1',
+          deckId: 'deck1',
+          question: 'Question 1',
+          answer: 'Answer 1'));
+      await repository.saveCard(model.Card(
+          id: 'card2',
+          deckId: 'deck1',
+          question: 'Question 2',
+          answer: 'Answer 2'));
+      final cardsCount = await repository.cardsToReviewCount();
+      expect(cardsCount[model.State.newState], 2);
+      expect(cardsCount[model.State.learning], 0);
+      expect(cardsCount[model.State.review], 0);
+      expect(cardsCount[model.State.relearning], 0);
+    });
+
+    test('count cards to review for a deck', () async {
+      await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
+      await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
+      await repository.saveCard(model.Card(
+          id: 'card1',
+          deckId: 'deck1',
+          question: 'Question 1',
+          answer: 'Answer 1'));
+      await repository.saveCard(model.Card(
+          id: 'card2',
+          deckId: 'deck1',
+          question: 'Question 2',
+          answer: 'Answer 2'));
+      final cardsCount = await repository.cardsToReviewCount(deckId: 'deck1');
+      expect(cardsCount[model.State.newState], 2);
+      expect(cardsCount[model.State.learning], 0);
+      expect(cardsCount[model.State.review], 0);
+      expect(cardsCount[model.State.relearning], 0);
+    });
+
+    test('count cards to review for an empty deck', () async {
+      await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
+      await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
+      await repository.saveCard(model.Card(
+          id: 'card1',
+          deckId: 'deck1',
+          question: 'Question 1',
+          answer: 'Answer 1'));
+      await repository.saveCard(model.Card(
+          id: 'card2',
+          deckId: 'deck1',
+          question: 'Question 2',
+          answer: 'Answer 2'));
+      final cardsCount = await repository.cardsToReviewCount(deckId: 'deck2');
+      expect(cardsCount[model.State.newState], 0);
+      expect(cardsCount[model.State.learning], 0);
+      expect(cardsCount[model.State.review], 0);
+      expect(cardsCount[model.State.relearning], 0);
+    });
+
+    test('load cards to review for a deck group', () async {
+      await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
+      await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
+      await repository.saveDeck(model.Deck(id: 'deck3', name: 'Test Deck 3'));
+      await repository.saveCard(model.Card(
+          id: 'card1',
+          deckId: 'deck1',
+          question: 'Question 1',
+          answer: 'Answer 1'));
+      await repository.saveCard(model.Card(
+          id: 'card2',
+          deckId: 'deck2',
+          question: 'Question 2',
+          answer: 'Answer 2'));
+      await repository.saveCard(model.Card(
+          id: 'card3',
+          deckId: 'deck3',
+          question: 'Question 3',
+          answer: 'Answer 3'));
+
+      final group = await repository.createDeckGroup('name 1', null);
+      await repository.addDeckToGroup('deck1', group.id);
+      await repository.addDeckToGroup('deck2', group.id);
+      final group2 = await repository.createDeckGroup('name 2', null);
+      await repository.addDeckToGroup('deck3', group2.id);
+
+      final cards1 = await repository.loadCardsToReview(deckGroupId: group.id);
+      expect(cards1.length, 2);
+      final cards2 = await repository.loadCardsToReview(deckGroupId: group2.id);
+      expect(cards2.length, 1);
     });
   });
 
@@ -439,6 +593,40 @@ void main() {
       final loadedDecks = await repository.listSharedDecks();
       expect(loadedDecks, contains(loggedInUserId));
       expect(loadedDecks[loggedInUserId]!.first.id, deckId);
+    });
+
+    test(
+        'grant access and other user incorporates shared deck into learning list',
+        () async {
+      final deck = model.Deck(name: 'Test Deck 3');
+      final savedDeck = await repository.saveDeck(deck);
+      final deckId = savedDeck.id!;
+      // add 2 cards to the deck
+      await repository.saveCard(model.Card(
+        id: 'card1',
+        deckId: deckId,
+        question: 'Question 1',
+        answer: "Answer 1",
+      ));
+      await repository.saveCard(model.Card(
+        id: 'card2',
+        deckId: deckId,
+        question: 'Question 2',
+        answer: "Answer 2",
+      ));
+
+      await repository.grantAccessToDeck(deckId, user1.email);
+      await changeLogin(user1);
+      final session = StudySession(repository: repository, deckId: deckId);
+      await session.startStudySession();
+      expect(session.remainingCards, equals(0));
+      await repository.incorporateSharedDeck(deckId);
+      final session2 = StudySession(repository: repository);
+      await session2.startStudySession();
+      expect(session2.remainingCards, equals(2));
+      final session3 = StudySession(repository: repository, deckId: deckId);
+      await session3.startStudySession();
+      expect(session3.remainingCards, equals(2));
     });
   });
 }

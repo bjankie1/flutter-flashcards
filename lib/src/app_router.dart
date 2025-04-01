@@ -16,6 +16,8 @@ import 'package:logger/logger.dart';
 import '../firebase_options.dart';
 import 'reviews/study_cards_page.dart';
 
+final _log = Logger();
+
 // Add GoRouter configuration outside the App class
 final router = GoRouter(
   routes: [
@@ -113,6 +115,7 @@ final router = GoRouter(
                     await repository.loadDeck(deckId),
                 builder: (context, deck, _) {
                   if (deck == null) {
+                    _log.d('Deck $deckId not found');
                     return Text('Deck not found');
                   }
                   return DeckDetailsPage(
@@ -180,9 +183,9 @@ final router = GoRouter(
                 name: 'learn',
                 builder: (context, state) {
                   final deckId = state.uri.queryParameters['deckId'];
+                  final deckGroupId = state.uri.queryParameters['deckGroupId'];
                   return StudyCardsPage(
-                    deckId: deckId,
-                  );
+                      deckId: deckId, deckGroupId: deckGroupId);
                 },
               ),
             ]),

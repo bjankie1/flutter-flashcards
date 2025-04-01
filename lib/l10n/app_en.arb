@@ -140,5 +140,13 @@
   "profileNameChanged": "Profile name changed",
   "noSharedDecksMessage": "No shared decks found",
   "deckNotFoundMessage": "Deck not found",
-  "cardOptionDoubleSided": "Learn both sides"
+  "cardOptionDoubleSided": "Learn both sides",
+  "decksWithoutGroupHeader": "Decks without group",
+  "sharedDecksHeader": "Decks sheared by other users",
+  "addDeckToGroup": "Add deck to group",
+  "saveButton": "Save",
+  "newDeckGroupName": "New deck group",
+  "newDeckGroupHelper": "Enter new deck group name",
+  "newDeckGroupAddedMessage": "New deck group added",
+  "explanationLabel": "Explanation"
 }

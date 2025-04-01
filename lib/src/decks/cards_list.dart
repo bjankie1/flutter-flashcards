@@ -24,36 +24,46 @@ class CardsList extends StatelessWidget {
           noDataWidget: Center(child: Text(context.l10n.deckEmptyMessage)),
           builder: (context, data, _) {
             final flashcards = data.toList();
-            return Column(
-              children: [
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: flashcards.length,
-                  itemBuilder: (context, index) {
-                    final card = flashcards[index];
-                    return Padding(
-                      padding: EdgeInsets.symmetric(vertical: 4),
-                      child: CardTile(
-                          deck: deck,
-                          card: card,
-                          onDelete: () => _deleteCard(context, card)),
-                    );
-                  },
-                ),
-                Padding(
-                  // Now always visible
-                  padding: const EdgeInsets.all(8.0),
-                  child: FilledButton(
-                    onPressed: () async {
-                      await context.pushNamed('addCard', pathParameters: {
-                        'deckId': deck.id!,
-                      });
-                    },
-                    child: Text(context.l10n.addCard),
-                  ),
-                ),
-              ],
-            );
+            flashcards.sort((card1, card2) => card1.question
+                .toLowerCase()
+                .compareTo(card2.question.toLowerCase()));
+            return data.isEmpty
+                ? Text('No Cards')
+                : Expanded(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: flashcards.length,
+                            itemBuilder: (context, index) {
+                              final card = flashcards[index];
+                              return Padding(
+                                padding: EdgeInsets.symmetric(vertical: 4),
+                                child: CardTile(
+                                    deck: deck,
+                                    card: card,
+                                    onDelete: () => _deleteCard(context, card)),
+                              );
+                            },
+                          ),
+                        ),
+                        Padding(
+                          // Now always visible
+                          padding: const EdgeInsets.all(8.0),
+                          child: FilledButton(
+                            onPressed: () async {
+                              await context
+                                  .pushNamed('addCard', pathParameters: {
+                                'deckId': deck.id!,
+                              });
+                            },
+                            child: Text(context.l10n.addCard),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
           },
         );
       },
@@ -63,7 +73,7 @@ class CardsList extends StatelessWidget {
   _deleteCard(BuildContext context, model.Card card) async {
     final repository = context.read<CardsRepository>();
     await repository
-        .deleteCard(card.id!)
+        .deleteCard(card.id)
         .then((_) => context.showInfoSnackbar(context.l10n.cardDeletedMessage),
             onError: (e, stackTrace) {
       context.showErrorSnackbar(context.l10n.cardDeletionErrorMessage);
