@@ -85,5 +85,6 @@
   "saveButton": "Zapisz",
   "newDeckGroupName": "Nowa grupa kart",
   "newDeckGroupHelper": "Podaj nazwę nowej grupy",
-  "newDeckGroupAddedMessage": "Grupa została dodana"
+  "newDeckGroupAddedMessage": "Grupa została dodana",
+  "explanationLabel": "Wyjaśnienie"
 }

@@ -24,6 +24,9 @@ class CardsList extends StatelessWidget {
           noDataWidget: Center(child: Text(context.l10n.deckEmptyMessage)),
           builder: (context, data, _) {
             final flashcards = data.toList();
+            flashcards.sort((card1, card2) => card1.question
+                .toLowerCase()
+                .compareTo(card2.question.toLowerCase()));
             return data.isEmpty
                 ? Text('No Cards')
                 : Expanded(

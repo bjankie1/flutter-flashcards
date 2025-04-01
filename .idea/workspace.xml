@@ -9,27 +9,22 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Grouping decks into categories">
-      <change afterPath="$PROJECT_DIR$/lib/src/common/containers.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/src/model/firebase/firebase_cache.dart" afterDir="false" />
+    <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Fix study sessions">
+      <change afterPath="$PROJECT_DIR$/genkit/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" beforeDir="false" afterPath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/common/custom_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/common/themes.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_group.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_group.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_groups.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_groups.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/shared_decks.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/shared_decks.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/genkit/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/genkit/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_en.arb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_en.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_pl.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_pl.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_pl.arb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_pl.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/cards_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/cards_list.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/model/firebase/firebase_cache.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/firebase/firebase_cache.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/model/repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/repository.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/model/study_session.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/study_session.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/reviews/cards_review_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/reviews/cards_review_widget.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/reviews/rewiews_landing_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/reviews/rewiews_landing_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/settings/settings_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/settings/settings_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/statistics/decks_reviews_pie_chart.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/statistics/decks_reviews_pie_chart.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/model/firebase_repository_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/firebase_repository_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/model/fsrs_with_repository_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/fsrs_with_repository_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/model/study_session_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/study_session_test.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html-e" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html-e" afterDir="false" />
     </list>
@@ -136,7 +131,7 @@
     "Flutter Test.load cards to review for a deck group.executor": "Run",
     "Flutter Test.load cards to review for a deck.executor": "Run",
     "Flutter Test.load cards to review when there are no cards yet.executor": "Run",
-    "Flutter Test.rateAnswer records answer and removes card.executor": "Debug",
+    "Flutter Test.rateAnswer records answer and removes card.executor": "Run",
     "Flutter Test.rating only one card as `again` leaves only this card in the list.executor": "Run",
     "Flutter Test.tests in firebase_repository_test.dart.executor": "Run",
     "Flutter Test.tests in iterable_extensios_test.dart.executor": "Run",
@@ -176,14 +171,14 @@
       <option name="useRegexp" value="false" />
       <method v="2" />
     </configuration>
-    <configuration name="rateAnswer records answer and removes card" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="rateAnswer records answer and removes card" />
-      <option name="testFile" value="$PROJECT_DIR$/test/model/study_session_test.dart" />
+    <configuration name="count cards to review for all decks" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="count cards to review for all decks" />
+      <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
       <option name="useRegexp" value="false" />
       <method v="2" />
     </configuration>
-    <configuration name="rating only one card as `again` leaves only this card in the list" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="rating only one card as `again` leaves only this card in the list" />
+    <configuration name="rateAnswer records answer and removes card" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="rateAnswer records answer and removes card" />
       <option name="testFile" value="$PROJECT_DIR$/test/model/study_session_test.dart" />
       <option name="useRegexp" value="false" />
       <method v="2" />
@@ -200,11 +195,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Flutter Test.tests in study_session_test.dart" />
-        <item itemvalue="Flutter Test.rateAnswer records answer and removes card" />
-        <item itemvalue="Flutter Test.rating only one card as `again` leaves only this card in the list" />
         <item itemvalue="Flutter Test.tests in firebase_repository_test.dart" />
         <item itemvalue="Flutter Test.count cards to review for a deck" />
+        <item itemvalue="Flutter Test.count cards to review for all decks" />
+        <item itemvalue="Flutter Test.tests in study_session_test.dart" />
+        <item itemvalue="Flutter Test.rateAnswer records answer and removes card" />
       </list>
     </recent_temporary>
   </component>
@@ -369,7 +364,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742021181074</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Fix study sessions">
+      <option name="closed" value="true" />
+      <created>1743285407163</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1743285407163</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -397,17 +400,7 @@
     <MESSAGE value="        Granting access" />
     <MESSAGE value="Two-sided cards" />
     <MESSAGE value="Grouping decks into categories" />
-    <option name="LAST_COMMIT_MESSAGE" value="Grouping decks into categories" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/model/study_session.dart</url>
-          <line>49</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Fix study sessions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix study sessions" />
   </component>
 </project>

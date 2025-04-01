@@ -604,6 +604,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New deck group added'**
   String get newDeckGroupAddedMessage;
+
+  /// No description provided for @explanationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Explanation'**
+  String get explanationLabel;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

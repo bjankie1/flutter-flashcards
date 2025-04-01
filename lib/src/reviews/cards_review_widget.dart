@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/assets.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/card_image.dart';
+import 'package:flutter_flashcards/src/common/containers.dart';
+import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/study_session.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
@@ -101,67 +103,46 @@ class ReviewWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
-          child: CardSideContent(
-            card: card,
-            front: variant == model.CardReviewVariant.front,
+          child: RichTextCard(
+            cardId: card.id,
+            title: context.l10n.questionLabel,
+            text: variant == model.CardReviewVariant.front
+                ? card.question
+                : card.answer,
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
+            imagePlacement: card.questionImageAttached
+                ? model.ImagePlacement.question
+                : null,
           ),
         ),
         Visibility(
           visible: !answerRevealed,
-          child: Expanded(
-            child: Padding(
-                padding: EdgeInsets.all(4.0),
-                child: AnimatedContainer(
-                    duration: const Duration(seconds: 1),
-                    curve: Curves.easeIn,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12.0),
-                        color: Colors.lightGreenAccent,
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          tapRevealAnswer();
-                        },
-                        child: FittedBox(
-                          child: Text(
-                            '?',
-                            style: TextStyle(fontSize: 30),
-                          ),
-                        ),
-                      ),
-                    ))),
-          ),
+          child: RevealAnswerWidget(tapRevealAnswer: tapRevealAnswer),
         ),
         Visibility(
           visible: answerRevealed,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: GptMarkdown(
-                  card.answer,
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-              ),
-            ),
-          ),
+          child: AnswerCard(card: card, variant: variant),
         ),
         Visibility(
           visible: answerRevealed &&
               card.explanation != null &&
-              card.explanation != '',
-          child: CardSideContent(
-            card: card,
-            front: false,
+              card.explanation != '' &&
+              card.explanation! != card.answer,
+          child: RichTextCard(
+            cardId: card.id,
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
+            title: context.l10n.explanationLabel,
+            text: card.explanation!,
+            imagePlacement: card.explanationImageAttached
+                ? model.ImagePlacement.explanation
+                : null,
           ),
         ),
         Visibility(
           visible: answerRevealed,
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 30.0, horizontal: 8.0),
             child: RateAnswer(
               card: card,
               onRated: tapRating,
@@ -169,6 +150,78 @@ class ReviewWidget extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class AnswerCard extends StatelessWidget {
+  final model.Card card;
+  final model.CardReviewVariant variant;
+
+  const AnswerCard({
+    super.key,
+    required this.card,
+    required this.variant,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: CardsContainer(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: GptMarkdown(
+                variant == model.CardReviewVariant.back
+                    ? card.question
+                    : card.answer,
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class RevealAnswerWidget extends StatelessWidget {
+  const RevealAnswerWidget({
+    super.key,
+    required this.tapRevealAnswer,
+  });
+
+  final Function tapRevealAnswer;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Padding(
+          padding: EdgeInsets.all(4.0),
+          child: AnimatedContainer(
+              duration: const Duration(seconds: 1),
+              curve: Curves.easeIn,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.0),
+                  color: context.theme
+                      .extension<ContainersColors>()
+                      ?.mainContainerBackground,
+                ),
+                child: InkWell(
+                  onTap: () {
+                    tapRevealAnswer();
+                  },
+                  child: FittedBox(
+                    child: Text(
+                      '?',
+                      style: TextStyle(fontSize: 30),
+                    ),
+                  ),
+                ),
+              ))),
     );
   }
 }
@@ -226,60 +279,66 @@ class _RateAnswerState extends State<RateAnswer> {
   }
 }
 
-class CardSideContent extends StatelessWidget {
-  const CardSideContent({super.key, required this.card, this.front = true});
+/// Displays question on the card. What is considered the question depends on
+/// the variant. `front` is set to true if the CardReviewVariant is front.
+class RichTextCard extends StatelessWidget {
+  final String cardId;
 
-  final model.Card card;
+  final String title;
+  final String text;
 
-  final bool front;
+  final model.ImagePlacement? imagePlacement;
 
-  Color color(BuildContext context) => front
-      ? Theme.of(context).colorScheme.secondaryContainer
-      : Theme.of(context).colorScheme.surfaceContainerLow;
+  final Color color;
 
-  String get markdown => front ? card.question : card.answer;
+  const RichTextCard({
+    super.key,
+    required this.cardId,
+    required this.title,
+    required this.text,
+    required this.imagePlacement,
+    required this.color,
+  });
 
-  bool get showImage =>
-      front && card.questionImageAttached ||
-      !front && card.explanationImageAttached;
-
-  model.ImagePlacement get placement =>
-      front ? model.ImagePlacement.question : model.ImagePlacement.explanation;
+  bool get showImage => imagePlacement != null;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Card(
-        color: color(context),
+        color: color,
         child: Padding(
           padding: EdgeInsets.all(10.0),
-          child: Stack(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(front ? 'Question' : 'Explanation'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: FittedBox(
-                      child: GptMarkdown(
-                        markdown,
-                        // style: Theme.of(context).textTheme.headlineLarge,
-                      ),
-                    ),
-                  ),
-                  if (showImage)
+              Text(title),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
                     Expanded(
-                      flex: 1,
-                      child: LayoutBuilder(
-                        builder: (context, constraints) => CardImage(
-                          cardId: card.id,
-                          placement: placement,
-                          height: constraints.maxHeight,
+                      flex: 2,
+                      child: FittedBox(
+                        child: GptMarkdown(
+                          text,
+                          // style: Theme.of(context).textTheme.headlineLarge,
                         ),
                       ),
                     ),
-                ],
+                    if (showImage)
+                      Expanded(
+                        flex: 1,
+                        child: LayoutBuilder(
+                          builder: (context, constraints) => CardImage(
+                            cardId: cardId,
+                            placement: imagePlacement!,
+                            height: constraints.maxHeight,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               )
             ],
           ),
@@ -289,6 +348,7 @@ class CardSideContent extends StatelessWidget {
   }
 }
 
+/// Container used to show question answer.
 class QuestionAnswerContainer extends StatelessWidget {
   final Color color;
 

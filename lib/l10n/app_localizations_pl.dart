@@ -280,4 +280,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get newDeckGroupAddedMessage => 'Grupa została dodana';
+
+  @override
+  String get explanationLabel => 'Wyjaśnienie';
 }

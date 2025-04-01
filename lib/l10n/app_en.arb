@@ -147,5 +147,6 @@
   "saveButton": "Save",
   "newDeckGroupName": "New deck group",
   "newDeckGroupHelper": "Enter new deck group name",
-  "newDeckGroupAddedMessage": "New deck group added"
+  "newDeckGroupAddedMessage": "New deck group added",
+  "explanationLabel": "Explanation"
 }

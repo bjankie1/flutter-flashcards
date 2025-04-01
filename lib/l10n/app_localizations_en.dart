@@ -280,4 +280,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newDeckGroupAddedMessage => 'New deck group added';
+
+  @override
+  String get explanationLabel => 'Explanation';
 }

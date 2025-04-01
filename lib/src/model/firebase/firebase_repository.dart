@@ -221,7 +221,7 @@ class FirebaseCardsRepository extends CardsRepository {
   @override
   Future<Iterable<Card>> loadCards(String deckId) async {
     _log.d('Loading cards for deck $deckId');
-    return await _loadCards({deckId}, {});
+    return await _loadCards(deckIds: {deckId});
   }
 
   void _validateUser() {
@@ -262,80 +262,21 @@ class FirebaseCardsRepository extends CardsRepository {
     throw Exception('No card stats for $cardId and variant $variant');
   }
 
-  Future<Iterable<String>> _deckCardsIds(DeckId deckId) async {
-    final snapshots =
-        await _cardsCollection.where('deckId', isEqualTo: deckId).get();
-    return snapshots.docs.map((doc) => doc.id);
-  }
-
-  Future<Iterable<String>> _deckGroupCardsIds(DeckGroupId deckGroupId) async {
-    final deckGroup = await loadDeckGroup(deckGroupId);
-    if (deckGroup == null ||
-        deckGroup.decks == null ||
-        deckGroup.decks!.isEmpty) {
-      return [];
-    }
-    final deckIds = deckGroup.decks;
-    final cardIds = await Future.wait(deckIds!.map((deckId) async {
-      final result =
-          await _cardsCollection.where('deckId', isEqualTo: deckId).get();
-      return result.docs.map((doc) => doc.id);
-    }));
-    return cardIds.expand((element) => element);
-  }
-
   /// Loads identifiers and review variants of cards to review based on `nextReviewDate`
   @override
   Future<Map<State, int>> cardsToReviewCount(
       {DeckId? deckId, DeckGroupId? deckGroupId}) async {
     _log.d('Loading cards to review count');
-    // Cards ready for review
-    final baseQuery = _cardStatsCollection.where(Filter.or(
-        Filter('nextReviewDate', isLessThanOrEqualTo: currentClockDateTime),
-        Filter('nextReviewDate', isNull: true)));
 
-    Future<Iterable<Iterable<String>>?> batchCardIds() async {
-      if (deckId != null || deckGroupId != null) {
-        final cardIds = deckId != null
-            ? await _deckCardsIds(deckId)
-            : await _deckGroupCardsIds(deckGroupId!);
-        return cardIds.splitIterable(15);
-      }
-      // null indicates no deck specific card filtering
-      return null;
-    }
+    final cardsWithStats = await _loadCardsWithStatsToReview(
+        deckId: deckId, deckGroupId: deckGroupId);
+    countState(State state) =>
+        cardsWithStats.where((item) => item.$1.state == state).length;
 
-    final cardIds = await batchCardIds();
-
-    if (cardIds != null && cardIds.isEmpty) {
-      return {
-        State.newState: 0,
-        State.learning: 0,
-        State.relearning: 0,
-        State.review: 0
-      };
-    }
-
-    countState(State state) async {
-      var query = baseQuery.where('state', isEqualTo: state.name);
-      final results = await Future.wait((cardIds ?? [[]]).map((batch) async {
-        if (batch.isNotEmpty) {
-          query = query.where('cardId', whereIn: batch);
-        }
-        var countQuery = query.count();
-        final result = await countQuery.get().then((value) {
-          _log.d('Loaded ${value.count} $state cards');
-          return value;
-        }).logError('Error counting cards to review');
-        return result.count ?? 0;
-      }));
-      return results.fold(0, (agg, next) => agg + next);
-    }
-
-    final newState = await countState(State.newState);
-    final learningState = await countState(State.learning);
-    final relearningState = await countState(State.relearning);
-    final reviewState = await countState(State.review);
+    final newState = countState(State.newState);
+    final learningState = countState(State.learning);
+    final relearningState = countState(State.relearning);
+    final reviewState = countState(State.review);
 
     _log.d('''
 Successfully loaded cards to review count. 
@@ -349,81 +290,51 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     };
   }
 
-  /// Loads identifiers and review variants of cards to review based on `nextReviewDate`
-  Future<Iterable<(String, CardReviewVariant)>> _cardIdsToReview(
-      {int? reviewLimit = 200, int? newLimit = 200}) async {
-    try {
-      // Cards ready for review
-      final statsSnapshot = await _cardStatsCollection
-          .where('nextReviewDate', isLessThanOrEqualTo: currentClockDateTime)
-          .limit(reviewLimit ?? 200)
-          .get()
-          .logError('Error querying cards to review');
-      final toReview = statsSnapshot.docs.map((doc) => doc.data()).toList();
-      _log.d('Identified ${toReview.length} to review');
+  Future<Iterable<(CardStats, Card)>> _loadCardsWithStatsToReview(
+      {DeckId? deckId, DeckGroupId? deckGroupId}) async {
+    _log.d(
+        'Loading cards stats with cards to review for deck: $deckId deckGroup: $deckGroupId');
 
-      // New cards
-      final statsSnapshotNew = await _cardStatsCollection
-          .where('nextReviewDate', isNull: true)
-          .limit(newLimit ?? 200)
-          .get()
-          .logError('Error querying new cards to review');
-      final newCards = statsSnapshotNew.docs.map((doc) => doc.data()).toList();
-      _log.d('New cards to review: ${newCards.length}');
+    final bool applyDeckFiltering = deckId != null || deckGroupId != null;
 
-      final allCards = [...toReview, ...newCards];
-      _log.d('All cards to review: ${allCards.length}');
-
-      _log.d('Loading cards to review');
-      // Load cards to review
-      final cardsIdsToReview = allCards.map((cs) => (cs.cardId, cs.variant));
-      return cardsIdsToReview;
-    } on Exception catch (e, stackTrace) {
-      _log.w('Error querying cards to review: $e', stackTrace: stackTrace);
-      rethrow;
+    Future<Iterable<Card>> getCards() async {
+      final cards = deckId != null
+          ? await _loadCards(deckIds: {deckId})
+          : await _loadCardsInDeckGroup(deckGroupId!);
+      return cards;
     }
+
+    // Cards ready for review
+    final cardStatsToReview = await _cardStatsCollection
+        .where(Filter.or(
+            Filter('nextReviewDate', isLessThanOrEqualTo: currentClockDateTime),
+            Filter('nextReviewDate', isNull: true)))
+        .get()
+        .then((snapshot) => snapshot.docs.map((doc) => doc.data()));
+    final cardIdsToReview = cardStatsToReview.map((cs) => cs.cardId).toSet();
+    _log.d('Found ${cardStatsToReview.length} cards to review');
+    if (cardStatsToReview.isEmpty) return Iterable.empty();
+    final cards = applyDeckFiltering
+        ? await getCards()
+        : await _loadCards(cardIds: cardIdsToReview);
+    _log.d('Found ${cards.length} matching cards');
+    if (cards.isEmpty) return Iterable.empty();
+    final cardsById =
+        Map.fromEntries(cards.map((card) => MapEntry(card.id, card)));
+
+    return cardStatsToReview
+        .where((cs) => cardsById.containsKey(cs.cardId))
+        .map((cs) => (cs, cardsById[cs.cardId]!));
   }
 
   @override
   Future<Iterable<(CardReviewVariant, Card)>> loadCardsToReview(
       {DeckId? deckId, DeckGroupId? deckGroupId}) async {
-    // First step:
-    // load cards to review IDs and corresponding card review variant.
-    final cardIdsWithVariants =
-        await _cardIdsToReview().logError('Error identifying cards to review');
-    _log.d('Cards to review: ${cardIdsWithVariants.length}');
-    // Load corresponding cards for each card ID from the tuple
-    final cardIds =
-        cardIdsWithVariants.map((t) => t.$1).toSet(); // unique card Ids
-    if (cardIds.isEmpty) return Iterable.empty();
+    _log.d('Loading cards to review');
 
-    // Second step:
-    // Identify decks IDs from a deck group the cards should be loaded for.
-    // The cards can be also loaded for a single deck if provided or all decks.
-    // The deck IDs set can be empty which means all cards should be loaded.
-    final deckIds = List<String>.empty(growable: true);
-    if (deckId != null) {
-      deckIds.add(deckId);
-    } else if (deckGroupId != null) {
-      final deckGroup = await loadDeckGroup(deckGroupId);
-      if (deckGroup != null && deckGroup.decks != null) {
-        deckIds.addAll(deckGroup.decks!);
-      }
-    }
-
-    // Load the cards for given decks.
-    Iterable<Card> cards = await _loadCards(deckIds.toSet(), cardIds);
-
-    // Third step:
-    // Combine cards data with cards IDs identified for review. This operation
-    // should also filter only the cards that were identified for review in
-    // the first step.
-    final cardsMappedToId =
-        Map.fromEntries(cards.map((card) => MapEntry(card.id, card)));
-    final result = cardIdsWithVariants
-        .where((pair) => cardsMappedToId.containsKey(pair.$1))
-        .map((pair) => (pair.$2, cardsMappedToId[pair.$1]!));
-    return result;
+    final result = await _loadCardsWithStatsToReview(
+        deckId: deckId, deckGroupId: deckGroupId);
+    return result.map((cs) => (cs.$1.variant, cs.$2));
   }
 
   /// Executes query by splitting ids into batches. The method does not verify
@@ -448,13 +359,34 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
   /// The method overcomes firebase limit on OR queries
   /// https://firebase.google.com/docs/firestore/query-data/queries#limits_on_or_queries
   Future<Iterable<Card>> _loadCards(
-      Set<String> deckIds, Set<String> cardIds) async {
+      {Set<String>? deckIds, Set<String>? cardIds}) async {
+    if ((cardIds ?? {}).isEmpty && (deckIds ?? {}).isEmpty) {
+      throw "Either deckIds or cardIds must be provided";
+    }
     final collectionGroup = _firestore
         .collectionGroup(userPrefix(cardsCollectionName))
         .withCardsConverter;
-    final result = deckIds.isNotEmpty
+    final result = deckIds != null && deckIds.isNotEmpty
         ? _batchQuery(query: collectionGroup, field: 'deckId', ids: deckIds)
-        : _batchQuery(query: collectionGroup, field: 'cardId', ids: cardIds);
+        : _batchQuery(query: collectionGroup, field: 'cardId', ids: cardIds!);
+    final cards = await result.logError('Error loading cards to review');
+    _log.d(
+        'Loaded ${cards.length} cards based on filter decks: $deckIds, cards: $cardIds');
+    return cards;
+  }
+
+  Future<Iterable<Card>> _loadCardsInDeckGroup(String deckGroupId) async {
+    final deckGroup = await loadDeckGroup(deckGroupId);
+    if (deckGroup == null) {
+      return Iterable.empty();
+    }
+    final deckIds = deckGroup.decks ?? {};
+    final collectionGroup = _firestore
+        .collectionGroup(userPrefix(cardsCollectionName))
+        .withCardsConverter;
+    if (deckIds.isEmpty) return Iterable.empty();
+    final result =
+        _batchQuery(query: collectionGroup, field: 'deckId', ids: deckIds);
     final cards = await result.logError('Error loading cards to review');
     _log.d('Loaded ${cards.length} cards to review');
     return cards;
@@ -555,7 +487,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
 
   @override
   Future<Iterable<Card>> loadCardsByIds(Iterable<String> cardIds) async =>
-      await _loadCards({}, cardIds.toSet());
+      await _loadCards(deckIds: {}, cardIds: cardIds.toSet());
 
   @override
   Future<Iterable<Deck>> loadDecksByIds(Iterable<String> deckIds) async {

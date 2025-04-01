@@ -35,7 +35,7 @@ void main() async {
   GoRouter.optionURLReflectsImperativeAPIs = true;
   setPathUrlStrategy();
 
-  if (kDebugMode) {
+  if (false && kDebugMode) {
     // Connect to the Firestore emulator
     FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
