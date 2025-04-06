@@ -93,8 +93,7 @@ class _DecksReviewsPieChartState extends State<DecksReviewsPieChart> {
                           : context.l10n.timePerDeckChartTitle,
                       style: Theme.of(context).textTheme.titleMedium),
                 ),
-                SizedBox(
-                  height: 400,
+                Expanded(
                   child: Row(
                     children: [
                       AspectRatio(

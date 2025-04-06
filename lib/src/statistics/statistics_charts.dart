@@ -18,25 +18,43 @@ class StatisticsCharts extends StatelessWidget {
     return Consumer<FiltersModel>(
       builder: (context, value, _) {
         return RepositoryLoader(
-            fetcher: (repository) => repository.loadAnswers(
-                value.selectedDates.start.dayStart,
-                value.selectedDates.end.dayEnd,
-                uid: uid),
-            builder: (context, result, _) {
-              return ListView(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: BaseStatisticsTable(result),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SizedBox(
-                      height: 400,
-                      child: Row(
-                        spacing: 8,
-                        children: [
-                          Expanded(
+          fetcher: (repository) => repository.loadAnswers(
+              value.selectedDates.start.dayStart,
+              value.selectedDates.end.dayEnd,
+              uid: uid),
+          builder: (context, result, _) {
+            return LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                return CustomScrollView(
+                  slivers: <Widget>[
+                    SliverGrid(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: constraints.maxWidth < 600 ? 1 : 3,
+                        childAspectRatio: 5,
+                        mainAxisSpacing: 0, // Space between rows
+                        crossAxisSpacing: 0, // Space between columns
+                      ),
+                      delegate: SliverChildListDelegate([
+                        BaseStatistic(
+                            answers: result, type: StatisticType.totalCount),
+                        BaseStatistic(
+                            answers: result, type: StatisticType.totalTime),
+                        BaseStatistic(
+                            answers: result, type: StatisticType.avgTime),
+                      ]),
+                    ),
+                    SliverPadding(
+                      padding: const EdgeInsets.all(8.0),
+                      sliver: SliverGrid(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: constraints.maxWidth < 900 ? 1 : 2,
+                          mainAxisSpacing: 8, // Space between rows
+                          crossAxisSpacing: 8, // Space between columns
+                          childAspectRatio: 1.5,
+                        ),
+                        delegate: SliverChildListDelegate([
+                          SizedBox(
+                            height: 400,
                             child: Container(
                               color:
                                   ColorScheme.of(context).surfaceContainerLow,
@@ -46,7 +64,8 @@ class StatisticsCharts extends StatelessWidget {
                               ),
                             ),
                           ),
-                          Expanded(
+                          SizedBox(
+                            height: 400,
                             child: Container(
                               color:
                                   ColorScheme.of(context).surfaceContainerLow,
@@ -59,36 +78,26 @@ class StatisticsCharts extends StatelessWidget {
                               ),
                             ),
                           ),
-                        ],
+                          ColoredBox(
+                            color: ColorScheme.of(context).surfaceContainerLow,
+                            child: DecksReviewsPieChart(result,
+                                type: SummaryType.count),
+                          ),
+                          ColoredBox(
+                            color: ColorScheme.of(context).surfaceContainerLow,
+                            child: DecksReviewsPieChart(result,
+                                type: SummaryType.time),
+                          ),
+                        ]),
                       ),
                     ),
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        spacing: 8,
-                        children: [
-                          Expanded(
-                            child: ColoredBox(
-                              color:
-                                  ColorScheme.of(context).surfaceContainerLow,
-                              child: DecksReviewsPieChart(result,
-                                  type: SummaryType.count),
-                            ),
-                          ),
-                          Expanded(
-                            child: ColoredBox(
-                              color:
-                                  ColorScheme.of(context).surfaceContainerLow,
-                              child: DecksReviewsPieChart(result,
-                                  type: SummaryType.time),
-                            ),
-                          ),
-                        ],
-                      )),
-                ],
-              );
-            });
+                    SliverFillRemaining(),
+                  ],
+                );
+              },
+            );
+          },
+        );
       },
     );
   }

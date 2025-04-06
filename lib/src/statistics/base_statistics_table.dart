@@ -21,31 +21,33 @@ class ReportLabel extends StatelessWidget {
       child: Container(
         alignment: alignRight ? Alignment.centerRight : Alignment.centerLeft,
         padding: const EdgeInsets.all(8),
-        child: FittedBox(
-          child: Text(label,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(fontWeight: bold ? FontWeight.bold : null)),
-        ),
+        child: Text(label,
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall
+                ?.copyWith(fontWeight: bold ? FontWeight.bold : null)),
       ),
     );
   }
 }
 
-class BaseStatisticsTable extends StatelessWidget {
-  final Iterable<model.CardAnswer> result;
+enum StatisticType { totalCount, totalTime, avgTime }
 
-  const BaseStatisticsTable(this.result);
+class BaseStatistic extends StatelessWidget {
+  final Iterable<model.CardAnswer> answers;
+
+  final StatisticType type;
+
+  const BaseStatistic({required this.answers, required this.type});
 
   Duration get totalTime {
-    return result.fold<Duration>(
+    return answers.fold<Duration>(
         Duration.zero, (agg, next) => agg + next.timeSpent);
   }
 
   Duration get averageTime {
     final days =
-        result.map((answer) => answer.reviewStart.dayStart).toSet().length;
+        answers.map((answer) => answer.reviewStart.dayStart).toSet().length;
     return Duration(seconds: (totalTime.inSeconds / days).toInt());
   }
 
@@ -70,27 +72,34 @@ class BaseStatisticsTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        ReportLabel(
-          'Answers:',
-          alignRight: true,
-          bold: true,
-        ),
-        ReportLabel(result.length.toString()),
-        ReportLabel(
-          'Total time:',
-          alignRight: true,
-          bold: true,
-        ),
-        ReportLabel(printDuration(context, totalTime)),
-        ReportLabel(
-          'Average (s):',
-          alignRight: true,
-          bold: true,
-        ),
-        ReportLabel(printDuration(context, averageTime)),
-      ],
-    );
+    switch (type) {
+      case StatisticType.totalCount:
+        return Row(children: [
+          ReportLabel(
+            'Answers:',
+            alignRight: true,
+            bold: true,
+          ),
+          ReportLabel(answers.length.toString())
+        ]);
+      case StatisticType.totalTime:
+        return Row(children: [
+          ReportLabel(
+            'Total time:',
+            alignRight: true,
+            bold: true,
+          ),
+          ReportLabel(printDuration(context, totalTime))
+        ]);
+      case StatisticType.avgTime:
+        return Row(children: [
+          ReportLabel(
+            'Average (s):',
+            alignRight: true,
+            bold: true,
+          ),
+          ReportLabel(printDuration(context, averageTime))
+        ]);
+    }
   }
 }
