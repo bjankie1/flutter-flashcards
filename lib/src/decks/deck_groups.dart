@@ -51,24 +51,31 @@ class DeckGroups extends StatelessWidget {
                   ],
                 ),
                 ConstrainedBox(
-                    constraints: BoxConstraints(maxHeight: 200),
+                    constraints: BoxConstraints(maxHeight: 120),
                     child: DeckGroupHorizontalList(decks: decks))
               ],
             ),
           ),
         ];
       }).expand((l) => l),
-      Text(
-        context.l10n.sharedDecksHeader,
-        style: context.textTheme.headlineMedium,
-      ),
       RepositoryLoader(
           fetcher: (repository) => repository.listSharedDecks(),
           builder: (context, sharedDecks, _) {
-            return ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 200),
-              child: DeckGroupHorizontalList(
-                  decks: sharedDecks.values.expand((d) => d).toList()),
+            return Column(
+              children: sharedDecks.isEmpty
+                  ? []
+                  : [
+                      Text(
+                        context.l10n.sharedDecksHeader,
+                        style: context.textTheme.headlineMedium,
+                      ),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: 200),
+                        child: DeckGroupHorizontalList(
+                            decks:
+                                sharedDecks.values.expand((d) => d).toList()),
+                      ),
+                    ],
             );
           })
     ];

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
+import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 
 class ReportLabel extends StatelessWidget {
@@ -37,6 +38,17 @@ class BaseStatisticsTable extends StatelessWidget {
 
   const BaseStatisticsTable(this.result);
 
+  Duration get totalTime {
+    return result.fold<Duration>(
+        Duration.zero, (agg, next) => agg + next.timeSpent);
+  }
+
+  Duration get averageTime {
+    final days =
+        result.map((answer) => answer.reviewStart.dayStart).toSet().length;
+    return Duration(seconds: (totalTime.inSeconds / days).toInt());
+  }
+
   String printDuration(BuildContext context, Duration duration) {
     final seconds = duration.inSeconds;
     final remainingSeconds = seconds % 60;
@@ -45,12 +57,14 @@ class BaseStatisticsTable extends StatelessWidget {
     final hours = minutes ~/ 60;
     String result = '';
     if (hours > 0) {
-      result += context.l10n.printHours(hours);
+      result = context.l10n.printHours(hours);
     }
     if (remainingMinutes > 0) {
-      result += context.l10n.printMinutes(remainingMinutes);
+      result += (result.isNotEmpty ? ' ' : '') +
+          context.l10n.printMinutes(remainingMinutes);
     }
-    result += result += context.l10n.printSeconds(remainingSeconds);
+    result += (result.isNotEmpty ? ' ' : '') +
+        context.l10n.printSeconds(remainingSeconds);
     return result;
   }
 
@@ -69,19 +83,13 @@ class BaseStatisticsTable extends StatelessWidget {
           alignRight: true,
           bold: true,
         ),
-        ReportLabel(printDuration(
-            context,
-            result.fold<Duration>(
-                Duration.zero, (agg, next) => agg + next.timeSpent))),
+        ReportLabel(printDuration(context, totalTime)),
         ReportLabel(
           'Average (s):',
           alignRight: true,
           bold: true,
         ),
-        ReportLabel(printDuration(
-            context,
-            result.fold<Duration>(
-                Duration.zero, (agg, next) => agg + next.timeSpent))),
+        ReportLabel(printDuration(context, averageTime)),
       ],
     );
   }
