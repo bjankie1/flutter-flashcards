@@ -86,5 +86,6 @@
   "newDeckGroupName": "Nowa grupa kart",
   "newDeckGroupHelper": "Podaj nazwę nowej grupy",
   "newDeckGroupAddedMessage": "Grupa została dodana",
-  "explanationLabel": "Wyjaśnienie"
+  "explanationLabel": "Wyjaśnienie",
+  "cardReviewDaily": "Liczba powtórek dziennie"
 }

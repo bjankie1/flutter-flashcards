@@ -9,9 +9,36 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Fix study sessions">
+    <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Fix focus traversal on card edit">
+      <change afterPath="$PROJECT_DIR$/lib/src/statistics/reviews_history.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" beforeDir="false" afterPath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/card_edit.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/card_edit.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/debug/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/debug/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_en.arb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_en.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_pl.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_pl.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_pl.arb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_pl.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/common/themes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/common/themes.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_groups.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_groups.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/layout/base_layout.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/layout/base_layout.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/layout/left_navigation.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/layout/navigation.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/statistics/base_statistics_table.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/statistics/base_statistics_table.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/statistics/decks_reviews_pie_chart.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/statistics/decks_reviews_pie_chart.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/statistics/review_hours_histogram.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/statistics/review_hours_histogram.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/statistics/statistics_charts.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/statistics/statistics_charts.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/linux/flutter/generated_plugins.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/index.html-e" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html-e" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/windows/flutter/generated_plugins.cmake" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,6 +112,9 @@
   &quot;associatedIndex&quot;: 5
 }</component>
   <component name="ProjectId" id="2sBV6oEGvdUtsYeA12COKjKh2pG" />
+  <component name="ProjectLevelVcsManager">
+    <OptionsSetting value="false" id="Update" />
+  </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1" />
     <panes>
@@ -130,42 +160,52 @@
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
+    "com.android.tools.idea.streaming.emulator.frame.visible": "false",
     "com.android.tools.idea.streaming.zoom.toolbar.visible": "false",
     "com.google.services.firebase.aqiPopupShown": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "45-fix-order-traversal-in-card-input-using-tab",
+    "git-widget-placeholder": "12-basic-android-version",
     "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards",
+    "last_opened_file_path": "/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards/lib/src/statistics",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.17",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "device.mirroring",
     "show.migrate.to.gradle.popup": "false",
     "structure.view.defaults.are.configured": "true"
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/src/statistics" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/assets/images" />
     </key>
   </component>
   <component name="RunManager" selected="Flutter.main.dart">
-    <configuration name="count cards to review for a deck" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="count cards to review for a deck" />
+    <configuration name="grant access and verify of other user can load deck" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="grant access and verify of other user can load deck" />
       <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
       <option name="useRegexp" value="false" />
       <method v="2" />
     </configuration>
-    <configuration name="count cards to review for all decks" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="count cards to review for all decks" />
+    <configuration name="grant access to deck" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="grant access to deck" />
       <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
       <option name="useRegexp" value="false" />
       <method v="2" />
     </configuration>
-    <configuration name="rateAnswer records answer and removes card" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="rateAnswer records answer and removes card" />
-      <option name="testFile" value="$PROJECT_DIR$/test/model/study_session_test.dart" />
+    <configuration name="grant permission to stats to user1 and user1 can get list of collaborators" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="grant permission to stats to user1 and user1 can get list of collaborators" />
+      <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
+      <option name="useRegexp" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="grant permission to stats to user1 and verify if added to /sharing collection" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="grant permission to stats to user1 and verify if added to /sharing collection" />
+      <option name="testFile" value="$PROJECT_DIR$/test/model/firebase_repository_test.dart" />
       <option name="useRegexp" value="false" />
       <method v="2" />
     </configuration>
@@ -174,18 +214,13 @@
       <option name="useRegexp" value="false" />
       <method v="2" />
     </configuration>
-    <configuration name="tests in study_session_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testFile" value="$PROJECT_DIR$/test/model/study_session_test.dart" />
-      <option name="useRegexp" value="false" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Flutter Test.tests in firebase_repository_test.dart" />
-        <item itemvalue="Flutter Test.count cards to review for a deck" />
-        <item itemvalue="Flutter Test.count cards to review for all decks" />
-        <item itemvalue="Flutter Test.tests in study_session_test.dart" />
-        <item itemvalue="Flutter Test.rateAnswer records answer and removes card" />
+        <item itemvalue="Flutter Test.grant permission to stats to user1 and verify if added to /sharing collection" />
+        <item itemvalue="Flutter Test.grant permission to stats to user1 and user1 can get list of collaborators" />
+        <item itemvalue="Flutter Test.grant access to deck" />
+        <item itemvalue="Flutter Test.grant access and verify of other user can load deck" />
       </list>
     </recent_temporary>
   </component>
@@ -366,7 +401,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743536520785</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Fix focus traversal on card edit">
+      <option name="closed" value="true" />
+      <created>1743538642022</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1743538642022</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -395,6 +438,7 @@
     <MESSAGE value="Two-sided cards" />
     <MESSAGE value="Grouping decks into categories" />
     <MESSAGE value="Fix study sessions" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix study sessions" />
+    <MESSAGE value="Fix focus traversal on card edit" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix focus traversal on card edit" />
   </component>
 </project>

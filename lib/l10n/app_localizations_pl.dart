@@ -283,4 +283,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get explanationLabel => 'Wyjaśnienie';
+
+  @override
+  String get cardReviewDaily => 'Liczba powtórek dziennie';
 }

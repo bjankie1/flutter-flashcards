@@ -4,7 +4,7 @@ import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:flutter_flashcards/src/common/avatar.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/layout/UserMenu.dart';
-import 'package:flutter_flashcards/src/layout/left_navigation.dart';
+import 'package:flutter_flashcards/src/layout/navigation.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:go_router/go_router.dart';
@@ -48,6 +48,8 @@ class BaseLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.sizeOf(context).width;
+    bool isMobile = screenWidth < 600;
     return LayoutBuilder(builder: (context, constraints) {
       return Scaffold(
         appBar: AppBar(
@@ -107,12 +109,14 @@ class BaseLayout extends StatelessWidget {
         body: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            LeftNavigation(
-              currentPage: currentPage,
-            ),
+            if (!isMobile)
+              LeftNavigation(
+                currentPage: currentPage,
+              ),
             Expanded(child: child)
           ],
         ),
+        bottomNavigationBar: !isMobile ? null : BottomNavigation(),
         floatingActionButton: floatingActionButton,
       );
     });

@@ -283,4 +283,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get explanationLabel => 'Explanation';
+
+  @override
+  String get cardReviewDaily => 'Cards reviews per day';
 }

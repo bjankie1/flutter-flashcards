@@ -610,6 +610,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Explanation'**
   String get explanationLabel;
+
+  /// No description provided for @cardReviewDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards reviews per day'**
+  String get cardReviewDaily;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

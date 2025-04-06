@@ -95,7 +95,6 @@ class _DecksReviewsPieChartState extends State<DecksReviewsPieChart> {
                 ),
                 SizedBox(
                   height: 400,
-                  width: 600,
                   child: Row(
                     children: [
                       AspectRatio(
