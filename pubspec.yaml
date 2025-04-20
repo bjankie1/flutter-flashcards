@@ -4,7 +4,7 @@ description: "Flashcards app for my kids."
 # Prevent accidental publishing to pub.dev.
 publish_to: 'none'
 
-version: 1.0.1+71
+version: 1.0.1+74
 
 environment:
   sdk: ^3.6.0
@@ -61,6 +61,7 @@ dev_dependencies:
   firebase_auth_mocks: ^0.14.1
   google_sign_in_mocks: ^0.3.0
   mocktail: ^1.0.4
+  flutter_launcher_icons: ^0.14.3
 
 flutter:
   uses-material-design: true
@@ -73,3 +74,17 @@ flutter:
     - assets/images/
 #flutter_intl:
 #  enabled: true
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/icon-512.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "assets/icon/icon-32.png"
+    background_color: "#ffffff"
+    theme_color: "#eeeeee"
+  macos:
+    generate: true
+    image_path: "assets/icon/icon-64.png"

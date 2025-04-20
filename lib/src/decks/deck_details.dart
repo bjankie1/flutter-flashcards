@@ -17,9 +17,9 @@ final class DeckInformation extends StatelessWidget {
     return ListTile(
       title: _DeckNameWidget(deck: deck),
       subtitle: _DeckDescriptionWidget(deck: deck),
-      trailing: Visibility(
-          visible: deck.category != null,
-          child: Chip(label: Text(deck.category?.name ?? ''))),
+      trailing: deck.category != null && !context.isMobile
+          ? Chip(label: Text(deck.category?.name ?? ''))
+          : null,
       dense: true,
     );
   }
@@ -71,16 +71,18 @@ class _DeckNameWidgetState extends State<_DeckNameWidget> {
           Expanded(
             child: Column(
               children: [
-                TextFormField(
-                  controller: nameController,
-                  readOnly: !isEditing,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderSide: isEditing
-                              ? const BorderSide() // Default border when editing
-                              : BorderSide.none)),
+                Expanded(
+                  child: TextFormField(
+                    controller: nameController,
+                    readOnly: !isEditing,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                    maxLines: 1,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderSide: isEditing
+                                ? const BorderSide() // Default border when editing
+                                : BorderSide.none)),
+                  ),
                 ),
                 SizedBox(
                   height: 5,

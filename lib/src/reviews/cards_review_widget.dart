@@ -242,6 +242,7 @@ class _RateAnswerState extends State<RateAnswer> {
 
   @override
   Widget build(BuildContext context) {
+    final textStyle = context.isMobile ? null : context.textTheme.displaySmall;
     return SegmentedButton<model.Rating>(
       emptySelectionAllowed: true,
       segments: [
@@ -249,25 +250,25 @@ class _RateAnswerState extends State<RateAnswer> {
             value: model.Rating.again,
             label: Text(
               context.l10n.rateAgainLabel,
-              style: Theme.of(context).textTheme.displaySmall,
+              style: textStyle,
             )),
         ButtonSegment<model.Rating>(
             value: model.Rating.hard,
             label: Text(
               context.l10n.rateHardLabel,
-              style: Theme.of(context).textTheme.displaySmall,
+              style: textStyle,
             )),
         ButtonSegment<model.Rating>(
             value: model.Rating.good,
             label: Text(
               context.l10n.rateGoodLabel,
-              style: Theme.of(context).textTheme.displaySmall,
+              style: textStyle,
             )),
         ButtonSegment<model.Rating>(
             value: model.Rating.easy,
             label: Text(
               context.l10n.rateEasyLabel,
-              style: Theme.of(context).textTheme.displaySmall,
+              style: textStyle,
             )),
       ],
       selected: _reviewRate != null ? {_reviewRate!} : {},

@@ -48,8 +48,7 @@ class BaseLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.sizeOf(context).width;
-    bool isMobile = screenWidth < 600;
+    bool isMobile = context.isMobile;
     return LayoutBuilder(builder: (context, constraints) {
       return Scaffold(
         appBar: AppBar(
@@ -79,7 +78,7 @@ class BaseLayout extends StatelessWidget {
                       },
                     ),
                   ),
-                  LocaleSelection(),
+                  if (!isMobile) LocaleSelection(),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: UserMenu(

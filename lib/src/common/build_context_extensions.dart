@@ -13,4 +13,9 @@ extension ContextAppState on BuildContext {
 
   CloudFunctions get cloudFunctions =>
       Provider.of<CloudFunctions>(this, listen: false);
+
+  bool get isMobile {
+    double screenWidth = MediaQuery.sizeOf(this).width;
+    return screenWidth < 600;
+  }
 }
