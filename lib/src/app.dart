@@ -15,6 +15,7 @@ class FlashcardsApp extends StatelessWidget {
     return ValueListenableBuilder<UserProfile?>(
         valueListenable: context.appState.userProfile,
         builder: (context, userProfile, _) => MaterialApp.router(
+              debugShowCheckedModeBanner: false,
               title: 'Flashcards',
               theme: getLightThemeFlexColor(),
               darkTheme: getDarkThemeFlexColor(),

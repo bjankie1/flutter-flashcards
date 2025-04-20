@@ -1,11 +1,14 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
-import 'package:random_color_scheme/random_color_scheme.dart';
 
 abstract final class CustomColors {
   static const Color rainee = Color(0xffb2c79e);
   static const Color frost = Color(0xffe6f5da);
+  static const Color pakistanGreen = Color(0xff143312);
+  static const Color darkGreen = Color(0xff0C1E0B);
   static const Color orangeFrame = Colors.orange;
+  static const Color darkPurple = Color(0xff370926);
+  static const Color ashGrey = Color(0xffAEB7B3);
 }
 
 @immutable
@@ -51,62 +54,6 @@ class ContainersColors extends ThemeExtension<ContainersColors> {
   }
 }
 
-ThemeData getLightThemeFromSeed() {
-  return ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.green,
-      ),
-      extensions: [
-        const ContainersColors(
-            mainContainerBackground: CustomColors.rainee,
-            secondaryContainerBackground: CustomColors.frost,
-            secondaryContainerFrame: CustomColors.orangeFrame)
-      ]);
-}
-
-ThemeData getDarkThemeFromSeed() {
-  return ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.green, brightness: Brightness.dark),
-      extensions: [
-        const ContainersColors(
-            mainContainerBackground: Colors.deepPurple,
-            secondaryContainerBackground: Color(0x00b8860b),
-            secondaryContainerFrame: CustomColors.orangeFrame)
-      ]
-      // brightness: Brightness.dark
-      );
-}
-
-ThemeData getLightThemeFlexSeed() {
-  return ThemeData(
-      useMaterial3: true,
-      colorScheme: SeedColorScheme.fromSeeds(
-        primaryKey: Colors.green,
-        secondaryKey: Colors.amber.shade900,
-        tertiaryKey: Colors.grey.shade600,
-      ),
-      extensions: [
-        const ContainersColors(
-            mainContainerBackground: CustomColors.rainee,
-            secondaryContainerBackground: CustomColors.frost,
-            secondaryContainerFrame: CustomColors.orangeFrame)
-      ]);
-}
-
-ThemeData getDarkThemeFlexSeed() {
-  return ThemeData(
-    useMaterial3: true,
-    colorScheme: SeedColorScheme.fromSeeds(
-        primaryKey: Colors.green,
-        secondaryKey: Colors.amber.shade900,
-        tertiaryKey: Colors.grey.shade600,
-        brightness: Brightness.dark),
-  );
-}
-
 ThemeData getLightThemeFlexColor() {
   return FlexThemeData.light(
       scheme: FlexScheme.dellGenoa,
@@ -125,22 +72,10 @@ ThemeData getDarkThemeFlexColor() {
       useMaterial3: true,
       extensions: [
         const ContainersColors(
-            mainContainerBackground: CustomColors.rainee,
-            secondaryContainerBackground: CustomColors.frost,
-            secondaryContainerFrame: CustomColors.orangeFrame)
+            mainContainerBackground: CustomColors.darkGreen,
+            secondaryContainerBackground: CustomColors.pakistanGreen,
+            secondaryContainerFrame: CustomColors.ashGrey)
       ]);
-}
-
-ThemeData getLightThemeRandom() {
-  return ThemeData(
-    colorScheme: randomColorSchemeLight(),
-  );
-}
-
-ThemeData getDarkThemeRandom() {
-  return ThemeData(
-    colorScheme: randomColorSchemeDark(),
-  );
 }
 
 extension ColorsGenerator on BuildContext {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
+import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 
 class ReportLabel extends StatelessWidget {
@@ -20,22 +21,35 @@ class ReportLabel extends StatelessWidget {
       child: Container(
         alignment: alignRight ? Alignment.centerRight : Alignment.centerLeft,
         padding: const EdgeInsets.all(8),
-        child: FittedBox(
-          child: Text(label,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(fontWeight: bold ? FontWeight.bold : null)),
-        ),
+        child: Text(label,
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall
+                ?.copyWith(fontWeight: bold ? FontWeight.bold : null)),
       ),
     );
   }
 }
 
-class BaseStatisticsTable extends StatelessWidget {
-  final Iterable<model.CardAnswer> result;
+enum StatisticType { totalCount, totalTime, avgTime }
 
-  const BaseStatisticsTable(this.result);
+class BaseStatistic extends StatelessWidget {
+  final Iterable<model.CardAnswer> answers;
+
+  final StatisticType type;
+
+  const BaseStatistic({required this.answers, required this.type});
+
+  Duration get totalTime {
+    return answers.fold<Duration>(
+        Duration.zero, (agg, next) => agg + next.timeSpent);
+  }
+
+  Duration get averageTime {
+    final days =
+        answers.map((answer) => answer.reviewStart.dayStart).toSet().length;
+    return Duration(seconds: (totalTime.inSeconds / days).toInt());
+  }
 
   String printDuration(BuildContext context, Duration duration) {
     final seconds = duration.inSeconds;
@@ -45,44 +59,47 @@ class BaseStatisticsTable extends StatelessWidget {
     final hours = minutes ~/ 60;
     String result = '';
     if (hours > 0) {
-      result += context.l10n.printHours(hours);
+      result = context.l10n.printHours(hours);
     }
     if (remainingMinutes > 0) {
-      result += context.l10n.printMinutes(remainingMinutes);
+      result += (result.isNotEmpty ? ' ' : '') +
+          context.l10n.printMinutes(remainingMinutes);
     }
-    result += result += context.l10n.printSeconds(remainingSeconds);
+    result += (result.isNotEmpty ? ' ' : '') +
+        context.l10n.printSeconds(remainingSeconds);
     return result;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        ReportLabel(
-          'Answers:',
-          alignRight: true,
-          bold: true,
-        ),
-        ReportLabel(result.length.toString()),
-        ReportLabel(
-          'Total time:',
-          alignRight: true,
-          bold: true,
-        ),
-        ReportLabel(printDuration(
-            context,
-            result.fold<Duration>(
-                Duration.zero, (agg, next) => agg + next.timeSpent))),
-        ReportLabel(
-          'Average (s):',
-          alignRight: true,
-          bold: true,
-        ),
-        ReportLabel(printDuration(
-            context,
-            result.fold<Duration>(
-                Duration.zero, (agg, next) => agg + next.timeSpent))),
-      ],
-    );
+    switch (type) {
+      case StatisticType.totalCount:
+        return Row(children: [
+          ReportLabel(
+            'Answers:',
+            alignRight: true,
+            bold: true,
+          ),
+          ReportLabel(answers.length.toString())
+        ]);
+      case StatisticType.totalTime:
+        return Row(children: [
+          ReportLabel(
+            'Total time:',
+            alignRight: true,
+            bold: true,
+          ),
+          ReportLabel(printDuration(context, totalTime))
+        ]);
+      case StatisticType.avgTime:
+        return Row(children: [
+          ReportLabel(
+            'Average (s):',
+            alignRight: true,
+            bold: true,
+          ),
+          ReportLabel(printDuration(context, averageTime))
+        ]);
+    }
   }
 }

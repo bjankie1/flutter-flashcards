@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 import 'package:firebase_core/firebase_core.dart';
@@ -21,8 +23,9 @@ import 'package:url_strategy/url_strategy.dart';
 import 'src/app.dart';
 import 'src/model/repository_provider.dart';
 
+final _log = Logger();
+
 void main() async {
-  final log = Logger();
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -35,22 +38,19 @@ void main() async {
   GoRouter.optionURLReflectsImperativeAPIs = true;
   setPathUrlStrategy();
 
-  if (false && kDebugMode) {
+  if (kDebugMode) {
     // Connect to the Firestore emulator
-    FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
-    await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-    await FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
-    log.d('Connected to Firestore emulator');
+    await _connectFirebaseEmulator();
   } else {
     FirebaseFirestore.instance.settings = Settings(
       persistenceEnabled: true,
       cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
     );
-    log.d('Connected to production Firestore');
+    _log.d('Connected to production Firestore');
   }
   final repository = FirebaseCardsRepository(FirebaseFirestore.instance, null);
   FirebaseAuth.instance.authStateChanges().listen((user) {
-    log.i('User logged in as ${user?.email}');
+    _log.i('User logged in as ${user?.email}');
     repository.user = user;
   });
 
@@ -75,4 +75,13 @@ void main() async {
       child: const FlashcardsApp(),
     ),
   );
+}
+
+Future<void> _connectFirebaseEmulator() async {
+  final localhost =
+      kIsWeb ? 'localhost' : (Platform.isAndroid ? '10.0.2.2' : 'localhost');
+  FirebaseFirestore.instance.useFirestoreEmulator(localhost, 8080);
+  await FirebaseAuth.instance.useAuthEmulator(localhost, 9099);
+  await FirebaseStorage.instance.useStorageEmulator(localhost, 9199);
+  _log.d('Connected to Firestore emulator');
 }
