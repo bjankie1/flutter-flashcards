@@ -12,3 +12,11 @@
     ```bash
     npm run genkit:start
     ```
+
+4. Open Genkit AI console http://localhost:4000/ to test flows.
+
+3. Check if code builds:
+
+   ```bash
+   npm run build 
+   ```

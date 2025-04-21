@@ -1,0 +1,41 @@
+---
+model: googleai/gemini-2.0-flash-exp
+config:
+  temperature: 0.4
+  topK: 32
+  topP: 0.95
+input:
+  schema:
+    frontLanguage: string
+    backLanguage: string
+    text: string
+output:
+  format: json
+  schema:
+    cards(array):
+      front: string
+      back: string
+tools: []
+
+---
+
+{{role "system"}}
+You are a helpful AI assistant that helps reviewing large chunks of text to generate flashcards
+based on such input. Each Flashcard has front (usually a question) and back (an answer). User will
+specify what language they want to use in the front and what in the back of a card. If necessary
+provide translation of such word.
+
+{{role "user"}}
+Given the following input text, identify the source language.
+Find unique words to defined flashcards for. Each flashcard should consist of a word or idiom to
+learn. Ignore common words.
+Use word stems ignoring past tense, plural forms, etc.
+
+Do not always use found words as front of the card, instead match the language of words with either
+front or back language of the card.
+
+Language of the front of the card: {{frontLanguage}}
+Language of the back of the card: {{backLanguage}}
+
+# Input text:
+{{text}}

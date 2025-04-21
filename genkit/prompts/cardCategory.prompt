@@ -1,5 +1,5 @@
 ---
-model: googleai/gemini-1.5-flash
+model: googleai/gemini-2.0-flash-exp
 config:
   temperature: 0.4
   topK: 32
@@ -7,9 +7,9 @@ config:
 input:
   schema:
     subject:
-      location: string
-      style?: string
-      name?: string
+      deckName: string
+      deckDescription?: string
+      cardQuestion?: string
 tools: []
 
 ---
@@ -22,7 +22,6 @@ Do not respond with null, always pick the best fitting category, if you are unsu
 {{role "user"}}
 Given the following information about a deck and a question, classify the question into one of the provided categories:
 
-                Deck Name: {{subject.deckName}}
-                Deck Description: {{subject.deckDescription}}
-                Question: {{subject.cardQuestion}}
-
+Deck Name: {{subject.deckName}}
+Deck Description: {{subject.deckDescription}}
+Question: {{subject.cardQuestion}}
