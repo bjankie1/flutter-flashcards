@@ -286,4 +286,40 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get cardReviewDaily => 'Liczba powtórek dziennie';
+
+  @override
+  String get frontCardLabel => 'Język na karcie z przodu';
+
+  @override
+  String get languageHint => 'Wybierz język';
+
+  @override
+  String get backCardLabel => 'Język na karcie z tyłu';
+
+  @override
+  String get deckDescription => 'Opis zestawu';
+
+  @override
+  String get deckSelect => 'Wybierz zestaw';
+
+  @override
+  String get addToDeck => 'Dodaj do zestawu';
+
+  @override
+  String get deckGeneration => 'Generowanie zestawów kart';
+
+  @override
+  String get inputTextForGenerator => 'Wprowadź tekst na podstawie którego chcesz wygenerować karty';
+
+  @override
+  String get generateCards => 'Generuj karty';
+
+  @override
+  String get inputText => 'Tekst';
+
+  @override
+  String get addToExistingDeck => 'Dodaj do istniejącego zestawu';
+
+  @override
+  String get createNewDeck => 'Utwórz nowy zestaw';
 }

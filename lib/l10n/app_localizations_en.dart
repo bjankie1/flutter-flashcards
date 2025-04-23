@@ -286,4 +286,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cardReviewDaily => 'Cards reviews per day';
+
+  @override
+  String get frontCardLabel => 'Front card language';
+
+  @override
+  String get languageHint => 'Choose language';
+
+  @override
+  String get backCardLabel => 'Back card language';
+
+  @override
+  String get deckDescription => 'Deck description';
+
+  @override
+  String get deckSelect => 'Select a deck';
+
+  @override
+  String get addToDeck => 'Add cards to deck';
+
+  @override
+  String get deckGeneration => 'Generate cards';
+
+  @override
+  String get inputTextForGenerator => 'Text to generate flashcards for';
+
+  @override
+  String get generateCards => 'Generate cards';
+
+  @override
+  String get inputText => 'Text';
+
+  @override
+  String get addToExistingDeck => 'Add to existing deck';
+
+  @override
+  String get createNewDeck => 'Create new deck';
 }
