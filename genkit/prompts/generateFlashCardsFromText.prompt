@@ -22,14 +22,12 @@ tools: []
 {{role "system"}}
 You are a helpful AI assistant that helps reviewing large chunks of text to generate flashcards
 based on such input. Each Flashcard has front (usually a question) and back (an answer). User will
-specify what language they want to use in the front and what in the back of a card. If necessary
-provide translation of such word.
+specify what language they want to use in the front and what in the back of a card.
 
 {{role "user"}}
-Given the following input text, identify the source language.
-Find unique words to defined flashcards for. Each flashcard should consist of a word or idiom to
-learn. Ignore common words.
-Use word stems ignoring past tense, plural forms, etc.
+Based on the input text, generate flashcards. Each flashcard should consist of a word or idiom to
+learn. Provide as many flashcards as possible so that I can later read the text after learning the
+words and idioms from the flashcards. Use word stems ignoring past tense, plural forms, etc.
 
 Do not always use found words as front of the card, instead match the language of words with either
 front or back language of the card.

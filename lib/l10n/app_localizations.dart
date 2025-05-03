@@ -431,6 +431,12 @@ abstract class AppLocalizations {
   /// **'Editing card in **{deck}** deck'**
   String editCardTitle(String deck);
 
+  /// No description provided for @generateCardsForDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate card for **{deck}** deck'**
+  String generateCardsForDeck(String deck);
+
   /// No description provided for @createCardTitle.
   ///
   /// In en, this message translates to:
@@ -677,11 +683,11 @@ abstract class AppLocalizations {
   /// **'Text'**
   String get inputText;
 
-  /// No description provided for @addToExistingDeck.
+  /// No description provided for @addCardsToDeck.
   ///
   /// In en, this message translates to:
-  /// **'Add to existing deck'**
-  String get addToExistingDeck;
+  /// **'Add cards to deck'**
+  String get addCardsToDeck;
 
   /// No description provided for @createNewDeck.
   ///

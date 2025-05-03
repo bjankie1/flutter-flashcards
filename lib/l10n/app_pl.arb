@@ -98,6 +98,7 @@
   "inputTextForGenerator": "Wprowadź tekst na podstawie którego chcesz wygenerować karty",
   "generateCards": "Generuj karty",
   "inputText": "Tekst",
-  "addToExistingDeck": "Dodaj do istniejącego zestawu",
-  "createNewDeck": "Utwórz nowy zestaw"
+  "addCardsToDeck": "Dodaj karty",
+  "createNewDeck": "Utwórz nowy zestaw",
+  "generateCardsForDeck": "Wygeneruj karty dla zestawu {deck}"
 }

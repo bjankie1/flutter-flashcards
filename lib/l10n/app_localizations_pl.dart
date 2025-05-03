@@ -193,6 +193,11 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String generateCardsForDeck(String deck) {
+    return 'Wygeneruj karty dla zestawu $deck';
+  }
+
+  @override
   String createCardTitle(String deck) {
     return 'Nowa karta w zestawie **$deck**';
   }
@@ -318,7 +323,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get inputText => 'Tekst';
 
   @override
-  String get addToExistingDeck => 'Dodaj do istniejącego zestawu';
+  String get addCardsToDeck => 'Dodaj karty';
 
   @override
   String get createNewDeck => 'Utwórz nowy zestaw';

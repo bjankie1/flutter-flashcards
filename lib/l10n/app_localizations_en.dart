@@ -193,6 +193,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String generateCardsForDeck(String deck) {
+    return 'Generate card for **$deck** deck';
+  }
+
+  @override
   String createCardTitle(String deck) {
     return 'Create card in **$deck**';
   }
@@ -318,7 +323,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inputText => 'Text';
 
   @override
-  String get addToExistingDeck => 'Add to existing deck';
+  String get addCardsToDeck => 'Add cards to deck';
 
   @override
   String get createNewDeck => 'Create new deck';

@@ -112,6 +112,14 @@
       }
     }
   },
+  "generateCardsForDeck": "Generate card for **{deck}** deck",
+  "@generateCardsForDeck": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      }
+    }
+  },
   "createCardTitle": "Create card in **{deck}**",
   "@createCardTitle": {
     "placeholders": {
@@ -160,6 +168,6 @@
   "inputTextForGenerator": "Text to generate flashcards for",
   "generateCards": "Generate cards",
   "inputText": "Text",
-  "addToExistingDeck": "Add to existing deck",
+  "addCardsToDeck": "Add cards to deck",
   "createNewDeck": "Create new deck"
 }

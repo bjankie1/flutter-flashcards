@@ -176,8 +176,9 @@ final router = GoRouter(
             path: 'generate',
             name: 'generateCards',
             builder: (context, state) {
+              final deckId = state.uri.queryParameters['deckId'];
               Logger().i('Creating deck from text');
-              return DeckGeneratePage();
+              return DeckGeneratePage(deckId: deckId);
             }),
         GoRoute(
             path: 'study',

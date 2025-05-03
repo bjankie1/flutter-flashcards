@@ -1,25 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/common/assets.dart';
 import 'package:flutter_flashcards/src/common/language_selector.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
+import 'package:gpt_markdown/gpt_markdown.dart';
 
 import "../common/build_context_extensions.dart";
 import '../genkit/functions.dart';
 import '../layout/base_layout.dart';
 
 class DeckGeneratePage extends StatelessWidget {
+  final model.DeckId? deckId;
+
+  const DeckGeneratePage({super.key, this.deckId});
+
   @override
   Widget build(BuildContext context) {
-    return BaseLayout(
-        title: Text(context.l10n.deckGeneration),
-        child: GenerationControllerWidget());
+    return RepositoryLoader(
+      fetcher: (repository) =>
+          deckId == null ? Future.value(null) : repository.loadDeck(deckId!),
+      builder: (context, deck, _) => BaseLayout(
+          title: GptMarkdown(deck == null
+              ? context.l10n.deckGeneration
+              : context.l10n.generateCardsForDeck(deck.name)),
+          child: GenerationControllerWidget(deckId: deckId)),
+    );
   }
 }
 
 class GenerationControllerWidget extends StatefulWidget {
+  final model.DeckId? deckId;
+
+  const GenerationControllerWidget({super.key, this.deckId});
+
   @override
   State<GenerationControllerWidget> createState() =>
       _GenerationControllerWidgetState();
@@ -46,7 +62,8 @@ class _GenerationControllerWidgetState
   @override
   Widget build(BuildContext context) {
     return proposals.isNotEmpty
-        ? GeneratedCardsSelectWidget(cardProposals: proposals)
+        ? GeneratedCardsSelectWidget(
+            cardProposals: proposals, deckId: widget.deckId)
         : Card(
             child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -77,7 +94,15 @@ class _GenerationControllerWidgetState
                       ? Center(child: CircularProgressIndicator())
                       : FilledButton(
                           onPressed: () async => processText(context),
-                          child: Text(context.l10n.generateCards))
+                          child: IntrinsicWidth(
+                            child: Row(
+                              children: [
+                                ImageIcon(gemini),
+                                const SizedBox(width: 8.0),
+                                Text(context.l10n.generateCards),
+                              ],
+                            ),
+                          ))
                 ],
               ),
             ),
@@ -105,7 +130,12 @@ class _GenerationControllerWidgetState
 class GeneratedCardsSelectWidget extends StatefulWidget {
   final Iterable<FrontBack> cardProposals;
 
-  GeneratedCardsSelectWidget({super.key, required this.cardProposals});
+  final model.DeckId? deckId;
+
+  bool get newDeck => deckId == null;
+
+  GeneratedCardsSelectWidget(
+      {super.key, required this.cardProposals, this.deckId});
 
   @override
   State<GeneratedCardsSelectWidget> createState() =>
@@ -116,7 +146,6 @@ class _GeneratedCardsSelectWidgetState
     extends State<GeneratedCardsSelectWidget> {
   final Set<int> singleSided = {};
   final Set<int> skipped = {};
-  bool newDeck = true;
 
   @override
   Widget build(BuildContext context) {
@@ -184,42 +213,15 @@ class _GeneratedCardsSelectWidgetState
         ),
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: RadioListTile(
-                        title: Text(context.l10n.createNewDeck),
-                        value: true,
-                        groupValue: newDeck,
-                        onChanged: toggleNewVsExisting),
-                  ),
-                  Expanded(
-                    child: RadioListTile(
-                        title: Text(context.l10n.addToExistingDeck),
-                        value: false,
-                        groupValue: newDeck,
-                        onChanged: toggleNewVsExisting),
-                  ),
-                ],
-              ),
-              newDeck
-                  ? CreateNewDeckWidget(
-                      onCreateNewDeck: (name, description) =>
-                          createNewDeck(name, description, sortedProposals),
-                    )
-                  : RepositoryLoader(
-                      fetcher: (repository) => repository.loadDecks(),
-                      builder: (context, decks, _) {
-                        return AddGeneratedCardsToExistingDeckWidget(
-                          onAddToExistingDeck: (deckId) =>
-                              addToExistingDeck(deckId, sortedProposals),
-                          decks: decks,
-                        );
-                      }),
-            ],
-          ),
+          child: widget.newDeck
+              ? CreateNewDeckWidget(
+                  onCreateNewDeck: (name, description) =>
+                      createNewDeck(name, description, sortedProposals),
+                )
+              : FilledButton(
+                  onPressed: () =>
+                      addToExistingDeck(widget.deckId!, sortedProposals),
+                  child: Text(context.l10n.addCardsToDeck)),
         ),
       ],
     );
@@ -293,12 +295,6 @@ class _GeneratedCardsSelectWidgetState
   }
 
   void toggleAllSelected() {}
-
-  void toggleNewVsExisting(bool? value) {
-    setState(() {
-      newDeck = !newDeck;
-    });
-  }
 }
 
 class CreateNewDeckWidget extends StatelessWidget {
@@ -330,95 +326,6 @@ class CreateNewDeckWidget extends StatelessWidget {
             onPressed: () => onCreateNewDeck(
                 deckNameController.text, deckDescriptionController.text),
             child: Text('Create deck')),
-      ],
-    );
-  }
-}
-
-class AddGeneratedCardsToExistingDeckWidget extends StatefulWidget {
-  final Function(model.DeckId deckId) onAddToExistingDeck;
-  final Iterable<model.Deck> decks;
-
-  AddGeneratedCardsToExistingDeckWidget(
-      {super.key, required this.onAddToExistingDeck, required this.decks});
-
-  @override
-  State<AddGeneratedCardsToExistingDeckWidget> createState() =>
-      _AddGeneratedCardsToExistingDeckWidgetState();
-}
-
-class _AddGeneratedCardsToExistingDeckWidgetState
-    extends State<AddGeneratedCardsToExistingDeckWidget> {
-  model.DeckId? selectedDeck;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      spacing: 8.0,
-      children: [
-        Autocomplete(
-          optionsBuilder: (textEditingValue) {
-            if (textEditingValue.text == '') {
-              return const Iterable<model.Deck>.empty();
-            }
-            return widget.decks.where((model.Deck deck) {
-              return deck.name
-                  .toLowerCase()
-                  .contains(textEditingValue.text.toLowerCase());
-            });
-          },
-          onSelected: (model.Deck selection) {
-            setState(() {
-              selectedDeck = selection.id!;
-            });
-          },
-          displayStringForOption: (deck) => deck.name,
-          fieldViewBuilder: (BuildContext context,
-                  TextEditingController textEditingController,
-                  FocusNode focusNode,
-                  VoidCallback onFieldSubmitted) =>
-              TextFormField(
-            controller: textEditingController,
-            focusNode: focusNode,
-            decoration: InputDecoration(labelText: context.l10n.deckSelect),
-            onFieldSubmitted: (value) {
-              onFieldSubmitted();
-            },
-          ),
-          optionsViewBuilder: (BuildContext context,
-                  AutocompleteOnSelected<model.Deck> onSelected,
-                  Iterable<model.Deck> options) =>
-              Align(
-            alignment: Alignment.topLeft,
-            child: Material(
-              elevation: 4.0,
-              child: SizedBox(
-                height: 200.0,
-                child: ListView.builder(
-                  padding: EdgeInsets.all(8.0),
-                  itemCount: options.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final model.Deck option = options.elementAt(index);
-                    return GestureDetector(
-                      onTap: () {
-                        onSelected(option);
-                      },
-                      child: ListTile(
-                        title: Text(option.name),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
-        ),
-        FilledButton(
-          onPressed: () => selectedDeck != null
-              ? widget.onAddToExistingDeck(selectedDeck!)
-              : null,
-          child: Text(context.l10n.addToDeck),
-        ),
       ],
     );
   }
