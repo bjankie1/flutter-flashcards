@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/common/assets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../common/build_context_extensions.dart';
@@ -82,6 +83,22 @@ class DeckContextMenu extends StatelessWidget {
                 ),
                 onTap: () {
                   _showAddDeckToGroupDialog(context, deck.id!);
+                },
+              ),
+              PopupMenuItem<String>(
+                value: 'generateWithAI',
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: ImageIcon(gemini),
+                    ),
+                    Text(context.l10n.generateCards),
+                  ],
+                ),
+                onTap: () {
+                  context.pushNamed('generateCards',
+                      queryParameters: {'deckId': deck.id});
                 },
               ),
               // Add more menu items as needed

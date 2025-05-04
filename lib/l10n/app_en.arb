@@ -112,6 +112,14 @@
       }
     }
   },
+  "generateCardsForDeck": "Generate card for **{deck}** deck",
+  "@generateCardsForDeck": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      }
+    }
+  },
   "createCardTitle": "Create card in **{deck}**",
   "@createCardTitle": {
     "placeholders": {
@@ -149,5 +157,17 @@
   "newDeckGroupHelper": "Enter new deck group name",
   "newDeckGroupAddedMessage": "New deck group added",
   "explanationLabel": "Explanation",
-  "cardReviewDaily": "Cards reviews per day"
+  "cardReviewDaily": "Cards reviews per day",
+  "frontCardLabel": "Front card language",
+  "languageHint": "Choose language",
+  "backCardLabel": "Back card language",
+  "deckDescription": "Deck description",
+  "deckSelect": "Select a deck",
+  "addToDeck": "Add cards to deck",
+  "deckGeneration": "Generate cards",
+  "inputTextForGenerator": "Text to generate flashcards for",
+  "generateCards": "Generate cards",
+  "inputText": "Text",
+  "addCardsToDeck": "Add cards to deck",
+  "createNewDeck": "Create new deck"
 }

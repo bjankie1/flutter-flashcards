@@ -431,6 +431,12 @@ abstract class AppLocalizations {
   /// **'Editing card in **{deck}** deck'**
   String editCardTitle(String deck);
 
+  /// No description provided for @generateCardsForDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate card for **{deck}** deck'**
+  String generateCardsForDeck(String deck);
+
   /// No description provided for @createCardTitle.
   ///
   /// In en, this message translates to:
@@ -616,6 +622,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cards reviews per day'**
   String get cardReviewDaily;
+
+  /// No description provided for @frontCardLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Front card language'**
+  String get frontCardLabel;
+
+  /// No description provided for @languageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose language'**
+  String get languageHint;
+
+  /// No description provided for @backCardLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Back card language'**
+  String get backCardLabel;
+
+  /// No description provided for @deckDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck description'**
+  String get deckDescription;
+
+  /// No description provided for @deckSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a deck'**
+  String get deckSelect;
+
+  /// No description provided for @addToDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Add cards to deck'**
+  String get addToDeck;
+
+  /// No description provided for @deckGeneration.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate cards'**
+  String get deckGeneration;
+
+  /// No description provided for @inputTextForGenerator.
+  ///
+  /// In en, this message translates to:
+  /// **'Text to generate flashcards for'**
+  String get inputTextForGenerator;
+
+  /// No description provided for @generateCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate cards'**
+  String get generateCards;
+
+  /// No description provided for @inputText.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get inputText;
+
+  /// No description provided for @addCardsToDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Add cards to deck'**
+  String get addCardsToDeck;
+
+  /// No description provided for @createNewDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Create new deck'**
+  String get createNewDeck;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

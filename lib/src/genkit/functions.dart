@@ -11,6 +11,13 @@ class GeneratedAnswer {
   const GeneratedAnswer(this.answer, this.explanation);
 }
 
+class FrontBack {
+  final String front;
+  final String back;
+
+  FrontBack({required this.front, required this.back});
+}
+
 class CloudFunctions {
   final _log = Logger();
 
@@ -97,6 +104,45 @@ class CloudFunctions {
 
       // 5. Extract the data from the result. The result will be a String since that's the defined outputSchema.
       return GeneratedAnswer(result.data['answer'], result.data['explanation']);
+    } on FirebaseFunctionsException catch (e) {
+      print(
+          'Error calling function: ${e.code}, ${e.message}, ${e.details}'); // Better error handling here for your users
+      // Handle the error appropriately (e.g., show an error message, retry, etc.).
+      rethrow; // Re-throw the exception so the caller can also handle it.
+    }
+  }
+
+  Future<Iterable<FrontBack>> generateCardsForText(
+      String frontLanguage, String backLanguage, String text) async {
+    if (text.trim().isEmpty) {
+      throw 'No input text provided';
+    }
+    if (frontLanguage.trim().isEmpty) {
+      throw 'No front language provided';
+    }
+    if (backLanguage.trim().isEmpty) {
+      throw 'No back language provided';
+    }
+    _log.d('Fetching LLM card suggestions for the text');
+    if (user == null) {
+      throw Exception("User must be logged in to call the function.");
+    }
+
+    final callable = functions.httpsCallable(
+        'generateFlashCardsFromText'); // Function name as deployed
+
+    try {
+      final result = await callable.call({
+        'frontLanguage': frontLanguage,
+        'backLanguage': backLanguage,
+        'text': text,
+      });
+      final cards = result.data['cards'];
+
+      _log.d('Cards generated: ${cards?.length}');
+
+      return cards.map<FrontBack>(
+          (card) => FrontBack(front: card['front'], back: card['back']));
     } on FirebaseFunctionsException catch (e) {
       print(
           'Error calling function: ${e.code}, ${e.message}, ${e.details}'); // Better error handling here for your users

@@ -87,5 +87,18 @@
   "newDeckGroupHelper": "Podaj nazwę nowej grupy",
   "newDeckGroupAddedMessage": "Grupa została dodana",
   "explanationLabel": "Wyjaśnienie",
-  "cardReviewDaily": "Liczba powtórek dziennie"
+  "cardReviewDaily": "Liczba powtórek dziennie",
+  "frontCardLabel": "Język na karcie z przodu",
+  "languageHint": "Wybierz język",
+  "backCardLabel": "Język na karcie z tyłu",
+  "deckDescription": "Opis zestawu",
+  "deckSelect": "Wybierz zestaw",
+  "addToDeck": "Dodaj do zestawu",
+  "deckGeneration": "Generowanie zestawów kart",
+  "inputTextForGenerator": "Wprowadź tekst na podstawie którego chcesz wygenerować karty",
+  "generateCards": "Generuj karty",
+  "inputText": "Tekst",
+  "addCardsToDeck": "Dodaj karty",
+  "createNewDeck": "Utwórz nowy zestaw",
+  "generateCardsForDeck": "Wygeneruj karty dla zestawu {deck}"
 }

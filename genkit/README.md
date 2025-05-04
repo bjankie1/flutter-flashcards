@@ -12,3 +12,17 @@
     ```bash
     npm run genkit:start
     ```
+
+3. Open Genkit AI console http://localhost:4000/ to test flows.
+
+4. Check if code builds:
+
+   ```bash
+   npm run build 
+   ```
+
+5. Deploy functions.
+
+   ```bash
+   firebase deploy --only functions:genkit
+   ```

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/collaboration/collaboration_page.dart';
 import 'package:flutter_flashcards/src/decks/card_edit_page.dart';
 import 'package:flutter_flashcards/src/decks/deck_details_page.dart';
+import 'package:flutter_flashcards/src/decks/deck_generate_page.dart';
 import 'package:flutter_flashcards/src/decks/decks_page.dart';
 import 'package:flutter_flashcards/src/reviews/rewiews_landing_page.dart';
 import 'package:flutter_flashcards/src/settings/settings_page.dart';
@@ -161,16 +162,24 @@ final router = GoRouter(
                   return CardEditPage(
                     deckId: deckId,
                   );
-                })
+                }),
           ],
         ),
         GoRoute(
-          path: 'decks',
-          name: 'decks',
-          builder: (context, state) {
-            return DecksPage();
-          },
-        ),
+            path: 'decks',
+            name: 'decks',
+            builder: (context, state) {
+              return DecksPage();
+            },
+            routes: []),
+        GoRoute(
+            path: 'generate',
+            name: 'generateCards',
+            builder: (context, state) {
+              final deckId = state.uri.queryParameters['deckId'];
+              Logger().i('Creating deck from text');
+              return DeckGeneratePage(deckId: deckId);
+            }),
         GoRoute(
             path: 'study',
             name: 'study',
