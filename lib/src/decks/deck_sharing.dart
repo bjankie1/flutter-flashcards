@@ -102,23 +102,20 @@ class DeckGrants extends StatelessWidget {
           return data.isEmpty
               ? Text(context.l10n.deckNotSharedMessage)
               : Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: ListView(
-                      children: data
-                          .map(
-                            (grant) => ListTile(
-                              title: Text(grant.name),
-                              subtitle: Text(grant.email),
-                              leading: Avatar(size: 20, userId: grant.id),
-                              trailing: IconButton(
-                                  onPressed: () async =>
-                                      await _removeShare(context, grant.email),
-                                  icon: Icon(Icons.delete)),
-                            ),
-                          )
-                          .toList(),
-                    ),
+                  child: ListView(
+                    children: data
+                        .map(
+                          (grant) => ListTile(
+                            title: Text(grant.name),
+                            subtitle: Text(grant.email),
+                            leading: Avatar(size: 20, userId: grant.id),
+                            trailing: IconButton(
+                                onPressed: () async =>
+                                    await _removeShare(context, grant.email),
+                                icon: Icon(Icons.delete)),
+                          ),
+                        )
+                        .toList(),
                   ),
                 );
         });
