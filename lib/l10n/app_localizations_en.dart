@@ -327,4 +327,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createNewDeck => 'Create new deck';
+
+  @override
+  String get shareDeck => 'Share deck with others';
+
+  @override
+  String get deckSharingHeader => 'Deck sharing';
+
+  @override
+  String get deckSharedListTitle => 'People with access';
+
+  @override
+  String get deckNotSharedMessage => 'Deck has yet been shared with anyone';
 }

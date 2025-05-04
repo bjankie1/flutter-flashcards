@@ -762,6 +762,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         .get()
         .logError('Error loading decks collaborators');
     if (snapshot.docs.isEmpty) {
+      _log.d('No collaborators available for deck $deckId');
       return [];
     }
     final userIds = snapshot.docs.map((doc) => doc.id);

@@ -90,136 +90,134 @@ final router = GoRouter(
             ),
           ],
         ),
-        GoRoute(
-          path: 'profile',
-          builder: (context, state) {
-            return ProfileScreen(
-              providers: const [],
-              actions: [
-                SignedOutAction((context) {
-                  context.go('/');
-                }),
-              ],
-            );
-          },
-        ),
-        GoRoute(
-          path: 'decks/:deckId',
-          name: 'deck',
-          builder: (context, state) {
-            final deckId = state.pathParameters['deckId'];
-            if (deckId == null) {
-              return DecksPage();
-            }
-            return RepositoryLoader(
-                fetcher: (repository) async =>
-                    await repository.loadDeck(deckId),
-                builder: (context, deck, _) {
-                  if (deck == null) {
-                    _log.d('Deck $deckId not found');
-                    return Text('Deck not found');
-                  }
-                  return DeckDetailsPage(
-                    deck: deck,
-                  );
-                });
-          },
-          routes: [
-            GoRoute(
-                path: 'cards/:cardId',
-                name: 'editCard',
-                builder: (context, state) {
-                  final deckId = state.pathParameters['deckId'];
-                  if (deckId == null) {
-                    return DecksPage();
-                  }
-                  final cardId = state.pathParameters['cardId'];
-
-                  return RepositoryLoader(
-                      fetcher: (repository) async =>
-                          cardId != null && cardId != 'create'
-                              ? await repository.loadCard(cardId)
-                              : null,
-                      builder: (context, card, _) {
-                        if (cardId != null && card == null) {
-                          return Text('Card not found');
-                        }
-                        return CardEditPage(
-                          card: card,
-                          deckId: deckId,
-                        );
-                      });
-                }),
-            GoRoute(
-                path: 'add',
-                name: 'addCard',
-                builder: (context, state) {
-                  Logger().i('Creating card');
-                  final deckId = state.pathParameters['deckId'];
-                  if (deckId == null) {
-                    return DecksPage();
-                  }
-                  return CardEditPage(
-                    deckId: deckId,
-                  );
-                }),
+      ],
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) {
+        return ProfileScreen(
+          providers: const [],
+          actions: [
+            SignedOutAction((context) {
+              context.go('/');
+            }),
           ],
-        ),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/decks/:deckId',
+      name: 'deck',
+      builder: (context, state) {
+        final deckId = state.pathParameters['deckId'];
+        if (deckId == null) {
+          return DecksPage();
+        }
+        return RepositoryLoader(
+            fetcher: (repository) async => await repository.loadDeck(deckId),
+            builder: (context, deck, _) {
+              if (deck == null) {
+                _log.d('Deck $deckId not found');
+                return Text('Deck not found');
+              }
+              return DeckDetailsPage(
+                deck: deck,
+              );
+            });
+      },
+      routes: [
         GoRoute(
-            path: 'decks',
-            name: 'decks',
+            path: '/cards/:cardId',
+            name: 'editCard',
             builder: (context, state) {
-              return DecksPage();
-            },
-            routes: []),
-        GoRoute(
-            path: 'generate',
-            name: 'generateCards',
-            builder: (context, state) {
-              final deckId = state.uri.queryParameters['deckId'];
-              Logger().i('Creating deck from text');
-              return DeckGeneratePage(deckId: deckId);
+              final deckId = state.pathParameters['deckId'];
+              if (deckId == null) {
+                return DecksPage();
+              }
+              final cardId = state.pathParameters['cardId'];
+
+              return RepositoryLoader(
+                  fetcher: (repository) async =>
+                      cardId != null && cardId != 'create'
+                          ? await repository.loadCard(cardId)
+                          : null,
+                  builder: (context, card, _) {
+                    if (cardId != null && card == null) {
+                      return Text('Card not found');
+                    }
+                    return CardEditPage(
+                      card: card,
+                      deckId: deckId,
+                    );
+                  });
             }),
         GoRoute(
-            path: 'study',
-            name: 'study',
+            path: 'add',
+            name: 'addCard',
             builder: (context, state) {
-              return ReviewsPage();
-            },
-            routes: [
-              GoRoute(
-                path: 'learn',
-                name: 'learn',
-                builder: (context, state) {
-                  final deckId = state.uri.queryParameters['deckId'];
-                  final deckGroupId = state.uri.queryParameters['deckGroupId'];
-                  return StudyCardsPage(
-                      deckId: deckId, deckGroupId: deckGroupId);
-                },
-              ),
-            ]),
-        GoRoute(
-          path: 'statistics',
-          name: 'statistics',
-          builder: (context, state) {
-            return StudyStatisticsPage();
-          },
-        ),
-        GoRoute(
-          path: 'settings',
-          name: 'settings',
-          builder: (context, state) {
-            return SettingsPage();
-          },
-        ),
-        GoRoute(
-          path: 'collaboration',
-          name: 'collaboration',
-          builder: (context, state) {
-            return CollaborationPage();
-          },
-        ),
+              Logger().i('Creating card');
+              final deckId = state.pathParameters['deckId'];
+              if (deckId == null) {
+                return DecksPage();
+              }
+              return CardEditPage(
+                deckId: deckId,
+              );
+            }),
       ],
+    ),
+    GoRoute(
+        path: '/decks',
+        name: 'decks',
+        builder: (context, state) {
+          return DecksPage();
+        },
+        routes: []),
+    GoRoute(
+        path: '/generate',
+        name: 'generateCards',
+        builder: (context, state) {
+          final deckId = state.uri.queryParameters['deckId'];
+          Logger().i('Creating deck from text');
+          return DeckGeneratePage(deckId: deckId);
+        }),
+    GoRoute(
+        path: '/study',
+        name: 'study',
+        builder: (context, state) {
+          return ReviewsPage();
+        },
+        routes: [
+          GoRoute(
+            path: 'learn',
+            name: 'learn',
+            builder: (context, state) {
+              final deckId = state.uri.queryParameters['deckId'];
+              final deckGroupId = state.uri.queryParameters['deckGroupId'];
+              return StudyCardsPage(deckId: deckId, deckGroupId: deckGroupId);
+            },
+          ),
+        ]),
+    GoRoute(
+      path: '/statistics',
+      name: 'statistics',
+      builder: (context, state) {
+        return StudyStatisticsPage();
+      },
+    ),
+    GoRoute(
+      path: '/settings',
+      name: 'settings',
+      builder: (context, state) {
+        return SettingsPage();
+      },
+    ),
+    GoRoute(
+      path: '/collaboration',
+      name: 'collaboration',
+      builder: (context, state) {
+        return CollaborationPage();
+      },
     ),
   ],
 );

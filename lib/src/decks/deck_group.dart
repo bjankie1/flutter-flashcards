@@ -32,8 +32,7 @@ class DeckGroupHorizontalList extends StatelessWidget {
                   secondary: true,
                   margin: EdgeInsets.symmetric(horizontal: 10),
                   child: ConstrainedBox(
-                      constraints:
-                          BoxConstraints(maxHeight: 100, maxWidth: 330),
+                      constraints: BoxConstraints(maxHeight: 80, maxWidth: 330),
                       child: DeckListItem(deck: deck)),
                 ))
             .toList());

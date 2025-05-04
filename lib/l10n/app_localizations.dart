@@ -694,6 +694,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create new deck'**
   String get createNewDeck;
+
+  /// No description provided for @shareDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Share deck with others'**
+  String get shareDeck;
+
+  /// No description provided for @deckSharingHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck sharing'**
+  String get deckSharingHeader;
+
+  /// No description provided for @deckSharedListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'People with access'**
+  String get deckSharedListTitle;
+
+  /// No description provided for @deckNotSharedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck has yet been shared with anyone'**
+  String get deckNotSharedMessage;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

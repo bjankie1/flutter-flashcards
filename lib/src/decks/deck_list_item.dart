@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/assets.dart';
+import 'package:flutter_flashcards/src/decks/deck_sharing.dart';
 import 'package:go_router/go_router.dart';
 
 import '../common/build_context_extensions.dart';
 import '../model/cards.dart' as model;
 import '../widgets.dart';
 import 'deck_group_selection.dart';
-import 'deck_sharing.dart';
 import 'decks_list.dart';
 
 class DeckListItem extends StatelessWidget {
@@ -29,15 +29,10 @@ class DeckListItem extends StatelessWidget {
         deck.name,
         style: Theme.of(context).textTheme.headlineSmall,
       ),
-      subtitle: Column(
+      subtitle: Row(
         children: [
-          Row(
-            children: [
-              DeckCardsNumber(deck: deck),
-              DeckCardsToReview(deck: deck),
-            ],
-          ),
-          DeckSharing(deck),
+          DeckCardsNumber(deck: deck),
+          DeckCardsToReview(deck: deck),
         ],
       ),
       trailing: DeckContextMenu(deck: deck),
@@ -76,7 +71,7 @@ class DeckContextMenu extends StatelessWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: const Icon(Icons.group),
+                      child: const Icon(Icons.folder),
                     ),
                     Text(context.l10n.addDeckToGroup),
                   ],
@@ -101,6 +96,22 @@ class DeckContextMenu extends StatelessWidget {
                       queryParameters: {'deckId': deck.id});
                 },
               ),
+              PopupMenuItem(
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Icon(Icons.share),
+                    ),
+                    Text(context.l10n.shareDeck),
+                  ],
+                ),
+                onTap: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (context) => DeckSharing(deck: deck));
+                },
+              )
               // Add more menu items as needed
             ]);
   }

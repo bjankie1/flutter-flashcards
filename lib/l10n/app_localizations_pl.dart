@@ -327,4 +327,16 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get createNewDeck => 'Utwórz nowy zestaw';
+
+  @override
+  String get shareDeck => 'Udostępnij zestaw';
+
+  @override
+  String get deckSharingHeader => 'Udostępnianie zestawu';
+
+  @override
+  String get deckSharedListTitle => 'Kto ma już dostęp';
+
+  @override
+  String get deckNotSharedMessage => 'Nie ma jeszcze nikogo, kto ma dostęp do tego zestawu';
 }

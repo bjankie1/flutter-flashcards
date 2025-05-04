@@ -100,5 +100,9 @@
   "inputText": "Tekst",
   "addCardsToDeck": "Dodaj karty",
   "createNewDeck": "Utwórz nowy zestaw",
-  "generateCardsForDeck": "Wygeneruj karty dla zestawu {deck}"
+  "generateCardsForDeck": "Wygeneruj karty dla zestawu {deck}",
+  "shareDeck": "Udostępnij zestaw",
+  "deckSharingHeader": "Udostępnianie zestawu",
+  "deckSharedListTitle": "Kto ma już dostęp",
+  "deckNotSharedMessage": "Nie ma jeszcze nikogo, kto ma dostęp do tego zestawu"
 }
