@@ -110,5 +110,6 @@
   "provisionaryCardsReviewHeadline": "Przegląd notatek",
   "provisionaryCardsReviewButton": "Przejrzyj notatki",
   "discard": "Odrzuć",
-  "later": "Potem"
+  "later": "Potem",
+  "noProvisionaryCardsHeadline": "Brak notatek do przejrzenia"
 }

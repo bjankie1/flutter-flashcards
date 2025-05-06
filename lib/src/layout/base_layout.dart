@@ -115,7 +115,11 @@ class BaseLayout extends StatelessWidget {
             Expanded(child: child)
           ],
         ),
-        bottomNavigationBar: !isMobile ? null : BottomNavigation(),
+        bottomNavigationBar: !isMobile
+            ? null
+            : BottomNavigation(
+                currentPage: currentPage,
+              ),
         floatingActionButton: floatingActionButton,
       );
     });

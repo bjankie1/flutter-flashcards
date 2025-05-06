@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/deck_selection.dart';
+import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/repository.dart';
@@ -14,7 +15,12 @@ class ProvisionaryCardsReviewPage extends StatelessWidget {
         builder: (context, data, _) {
           return BaseLayout(
               title: Text(context.l10n.provisionaryCardsReviewHeadline),
-              child: ProvisionaryCardsReview(provisionaryCards: data.toList()));
+              child: data.isEmpty
+                  ? Text(
+                      context.l10n.noProvisionaryCardsHeadline,
+                      style: context.textTheme.titleLarge,
+                    )
+                  : ProvisionaryCardsReview(provisionaryCards: data.toList()));
         });
   }
 }
@@ -291,6 +297,15 @@ class _ProvisionaryCardFinalizationState
                 ],
               ),
               FocusTraversalOrder(
+                order: NumericFocusOrder(2.5),
+                child: DeckSelection(
+                  initialDeckId: deckId,
+                  onDeckSelected: (deckId) => setState(() {
+                    this.deckId = deckId;
+                  }),
+                ),
+              ),
+              FocusTraversalOrder(
                 order: NumericFocusOrder(3),
                 child: TextFormField(
                   controller: questionController,
@@ -310,15 +325,6 @@ class _ProvisionaryCardFinalizationState
                     labelText: context.l10n.answerLabel,
                     border: OutlineInputBorder(),
                   ),
-                ),
-              ),
-              FocusTraversalOrder(
-                order: NumericFocusOrder(5),
-                child: DeckSelection(
-                  initialDeckId: deckId,
-                  onDeckSelected: (deckId) => setState(() {
-                    this.deckId = deckId;
-                  }),
                 ),
               ),
               SizedBox(

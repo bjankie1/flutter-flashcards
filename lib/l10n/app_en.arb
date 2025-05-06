@@ -179,5 +179,6 @@
   "provisionaryCardsReviewHeadline": "Provisionary cards review",
   "provisionaryCardsReviewButton": "Review provisionary cards",
   "discard": "Discard",
-  "later": "Later"
+  "later": "Later",
+  "noProvisionaryCardsHeadline": "No provisionary cards to review"
 }

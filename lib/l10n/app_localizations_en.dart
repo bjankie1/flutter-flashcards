@@ -357,4 +357,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get later => 'Later';
+
+  @override
+  String get noProvisionaryCardsHeadline => 'No provisionary cards to review';
 }

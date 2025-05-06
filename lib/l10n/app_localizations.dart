@@ -754,6 +754,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Later'**
   String get later;
+
+  /// No description provided for @noProvisionaryCardsHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'No provisionary cards to review'**
+  String get noProvisionaryCardsHeadline;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -357,4 +357,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get later => 'Potem';
+
+  @override
+  String get noProvisionaryCardsHeadline => 'Brak notatek do przejrzenia';
 }

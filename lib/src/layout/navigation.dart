@@ -97,10 +97,16 @@ class LeftNavigation extends StatelessWidget {
 /// Bottom navigation to be used in case of mobile devices (<600 effective
 /// pixels).
 class BottomNavigation extends StatelessWidget {
+  final PageIndex? currentPage;
+
+  const BottomNavigation({super.key, this.currentPage});
+
   @override
   Widget build(BuildContext context) {
+    int selectedIndex = currentPage?.index ?? 0;
     final destinations = Destinations(context: context);
     return NavigationBar(
+      selectedIndex: selectedIndex,
       destinations: destinations.destinations,
       onDestinationSelected: destinations.navigate,
     );
