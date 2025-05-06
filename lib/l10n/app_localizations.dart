@@ -718,6 +718,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Deck has yet been shared with anyone'**
   String get deckNotSharedMessage;
+
+  /// No description provided for @quickAddCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick add card'**
+  String get quickAddCard;
+
+  /// No description provided for @provisionaryCardText.
+  ///
+  /// In en, this message translates to:
+  /// **'Provisionary note'**
+  String get provisionaryCardText;
+
+  /// No description provided for @provisionaryCardsReviewHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Provisionary cards review'**
+  String get provisionaryCardsReviewHeadline;
+
+  /// No description provided for @provisionaryCardsReviewButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Review provisionary cards'**
+  String get provisionaryCardsReviewButton;
+
+  /// No description provided for @discard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discard;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -22,10 +22,10 @@ extension PageIndexNavigation on PageIndex {
         context.goNamed('learning');
       case PageIndex.statistics:
         context.goNamed('statistics');
-      case PageIndex.settings:
-        context.goNamed('settings');
       case PageIndex.collaboration:
         context.goNamed('collaboration');
+      case PageIndex.settings:
+        context.goNamed('settings');
     }
   }
 }

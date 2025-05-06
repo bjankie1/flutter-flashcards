@@ -51,20 +51,21 @@ class DeckContextMenu extends StatelessWidget {
         icon: Icon(Icons.more_vert),
         itemBuilder: (BuildContext context) => [
               PopupMenuItem<String>(
-                value: 'delete',
+                value: 'addCard',
                 child: Row(
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: const Icon(Icons.delete),
+                      child: const Icon(Icons.add),
                     ),
-                    Text(context.l10n.delete),
+                    Text(context.l10n.addCard),
                   ],
                 ),
-                onTap: () {
-                  deleteDeck(context, deck);
+                onTap: () async {
+                  _addCard(context, deck);
                 },
               ),
+
               PopupMenuItem<String>(
                 value: 'addToGroup',
                 child: Row(
@@ -111,7 +112,22 @@ class DeckContextMenu extends StatelessWidget {
                       context: context,
                       builder: (context) => DeckSharing(deck: deck));
                 },
-              )
+              ),
+              PopupMenuItem<String>(
+                value: 'delete',
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: const Icon(Icons.delete),
+                    ),
+                    Text(context.l10n.delete),
+                  ],
+                ),
+                onTap: () {
+                  deleteDeck(context, deck);
+                },
+              ),
               // Add more menu items as needed
             ]);
   }
@@ -130,6 +146,10 @@ class DeckContextMenu extends StatelessWidget {
           );
         });
   }
+
+  Future<void> _addCard(BuildContext context, model.Deck deck) async {
+    await context.pushNamed('addCard', pathParameters: {'deckId': deck.id!});
+  }
 }
 
 class DeckCardsNumber extends StatelessWidget {
@@ -143,7 +163,14 @@ class DeckCardsNumber extends StatelessWidget {
         fetcher: (repository) => repository.getCardCount(deck.id!),
         builder: (context, data, _) {
           final cardCount = data;
-          return TagText("${context.l10n.cards}: $cardCount");
+          return TextButton(
+            style: TextButton.styleFrom(padding: EdgeInsets.only(right: 8)),
+            onPressed: () async => {
+              await context
+                  .pushNamed('addCard', pathParameters: {'deckId': deck.id!})
+            },
+            child: Text("${context.l10n.cards}: $cardCount"),
+          );
         });
   }
 }
@@ -162,7 +189,8 @@ class DeckCardsToReview extends StatelessWidget {
           final cardCount = data.values.reduce((agg, next) => agg + next);
           return Visibility(
             visible: cardCount > 0,
-            child: FilledButton(
+            child: TextButton(
+                style: ButtonStyle(visualDensity: VisualDensity.compact),
                 onPressed: () {
                   startLearning(context, deck);
                 },

@@ -104,5 +104,11 @@
   "shareDeck": "Udostępnij zestaw",
   "deckSharingHeader": "Udostępnianie zestawu",
   "deckSharedListTitle": "Kto ma już dostęp",
-  "deckNotSharedMessage": "Nie ma jeszcze nikogo, kto ma dostęp do tego zestawu"
+  "deckNotSharedMessage": "Nie ma jeszcze nikogo, kto ma dostęp do tego zestawu",
+  "quickAddCard": "Szybko dodaj kartę",
+  "provisionaryCardText": "Tekst do użycia w karcie",
+  "provisionaryCardsReviewHeadline": "Przegląd notatek",
+  "provisionaryCardsReviewButton": "Przejrzyj notatki",
+  "discard": "Odrzuć",
+  "later": "Potem"
 }

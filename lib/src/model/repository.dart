@@ -211,6 +211,14 @@ abstract class CardsRepository extends ChangeNotifier {
     }
     return groupedDecks;
   }
+
+  Future<void> addProvisionaryCard(String text);
+
+  /// Finalize provisionary card. If `resultingCardId` is not null, it means
+  /// a corresponding card has been created. Otherwise it has been discarded.
+  Future<void> finalizeProvisionaryCard(String id, String? resultingCardId);
+
+  Future<Iterable<model.ProvisionaryCard>> listProvisionaryCards();
 }
 
 extension ContextProviders on BuildContext {

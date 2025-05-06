@@ -1,26 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
+import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
+import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/decks/deck_groups.dart';
+import 'package:flutter_flashcards/src/decks/provisionary_cards_add.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../layout/base_layout.dart';
 import '../model/cards.dart' as model;
 import '../model/repository.dart';
 
-class DecksPage extends StatefulWidget {
-  @override
-  State<DecksPage> createState() => _DecksPageState();
-}
-
-class _DecksPageState extends State<DecksPage> {
-  bool _ownDecks = true;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
+class DecksPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<AppState>(builder: (context, appState, _) {
@@ -34,69 +26,106 @@ class _DecksPageState extends State<DecksPage> {
           label: Text(context.l10n.addDeck),
           icon: const Icon(Icons.add),
         ),
-        child: ListenableBuilder(
-            listenable: context.appState.cardRepository.decksUpdated,
-            builder: (context, _) => DeckGroups()),
+        child: Column(
+          children: [
+            Row(children: [
+              FilledButton.icon(
+                  onPressed: () => _quickAddCard(context),
+                  icon: Icon(Icons.add),
+                  label: Text(context.l10n.quickAddCard)),
+              FilledButton.icon(
+                  onPressed: () async {
+                    await context.pushNamed('quickCards');
+                  },
+                  icon: Icon(Icons.reviews),
+                  label: Text(context.l10n.provisionaryCardsReviewButton)),
+            ]),
+            Expanded(
+              child: ListenableBuilder(
+                  listenable: context.appState.cardRepository.decksUpdated,
+                  builder: (context, _) => DeckGroups()),
+            ),
+          ],
+        ),
       );
     });
   }
 
   _showAddDeckDialog(BuildContext context, model.Deck? deck) async {
-    String deckName = deck?.name ?? '';
+    final TextEditingController deckNameController =
+        TextEditingController(text: deck?.name ?? '');
 
-    return showDialog<void>(
+    return showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title:
-              Text(deck == null ? context.l10n.addDeck : context.l10n.editDeck),
-          content: TextFormField(
-            initialValue: deckName,
-            onChanged: (value) {
-              deckName = value;
-            },
-            decoration: InputDecoration(labelText: context.l10n.deckName),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return context.l10n.deckNamePrompt;
-              }
-              return null;
-            },
-          ),
-          actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: Text(context.ml10n.cancelButtonLabel),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(spacing: 20, children: [
+            Text(
+              deck == null ? context.l10n.addDeck : context.l10n.editDeck,
+              style: context.textTheme.titleLarge,
             ),
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: Text(deck == null
-                  ? context.l10n.add
-                  : context.ml10n.saveButtonLabel),
-              onPressed: () async {
-                if (deckName.isNotEmpty) {
-                  await context.cardRepository
-                      .saveDeck(model.Deck(name: deckName));
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context)
-                      ..removeCurrentSnackBar()
-                      ..showSnackBar(
-                          SnackBar(content: Text(context.l10n.deckSaved)));
-                    Navigator.pop(context);
-                  }
+            TextFormField(
+              controller: deckNameController,
+              decoration: InputDecoration(labelText: context.l10n.deckName),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return context.l10n.deckNamePrompt;
                 }
+                return null;
               },
             ),
-          ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              spacing: 20,
+              children: [
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  child: Text(context.ml10n.cancelButtonLabel),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                ValueListenableBuilder(
+                    valueListenable: deckNameController,
+                    builder: (context, value, _) {
+                      return FilledButton(
+                        style: TextButton.styleFrom(
+                          textStyle: Theme.of(context).textTheme.labelLarge,
+                        ),
+                        child: Text(deck == null
+                            ? context.l10n.add
+                            : context.ml10n.saveButtonLabel),
+                        onPressed: deckNameController.text.trim().isEmpty
+                            ? null
+                            : () async {
+                                if (deckNameController.text.isNotEmpty) {
+                                  await context.cardRepository.saveDeck(
+                                      model.Deck(
+                                          name:
+                                              deckNameController.text.trim()));
+                                  context
+                                      .showInfoSnackbar(context.l10n.deckSaved);
+                                  context.pop();
+                                }
+                              },
+                      );
+                    }),
+              ],
+            )
+          ]),
         );
       },
     );
+  }
+
+  void _quickAddCard(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return ProvisionaryCardAdd();
+        });
   }
 }

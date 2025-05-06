@@ -45,6 +45,7 @@ class _DeckSharingState extends State<DeckSharing> {
                       //     borderRadius: BorderRadius.circular(20)),
                       helperText: context.l10n.invitationEmailHelperText),
                   controller: shareWithController,
+                  keyboardType: TextInputType.emailAddress,
                   validator: (value) => EmailValidator.validate(value!)
                       ? null
                       : context.l10n.invalidEmailMessage,

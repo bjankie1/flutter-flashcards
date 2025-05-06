@@ -94,10 +94,13 @@ class DeckGroupReviewButton extends StatelessWidget {
             repository.cardsToReviewCount(deckGroupId: deckGroup.id),
         builder: (context, countStat, _) {
           final count = countStat.values.fold(0, (p, c) => p + c);
-          return FilledButton(
-              onPressed: () async => await context
-                  .push('/study/learn?deckGroupId=${deckGroup.id}'),
-              child: Text(context.l10n.cardsToReview(count)));
+          return Visibility(
+            visible: count > 0,
+            child: TextButton(
+                onPressed: () async => await context
+                    .push('/study/learn?deckGroupId=${deckGroup.id}'),
+                child: Text(context.l10n.cardsToReview(count))),
+          );
         });
   }
 }

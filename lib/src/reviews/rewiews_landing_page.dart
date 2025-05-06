@@ -18,6 +18,7 @@ class ReviewsPage extends StatelessWidget {
             fetcher: (repository) => groupedByDeck(cards, repository),
             builder: (context, cardsByDeck, _) => BaseLayout(
                 title: Text(context.l10n.learning),
+                currentPage: PageIndex.learning,
                 child: ReviewsBreakdown(cardsByDeck)),
           );
         });

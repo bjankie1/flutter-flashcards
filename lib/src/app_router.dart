@@ -7,6 +7,7 @@ import 'package:flutter_flashcards/src/decks/card_edit_page.dart';
 import 'package:flutter_flashcards/src/decks/deck_details_page.dart';
 import 'package:flutter_flashcards/src/decks/deck_generate_page.dart';
 import 'package:flutter_flashcards/src/decks/decks_page.dart';
+import 'package:flutter_flashcards/src/decks/provisionary_card_complete.dart';
 import 'package:flutter_flashcards/src/reviews/rewiews_landing_page.dart';
 import 'package:flutter_flashcards/src/settings/settings_page.dart';
 import 'package:flutter_flashcards/src/statistics/statistics_page.dart';
@@ -180,6 +181,12 @@ final router = GoRouter(
           final deckId = state.uri.queryParameters['deckId'];
           Logger().i('Creating deck from text');
           return DeckGeneratePage(deckId: deckId);
+        }),
+    GoRoute(
+        path: '/quick-cards',
+        name: 'quickCards',
+        builder: (context, state) {
+          return ProvisionaryCardsReviewPage();
         }),
     GoRoute(
         path: '/study',

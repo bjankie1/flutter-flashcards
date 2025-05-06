@@ -34,6 +34,12 @@ extension CollectionReferenceExtensions<T> on CollectionReference<T> {
       fromFirestore: (doc, _) => Card.fromJson(doc.id, doc.data()!),
       toFirestore: (card, _) => card.toJson());
 
+  CollectionReference<ProvisionaryCard> get withProvisionaryCardsConverter =>
+      withConverter<ProvisionaryCard>(
+          fromFirestore: (doc, _) =>
+              ProvisionaryCard.fromJson(doc.id, doc.data()!),
+          toFirestore: (provisionaryCard, _) => provisionaryCard.toJson());
+
   CollectionReference<CardStats> get withCardStatsConverter =>
       withConverter<CardStats>(
           fromFirestore: (doc, _) => CardStats.fromJson(doc.id, doc.data()!),
@@ -73,6 +79,7 @@ const cardStatsCollectionName = 'cardStats';
 const cardAnswersCollectionName = 'reviewLog';
 const decksCollectionName = 'decks';
 const deckGroupsCollectionName = 'deckGroups';
+const provisionaryCardsCollectionName = 'provisionaryCards';
 
 /// Add `user` prefix and make first letter of `name` upper case. Eg.
 /// for `decks` returns `userDecks`
@@ -933,5 +940,40 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     await doc.update({'decks': deckIds}).logError(
         'Error removing deck $deckId from group $groupId');
     notifyDeckGroupChanged();
+  }
+
+  /// Stores a word or a phrase in `/provisionaryCards/{userId}/userProvisionaryCards/{cardId}` collection
+  @override
+  Future<void> addProvisionaryCard(String text) async {
+    final provisionaryCard = ProvisionaryCard.fromText(text);
+    final collection = _firestore
+        .userCollection(provisionaryCardsCollectionName, userId)
+        .withProvisionaryCardsConverter;
+    await collection.doc(provisionaryCard.id).set(provisionaryCard);
+  }
+
+  @override
+  Future<void> finalizeProvisionaryCard(
+      String id, String? resultingCardId) async {
+    final collection = _firestore
+        .userCollection(provisionaryCardsCollectionName, userId)
+        .withProvisionaryCardsConverter;
+    final provisionaryCardDocRef = collection.doc(id);
+    final provisionaryCardSnapshot = await collection.doc(id).get();
+    if (!provisionaryCardSnapshot.exists) {
+      throw 'Provisionary card with ID $id not found';
+    }
+    await provisionaryCardDocRef.update(
+        {'finalizedDate': DateTime.now(), 'resultingCardId': resultingCardId});
+  }
+
+  @override
+  Future<Iterable<ProvisionaryCard>> listProvisionaryCards() async {
+    final collection = _firestore
+        .userCollection(provisionaryCardsCollectionName, userId)
+        .withProvisionaryCardsConverter;
+    final query = collection.where('finalizedDate', isNull: true);
+    final snapshot = await query.get();
+    return snapshot.docs.map((doc) => doc.data());
   }
 }

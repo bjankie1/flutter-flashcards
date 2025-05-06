@@ -339,4 +339,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deckNotSharedMessage => 'Deck has yet been shared with anyone';
+
+  @override
+  String get quickAddCard => 'Quick add card';
+
+  @override
+  String get provisionaryCardText => 'Provisionary note';
+
+  @override
+  String get provisionaryCardsReviewHeadline => 'Provisionary cards review';
+
+  @override
+  String get provisionaryCardsReviewButton => 'Review provisionary cards';
+
+  @override
+  String get discard => 'Discard';
+
+  @override
+  String get later => 'Later';
 }
