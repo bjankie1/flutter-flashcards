@@ -195,6 +195,7 @@ class _ProvisionaryCardFinalizationState
   bool doubleSided = true;
   String? deckId;
   bool isQuestion = true;
+  model.Deck? deck;
 
   final questionController = TextEditingController();
   final answerController = TextEditingController();
@@ -246,6 +247,7 @@ class _ProvisionaryCardFinalizationState
   void didUpdateWidget(covariant ProvisionaryCardFinalization oldWidget) {
     super.didUpdateWidget(oldWidget);
     _reset();
+    _geminiSuggestion();
   }
 
   @override
@@ -300,9 +302,12 @@ class _ProvisionaryCardFinalizationState
                 order: NumericFocusOrder(2.5),
                 child: DeckSelection(
                   initialDeckId: deckId,
-                  onDeckSelected: (deckId) => setState(() {
-                    this.deckId = deckId;
-                  }),
+                  onDeckSelected: (deckId) async {
+                    setState(() {
+                      this.deckId = deckId;
+                    });
+                    await _geminiSuggestion();
+                  },
                 ),
               ),
               FocusTraversalOrder(
@@ -345,16 +350,22 @@ class _ProvisionaryCardFinalizationState
                   ),
                   FocusTraversalOrder(
                     order: NumericFocusOrder(5),
-                    child: FilledButton.icon(
-                        onPressed: isComplete
-                            ? () => widget.onFinalize(
-                                deckId!,
-                                questionController.text,
-                                answerController.text,
-                                doubleSided)
-                            : null,
-                        icon: Icon(Icons.save),
-                        label: Text(context.l10n.saveAndNext)),
+                    child: ListenableBuilder(
+                        listenable: Listenable.merge(
+                          [questionController, answerController],
+                        ),
+                        builder: (context, _) {
+                          return FilledButton.icon(
+                              onPressed: isComplete
+                                  ? () => widget.onFinalize(
+                                      deckId!,
+                                      questionController.text,
+                                      answerController.text,
+                                      doubleSided)
+                                  : null,
+                              icon: Icon(Icons.save),
+                              label: Text(context.l10n.saveAndNext));
+                        }),
                   ),
                 ],
               ),
@@ -363,5 +374,27 @@ class _ProvisionaryCardFinalizationState
         ),
       ),
     );
+  }
+
+  Future<void> _geminiSuggestion() async {
+    if (deckId != null && (deck == null || deck!.id != deckId)) {
+      deck = await context.cardRepository.loadDeck(deckId!);
+    }
+    print('Fetching suggestion for deck $deck');
+
+    if (deck?.category != null) {
+      final suggestion = await context.cloudFunctions.generateCardAnswer(
+          deck!.category!,
+          deck!.name,
+          deck?.description ?? '',
+          widget.provisionaryCard.text);
+      setState(() {
+        if (isQuestion) {
+          answerController.text = suggestion.answer;
+        } else {
+          questionController.text = suggestion.answer;
+        }
+      });
+    }
   }
 }

@@ -28,22 +28,30 @@ class DecksPage extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Row(children: [
-              FilledButton.icon(
+            Row(
+              spacing: 8,
+              children: [
+                FilledButton.icon(
                   onPressed: () => _quickAddCard(context),
                   icon: Icon(Icons.add),
-                  label: Text(context.l10n.quickAddCard)),
-              FilledButton.icon(
+                  label: Text(context.l10n.quickAddCard),
+                ),
+                FilledButton.icon(
                   onPressed: () async {
                     await context.pushNamed('quickCards');
                   },
                   icon: Icon(Icons.reviews),
-                  label: Text(context.l10n.provisionaryCardsReviewButton)),
-            ]),
+                  label: Text(context.l10n.provisionaryCardsReviewButton),
+                ),
+              ],
+            ),
             Expanded(
               child: ListenableBuilder(
                   listenable: context.appState.cardRepository.decksUpdated,
-                  builder: (context, _) => DeckGroups()),
+                  builder: (context, _) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: DeckGroups(),
+                      )),
             ),
           ],
         ),

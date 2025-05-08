@@ -11,7 +11,13 @@ import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
-enum PageIndex { cards, learning, statistics, settings, collaboration }
+enum PageIndex {
+  cards,
+  learning,
+  statistics,
+  collaboration,
+  settings,
+}
 
 extension PageIndexNavigation on PageIndex {
   void navigate(BuildContext context) {

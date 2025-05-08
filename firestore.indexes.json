@@ -135,6 +135,24 @@
       ]
     },
     {
+      "collectionGroup": "userCards",
+      "fieldPath": "id",
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION_GROUP"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
       "collectionGroup": "userDecks",
       "fieldPath": "deckId",
       "indexes": [
@@ -143,7 +161,25 @@
           "queryScope": "COLLECTION_GROUP"
         },
         {
-          "order": "DESCENDING",
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "userCards",
+      "fieldPath": "deckId",
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION_GROUP"
+        },
+        {
+          "order": "ASCENDING",
           "queryScope": "COLLECTION"
         },
         {

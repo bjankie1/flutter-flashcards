@@ -35,6 +35,7 @@ class _ProvisionaryCardAddState extends State<ProvisionaryCardAdd> {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         spacing: 20,
         children: [
           TextFormField(
@@ -50,12 +51,19 @@ class _ProvisionaryCardAddState extends State<ProvisionaryCardAdd> {
                 if (value.isEmpty) return;
                 _addProvisionaryCard(context, value);
               }),
-          FilledButton(
-              onPressed: () async {
-                await _addProvisionaryCard(
-                    context, cardQuestionController.text);
-              },
-              child: Text(context.l10n.saveButton)),
+          ValueListenableBuilder(
+            valueListenable: cardQuestionController,
+            builder: (BuildContext context, TextEditingValue value, _) {
+              return FilledButton(
+                  onPressed: value.text.isEmpty
+                      ? null
+                      : () async {
+                          await _addProvisionaryCard(
+                              context, cardQuestionController.text);
+                        },
+                  child: Text(context.l10n.add));
+            },
+          ),
           const Divider(),
           Expanded(
             child: ListView(

@@ -15,11 +15,8 @@ class DeckGroups extends StatelessWidget {
       valueListenable: context.cardRepository.decksGroupUpdated,
       builder: (context, _, __) => RepositoryLoader(
         fetcher: (repository) => repository.loadDecksInGroups(),
-        builder: (context, groups, _) => Padding(
-          padding: const EdgeInsets.only(right: 8.0),
-          child: ListView(
-            children: _groupsWidgets(context, groups),
-          ),
+        builder: (context, groups, _) => ListView(
+          children: _groupsWidgets(context, groups),
         ),
       ),
     );

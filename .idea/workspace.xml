@@ -12,14 +12,12 @@
     <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Provisionary cards support">
       <change beforePath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" beforeDir="false" afterPath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_en.arb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_en.arb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_pl.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_pl.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_pl.arb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_pl.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firestore.indexes.json" beforeDir="false" afterPath="$PROJECT_DIR$/firestore.indexes.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_groups.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_groups.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/decks_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/decks_page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/decks/provisionary_card_complete.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/provisionary_card_complete.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/provisionary_cards_add.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/provisionary_cards_add.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/layout/base_layout.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/layout/base_layout.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/layout/navigation.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/layout/navigation.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html-e" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html-e" afterDir="false" />
@@ -163,6 +161,7 @@
   },
   "keyToStringList": {
     "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "TEXT",
       "Dart",
       "JSON"
     ]
@@ -492,7 +491,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746521189624</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Provisionary cards support">
+      <option name="closed" value="true" />
+      <created>1746550418127</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1746550418127</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="ToolWindowManager">
