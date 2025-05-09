@@ -219,6 +219,8 @@ abstract class CardsRepository extends ChangeNotifier {
   Future<void> finalizeProvisionaryCard(String id, String? resultingCardId);
 
   Future<Iterable<model.ProvisionaryCard>> listProvisionaryCards();
+
+  Future<void> updateDeckGroup(model.DeckGroup group);
 }
 
 extension ContextProviders on BuildContext {

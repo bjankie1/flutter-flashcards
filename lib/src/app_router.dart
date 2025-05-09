@@ -20,6 +20,19 @@ import 'reviews/study_cards_page.dart';
 
 final _log = Logger();
 
+enum NamedRoute {
+  quickCards,
+  learn,
+  study,
+  generateCards,
+  decks,
+  addCard,
+  editCard,
+  statistics,
+  settings,
+  collaboration
+}
+
 // Add GoRouter configuration outside the App class
 final router = GoRouter(
   routes: [
@@ -129,7 +142,7 @@ final router = GoRouter(
       routes: [
         GoRoute(
             path: '/cards/:cardId',
-            name: 'editCard',
+            name: NamedRoute.editCard.name,
             builder: (context, state) {
               final deckId = state.pathParameters['deckId'];
               if (deckId == null) {
@@ -154,7 +167,7 @@ final router = GoRouter(
             }),
         GoRoute(
             path: 'add',
-            name: 'addCard',
+            name: NamedRoute.addCard.name,
             builder: (context, state) {
               Logger().i('Creating card');
               final deckId = state.pathParameters['deckId'];
@@ -169,14 +182,14 @@ final router = GoRouter(
     ),
     GoRoute(
         path: '/decks',
-        name: 'decks',
+        name: NamedRoute.decks.name,
         builder: (context, state) {
           return DecksPage();
         },
         routes: []),
     GoRoute(
         path: '/generate',
-        name: 'generateCards',
+        name: NamedRoute.generateCards.name,
         builder: (context, state) {
           final deckId = state.uri.queryParameters['deckId'];
           Logger().i('Creating deck from text');
@@ -184,20 +197,20 @@ final router = GoRouter(
         }),
     GoRoute(
         path: '/quick-cards',
-        name: 'quickCards',
+        name: NamedRoute.quickCards.name,
         builder: (context, state) {
           return ProvisionaryCardsReviewPage();
         }),
     GoRoute(
         path: '/study',
-        name: 'study',
+        name: NamedRoute.study.name,
         builder: (context, state) {
           return ReviewsPage();
         },
         routes: [
           GoRoute(
             path: 'learn',
-            name: 'learn',
+            name: NamedRoute.learn.name,
             builder: (context, state) {
               final deckId = state.uri.queryParameters['deckId'];
               final deckGroupId = state.uri.queryParameters['deckGroupId'];
@@ -207,21 +220,21 @@ final router = GoRouter(
         ]),
     GoRoute(
       path: '/statistics',
-      name: 'statistics',
+      name: NamedRoute.statistics.name,
       builder: (context, state) {
         return StudyStatisticsPage();
       },
     ),
     GoRoute(
       path: '/settings',
-      name: 'settings',
+      name: NamedRoute.settings.name,
       builder: (context, state) {
         return SettingsPage();
       },
     ),
     GoRoute(
       path: '/collaboration',
-      name: 'collaboration',
+      name: NamedRoute.collaboration.name,
       builder: (context, state) {
         return CollaborationPage();
       },

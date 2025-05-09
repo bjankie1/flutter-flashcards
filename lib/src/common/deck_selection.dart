@@ -25,7 +25,7 @@ class DeckSelection extends StatelessWidget {
             initialValue: TextEditingValue(text: _initialDeckName(decks)),
             optionsBuilder: (textEditingValue) {
               if (textEditingValue.text == '') {
-                return const Iterable<model.Deck>.empty();
+                return decks;
               }
               return decks.where((model.Deck deck) {
                 return deck.name

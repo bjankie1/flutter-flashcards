@@ -3,7 +3,7 @@ import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/containers.dart';
 import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/decks/deck_group.dart';
-import 'package:flutter_flashcards/src/model/cards.dart';
+import 'package:flutter_flashcards/src/model/cards.dart' show Deck, DeckGroup;
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -27,32 +27,7 @@ class DeckGroups extends StatelessWidget {
       ...groups.map((t) {
         final (group, decks) = t;
         return [
-          CardsContainer(
-            padding: EdgeInsets.all(10),
-            margin: EdgeInsets.symmetric(vertical: 10),
-            child: Column(
-              children: [
-                Row(
-                  spacing: 10,
-                  children: [
-                    Text(
-                      group == null
-                          ? context.l10n.decksWithoutGroupHeader
-                          : group.name,
-                      style: context.textTheme.headlineMedium,
-                    ),
-                    if (group != null)
-                      DeckGroupReviewButton(
-                        deckGroup: group,
-                      )
-                  ],
-                ),
-                ConstrainedBox(
-                    constraints: BoxConstraints(maxHeight: 120),
-                    child: DeckGroupHorizontalList(decks: decks))
-              ],
-            ),
-          ),
+          DeckGroupWidget(group: group, decks: decks),
         ];
       }).expand((l) => l),
       RepositoryLoader(
@@ -79,6 +54,51 @@ class DeckGroups extends StatelessWidget {
   }
 }
 
+class DeckGroupWidget extends StatelessWidget {
+  final DeckGroup? group;
+
+  final List<Deck> decks;
+
+  const DeckGroupWidget({super.key, this.group, required this.decks});
+
+  @override
+  Widget build(BuildContext context) {
+    return CardsContainer(
+      padding: EdgeInsets.all(10),
+      margin: EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        children: [
+          Row(
+            spacing: 10,
+            children: [
+              group == null
+                  ? Text(
+                      context.l10n.decksWithoutGroupHeader,
+                      style: context.textTheme.headlineMedium,
+                    )
+                  : EditableText(
+                      text: group!.name,
+                      style: context.textTheme.headlineMedium,
+                      onTextChanged: (value) {
+                        context.cardRepository
+                            .updateDeckGroup(group!.copyWith(name: value));
+                      },
+                    ),
+              if (group != null)
+                DeckGroupReviewButton(
+                  deckGroup: group!,
+                )
+            ],
+          ),
+          ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 120),
+              child: DeckGroupHorizontalList(decks: decks))
+        ],
+      ),
+    );
+  }
+}
+
 class DeckGroupReviewButton extends StatelessWidget {
   final DeckGroup deckGroup;
 
@@ -99,5 +119,71 @@ class DeckGroupReviewButton extends StatelessWidget {
                 child: Text(context.l10n.cardsToReview(count))),
           );
         });
+  }
+}
+
+class EditableText extends StatefulWidget {
+  final String text;
+  final Function(String) onTextChanged;
+  final TextStyle? style;
+
+  const EditableText(
+      {super.key, required this.text, required this.onTextChanged, this.style});
+
+  @override
+  State<EditableText> createState() => _EditableTextState();
+}
+
+class _EditableTextState extends State<EditableText> {
+  final controller = TextEditingController();
+  bool editing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    controller.text = widget.text;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+                readOnly: !editing,
+                decoration: InputDecoration(border: InputBorder.none),
+                controller: controller,
+                style: widget.style,
+                onTap: () {
+                  setState(() {
+                    editing = true;
+                  });
+                },
+                onTapOutside: (_) {
+                  widget.onTextChanged(controller.text);
+                  setState(() {
+                    editing = false;
+                  });
+                },
+                onSubmitted: (value) {
+                  widget.onTextChanged(value);
+                  setState(() {
+                    editing = false;
+                  });
+                }),
+          ),
+          if (editing)
+            IconButton(
+                icon: Icon(Icons.check),
+                onPressed: () {
+                  widget.onTextChanged(controller.text);
+                  setState(() {
+                    editing = false;
+                  });
+                })
+        ],
+      ),
+    );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/app_router.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
@@ -28,22 +29,44 @@ class DecksPage extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Row(
-              spacing: 8,
-              children: [
-                FilledButton.icon(
-                  onPressed: () => _quickAddCard(context),
-                  icon: Icon(Icons.add),
-                  label: Text(context.l10n.quickAddCard),
-                ),
-                FilledButton.icon(
-                  onPressed: () async {
-                    await context.pushNamed('quickCards');
-                  },
-                  icon: Icon(Icons.reviews),
-                  label: Text(context.l10n.provisionaryCardsReviewButton),
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: LayoutBuilder(builder: (context, constraints) {
+                final fontSize = constraints.maxWidth > 600
+                    ? context.textTheme.titleLarge?.fontSize
+                    : context.textTheme.titleMedium?.fontSize;
+                return Row(
+                  spacing: 8,
+                  children: [
+                    FilledButton.icon(
+                      style: ButtonStyle(
+                          padding: WidgetStateProperty.all<EdgeInsets>(
+                              EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 20))),
+                      onPressed: () => _quickAddCard(context),
+                      icon: Icon(Icons.add_box, size: 24),
+                      label: Text(
+                        context.l10n.quickAddCard,
+                        style: TextStyle(fontSize: fontSize),
+                      ),
+                    ),
+                    FilledButton.icon(
+                      style: ButtonStyle(
+                          padding: WidgetStateProperty.all<EdgeInsets>(
+                              EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 20))),
+                      onPressed: () async {
+                        await context.pushNamed(NamedRoute.quickCards.name);
+                      },
+                      icon: Icon(Icons.reviews, size: 24),
+                      label: Text(
+                        context.l10n.provisionaryCardsReviewButton,
+                        style: TextStyle(fontSize: fontSize),
+                      ),
+                    ),
+                  ],
+                );
+              }),
             ),
             Expanded(
               child: ListenableBuilder(

@@ -12,12 +12,17 @@
     <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Provisionary cards support">
       <change beforePath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" beforeDir="false" afterPath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/firestore.indexes.json" beforeDir="false" afterPath="$PROJECT_DIR$/firestore.indexes.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app_router.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app_router.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/common/deck_selection.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/common/deck_selection.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_group.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_group.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_group_selection.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_group_selection.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_groups.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_groups.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_list_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_list_item.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/decks/decks_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/decks_page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/decks/provisionary_card_complete.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/provisionary_card_complete.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/provisionary_cards_add.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/provisionary_cards_add.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/layout/base_layout.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/layout/base_layout.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/model/repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/statistics/decks_reviews_pie_chart.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/statistics/decks_reviews_pie_chart.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html-e" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html-e" afterDir="false" />
@@ -148,7 +153,7 @@
     "com.android.tools.idea.streaming.zoom.toolbar.visible": "false",
     "com.google.services.firebase.aqiPopupShown": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "42-quickly-add-new-card-from-the-dashboard",
+    "git-widget-placeholder": "#53 on 42-quickly-add-new-card-from-the-dashboard",
     "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards/genkit/prompts",
@@ -499,7 +504,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746550418127</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Provisionary cards support">
+      <option name="closed" value="true" />
+      <created>1746694038486</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1746694038486</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="ToolWindowManager">

@@ -28,6 +28,8 @@ class DeckListItem extends StatelessWidget {
       title: Text(
         deck.name,
         style: Theme.of(context).textTheme.headlineSmall,
+        overflow: TextOverflow.clip,
+        softWrap: false,
       ),
       subtitle: Row(
         children: [
@@ -169,7 +171,11 @@ class DeckCardsNumber extends StatelessWidget {
               await context
                   .pushNamed('addCard', pathParameters: {'deckId': deck.id!})
             },
-            child: Text("${context.l10n.cards}: $cardCount"),
+            child: Text(
+              "${context.l10n.cards}: $cardCount",
+              overflow: TextOverflow.clip,
+              softWrap: false,
+            ),
           );
         });
   }
@@ -194,7 +200,11 @@ class DeckCardsToReview extends StatelessWidget {
                 onPressed: () {
                   startLearning(context, deck);
                 },
-                child: Text(context.l10n.cardsToReview(cardCount))),
+                child: Text(
+                  context.l10n.cardsToReview(cardCount),
+                  overflow: TextOverflow.clip,
+                  softWrap: false,
+                )),
           );
         });
   }

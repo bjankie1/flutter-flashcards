@@ -244,7 +244,7 @@ class _ProvisionaryCardFinalizationState
   @override
   @mustCallSuper
   @protected
-  void didUpdateWidget(covariant ProvisionaryCardFinalization oldWidget) {
+  void didUpdateWidget(covariant ProvisionaryCardFinalization oldWidget) async {
     super.didUpdateWidget(oldWidget);
     _reset();
     _geminiSuggestion();
@@ -259,7 +259,7 @@ class _ProvisionaryCardFinalizationState
           padding: const EdgeInsets.all(20.0),
           child: FocusTraversalGroup(
             policy: OrderedTraversalPolicy(),
-            child: Column(spacing: 8, children: [
+            child: ListView(shrinkWrap: true, children: [
               Text(widget.provisionaryCard.text),
               Row(
                 children: [
@@ -298,6 +298,9 @@ class _ProvisionaryCardFinalizationState
                   ),
                 ],
               ),
+              SizedBox(
+                height: 20,
+              ),
               FocusTraversalOrder(
                 order: NumericFocusOrder(2.5),
                 child: DeckSelection(
@@ -310,10 +313,14 @@ class _ProvisionaryCardFinalizationState
                   },
                 ),
               ),
+              SizedBox(
+                height: 20,
+              ),
               FocusTraversalOrder(
                 order: NumericFocusOrder(3),
                 child: TextFormField(
                   controller: questionController,
+                  minLines: 1,
                   maxLines: 5,
                   decoration: InputDecoration(
                     labelText: context.l10n.questionLabel,
@@ -321,10 +328,14 @@ class _ProvisionaryCardFinalizationState
                   ),
                 ),
               ),
+              SizedBox(
+                height: 20,
+              ),
               FocusTraversalOrder(
                 order: NumericFocusOrder(4),
                 child: TextFormField(
                   controller: answerController,
+                  minLines: 1,
                   maxLines: 5,
                   decoration: InputDecoration(
                     labelText: context.l10n.answerLabel,
@@ -333,7 +344,7 @@ class _ProvisionaryCardFinalizationState
                 ),
               ),
               SizedBox(
-                height: 20,
+                height: 40,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -356,15 +367,16 @@ class _ProvisionaryCardFinalizationState
                         ),
                         builder: (context, _) {
                           return FilledButton.icon(
-                              onPressed: isComplete
-                                  ? () => widget.onFinalize(
-                                      deckId!,
-                                      questionController.text,
-                                      answerController.text,
-                                      doubleSided)
-                                  : null,
-                              icon: Icon(Icons.save),
-                              label: Text(context.l10n.saveAndNext));
+                            onPressed: isComplete
+                                ? () => widget.onFinalize(
+                                    deckId!,
+                                    questionController.text,
+                                    answerController.text,
+                                    doubleSided)
+                                : null,
+                            icon: Icon(Icons.save),
+                            label: Text(context.l10n.saveAndNext),
+                          );
                         }),
                   ),
                 ],

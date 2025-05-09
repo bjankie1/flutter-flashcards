@@ -976,4 +976,18 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     final snapshot = await query.get();
     return snapshot.docs.map((doc) => doc.data());
   }
+
+  @override
+  Future<void> updateDeckGroup(DeckGroup group) async {
+    if (group.name.trim().isEmpty) {
+      throw 'Group name cannot be empty and needs to contain non-whitespace characters';
+    }
+    _log.d('Updating deck group ${group.name}');
+    final docRef = _deckGroupsCollection.doc(group.id);
+    final existing = await docRef.get();
+    if (!existing.exists) {
+      throw 'Group ${group.id} does not exists';
+    }
+    await docRef.set(group);
+  }
 }
