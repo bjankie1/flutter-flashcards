@@ -18,22 +18,11 @@ class DeckGroupHorizontalList extends StatelessWidget {
     return ListView(
         scrollDirection: Axis.horizontal,
         children: decks
-            .map((deck) =>
-                // ColoredBox(color: Colors.green, child: Text(deck.name)))
-                // sharedDecks
-                //     ? SharedDeckItem(
-                //         deck: deck,
-                //         avatar: Avatar(
-                //           size: 20,
-                //           userId: 'TODO',
-                //         ))
-                //     :
-                CardsContainer(
+            .map((deck) => CardsContainer(
                   secondary: true,
                   margin: EdgeInsets.symmetric(horizontal: 10),
                   child: ConstrainedBox(
-                      constraints:
-                          BoxConstraints(maxHeight: 100, maxWidth: 330),
+                      constraints: BoxConstraints(maxHeight: 80, maxWidth: 330),
                       child: DeckListItem(deck: deck)),
                 ))
             .toList());

@@ -11,7 +11,13 @@ import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
-enum PageIndex { cards, learning, statistics, settings, collaboration }
+enum PageIndex {
+  cards,
+  learning,
+  statistics,
+  collaboration,
+  settings,
+}
 
 extension PageIndexNavigation on PageIndex {
   void navigate(BuildContext context) {
@@ -22,10 +28,10 @@ extension PageIndexNavigation on PageIndex {
         context.goNamed('learning');
       case PageIndex.statistics:
         context.goNamed('statistics');
-      case PageIndex.settings:
-        context.goNamed('settings');
       case PageIndex.collaboration:
         context.goNamed('collaboration');
+      case PageIndex.settings:
+        context.goNamed('settings');
     }
   }
 }
@@ -115,7 +121,11 @@ class BaseLayout extends StatelessWidget {
             Expanded(child: child)
           ],
         ),
-        bottomNavigationBar: !isMobile ? null : BottomNavigation(),
+        bottomNavigationBar: !isMobile
+            ? null
+            : BottomNavigation(
+                currentPage: currentPage,
+              ),
         floatingActionButton: floatingActionButton,
       );
     });

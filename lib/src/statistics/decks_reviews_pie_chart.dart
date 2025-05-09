@@ -67,7 +67,8 @@ class _DecksReviewsPieChartState extends State<DecksReviewsPieChart> {
       final section = PieChartSectionData(
         color: color,
         value: value.toDouble(),
-        title: '${(value / total * 100).toStringAsFixed(1)}%',
+        title:
+            total == 0 ? '-' : '${(value / total * 100).toStringAsFixed(1)}%',
         radius: 80,
         titleStyle: TextStyle(
             fontSize: 12, fontWeight: FontWeight.bold, color: contrastingColor),
