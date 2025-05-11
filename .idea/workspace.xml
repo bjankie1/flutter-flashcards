@@ -12,17 +12,10 @@
     <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Provisionary cards support">
       <change beforePath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" beforeDir="false" afterPath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app_router.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app_router.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/common/deck_selection.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/common/deck_selection.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_group.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_group.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_group_selection.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_group_selection.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_groups.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_groups.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_list_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_list_item.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/decks_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/decks_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/provisionary_card_complete.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/provisionary_card_complete.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/firebase/firebase_repository.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/model/repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/repository.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/statistics/decks_reviews_pie_chart.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/statistics/decks_reviews_pie_chart.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/cards_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/cards_list.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_details_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_details_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/reviews/cards_review_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/reviews/cards_review_widget.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/reviews/rewiews_landing_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/reviews/rewiews_landing_page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html-e" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html-e" afterDir="false" />
@@ -160,7 +153,7 @@
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.17",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "AndroidSdkUpdater",
+    "settings.editor.selected.configurable": "com.android.studio.ml.templates",
     "show.migrate.to.gradle.popup": "false",
     "structure.view.defaults.are.configured": "true"
   },
@@ -512,7 +505,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746694038486</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Provisionary cards support">
+      <option name="closed" value="true" />
+      <created>1746801287957</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1746801287957</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="ToolWindowManager">
