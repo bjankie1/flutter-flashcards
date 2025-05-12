@@ -253,135 +253,140 @@ class _ProvisionaryCardFinalizationState
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 600),
+      constraints: BoxConstraints(maxWidth: 600, minHeight: 300),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: FocusTraversalGroup(
             policy: OrderedTraversalPolicy(),
-            child: ListView(shrinkWrap: true, children: [
-              Text(widget.provisionaryCard.text),
-              Row(
-                children: [
-                  Expanded(
-                      child: Text(isQuestion
-                          ? context.l10n.questionLabel
-                          : context.l10n.answerLabel)),
-                  FocusTraversalOrder(
-                    order: NumericFocusOrder(1),
-                    child: Switch(
-                      value: isQuestion,
-                      thumbIcon: frontBackIcon,
-                      onChanged: (value) => setState(() {
-                        isQuestion = value;
-                        questionController.text =
-                            isQuestion ? widget.provisionaryCard.text : '';
-                        answerController.text =
-                            isQuestion ? '' : widget.provisionaryCard.text;
-                      }),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Expanded(child: Text('Double sided')),
-                  FocusTraversalOrder(
-                    order: NumericFocusOrder(2),
-                    child: Switch(
-                      value: doubleSided,
-                      thumbIcon: doubleSidedIcon,
-                      onChanged: (value) => setState(() {
-                        doubleSided = value;
-                      }),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              FocusTraversalOrder(
-                order: NumericFocusOrder(2.5),
-                child: DeckSelection(
-                  initialDeckId: deckId,
-                  onDeckSelected: (deckId) async {
-                    setState(() {
-                      this.deckId = deckId;
-                    });
-                    await _geminiSuggestion();
-                  },
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              FocusTraversalOrder(
-                order: NumericFocusOrder(3),
-                child: TextFormField(
-                  controller: questionController,
-                  minLines: 1,
-                  maxLines: 5,
-                  decoration: InputDecoration(
-                    labelText: context.l10n.questionLabel,
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              FocusTraversalOrder(
-                order: NumericFocusOrder(4),
-                child: TextFormField(
-                  controller: answerController,
-                  minLines: 1,
-                  maxLines: 5,
-                  decoration: InputDecoration(
-                    labelText: context.l10n.answerLabel,
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 40,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton.icon(
-                    onPressed: widget.onDiscard,
-                    icon: Icon(Icons.cancel),
-                    label: Text(context.l10n.discard),
-                  ),
-                  TextButton.icon(
-                    onPressed: widget.onSnooze,
-                    icon: Icon(Icons.snooze),
-                    label: Text(context.l10n.later),
-                  ),
-                  FocusTraversalOrder(
-                    order: NumericFocusOrder(5),
-                    child: ListenableBuilder(
-                        listenable: Listenable.merge(
-                          [questionController, answerController],
-                        ),
-                        builder: (context, _) {
-                          return FilledButton.icon(
-                            onPressed: isComplete
-                                ? () => widget.onFinalize(
-                                    deckId!,
-                                    questionController.text,
-                                    answerController.text,
-                                    doubleSided)
-                                : null,
-                            icon: Icon(Icons.save),
-                            label: Text(context.l10n.saveAndNext),
-                          );
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                Text(widget.provisionaryCard.text),
+                Row(
+                  children: [
+                    Expanded(
+                        child: Text(isQuestion
+                            ? context.l10n.questionLabel
+                            : context.l10n.answerLabel)),
+                    FocusTraversalOrder(
+                      order: NumericFocusOrder(1),
+                      child: Switch(
+                        value: isQuestion,
+                        thumbIcon: frontBackIcon,
+                        onChanged: (value) => setState(() {
+                          isQuestion = value;
+                          questionController.text =
+                              isQuestion ? widget.provisionaryCard.text : '';
+                          answerController.text =
+                              isQuestion ? '' : widget.provisionaryCard.text;
                         }),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(child: Text('Double sided')),
+                    FocusTraversalOrder(
+                      order: NumericFocusOrder(2),
+                      child: Switch(
+                        value: doubleSided,
+                        thumbIcon: doubleSidedIcon,
+                        onChanged: (value) => setState(() {
+                          doubleSided = value;
+                        }),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                FocusTraversalOrder(
+                  order: NumericFocusOrder(2.5),
+                  child: DeckSelection(
+                    initialDeckId: deckId,
+                    onDeckSelected: (deckId) async {
+                      setState(() {
+                        this.deckId = deckId;
+                      });
+                      await _geminiSuggestion();
+                    },
                   ),
-                ],
-              ),
-            ]),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                FocusTraversalOrder(
+                  order: NumericFocusOrder(3),
+                  child: TextFormField(
+                    controller: questionController,
+                    minLines: 1,
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.questionLabel,
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                FocusTraversalOrder(
+                  order: NumericFocusOrder(4),
+                  child: TextFormField(
+                    controller: answerController,
+                    minLines: 1,
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.answerLabel,
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 40,
+                ),
+                FittedBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton.icon(
+                        onPressed: widget.onDiscard,
+                        icon: Icon(Icons.cancel),
+                        label: Text(context.l10n.discard),
+                      ),
+                      TextButton.icon(
+                        onPressed: widget.onSnooze,
+                        icon: Icon(Icons.snooze),
+                        label: Text(context.l10n.later),
+                      ),
+                      FocusTraversalOrder(
+                        order: NumericFocusOrder(5),
+                        child: ListenableBuilder(
+                            listenable: Listenable.merge(
+                              [questionController, answerController],
+                            ),
+                            builder: (context, _) {
+                              return FilledButton.icon(
+                                onPressed: isComplete
+                                    ? () => widget.onFinalize(
+                                        deckId!,
+                                        questionController.text,
+                                        answerController.text,
+                                        doubleSided)
+                                    : null,
+                                icon: Icon(Icons.save),
+                                label: Text(context.l10n.saveAndNext),
+                              );
+                            }),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

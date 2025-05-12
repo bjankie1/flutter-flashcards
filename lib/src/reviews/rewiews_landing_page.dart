@@ -55,10 +55,6 @@ class ReviewsBreakdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO:
-    // - limit size of cards to review
-    // - fix shared decks not showing up (probably due to lack of stats)
-
     return Center(
       child: SizedBox(
         width: 800,

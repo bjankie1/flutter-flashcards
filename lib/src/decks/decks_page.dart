@@ -35,36 +35,45 @@ class DecksPage extends StatelessWidget {
                 final fontSize = constraints.maxWidth > 600
                     ? context.textTheme.titleLarge?.fontSize
                     : context.textTheme.titleMedium?.fontSize;
-                return Row(
-                  spacing: 8,
-                  children: [
-                    FilledButton.icon(
-                      style: ButtonStyle(
-                          padding: WidgetStateProperty.all<EdgeInsets>(
-                              EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 20))),
-                      onPressed: () => _quickAddCard(context),
-                      icon: Icon(Icons.add_box, size: 24),
-                      label: Text(
-                        context.l10n.quickAddCard,
-                        style: TextStyle(fontSize: fontSize),
-                      ),
+                return SizedBox(
+                  height: constraints.maxHeight <= 600 ||
+                          MediaQuery.of(context).orientation ==
+                              Orientation.landscape
+                      ? 32
+                      : 48,
+                  child: FittedBox(
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        FilledButton.icon(
+                          style: ButtonStyle(
+                              padding: WidgetStateProperty.all<EdgeInsets>(
+                                  EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 20))),
+                          onPressed: () => _quickAddCard(context),
+                          icon: Icon(Icons.add_box, size: 24),
+                          label: Text(
+                            context.l10n.quickAddCard,
+                            style: TextStyle(fontSize: fontSize),
+                          ),
+                        ),
+                        FilledButton.icon(
+                          style: ButtonStyle(
+                              padding: WidgetStateProperty.all<EdgeInsets>(
+                                  EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 20))),
+                          onPressed: () async {
+                            await context.pushNamed(NamedRoute.quickCards.name);
+                          },
+                          icon: Icon(Icons.reviews, size: 24),
+                          label: Text(
+                            context.l10n.provisionaryCardsReviewButton,
+                            style: TextStyle(fontSize: fontSize),
+                          ),
+                        ),
+                      ],
                     ),
-                    FilledButton.icon(
-                      style: ButtonStyle(
-                          padding: WidgetStateProperty.all<EdgeInsets>(
-                              EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 20))),
-                      onPressed: () async {
-                        await context.pushNamed(NamedRoute.quickCards.name);
-                      },
-                      icon: Icon(Icons.reviews, size: 24),
-                      label: Text(
-                        context.l10n.provisionaryCardsReviewButton,
-                        style: TextStyle(fontSize: fontSize),
-                      ),
-                    ),
-                  ],
+                  ),
                 );
               }),
             ),
