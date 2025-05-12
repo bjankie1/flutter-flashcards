@@ -327,4 +327,37 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get createNewDeck => 'Utwórz nowy zestaw';
+
+  @override
+  String get shareDeck => 'Udostępnij zestaw';
+
+  @override
+  String get deckSharingHeader => 'Udostępnianie zestawu';
+
+  @override
+  String get deckSharedListTitle => 'Kto ma już dostęp';
+
+  @override
+  String get deckNotSharedMessage => 'Nie ma jeszcze nikogo, kto ma dostęp do tego zestawu';
+
+  @override
+  String get quickAddCard => 'Szybko dodaj kartę';
+
+  @override
+  String get provisionaryCardText => 'Tekst do użycia w karcie';
+
+  @override
+  String get provisionaryCardsReviewHeadline => 'Przegląd notatek';
+
+  @override
+  String get provisionaryCardsReviewButton => 'Przejrzyj notatki';
+
+  @override
+  String get discard => 'Odrzuć';
+
+  @override
+  String get later => 'Potem';
+
+  @override
+  String get noProvisionaryCardsHeadline => 'Brak notatek do przejrzenia';
 }

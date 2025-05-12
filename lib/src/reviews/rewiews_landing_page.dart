@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
+import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
@@ -18,6 +19,7 @@ class ReviewsPage extends StatelessWidget {
             fetcher: (repository) => groupedByDeck(cards, repository),
             builder: (context, cardsByDeck, _) => BaseLayout(
                 title: Text(context.l10n.learning),
+                currentPage: PageIndex.learning,
                 child: ReviewsBreakdown(cardsByDeck)),
           );
         });
@@ -56,35 +58,41 @@ class ReviewsBreakdown extends StatelessWidget {
     return Center(
       child: SizedBox(
         width: 800,
-        child: ListView(children: [
-          ...cardsByDeck.keys.map((deck) => Card(
-                child: ListTile(
-                    title: Text(deck.name),
-                    enabled: true,
-                    leading: Chip(
-                        label: Text(context.l10n
-                            .cardsToReview(cardsByDeck[deck]!.length))),
-                    trailing: FilledButton(
-                        onPressed: () async => await learn(context, deck.id),
-                        child: Text(context.l10n.learn))),
-              )),
-          Visibility(
-            visible: cardsByDeck.isNotEmpty,
-            child: ListTile(
-                title: FilledButton(
-                    onPressed: () async => await learnEverything(context),
-                    child: Text(
-                      context.l10n.learnEverything,
-                    ))),
-          ),
-          Visibility(
-            visible: cardsByDeck.isEmpty,
-            child: Text(
-              context.l10n.noCardsToLearn,
-              style: Theme.of(context).textTheme.headlineMedium,
+        child: Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            ...cardsByDeck.keys.map(
+              (deck) => FilledButton(
+                style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all<Color?>(
+                        context.theme.primaryColorLight)),
+                onPressed: () async => await learn(context, deck.id),
+                child: Text("${deck.name}: ${cardsByDeck[deck]!.length}"),
+              ),
             ),
-          )
-        ]),
+            Visibility(
+              visible: cardsByDeck.isNotEmpty,
+              child: FilledButton(
+                onPressed: () async => await learnEverything(context),
+                style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all<Color?>(
+                        context.theme.primaryColorDark)),
+                child: Text(
+                  context.l10n.learnEverything,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            Visibility(
+              visible: cardsByDeck.isEmpty,
+              child: Text(
+                context.l10n.noCardsToLearn,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

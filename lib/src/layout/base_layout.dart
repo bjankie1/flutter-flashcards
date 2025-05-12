@@ -11,7 +11,13 @@ import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
-enum PageIndex { cards, learning, statistics, settings, collaboration }
+enum PageIndex {
+  cards,
+  learning,
+  statistics,
+  collaboration,
+  settings,
+}
 
 extension PageIndexNavigation on PageIndex {
   void navigate(BuildContext context) {
@@ -22,10 +28,10 @@ extension PageIndexNavigation on PageIndex {
         context.goNamed('learning');
       case PageIndex.statistics:
         context.goNamed('statistics');
-      case PageIndex.settings:
-        context.goNamed('settings');
       case PageIndex.collaboration:
         context.goNamed('collaboration');
+      case PageIndex.settings:
+        context.goNamed('settings');
     }
   }
 }
@@ -51,6 +57,7 @@ class BaseLayout extends StatelessWidget {
     bool isMobile = context.isMobile;
     return LayoutBuilder(builder: (context, constraints) {
       return Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           // leading: ModalRoute.of(context)?.canPop ==
           //         true // Check if there's a previous route
@@ -63,29 +70,33 @@ class BaseLayout extends StatelessWidget {
             builder: (context, appState, child) {
               return Row(
                 children: [
-                  title,
-                  Spacer(),
-                  ValueListenableBuilder<UserProfile?>(
-                    valueListenable: context.appState.userProfile,
-                    builder: (context, userProfile, _) => IconButton(
-                      icon: Icon(// Your icon based on current theme
-                          userProfile?.theme == ThemeMode.light
-                              ? Icons.dark_mode
-                              : Icons.light_mode),
-                      onPressed: () {
-                        Provider.of<AppState>(context, listen: false)
-                            .toggleTheme();
-                      },
+                  Expanded(
+                    child: title,
+                  ),
+                  if (constraints.maxWidth > 600) Spacer(),
+                  if (constraints.maxWidth > 600)
+                    ValueListenableBuilder<UserProfile?>(
+                      valueListenable: context.appState.userProfile,
+                      builder: (context, userProfile, _) => IconButton(
+                        icon: Icon(// Your icon based on current theme
+                            userProfile?.theme == ThemeMode.light
+                                ? Icons.dark_mode
+                                : Icons.light_mode),
+                        onPressed: () {
+                          Provider.of<AppState>(context, listen: false)
+                              .toggleTheme();
+                        },
+                      ),
                     ),
-                  ),
-                  if (!isMobile) LocaleSelection(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: UserMenu(
-                        child: Avatar(
-                      size: 30,
-                    )),
-                  ),
+                  if (constraints.maxWidth > 600) LocaleSelection(),
+                  if (constraints.maxWidth > 600)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: UserMenu(
+                          child: Avatar(
+                        size: 30,
+                      )),
+                    ),
                   Visibility(
                     visible: false,
                     child: Padding(
@@ -115,7 +126,11 @@ class BaseLayout extends StatelessWidget {
             Expanded(child: child)
           ],
         ),
-        bottomNavigationBar: !isMobile ? null : BottomNavigation(),
+        bottomNavigationBar: !isMobile
+            ? null
+            : BottomNavigation(
+                currentPage: currentPage,
+              ),
         floatingActionButton: floatingActionButton,
       );
     });
