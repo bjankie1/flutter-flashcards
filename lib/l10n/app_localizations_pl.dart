@@ -78,7 +78,8 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get deleteDeckConfirmation => 'Czy na pewno chcesz usunąć ten zestaw kart?';
+  String get deleteDeckConfirmation =>
+      'Czy na pewno chcesz usunąć ten zestaw kart?';
 
   @override
   String get delete => 'Usuń';
@@ -251,7 +252,8 @@ class AppLocalizationsPl extends AppLocalizations {
   String get decksTitle => 'Moje zestawy';
 
   @override
-  String get noDecksMessage => 'Nie masz jeszcze zestawów. Dodaj swój pierwszy.';
+  String get noDecksMessage =>
+      'Nie masz jeszcze zestawów. Dodaj swój pierwszy.';
 
   @override
   String get profileNameChanged => 'Nazwa profilu zmieniona';
@@ -314,7 +316,8 @@ class AppLocalizationsPl extends AppLocalizations {
   String get deckGeneration => 'Generowanie zestawów kart';
 
   @override
-  String get inputTextForGenerator => 'Wprowadź tekst na podstawie którego chcesz wygenerować karty';
+  String get inputTextForGenerator =>
+      'Wprowadź tekst na podstawie którego chcesz wygenerować karty';
 
   @override
   String get generateCards => 'Generuj karty';
@@ -338,7 +341,8 @@ class AppLocalizationsPl extends AppLocalizations {
   String get deckSharedListTitle => 'Kto ma już dostęp';
 
   @override
-  String get deckNotSharedMessage => 'Nie ma jeszcze nikogo, kto ma dostęp do tego zestawu';
+  String get deckNotSharedMessage =>
+      'Nie ma jeszcze nikogo, kto ma dostęp do tego zestawu';
 
   @override
   String get quickAddCard => 'Szybko dodaj kartę';

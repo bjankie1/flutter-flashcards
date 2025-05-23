@@ -46,21 +46,24 @@ class _ProvisionaryCardsReviewState extends State<ProvisionaryCardsReview> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Wrap(
-          spacing: 10,
-          runSpacing: 4,
-          children: widget.provisionaryCards
-              .asMap()
-              .entries
-              .map((entry) => ProvisionaryCardChip(
-                    text: entry.value.text,
-                    finalized: finalizedCardsIndexes.contains(entry.key),
-                    discarded: discardedCardsIndexes.contains(entry.key),
-                    active: currentIndex == entry.key,
-                    onDelete: () async =>
-                        await _discardProposal(context, entry.key, entry.value),
-                  ))
-              .toList(),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 600, maxHeight: 50),
+          child: ListView(
+            padding: EdgeInsets.all(4),
+            scrollDirection: Axis.horizontal,
+            children: widget.provisionaryCards
+                .asMap()
+                .entries
+                .map((entry) => ProvisionaryCardChip(
+                      text: entry.value.text,
+                      finalized: finalizedCardsIndexes.contains(entry.key),
+                      discarded: discardedCardsIndexes.contains(entry.key),
+                      active: currentIndex == entry.key,
+                      onDelete: () async => await _discardProposal(
+                          context, entry.key, entry.value),
+                    ))
+                .toList(),
+          ),
         ),
         if (currentIndex >= 0)
           ProvisionaryCardFinalization(
@@ -200,6 +203,8 @@ class _ProvisionaryCardFinalizationState
   final questionController = TextEditingController();
   final answerController = TextEditingController();
 
+  bool fetchingSuggestion = false;
+
   bool get isComplete =>
       questionController.text.isNotEmpty &&
       answerController.text.isNotEmpty &&
@@ -274,13 +279,16 @@ class _ProvisionaryCardFinalizationState
                       child: Switch(
                         value: isQuestion,
                         thumbIcon: frontBackIcon,
-                        onChanged: (value) => setState(() {
-                          isQuestion = value;
-                          questionController.text =
-                              isQuestion ? widget.provisionaryCard.text : '';
-                          answerController.text =
-                              isQuestion ? '' : widget.provisionaryCard.text;
-                        }),
+                        onChanged: (value) {
+                          setState(() {
+                            isQuestion = value;
+                            questionController.text =
+                                isQuestion ? widget.provisionaryCard.text : '';
+                            answerController.text =
+                                isQuestion ? '' : widget.provisionaryCard.text;
+                          });
+                          _geminiSuggestion();
+                        },
                       ),
                     ),
                   ],
@@ -330,6 +338,12 @@ class _ProvisionaryCardFinalizationState
                     ),
                   ),
                 ),
+                if (!isQuestion)
+                  AnimatedOpacity(
+                    opacity: fetchingSuggestion ? 1 : 0,
+                    duration: Duration(milliseconds: 500),
+                    child: LinearProgressIndicator(),
+                  ),
                 SizedBox(
                   height: 20,
                 ),
@@ -345,6 +359,12 @@ class _ProvisionaryCardFinalizationState
                     ),
                   ),
                 ),
+                if (isQuestion)
+                  AnimatedOpacity(
+                    opacity: fetchingSuggestion ? 1 : 0,
+                    duration: Duration(milliseconds: 500),
+                    child: LinearProgressIndicator(),
+                  ),
                 SizedBox(
                   height: 40,
                 ),
@@ -400,18 +420,27 @@ class _ProvisionaryCardFinalizationState
     print('Fetching suggestion for deck $deck');
 
     if (deck?.category != null) {
-      final suggestion = await context.cloudFunctions.generateCardAnswer(
-          deck!.category!,
-          deck!.name,
-          deck?.description ?? '',
-          widget.provisionaryCard.text);
       setState(() {
-        if (isQuestion) {
-          answerController.text = suggestion.answer;
-        } else {
-          questionController.text = suggestion.answer;
-        }
+        fetchingSuggestion = true;
       });
+      try {
+        final suggestion = await context.cloudFunctions.generateCardAnswer(
+            deck!.category!,
+            deck!.name,
+            deck?.description ?? '',
+            widget.provisionaryCard.text);
+        setState(() {
+          if (isQuestion) {
+            answerController.text = suggestion.answer;
+          } else {
+            questionController.text = suggestion.answer;
+          }
+        });
+      } finally {
+        setState(() {
+          fetchingSuggestion = false;
+        });
+      }
     }
   }
 }

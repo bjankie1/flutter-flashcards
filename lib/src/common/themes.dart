@@ -57,6 +57,7 @@ class ContainersColors extends ThemeExtension<ContainersColors> {
 ThemeData getLightThemeFlexColor() {
   return FlexThemeData.light(
       scheme: FlexScheme.dellGenoa,
+      scaffoldBackground: Color(0xffF5F5DC),
       useMaterial3: true,
       extensions: [
         const ContainersColors(

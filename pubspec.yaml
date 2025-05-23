@@ -4,7 +4,7 @@ description: "Flashcards app for my kids."
 # Prevent accidental publishing to pub.dev.
 publish_to: 'none'
 
-version: 1.0.2+107
+version: 1.0.2+111
 
 environment:
   sdk: ^3.6.0
@@ -29,7 +29,8 @@ dependencies:
   firebase_ui_oauth_google: ^1.4.0
   logger: ^2.5.0
   flutter_markdown: ^0.7.4+2
-  gpt_markdown: ^1.0.3
+  gpt_markdown: ^1.0.19
+  flutter_math_fork: ^0.7.4
   fsrs: any
   intl: any
   intl_translation: any

@@ -14,10 +14,15 @@
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/decks_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/decks_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_pl.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_pl.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/common/themes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/common/themes.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/decks/provisionary_card_complete.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/provisionary_card_complete.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/layout/base_layout.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/layout/base_layout.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/reviews/rewiews_landing_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/reviews/rewiews_landing_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Podfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Podfile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
@@ -156,7 +161,7 @@
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.17",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "emulator",
+    "settings.editor.selected.configurable": "preferences.intentionPowerPack",
     "show.migrate.to.gradle.popup": "false",
     "structure.view.defaults.are.configured": "true"
   },
@@ -524,7 +529,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746977716222</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="Provisionary cards support">
+      <option name="closed" value="true" />
+      <created>1747061183082</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1747061183082</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="ToolWindowManager">
