@@ -169,5 +169,16 @@
   "generateCards": "Generate cards",
   "inputText": "Text",
   "addCardsToDeck": "Add cards to deck",
-  "createNewDeck": "Create new deck"
+  "createNewDeck": "Create new deck",
+  "shareDeck": "Share deck with others",
+  "deckSharingHeader": "Deck sharing",
+  "deckSharedListTitle": "People with access",
+  "deckNotSharedMessage": "Deck has yet been shared with anyone",
+  "quickAddCard": "Quick add card",
+  "provisionaryCardText": "Provisionary note",
+  "provisionaryCardsReviewHeadline": "Provisionary cards review",
+  "provisionaryCardsReviewButton": "Review provisionary cards",
+  "discard": "Discard",
+  "later": "Later",
+  "noProvisionaryCardsHeadline": "No provisionary cards to review"
 }

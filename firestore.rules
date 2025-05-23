@@ -96,6 +96,10 @@ service cloud.firestore {
       allow create: if isAuthor(userId);
     }
 
+    match /provisionaryCards/{userId}/userProvisionaryCards/{cardId} {
+      allow read, write: if isAuthor(userId);
+    }
+
     match /{path=**}/userDecks/{deckId} {
       allow read: if isSigned(); // && (isAuthor(userId) || deckSharedWith(deckId, userId));
     }
