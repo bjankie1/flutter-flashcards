@@ -4,7 +4,7 @@ description: "Flashcards app for my kids."
 # Prevent accidental publishing to pub.dev.
 publish_to: 'none'
 
-version: 1.0.2+111
+version: 1.0.2+114
 
 environment:
   sdk: ^3.6.0
@@ -89,3 +89,5 @@ flutter_launcher_icons:
   macos:
     generate: true
     image_path: "assets/icon/icon-64.png"
+flutter_intl:
+  enabled: true

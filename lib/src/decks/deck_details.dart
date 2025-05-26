@@ -14,13 +14,16 @@ final class DeckInformation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: _DeckNameWidget(deck: deck),
-      subtitle: _DeckDescriptionWidget(deck: deck),
-      trailing: deck.category != null && !context.isMobile
-          ? Chip(label: Text(deck.category?.name ?? ''))
-          : null,
-      dense: true,
+    return Card(
+      child: ListTile(
+        title: _DeckNameWidget(deck: deck),
+        subtitle: _DeckDescriptionWidget(deck: deck),
+        trailing: deck.category != null && !context.isMobile
+            ? Chip(label: Text(deck.category?.name ?? ''))
+            : null,
+        isThreeLine: true,
+        dense: true,
+      ),
     );
   }
 }

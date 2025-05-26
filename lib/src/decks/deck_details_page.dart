@@ -25,21 +25,30 @@ class DeckDetailsPage extends StatelessWidget {
         label: Text(context.l10n.addCard),
         icon: const Icon(Icons.add),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40.0),
-        child: Column(
-          children: [
-            ValueListenableBuilder(
-              valueListenable: context.watch<CardsRepository>().decksUpdated,
-              builder: (context, deckChange, _) => RepositoryLoader(
-                fetcher: (repository) => repository.loadDeck(deck.id!),
-                builder: (context, deck, _) => Material(
-                  child: DeckInformation(deck: deck!),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 800),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40.0),
+            child: Column(
+              children: [
+                ValueListenableBuilder(
+                  valueListenable:
+                      context.watch<CardsRepository>().decksUpdated,
+                  builder: (context, deckChange, _) => RepositoryLoader(
+                    fetcher: (repository) => repository.loadDeck(deck.id!),
+                    builder: (context, deck, _) => DeckInformation(deck: deck!),
+                  ),
                 ),
-              ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: CardsList(deck: deck),
+                  ),
+                ),
+              ],
             ),
-            CardsList(deck: deck),
-          ],
+          ),
         ),
       ),
     );

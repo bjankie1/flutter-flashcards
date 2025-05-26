@@ -29,21 +29,19 @@ class CardsList extends StatelessWidget {
                 .compareTo(card2.question.toLowerCase()));
             return data.isEmpty
                 ? Text('No Cards')
-                : Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: flashcards.length,
-                      itemBuilder: (context, index) {
-                        final card = flashcards[index];
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: 4),
-                          child: CardTile(
-                              deck: deck,
-                              card: card,
-                              onDelete: () => _deleteCard(context, card)),
-                        );
-                      },
-                    ),
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: flashcards.length,
+                    itemBuilder: (context, index) {
+                      final card = flashcards[index];
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 4),
+                        child: CardTile(
+                            deck: deck,
+                            card: card,
+                            onDelete: () => _deleteCard(context, card)),
+                      );
+                    },
                   );
           },
         );
