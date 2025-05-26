@@ -78,7 +78,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get deleteDeckConfirmation => 'Are you sure you want to delete this deck?';
+  String get deleteDeckConfirmation =>
+      'Are you sure you want to delete this deck?';
 
   @override
   String get delete => 'Delete';
@@ -327,4 +328,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createNewDeck => 'Create new deck';
+
+  @override
+  String get shareDeck => 'Share deck with others';
+
+  @override
+  String get deckSharingHeader => 'Deck sharing';
+
+  @override
+  String get deckSharedListTitle => 'People with access';
+
+  @override
+  String get deckNotSharedMessage => 'Deck has yet been shared with anyone';
+
+  @override
+  String get quickAddCard => 'Quick add card';
+
+  @override
+  String get provisionaryCardText => 'Provisionary note';
+
+  @override
+  String get provisionaryCardsReviewHeadline => 'Provisionary cards review';
+
+  @override
+  String get provisionaryCardsReviewButton => 'Review provisionary cards';
+
+  @override
+  String get discard => 'Discard';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get noProvisionaryCardsHeadline => 'No provisionary cards to review';
 }

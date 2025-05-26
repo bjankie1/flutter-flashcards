@@ -572,11 +572,16 @@ void main() {
       final savedDeck = await repository.saveDeck(deck);
       final deckId = savedDeck.id!;
       await repository.grantAccessToDeck(deckId, user1.email);
+
       final granted = await repository.listGrantedDeckAccess(deckId);
-      final shared = await repository.listSharedDecks();
       expect(granted.length, 1);
       expect(granted.first.email, user1.email);
+
+      // Operation should have no effect on decks shared with current user.
+      final shared = await repository.listSharedDecks();
       expect(shared.length, 0);
+
+      // Check if the other user sees the granted deck.
       await changeLogin(user1);
       final sharedWithUser1 = await repository.listSharedDecks();
       expect(sharedWithUser1.length, 1);

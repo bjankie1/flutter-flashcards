@@ -29,40 +29,19 @@ class CardsList extends StatelessWidget {
                 .compareTo(card2.question.toLowerCase()));
             return data.isEmpty
                 ? Text('No Cards')
-                : Expanded(
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: flashcards.length,
-                            itemBuilder: (context, index) {
-                              final card = flashcards[index];
-                              return Padding(
-                                padding: EdgeInsets.symmetric(vertical: 4),
-                                child: CardTile(
-                                    deck: deck,
-                                    card: card,
-                                    onDelete: () => _deleteCard(context, card)),
-                              );
-                            },
-                          ),
-                        ),
-                        Padding(
-                          // Now always visible
-                          padding: const EdgeInsets.all(8.0),
-                          child: FilledButton(
-                            onPressed: () async {
-                              await context
-                                  .pushNamed('addCard', pathParameters: {
-                                'deckId': deck.id!,
-                              });
-                            },
-                            child: Text(context.l10n.addCard),
-                          ),
-                        ),
-                      ],
-                    ),
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: flashcards.length,
+                    itemBuilder: (context, index) {
+                      final card = flashcards[index];
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 4),
+                        child: CardTile(
+                            deck: deck,
+                            card: card,
+                            onDelete: () => _deleteCard(context, card)),
+                      );
+                    },
                   );
           },
         );
@@ -86,7 +65,12 @@ class CardTile extends StatelessWidget {
   final model.Card card;
   final Function onDelete;
 
-  CardTile({required this.deck, required this.card, required this.onDelete});
+  CardTile({
+    super.key,
+    required this.deck,
+    required this.card,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +85,16 @@ class CardTile extends StatelessWidget {
       ),
       subtitle: Row(
         children: [
-          if (card.options?.learnBothSides ?? false) Icon(Icons.swap_vert)
+          if (card.options?.learnBothSides ?? false)
+            Icon(
+              Icons.swap_vert,
+              color: Colors.green,
+            ),
+          if (card.explanation != null && card.explanation!.isNotEmpty)
+            Icon(
+              Icons.info,
+              color: Colors.blue,
+            ),
         ],
       ),
       trailing: IconButton(

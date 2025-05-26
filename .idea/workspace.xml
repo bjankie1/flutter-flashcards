@@ -9,20 +9,16 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Refactoring">
-      <change afterPath="$PROJECT_DIR$/assets/images/gemini.png" afterDir="false" />
+    <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Provisionary cards support">
+      <change beforePath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" beforeDir="false" afterPath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/firebase.json" beforeDir="false" afterPath="$PROJECT_DIR$/firebase.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/genkit/prompts/generateFlashCardsFromText.prompt" beforeDir="false" afterPath="$PROJECT_DIR$/genkit/prompts/generateFlashCardsFromText.prompt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_en.arb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_en.arb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_pl.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_pl.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/l10n/app_pl.arb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_pl.arb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app_router.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app_router.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/common/assets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/common/assets.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_generate_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_generate_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_list_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_list_item.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deploy.sh" beforeDir="false" afterPath="$PROJECT_DIR$/deploy.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/cards_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/cards_list.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_details.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_details.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_details_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_details_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/index.html-e" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html-e" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,62 +107,64 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;AnalyzeApkAction.lastApkPath&quot;: &quot;/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards/build/app/outputs/bundle/release/app-release.aab&quot;,
-    &quot;Flutter Test.Assign deck to groups.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.Collaboration Invitations.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.Decks management.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.Save and load card stats.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.Save double-sided card and verify the stats include both sides.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.Should fail adding deck to a non existing group.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.Should fail creating deck group with same or invalid name.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.changeInvitationStatus updates invitation status both users start collaboration.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.count cards to review for a deck.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.count cards to review for all decks.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.grant access and other user incorporates shared deck into learning list.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.grant access and verify of other user can load deck.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.grant access to deck.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.grant permission to stats to user1 and user1 can get list of collaborators.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.grant permission to stats to user1 and verify if added to /sharing collection.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.load cards to review for a deck group.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.load cards to review for a deck.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.load cards to review when there are no cards yet.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.rateAnswer records answer and removes card.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.rating only one card as `again` leaves only this card in the list.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.tests in firebase_repository_test.dart.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.tests in iterable_extensios_test.dart.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.tests in study_session_test.dart.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart.executor&quot;: &quot;Run&quot;,
-    &quot;ResourceManagerPrefKey.ResourceType&quot;: &quot;DRAWABLE&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;ScreenshotViewer.SavePath&quot;: &quot;/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards/assets/screenshots/android&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;com.android.tools.idea.streaming.emulator.frame.visible&quot;: &quot;false&quot;,
-    &quot;com.android.tools.idea.streaming.zoom.toolbar.visible&quot;: &quot;false&quot;,
-    &quot;com.google.services.firebase.aqiPopupShown&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;44-create-flashcards-based-on-a-text&quot;,
-    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards/genkit/prompts&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;AndroidSdkUpdater&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
-    &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "AnalyzeApkAction.lastApkPath": "/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards/build/app/outputs/bundle/release/app-release.aab",
+    "Flutter Test.Assign deck to groups.executor": "Run",
+    "Flutter Test.Collaboration Invitations.executor": "Run",
+    "Flutter Test.Decks management.executor": "Run",
+    "Flutter Test.Save and load card stats.executor": "Run",
+    "Flutter Test.Save double-sided card and verify the stats include both sides.executor": "Run",
+    "Flutter Test.Should fail adding deck to a non existing group.executor": "Run",
+    "Flutter Test.Should fail creating deck group with same or invalid name.executor": "Run",
+    "Flutter Test.changeInvitationStatus updates invitation status both users start collaboration.executor": "Run",
+    "Flutter Test.count cards to review for a deck.executor": "Run",
+    "Flutter Test.count cards to review for all decks.executor": "Run",
+    "Flutter Test.grant access and other user incorporates shared deck into learning list.executor": "Run",
+    "Flutter Test.grant access and verify of other user can load deck.executor": "Run",
+    "Flutter Test.grant access to deck.executor": "Run",
+    "Flutter Test.grant permission to stats to user1 and user1 can get list of collaborators.executor": "Run",
+    "Flutter Test.grant permission to stats to user1 and verify if added to /sharing collection.executor": "Run",
+    "Flutter Test.load cards to review for a deck group.executor": "Run",
+    "Flutter Test.load cards to review for a deck.executor": "Run",
+    "Flutter Test.load cards to review when there are no cards yet.executor": "Run",
+    "Flutter Test.rateAnswer records answer and removes card.executor": "Run",
+    "Flutter Test.rating only one card as `again` leaves only this card in the list.executor": "Run",
+    "Flutter Test.tests in firebase_repository_test.dart.executor": "Run",
+    "Flutter Test.tests in iterable_extensios_test.dart.executor": "Run",
+    "Flutter Test.tests in study_session_test.dart.executor": "Run",
+    "Flutter.main.dart.executor": "Run",
+    "ResourceManagerPrefKey.ResourceType": "DRAWABLE",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "ScreenshotViewer.SavePath": "/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards/assets/screenshots/android",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "com.android.tools.idea.streaming.emulator.frame.visible": "false",
+    "com.android.tools.idea.streaming.zoom.toolbar.visible": "false",
+    "com.google.services.firebase.aqiPopupShown": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "#53 on 42-quickly-add-new-card-from-the-dashboard",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards/genkit/prompts",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.17",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.intentionPowerPack",
+    "show.migrate.to.gradle.popup": "false",
+    "structure.view.defaults.are.configured": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;JSON&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "TEXT",
+      "Dart",
+      "JSON"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/genkit/prompts" />
@@ -459,7 +457,87 @@
       <option name="project" value="LOCAL" />
       <updated>1746122539553</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="Improvements in card generation flow">
+      <option name="closed" value="true" />
+      <created>1746281387918</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1746281387918</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Fixes in deck sharing">
+      <option name="closed" value="true" />
+      <created>1746388706454</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1746388706454</updated>
+    </task>
+    <task id="LOCAL-00032" summary="Fixes in deck sharing">
+      <option name="closed" value="true" />
+      <created>1746388759145</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1746388759145</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Provisionary cards support">
+      <option name="closed" value="true" />
+      <created>1746521189624</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1746521189624</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Provisionary cards support">
+      <option name="closed" value="true" />
+      <created>1746550418127</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1746550418127</updated>
+    </task>
+    <task id="LOCAL-00035" summary="Provisionary cards support">
+      <option name="closed" value="true" />
+      <created>1746694038486</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1746694038486</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Provisionary cards support">
+      <option name="closed" value="true" />
+      <created>1746801287957</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1746801287957</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Provisionary cards support">
+      <option name="closed" value="true" />
+      <created>1746977716222</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1746977716222</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Provisionary cards support">
+      <option name="closed" value="true" />
+      <created>1747061183082</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1747061183082</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Provisionary cards support">
+      <option name="closed" value="true" />
+      <created>1748032001864</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1748032001864</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -493,16 +571,9 @@
     <MESSAGE value="Mobile devices adjustments" />
     <MESSAGE value="Gemini extensions. Creation of full deck based on text." />
     <MESSAGE value="Refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactoring" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/main.dart</url>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Improvements in card generation flow" />
+    <MESSAGE value="Fixes in deck sharing" />
+    <MESSAGE value="Provisionary cards support" />
+    <option name="LAST_COMMIT_MESSAGE" value="Provisionary cards support" />
   </component>
 </project>

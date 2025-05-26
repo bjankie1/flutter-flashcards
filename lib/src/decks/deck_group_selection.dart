@@ -48,8 +48,19 @@ class _DeckGroupSelectionListState extends State<DeckGroupSelectionList> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return ListView(
       children: [
+        ...groups.map((group) => ListTile(
+              leading: Visibility(
+                visible:
+                    group.decks != null && group.decks!.contains(widget.deckId),
+                child: Icon(Icons.check),
+              ),
+              title: Text(group.name),
+              onTap: () {
+                _toggleDeckInGroup(context, group);
+              },
+            )),
         AddNewDeckGroup(
           deckId: widget.deckId,
           onGroupAdded: (group) {
@@ -57,25 +68,6 @@ class _DeckGroupSelectionListState extends State<DeckGroupSelectionList> {
               groups.add(group);
             });
           },
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: groups.length,
-            itemBuilder: (context, index) {
-              final group = groups[index];
-              return ListTile(
-                leading: Visibility(
-                  visible: group.decks != null &&
-                      group.decks!.contains(widget.deckId),
-                  child: Icon(Icons.check),
-                ),
-                title: Text(group.name),
-                onTap: () {
-                  _toggleDeckInGroup(context, group);
-                },
-              );
-            },
-          ),
         ),
       ],
     );
@@ -133,25 +125,22 @@ class AddNewDeckGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: TextFormField(
-            controller: _controller,
-            decoration: InputDecoration(
-                label: Text(context.l10n.newDeckGroupName),
-                border: OutlineInputBorder(),
-                helperText: context.l10n.newDeckGroupHelper),
-          ),
-        ),
-        IconButton(
-          iconSize: 40,
-          color: Colors.green,
-          onPressed: () => _addGroup(context),
-          icon: Icon(Icons.check),
-        )
-      ],
-    );
+    return ValueListenableBuilder(
+        valueListenable: _controller,
+        builder: (context, value, _) => ListTile(
+            title: TextFormField(
+              controller: _controller,
+              decoration: InputDecoration(
+                  label: Text(context.l10n.newDeckGroupName),
+                  helperText: context.l10n.newDeckGroupHelper),
+              autofocus: true,
+              textInputAction: TextInputAction.done,
+              onFieldSubmitted:
+                  value.text.isEmpty ? null : (_) => _addGroup(context),
+            ),
+            trailing: FilledButton(
+              onPressed: value.text.isEmpty ? null : () => _addGroup(context),
+              child: Text(context.l10n.add),
+            )));
   }
 }

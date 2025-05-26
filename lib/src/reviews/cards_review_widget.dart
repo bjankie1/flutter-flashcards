@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/assets.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
@@ -81,13 +83,9 @@ class _CardsReviewState extends State<CardsReview> {
 /// explanation.
 class ReviewWidget extends StatelessWidget {
   final model.Card card;
-
   final model.CardReviewVariant variant;
-
   final bool answerRevealed;
-
   final Function tapRevealAnswer;
-
   final Function(model.Rating) tapRating;
 
   ReviewWidget(
@@ -99,57 +97,47 @@ class ReviewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: RichTextCard(
-            cardId: card.id,
-            title: context.l10n.questionLabel,
-            text: variant == model.CardReviewVariant.front
-                ? card.question
-                : card.answer,
-            color: Theme.of(context).colorScheme.surfaceContainerLow,
-            imagePlacement: card.questionImageAttached
-                ? model.ImagePlacement.question
-                : null,
-          ),
-        ),
-        Visibility(
-          visible: !answerRevealed,
-          child: RevealAnswerWidget(tapRevealAnswer: tapRevealAnswer),
-        ),
-        Visibility(
-          visible: answerRevealed,
-          child: AnswerCard(card: card, variant: variant),
-        ),
-        Visibility(
-          visible: answerRevealed &&
-              card.explanation != null &&
-              card.explanation != '' &&
-              card.explanation! != card.answer,
-          child: RichTextCard(
-            cardId: card.id,
-            color: Theme.of(context).colorScheme.surfaceContainerLow,
-            title: context.l10n.explanationLabel,
-            text: card.explanation!,
-            imagePlacement: card.explanationImageAttached
-                ? model.ImagePlacement.explanation
-                : null,
-          ),
-        ),
-        Visibility(
-          visible: answerRevealed,
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 30.0, horizontal: 8.0),
-            child: RateAnswer(
-              card: card,
-              onRated: tapRating,
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: 600, maxWidth: 800),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            RichTextCard(
+              cardId: card.id,
+              title: context.l10n.questionLabel,
+              text: variant == model.CardReviewVariant.front
+                  ? card.question
+                  : card.answer,
+              color: Theme.of(context).colorScheme.surfaceContainerLow,
+              imagePlacement: card.questionImageAttached
+                  ? model.ImagePlacement.question
+                  : null,
             ),
-          ),
+            Expanded(
+              child: CardFlipAnimation(
+                key: Key('${card.id}_${variant.name}'),
+                front: RevealAnswerWidget(tapRevealAnswer: tapRevealAnswer),
+                back: AnswerCard(card: card, variant: variant),
+                onFlipped: tapRevealAnswer,
+              ),
+            ),
+            AnimatedOpacity(
+              opacity: answerRevealed ? 1 : 0,
+              duration: Duration(milliseconds: 500),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 30.0, horizontal: 8.0),
+                child: RateAnswer(
+                  key: ValueKey('${card.id}_${variant.name}'),
+                  card: card,
+                  onRated: tapRating,
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
@@ -166,20 +154,36 @@ class AnswerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: CardsContainer(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-              child: GptMarkdown(
-                variant == model.CardReviewVariant.back
-                    ? card.question
-                    : card.answer,
-                style: Theme.of(context).textTheme.headlineLarge,
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: CardsContainer(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Center(
+                child: GptMarkdown(
+                  variant == model.CardReviewVariant.back
+                      ? card.question
+                      : card.answer,
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
               ),
-            ),
+              Visibility(
+                visible: card.explanation != null &&
+                    card.explanation != '' &&
+                    card.explanation! != card.answer,
+                child: RichTextCard(
+                  cardId: card.id,
+                  color: Theme.of(context).colorScheme.surfaceContainerLow,
+                  title: context.l10n.explanationLabel,
+                  text: card.explanation!,
+                  imagePlacement: card.explanationImageAttached
+                      ? model.ImagePlacement.explanation
+                      : null,
+                ),
+              )
+            ],
           ),
         ),
       ),
@@ -197,32 +201,21 @@ class RevealAnswerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-          padding: EdgeInsets.all(4.0),
-          child: AnimatedContainer(
-              duration: const Duration(seconds: 1),
-              curve: Curves.easeIn,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0),
-                  color: context.theme
-                      .extension<ContainersColors>()
-                      ?.mainContainerBackground,
-                ),
-                child: InkWell(
-                  onTap: () {
-                    tapRevealAnswer();
-                  },
-                  child: FittedBox(
-                    child: Text(
-                      '?',
-                      style: TextStyle(fontSize: 30),
-                    ),
-                  ),
-                ),
-              ))),
-    );
+    return Padding(
+        padding: EdgeInsets.all(4.0),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12.0),
+            color: context.theme
+                .extension<ContainersColors>()
+                ?.mainContainerBackground,
+          ),
+          child: FittedBox(
+            child: Text(
+              '?',
+            ),
+          ),
+        ));
   }
 }
 
@@ -231,7 +224,7 @@ class RateAnswer extends StatefulWidget {
 
   final void Function(model.Rating) onRated;
 
-  RateAnswer({required this.card, required this.onRated});
+  RateAnswer({super.key, required this.card, required this.onRated});
 
   @override
   State<RateAnswer> createState() => _RateAnswerState();
@@ -377,6 +370,111 @@ class QuestionAnswerContainer extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class CardFlipAnimation extends StatefulWidget {
+  final Widget front;
+  final Widget back;
+  final Function onFlipped;
+
+  const CardFlipAnimation({
+    super.key,
+    required this.front,
+    required this.back,
+    required this.onFlipped,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _CardFlipAnimationState();
+}
+
+class _CardFlipAnimationState extends State<CardFlipAnimation>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  bool _showFront = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _animation = Tween<double>(begin: 0, end: pi).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOutCubic, // Adjust curve for animation feel
+      ),
+    );
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        // After the animation completes (flipped to back), switch the child
+        setState(() {
+          _showFront = false;
+        });
+      } else if (status == AnimationStatus.dismissed) {
+        // After the animation dismisses (flipped to front), switch the child
+        setState(() {
+          _showFront = true;
+        });
+      }
+    });
+  }
+
+  // @override
+  // void didUpdateWidget(covariant CardFlipAnimation oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //
+  //   if (_showFront == false &&
+  //       (widget.front != oldWidget.front || widget.back != oldWidget.back)) {
+  //     setState(() {
+  //       _showFront = true; // Show the front of the new card
+  //       _controller.reset();
+  //     });
+  //   }
+  // }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void flipCard() {
+    if (_showFront) {
+      _controller.forward(); // Flip to back
+      widget.onFlipped();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        final isHalfway = _animation.value > pi / 2;
+        final currentRotation =
+            isHalfway ? pi - _animation.value : _animation.value;
+
+        // Apply perspective transformation
+        final transform = Matrix4.identity()
+          ..setEntry(3, 2, 0.001) // Perspective
+          ..rotateY(currentRotation); // Rotate around Y-axis
+
+        return GestureDetector(
+          onTap: flipCard, // Flip the card on tap
+          child: Transform(
+            transform: transform,
+            alignment: Alignment.center,
+            child: isHalfway ? widget.back : widget.front, // Show back or front
+          ),
+        );
+      },
     );
   }
 }
