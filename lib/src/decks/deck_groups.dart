@@ -15,41 +15,41 @@ class DeckGroups extends StatelessWidget {
       valueListenable: context.cardRepository.decksGroupUpdated,
       builder: (context, _, __) => RepositoryLoader(
         fetcher: (repository) => repository.loadDecksInGroups(),
-        builder: (context, groups, _) => ListView(
-          children: _groupsWidgets(context, groups),
-        ),
+        builder: (context, groups, _) =>
+            ListView(children: _groupsWidgets(context, groups)),
       ),
     );
   }
 
   _groupsWidgets(BuildContext context, List<(DeckGroup?, List<Deck>)> groups) {
     return [
-      ...groups.map((t) {
-        final (group, decks) = t;
-        return [
-          DeckGroupWidget(group: group, decks: decks),
-        ];
-      }).expand((l) => l),
-      RepositoryLoader(
-          fetcher: (repository) => repository.listSharedDecks(),
-          builder: (context, sharedDecks, _) {
-            return Column(
-              children: sharedDecks.isEmpty
-                  ? []
-                  : [
-                      Text(
-                        context.l10n.sharedDecksHeader,
-                        style: context.textTheme.headlineMedium,
-                      ),
-                      ConstrainedBox(
-                        constraints: BoxConstraints(maxHeight: 200),
-                        child: DeckGroupHorizontalList(
-                            decks:
-                                sharedDecks.values.expand((d) => d).toList()),
-                      ),
-                    ],
-            );
+      ...groups
+          .map((t) {
+            final (group, decks) = t;
+            return [DeckGroupWidget(group: group, decks: decks)];
           })
+          .expand((l) => l),
+      RepositoryLoader(
+        fetcher: (repository) => repository.listSharedDecks(),
+        builder: (context, sharedDecks, _) {
+          return Column(
+            children: sharedDecks.isEmpty
+                ? []
+                : [
+                    Text(
+                      context.l10n.sharedDecksHeader,
+                      style: context.textTheme.headlineMedium,
+                    ),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: 200),
+                      child: DeckGroupHorizontalList(
+                        decks: sharedDecks.values.expand((d) => d).toList(),
+                      ),
+                    ),
+                  ],
+          );
+        },
+      ),
     ];
   }
 }
@@ -80,19 +80,18 @@ class DeckGroupWidget extends StatelessWidget {
                       text: group!.name,
                       style: context.textTheme.headlineMedium,
                       onTextChanged: (value) {
-                        context.cardRepository
-                            .updateDeckGroup(group!.copyWith(name: value));
+                        context.cardRepository.updateDeckGroup(
+                          group!.copyWith(name: value),
+                        );
                       },
                     ),
-              if (group != null)
-                DeckGroupReviewButton(
-                  deckGroup: group!,
-                )
+              if (group != null) DeckGroupReviewButton(deckGroup: group!),
             ],
           ),
           ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 120),
-              child: DeckGroupHorizontalList(decks: decks))
+            constraints: BoxConstraints(maxHeight: 120),
+            child: DeckGroupHorizontalList(decks: decks),
+          ),
         ],
       ),
     );
@@ -107,18 +106,20 @@ class DeckGroupReviewButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryLoader(
-        fetcher: (repository) =>
-            repository.cardsToReviewCount(deckGroupId: deckGroup.id),
-        builder: (context, countStat, _) {
-          final count = countStat.values.fold(0, (p, c) => p + c);
-          return Visibility(
-            visible: count > 0,
-            child: TextButton(
-                onPressed: () async => await context
-                    .push('/study/learn?deckGroupId=${deckGroup.id}'),
-                child: Text(context.l10n.cardsToReview(count))),
-          );
-        });
+      fetcher: (repository) =>
+          repository.cardsToReviewCount(deckGroupId: deckGroup.id),
+      builder: (context, countStat, _) {
+        final count = countStat.values.fold(0, (p, c) => p + c);
+        return Visibility(
+          visible: count > 0,
+          child: TextButton(
+            onPressed: () async =>
+                await context.push('/learn?deckGroupId=${deckGroup.id}'),
+            child: Text(context.l10n.cardsToReview(count)),
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -127,8 +128,12 @@ class EditableText extends StatefulWidget {
   final Function(String) onTextChanged;
   final TextStyle? style;
 
-  const EditableText(
-      {super.key, required this.text, required this.onTextChanged, this.style});
+  const EditableText({
+    super.key,
+    required this.text,
+    required this.onTextChanged,
+    this.style,
+  });
 
   @override
   State<EditableText> createState() => _EditableTextState();
@@ -151,37 +156,39 @@ class _EditableTextState extends State<EditableText> {
         children: [
           Expanded(
             child: TextField(
-                readOnly: !editing,
-                decoration: InputDecoration(border: InputBorder.none),
-                controller: controller,
-                style: widget.style,
-                onTap: () {
-                  setState(() {
-                    editing = true;
-                  });
-                },
-                onTapOutside: (_) {
-                  widget.onTextChanged(controller.text);
-                  setState(() {
-                    editing = false;
-                  });
-                },
-                onSubmitted: (value) {
-                  widget.onTextChanged(value);
-                  setState(() {
-                    editing = false;
-                  });
-                }),
+              readOnly: !editing,
+              decoration: InputDecoration(border: InputBorder.none),
+              controller: controller,
+              style: widget.style,
+              onTap: () {
+                setState(() {
+                  editing = true;
+                });
+              },
+              onTapOutside: (_) {
+                widget.onTextChanged(controller.text);
+                setState(() {
+                  editing = false;
+                });
+              },
+              onSubmitted: (value) {
+                widget.onTextChanged(value);
+                setState(() {
+                  editing = false;
+                });
+              },
+            ),
           ),
           if (editing)
             IconButton(
-                icon: Icon(Icons.check),
-                onPressed: () {
-                  widget.onTextChanged(controller.text);
-                  setState(() {
-                    editing = false;
-                  });
-                })
+              icon: Icon(Icons.check),
+              onPressed: () {
+                widget.onTextChanged(controller.text);
+                setState(() {
+                  editing = false;
+                });
+              },
+            ),
         ],
       ),
     );

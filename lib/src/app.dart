@@ -13,17 +13,18 @@ class FlashcardsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<UserProfile?>(
-        valueListenable: context.appState.userProfile,
-        builder: (context, userProfile, _) => MaterialApp.router(
-              debugShowCheckedModeBanner: false,
-              title: 'Flashcards',
-              theme: getLightThemeFlexColor(),
-              darkTheme: getDarkThemeFlexColor(),
-              themeMode: userProfile?.theme ?? ThemeMode.system,
-              routerConfig: router,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              locale: userProfile?.locale,
-            ));
+      valueListenable: context.appState.userProfile,
+      builder: (context, userProfile, _) => MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        title: 'Flashcards',
+        theme: getLightThemeFlexColor(),
+        darkTheme: getDarkThemeFlexColor(),
+        themeMode: userProfile?.theme ?? ThemeMode.system,
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: userProfile?.locale,
+      ),
+    );
   }
 }

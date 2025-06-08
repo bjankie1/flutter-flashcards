@@ -10,15 +10,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Provisionary cards support">
-      <change beforePath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" beforeDir="false" afterPath="$PROJECT_DIR$/.firebase/hosting.YnVpbGQvd2Vi.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deploy.sh" beforeDir="false" afterPath="$PROJECT_DIR$/deploy.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/cards_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/cards_list.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_details.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_details.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/decks/deck_details_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/decks/deck_details_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/model/cards.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/model/cards.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/reviews/study_cards_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/reviews/study_cards_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/index.html-e" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html-e" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +55,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="12-basic-android-version" />
+        <entry key="$PROJECT_DIR$" value="42-quickly-add-new-card-from-the-dashboard" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -107,64 +108,64 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "AnalyzeApkAction.lastApkPath": "/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards/build/app/outputs/bundle/release/app-release.aab",
-    "Flutter Test.Assign deck to groups.executor": "Run",
-    "Flutter Test.Collaboration Invitations.executor": "Run",
-    "Flutter Test.Decks management.executor": "Run",
-    "Flutter Test.Save and load card stats.executor": "Run",
-    "Flutter Test.Save double-sided card and verify the stats include both sides.executor": "Run",
-    "Flutter Test.Should fail adding deck to a non existing group.executor": "Run",
-    "Flutter Test.Should fail creating deck group with same or invalid name.executor": "Run",
-    "Flutter Test.changeInvitationStatus updates invitation status both users start collaboration.executor": "Run",
-    "Flutter Test.count cards to review for a deck.executor": "Run",
-    "Flutter Test.count cards to review for all decks.executor": "Run",
-    "Flutter Test.grant access and other user incorporates shared deck into learning list.executor": "Run",
-    "Flutter Test.grant access and verify of other user can load deck.executor": "Run",
-    "Flutter Test.grant access to deck.executor": "Run",
-    "Flutter Test.grant permission to stats to user1 and user1 can get list of collaborators.executor": "Run",
-    "Flutter Test.grant permission to stats to user1 and verify if added to /sharing collection.executor": "Run",
-    "Flutter Test.load cards to review for a deck group.executor": "Run",
-    "Flutter Test.load cards to review for a deck.executor": "Run",
-    "Flutter Test.load cards to review when there are no cards yet.executor": "Run",
-    "Flutter Test.rateAnswer records answer and removes card.executor": "Run",
-    "Flutter Test.rating only one card as `again` leaves only this card in the list.executor": "Run",
-    "Flutter Test.tests in firebase_repository_test.dart.executor": "Run",
-    "Flutter Test.tests in iterable_extensios_test.dart.executor": "Run",
-    "Flutter Test.tests in study_session_test.dart.executor": "Run",
-    "Flutter.main.dart.executor": "Run",
-    "ResourceManagerPrefKey.ResourceType": "DRAWABLE",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "ScreenshotViewer.SavePath": "/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards/assets/screenshots/android",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "com.android.tools.idea.streaming.emulator.frame.visible": "false",
-    "com.android.tools.idea.streaming.zoom.toolbar.visible": "false",
-    "com.google.services.firebase.aqiPopupShown": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "#53 on 42-quickly-add-new-card-from-the-dashboard",
-    "io.flutter.reload.alreadyRun": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards/genkit/prompts",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.17",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.intentionPowerPack",
-    "show.migrate.to.gradle.popup": "false",
-    "structure.view.defaults.are.configured": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;AnalyzeApkAction.lastApkPath&quot;: &quot;/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards/build/app/outputs/bundle/release/app-release.aab&quot;,
+    &quot;Flutter Test.Assign deck to groups.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.Collaboration Invitations.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.Decks management.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.Save and load card stats.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.Save double-sided card and verify the stats include both sides.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.Should fail adding deck to a non existing group.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.Should fail creating deck group with same or invalid name.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.changeInvitationStatus updates invitation status both users start collaboration.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.count cards to review for a deck.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.count cards to review for all decks.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.grant access and other user incorporates shared deck into learning list.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.grant access and verify of other user can load deck.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.grant access to deck.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.grant permission to stats to user1 and user1 can get list of collaborators.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.grant permission to stats to user1 and verify if added to /sharing collection.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.load cards to review for a deck group.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.load cards to review for a deck.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.load cards to review when there are no cards yet.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.rateAnswer records answer and removes card.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.rating only one card as `again` leaves only this card in the list.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.tests in firebase_repository_test.dart.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.tests in iterable_extensios_test.dart.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.tests in study_session_test.dart.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart.executor&quot;: &quot;Run&quot;,
+    &quot;ResourceManagerPrefKey.ResourceType&quot;: &quot;DRAWABLE&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;ScreenshotViewer.SavePath&quot;: &quot;/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards/assets/screenshots/android&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;com.android.tools.idea.streaming.emulator.frame.visible&quot;: &quot;false&quot;,
+    &quot;com.android.tools.idea.streaming.zoom.toolbar.visible&quot;: &quot;false&quot;,
+    &quot;com.google.services.firebase.aqiPopupShown&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/bjankiewicz/Documents/flutter-flashcards/flutter_flashcards/genkit/prompts&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
+    &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "TEXT",
-      "Dart",
-      "JSON"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;TEXT&quot;,
+      &quot;Dart&quot;,
+      &quot;JSON&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/genkit/prompts" />
@@ -537,7 +538,15 @@
       <option name="project" value="LOCAL" />
       <updated>1748032001864</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="Provisionary cards support">
+      <option name="closed" value="true" />
+      <created>1748234168467</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1748234168467</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="ToolWindowManager">

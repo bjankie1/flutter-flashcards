@@ -17,10 +17,11 @@ class ContainersColors extends ThemeExtension<ContainersColors> {
   final Color secondaryContainerBackground;
   final Color secondaryContainerFrame;
 
-  const ContainersColors(
-      {required this.mainContainerBackground,
-      required this.secondaryContainerBackground,
-      required this.secondaryContainerFrame});
+  const ContainersColors({
+    required this.mainContainerBackground,
+    required this.secondaryContainerBackground,
+    required this.secondaryContainerFrame,
+  });
 
   @override
   ContainersColors copyWith({
@@ -45,44 +46,58 @@ class ContainersColors extends ThemeExtension<ContainersColors> {
     }
     return ContainersColors(
       mainContainerBackground: Color.lerp(
-          mainContainerBackground, other.mainContainerBackground, t)!,
+        mainContainerBackground,
+        other.mainContainerBackground,
+        t,
+      )!,
       secondaryContainerBackground: Color.lerp(
-          secondaryContainerBackground, other.secondaryContainerBackground, t)!,
+        secondaryContainerBackground,
+        other.secondaryContainerBackground,
+        t,
+      )!,
       secondaryContainerFrame: Color.lerp(
-          secondaryContainerFrame, other.secondaryContainerFrame, t)!,
+        secondaryContainerFrame,
+        other.secondaryContainerFrame,
+        t,
+      )!,
     );
   }
 }
 
 ThemeData getLightThemeFlexColor() {
   return FlexThemeData.light(
-      scheme: FlexScheme.dellGenoa,
-      scaffoldBackground: Color(0xffF5F5DC),
-      useMaterial3: true,
-      extensions: [
-        const ContainersColors(
-            mainContainerBackground: CustomColors.rainee,
-            secondaryContainerBackground: CustomColors.frost,
-            secondaryContainerFrame: CustomColors.orangeFrame)
-      ]);
+    scheme: FlexScheme.dellGenoa,
+    // scaffoldBackground: Color(0xffF5F5DC),
+    useMaterial3: true,
+    extensions: [
+      const ContainersColors(
+        mainContainerBackground: CustomColors.rainee,
+        secondaryContainerBackground: CustomColors.frost,
+        secondaryContainerFrame: CustomColors.orangeFrame,
+      ),
+    ],
+  );
 }
 
 ThemeData getDarkThemeFlexColor() {
   return FlexThemeData.dark(
-      scheme: FlexScheme.dellGenoa,
-      useMaterial3: true,
-      extensions: [
-        const ContainersColors(
-            mainContainerBackground: CustomColors.darkGreen,
-            secondaryContainerBackground: CustomColors.pakistanGreen,
-            secondaryContainerFrame: CustomColors.ashGrey)
-      ]);
+    scheme: FlexScheme.dellGenoa,
+    useMaterial3: true,
+    extensions: [
+      const ContainersColors(
+        mainContainerBackground: CustomColors.darkGreen,
+        secondaryContainerBackground: CustomColors.pakistanGreen,
+        secondaryContainerFrame: CustomColors.ashGrey,
+      ),
+    ],
+  );
 }
 
 extension ColorsGenerator on BuildContext {
   List<Color> chartColors(int count) {
-    final colorScheme =
-        Theme.of(this).colorScheme; // Use current theme's colorScheme
+    final colorScheme = Theme.of(
+      this,
+    ).colorScheme; // Use current theme's colorScheme
 
     // Create an initial list of colors from the colorScheme
     List<Color> baseColors = [

@@ -25,13 +25,23 @@ import 'src/model/repository_provider.dart';
 
 final _log = Logger();
 
+void _setupLogging() {
+  Logger.level = kReleaseMode ? Level.warning : Level.trace;
+  Logger.addOutputListener((event) {
+    for (var line in event.lines) {
+      debugPrint(line); // This will print each formatted line from the printer
+    }
+  });
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  _setupLogging();
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseUIAuth.configureProviders([
     EmailAuthProvider(),
-    GoogleProvider(clientId: DefaultFirebaseOptions.GOOGLE_CLIENT_ID)
+    GoogleProvider(clientId: DefaultFirebaseOptions.GOOGLE_CLIENT_ID),
   ]);
 
   // settings that cause the route to be represented in the URL
@@ -63,11 +73,14 @@ void main() async {
     MultiProvider(
       providers: [
         CardsRepositoryProvider(repository),
-        Provider(create: (context) {
-          return storageService;
-        }),
+        Provider(
+          create: (context) {
+            return storageService;
+          },
+        ),
         ChangeNotifierProvider(
-            create: (context) => AppState(repository, storageService)),
+          create: (context) => AppState(repository, storageService),
+        ),
         ChangeNotifierProvider(create: (context) => DrawerState()),
         Provider(create: (context) => cloudFunctions),
         Provider(create: (context) => appInfo),
@@ -78,8 +91,9 @@ void main() async {
 }
 
 Future<void> _connectFirebaseEmulator() async {
-  final localhost =
-      kIsWeb ? 'localhost' : (Platform.isAndroid ? '10.0.2.2' : 'localhost');
+  final localhost = kIsWeb
+      ? 'localhost'
+      : (Platform.isAndroid ? '10.0.2.2' : 'localhost');
   FirebaseFirestore.instance.useFirestoreEmulator(localhost, 8080);
   await FirebaseAuth.instance.useAuthEmulator(localhost, 9099);
   await FirebaseStorage.instance.useStorageEmulator(localhost, 9199);

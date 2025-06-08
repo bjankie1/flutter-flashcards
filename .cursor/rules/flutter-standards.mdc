@@ -1,0 +1,20 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+- Avoid using type any
+- Create necessary types
+- Don't leave blank lines within a function
+- One export per file
+- Prefer super contructor
+- Use PascalCase for classes.
+- Use camelCase for variables, functions, and methods.
+- Use underscores_case for file and directory names.
+- Avoid magic numbers and define constants.
+- Start each function with a verb.
+- always use package import even for our project files
+Ex: import 'package:apparence_kit/core/data/entities/upload_result.dart';
+- Comply to the always_use_package_imports rule
+- Our package is named apparence_kit
+- DO avoid relative imports for files in lib/

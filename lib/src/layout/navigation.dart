@@ -11,51 +11,36 @@ class Destinations {
   Destinations({required this.context});
 
   List<NavigationDestination> get destinations => [
-        NavigationDestination(
-          icon: Icon(Icons.home),
-          selectedIcon: Icon(
-            Icons.home_filled,
-          ),
-          label: context.l10n.decks,
-        ),
-        NavigationDestination(
-          icon: RepositoryLoader(
-              fetcher: (repository) => repository.cardsToReviewCount().then(
-                  (value) =>
-                      value.values.reduce((total, element) => total + element)),
-              builder: (context, count, _) {
-                return Badge.count(
-                  isLabelVisible: count > 0,
-                  count: count,
-                  child: const Icon(Icons.school_outlined),
-                );
-              }),
-          selectedIcon: Icon(Icons.school),
-          label: context.l10n.learning,
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.show_chart_outlined),
-          selectedIcon: Icon(Icons.show_chart),
-          label: context.l10n.statistics,
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.people_alt_outlined),
-          selectedIcon: Icon(Icons.people_alt),
-          label: context.l10n.collaboration,
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.settings_outlined),
-          selectedIcon: Icon(Icons.settings),
-          label: context.l10n.settings,
-        ),
-      ];
+    NavigationDestination(
+      icon: Icon(Icons.home),
+      selectedIcon: Icon(Icons.home_filled),
+      label: context.l10n.decks,
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.show_chart_outlined),
+      selectedIcon: Icon(Icons.show_chart),
+      label: context.l10n.statistics,
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.people_alt_outlined),
+      selectedIcon: Icon(Icons.people_alt),
+      label: context.l10n.collaboration,
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.settings_outlined),
+      selectedIcon: Icon(Icons.settings),
+      label: context.l10n.settings,
+    ),
+  ];
 
   List<NavigationRailDestination> get navigationRailDestinations => destinations
-      .map((d) => NavigationRailDestination(
-            icon: d.icon,
-            selectedIcon: d.selectedIcon,
-            label: Text(d.label),
-          ))
+      .map(
+        (d) => NavigationRailDestination(
+          icon: d.icon,
+          selectedIcon: d.selectedIcon,
+          label: Text(d.label),
+        ),
+      )
       .toList();
 
   void navigate(int index) {
@@ -63,12 +48,10 @@ class Destinations {
       case 0:
         context.goNamed('decks');
       case 1:
-        context.goNamed('study');
-      case 2:
         context.goNamed('statistics');
-      case 3:
+      case 2:
         context.goNamed('collaboration');
-      case 4:
+      case 3:
         context.goNamed('settings');
     }
   }

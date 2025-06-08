@@ -8,7 +8,6 @@ import 'package:flutter_flashcards/src/decks/deck_details_page.dart';
 import 'package:flutter_flashcards/src/decks/deck_generate_page.dart';
 import 'package:flutter_flashcards/src/decks/decks_page.dart';
 import 'package:flutter_flashcards/src/decks/provisionary_card_complete.dart';
-import 'package:flutter_flashcards/src/reviews/rewiews_landing_page.dart';
 import 'package:flutter_flashcards/src/settings/settings_page.dart';
 import 'package:flutter_flashcards/src/statistics/statistics_page.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
@@ -23,14 +22,13 @@ final _log = Logger();
 enum NamedRoute {
   quickCards,
   learn,
-  study,
   generateCards,
   decks,
   addCard,
   editCard,
   statistics,
   settings,
-  collaboration
+  collaboration,
 }
 
 // Add GoRouter configuration outside the App class
@@ -55,15 +53,14 @@ final router = GoRouter(
               providers: [
                 EmailAuthProvider(),
                 GoogleProvider(
-                    clientId: DefaultFirebaseOptions.GOOGLE_CLIENT_ID),
+                  clientId: DefaultFirebaseOptions.GOOGLE_CLIENT_ID,
+                ),
               ],
               actions: [
                 ForgotPasswordAction(((context, email) {
                   final uri = Uri(
                     path: '/sign-in/forgot-password',
-                    queryParameters: <String, String?>{
-                      'email': email,
-                    },
+                    queryParameters: <String, String?>{'email': email},
                   );
                   context.push(uri.toString());
                 })),
@@ -71,7 +68,7 @@ final router = GoRouter(
                   final user = switch (state) {
                     SignedIn state => state.user,
                     UserCreated state => state.credential.user,
-                    _ => null
+                    _ => null,
                   };
                   if (user == null) {
                     return;
@@ -82,8 +79,10 @@ final router = GoRouter(
                   if (!user.emailVerified) {
                     user.sendEmailVerification();
                     const snackBar = SnackBar(
-                        content: Text(
-                            'Please check your email to verify your email address'));
+                      content: Text(
+                        'Please check your email to verify your email address',
+                      ),
+                    );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
                   context.go('/');
@@ -128,96 +127,88 @@ final router = GoRouter(
           return DecksPage();
         }
         return RepositoryLoader(
-            fetcher: (repository) async => await repository.loadDeck(deckId),
-            builder: (context, deck, _) {
-              if (deck == null) {
-                _log.d('Deck $deckId not found');
-                return Text('Deck not found');
-              }
-              return DeckDetailsPage(
-                deck: deck,
-              );
-            });
+          fetcher: (repository) async => await repository.loadDeck(deckId),
+          builder: (context, deck, _) {
+            if (deck == null) {
+              _log.d('Deck $deckId not found');
+              return Text('Deck not found');
+            }
+            return DeckDetailsPage(deck: deck);
+          },
+        );
       },
       routes: [
         GoRoute(
-            path: '/cards/:cardId',
-            name: NamedRoute.editCard.name,
-            builder: (context, state) {
-              final deckId = state.pathParameters['deckId'];
-              if (deckId == null) {
-                return DecksPage();
-              }
-              final cardId = state.pathParameters['cardId'];
+          path: '/cards/:cardId',
+          name: NamedRoute.editCard.name,
+          builder: (context, state) {
+            final deckId = state.pathParameters['deckId'];
+            if (deckId == null) {
+              return DecksPage();
+            }
+            final cardId = state.pathParameters['cardId'];
 
-              return RepositoryLoader(
-                  fetcher: (repository) async =>
-                      cardId != null && cardId != 'create'
-                          ? await repository.loadCard(cardId)
-                          : null,
-                  builder: (context, card, _) {
-                    if (cardId != null && card == null) {
-                      return Text('Card not found');
-                    }
-                    return CardEditPage(
-                      card: card,
-                      deckId: deckId,
-                    );
-                  });
-            }),
+            return RepositoryLoader(
+              fetcher: (repository) async =>
+                  cardId != null && cardId != 'create'
+                  ? await repository.loadCard(cardId)
+                  : null,
+              builder: (context, card, _) {
+                if (cardId != null && card == null) {
+                  return Text('Card not found');
+                }
+                return CardEditPage(card: card, deckId: deckId);
+              },
+            );
+          },
+        ),
         GoRoute(
-            path: 'add',
-            name: NamedRoute.addCard.name,
-            builder: (context, state) {
-              Logger().i('Creating card');
-              final deckId = state.pathParameters['deckId'];
-              if (deckId == null) {
-                return DecksPage();
-              }
-              return CardEditPage(
-                deckId: deckId,
-              );
-            }),
+          path: 'add',
+          name: NamedRoute.addCard.name,
+          builder: (context, state) {
+            Logger().i('Creating card');
+            final deckId = state.pathParameters['deckId'];
+            if (deckId == null) {
+              return DecksPage();
+            }
+            return CardEditPage(deckId: deckId);
+          },
+        ),
       ],
     ),
     GoRoute(
-        path: '/decks',
-        name: NamedRoute.decks.name,
-        builder: (context, state) {
-          return DecksPage();
-        },
-        routes: []),
+      path: '/decks',
+      name: NamedRoute.decks.name,
+      builder: (context, state) {
+        return DecksPage();
+      },
+      routes: [],
+    ),
     GoRoute(
-        path: '/generate',
-        name: NamedRoute.generateCards.name,
-        builder: (context, state) {
-          final deckId = state.uri.queryParameters['deckId'];
-          Logger().i('Creating deck from text');
-          return DeckGeneratePage(deckId: deckId);
-        }),
+      path: '/generate',
+      name: NamedRoute.generateCards.name,
+      builder: (context, state) {
+        final deckId = state.uri.queryParameters['deckId'];
+        Logger().i('Creating deck from text');
+        return DeckGeneratePage(deckId: deckId);
+      },
+    ),
     GoRoute(
-        path: '/quick-cards',
-        name: NamedRoute.quickCards.name,
-        builder: (context, state) {
-          return ProvisionaryCardsReviewPage();
-        }),
+      path: '/quick-cards',
+      name: NamedRoute.quickCards.name,
+      builder: (context, state) {
+        return ProvisionaryCardsReviewPage();
+      },
+    ),
     GoRoute(
-        path: '/study',
-        name: NamedRoute.study.name,
-        builder: (context, state) {
-          return ReviewsPage();
-        },
-        routes: [
-          GoRoute(
-            path: 'learn',
-            name: NamedRoute.learn.name,
-            builder: (context, state) {
-              final deckId = state.uri.queryParameters['deckId'];
-              final deckGroupId = state.uri.queryParameters['deckGroupId'];
-              return StudyCardsPage(deckId: deckId, deckGroupId: deckGroupId);
-            },
-          ),
-        ]),
+      path: '/learn',
+      name: NamedRoute.learn.name,
+      builder: (context, state) {
+        final deckId = state.uri.queryParameters['deckId'];
+        final deckGroupId = state.uri.queryParameters['deckGroupId'];
+        return StudyCardsPage(deckId: deckId, deckGroupId: deckGroupId);
+      },
+    ),
     GoRoute(
       path: '/statistics',
       name: NamedRoute.statistics.name,

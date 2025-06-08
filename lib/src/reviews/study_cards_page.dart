@@ -19,7 +19,10 @@ class StudyCardsPage extends StatelessWidget {
     return RepositoryLoader(
       fetcher: (repository) async {
         final session = StudySession(
-            repository: repository, deckId: deckId, deckGroupId: deckGroupId);
+          repository: repository,
+          deckId: deckId,
+          deckGroupId: deckGroupId,
+        );
         await session.startStudySession().logError('Error starting session');
         return session;
       },
@@ -27,22 +30,23 @@ class StudyCardsPage extends StatelessWidget {
         if (session.remainingCards == 0) {
           return BaseLayout(
             title: Text(context.l10n.noCardsToLearn),
-            currentPage: PageIndex.learning,
+            currentPage: PageIndex.cards,
             child: Text(context.l10n.noCardsToLearn),
           );
         }
 
         return BaseLayout(
-            title: ListenableBuilder(
-                listenable: session,
-                builder: (context, _) {
-                  return Text(context.l10n
-                      .learnProgressMessage(session.remainingCards));
-                }),
-            currentPage: PageIndex.learning,
-            child: CardsReview(
-              session: session,
-            ));
+          title: ListenableBuilder(
+            listenable: session,
+            builder: (context, _) {
+              return Text(
+                context.l10n.learnProgressMessage(session.remainingCards),
+              );
+            },
+          ),
+          currentPage: PageIndex.cards,
+          child: CardsReview(session: session),
+        );
       },
     );
   }

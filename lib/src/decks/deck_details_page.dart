@@ -33,8 +33,9 @@ class DeckDetailsPage extends StatelessWidget {
             child: Column(
               children: [
                 ValueListenableBuilder(
-                  valueListenable:
-                      context.watch<CardsRepository>().decksUpdated,
+                  valueListenable: context
+                      .watch<CardsRepository>()
+                      .decksUpdated,
                   builder: (context, deckChange, _) => RepositoryLoader(
                     fetcher: (repository) => repository.loadDeck(deck.id!),
                     builder: (context, deck, _) => DeckInformation(deck: deck!),
@@ -58,10 +59,7 @@ class DeckDetailsPage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CardEditPage(
-          deckId: deck.id!,
-          card: card,
-        ),
+        builder: (context) => CardEditPage(deckId: deck.id!, card: card),
       ),
     );
   }

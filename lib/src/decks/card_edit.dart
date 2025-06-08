@@ -68,7 +68,7 @@ class _CardEditState extends State<CardEdit> {
     textChangeNotifier = Listenable.merge([
       cardQuestionTextController,
       cardAnswerTextController,
-      cardHintTextController
+      cardHintTextController,
     ]);
   }
 
@@ -82,133 +82,135 @@ class _CardEditState extends State<CardEdit> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40.0),
-      child: FocusTraversalGroup(
-        policy: OrderedTraversalPolicy(),
-        child: LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CardOptions(
-                      value: learnBothSides,
-                      onChanged: (value) {
-                        setState(() {
-                          learnBothSides = value;
-                        });
-                      }),
+    return Center(
+      child: FractionallySizedBox(
+        widthFactor: 0.5,
+        child: FocusTraversalGroup(
+          policy: OrderedTraversalPolicy(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CardOptions(
+                  value: learnBothSides,
+                  onChanged: (value) {
+                    setState(() {
+                      learnBothSides = value;
+                    });
+                  },
                 ),
-                Expanded(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Input widgets
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            spacing: 8.0,
-                            children: [
-                              MarkdownWithImageInput(
-                                  controller: cardQuestionTextController,
-                                  focusOrder: 1,
-                                  hintText: context.l10n.questionHint,
-                                  labelText: context.l10n.questionLabel,
-                                  imagePlacement: model.ImagePlacement.question,
-                                  onImageUpload: _uploadImage),
-                              _answerInput(),
-                              MarkdownWithImageInput(
-                                  controller: cardHintTextController,
-                                  focusOrder: 3,
-                                  hintText: context.l10n.hintPrompt,
-                                  labelText: context.l10n.hintLabel,
-                                  imagePlacement:
-                                      model.ImagePlacement.explanation,
-                                  onImageUpload: _uploadImage),
-                            ],
-                          ),
-                        ),
-                      ),
-                      // Preview widgets
-                      if (constraints.maxWidth > 600)
-                        ListenableBuilder(
-                          listenable: textChangeNotifier,
-                          builder: (context, value) => CardPreview(
-                              cardQuestion: cardQuestionTextController.text,
-                              cardAnswer: cardAnswerTextController.text,
-                              cardHint: cardHintTextController.text,
-                              questionImageAttached: questionImageAttached,
-                              explanationImageAttached:
-                                  explanationImageAttached,
-                              cardId: cardId),
-                        )
-                    ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    MarkdownWithImageInput(
+                      controller: cardQuestionTextController,
+                      focusOrder: 1,
+                      hintText: context.l10n.questionHint,
+                      labelText: context.l10n.questionLabel,
+                      imagePlacement: model.ImagePlacement.question,
+                      onImageUpload: _uploadImage,
+                    ),
+                    const SizedBox(height: 16),
+                    ValueListenableBuilder(
+                      valueListenable: cardQuestionTextController,
+                      builder: (context, value, _) {
+                        return _GenerateAnswerButton(
+                          deck: widget.deck,
+                          question: value.text,
+                          onAnswer: (answer, hint) {
+                            cardAnswerTextController.text = answer;
+                            cardHintTextController.text = hint;
+                          },
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _answerInput(),
+                    const SizedBox(height: 16),
+                    MarkdownWithImageInput(
+                      controller: cardHintTextController,
+                      focusOrder: 3,
+                      hintText: context.l10n.hintPrompt,
+                      labelText: context.l10n.hintLabel,
+                      imagePlacement: model.ImagePlacement.explanation,
+                      onImageUpload: _uploadImage,
+                    ),
+                  ],
+                ),
+              ),
+              CardEditActions(
+                onSave: () async => _saveCard(context),
+                onSaveAndAddNext: () async => _saveCard(context, addNew: true),
+                isNewCard: widget.card?.id == null,
+              ),
+              const SizedBox(height: 24),
+              ListenableBuilder(
+                listenable: textChangeNotifier,
+                builder: (context, value) => Card(
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 0,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: CardPreview(
+                      cardQuestion: cardQuestionTextController.text,
+                      cardAnswer: cardAnswerTextController.text,
+                      cardHint: cardHintTextController.text,
+                      questionImageAttached: questionImageAttached,
+                      explanationImageAttached: explanationImageAttached,
+                      cardId: cardId,
+                    ),
                   ),
                 ),
-                CardEditActions(
-                    onSave: () async => _saveCard(context),
-                    onSaveAndAddNext: () async =>
-                        _saveCard(context, addNew: true),
-                    isNewCard: widget.card?.id == null)
-              ],
-            );
-          },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _answerInput() {
-    return Expanded(
-      child: Row(
-        children: [
-          Expanded(
-            child: FocusTraversalOrder(
-              order: const NumericFocusOrder(2),
-              child: TextFormField(
-                maxLines: 4,
-                controller: cardAnswerTextController,
-                decoration: InputDecoration(
-                    hintText: context.l10n.answerHint,
-                    labelText: context.l10n.answerLabel,
-                    border: OutlineInputBorder()),
-              ),
-            ),
-          ),
-          ValueListenableBuilder(
-              valueListenable: cardQuestionTextController,
-              builder: (context, value, _) {
-                return _GenerateAnswerButton(
-                    deck: widget.deck,
-                    question: value.text,
-                    onAnswer: (answer, hint) {
-                      cardAnswerTextController.text = answer;
-                      cardHintTextController.text = hint;
-                    });
-              })
-        ],
+    return FocusTraversalOrder(
+      order: const NumericFocusOrder(2),
+      child: TextFormField(
+        minLines: 1,
+        maxLines: 4,
+        controller: cardAnswerTextController,
+        decoration: InputDecoration(
+          hintText: context.l10n.answerHint,
+          labelText: context.l10n.answerLabel,
+          border: OutlineInputBorder(),
+        ),
       ),
     );
   }
 
   void _saveCard(BuildContext context, {bool addNew = false}) async {
     final cardToSave = model.Card(
-        id: cardId,
-        deckId: widget.deck.id!,
-        question: cardQuestionTextController.text,
-        answer: cardAnswerTextController.text,
-        explanation: cardHintTextController.text,
-        questionImageAttached: questionImageAttached,
-        explanationImageAttached: explanationImageAttached,
-        options: model.CardOptions(learnBothSides: learnBothSides));
+      id: cardId,
+      deckId: widget.deck.id!,
+      question: cardQuestionTextController.text,
+      answer: cardAnswerTextController.text,
+      explanation: cardHintTextController.text,
+      questionImageAttached: questionImageAttached,
+      explanationImageAttached: explanationImageAttached,
+      options: model.CardOptions(learnBothSides: learnBothSides),
+    );
 
-    await context.cardRepository.saveCard(cardToSave).then(
-        (value) => context.showInfoSnackbar(context.l10n.cardSavedMessage),
-        onError: (e) =>
-            context.showErrorSnackbar(context.l10n.cardSavingErrorMessage));
+    await context.cardRepository
+        .saveCard(cardToSave)
+        .then(
+          (value) => context.showInfoSnackbar(context.l10n.cardSavedMessage),
+          onError: (e) =>
+              context.showErrorSnackbar(context.l10n.cardSavingErrorMessage),
+        );
     if (addNew) {
       reset();
     } else {
@@ -262,44 +264,45 @@ class MarkdownWithImageInput extends StatelessWidget {
 
   final Function(model.ImagePlacement) onImageUpload;
 
-  MarkdownWithImageInput(
-      {required this.controller,
-      required this.focusOrder,
-      required this.hintText,
-      required this.labelText,
-      required this.imagePlacement,
-      required this.onImageUpload});
+  MarkdownWithImageInput({
+    required this.controller,
+    required this.focusOrder,
+    required this.hintText,
+    required this.labelText,
+    required this.imagePlacement,
+    required this.onImageUpload,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      flex: 2,
-      child: Stack(
-        alignment: Alignment.topRight,
-        children: [
-          FocusTraversalOrder(
-              order: NumericFocusOrder(focusOrder),
-              child: TextFormField(
-                expands: true,
-                maxLines: null,
-                minLines: null,
-                textAlignVertical: TextAlignVertical.top,
-                controller: controller,
-                decoration: InputDecoration(
-                    hintText: hintText,
-                    labelText: labelText,
-                    border: OutlineInputBorder()),
-              )),
-          Positioned(
-            top: 8,
-            right: 8,
-            child: IconButton.filled(
-              onPressed: () => onImageUpload(imagePlacement),
-              icon: Icon(Icons.image),
+    return Stack(
+      alignment: Alignment.topRight,
+      children: [
+        FocusTraversalOrder(
+          order: NumericFocusOrder(focusOrder),
+          child: TextFormField(
+            maxLines: null,
+            minLines: 1,
+            textAlignVertical: TextAlignVertical.top,
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: hintText,
+              labelText: labelText,
+              border: OutlineInputBorder(),
             ),
-          )
-        ],
-      ),
+          ),
+        ),
+        Positioned(
+          top: 4,
+          right: 4,
+          child: IconButton.filledTonal(
+            onPressed: () => onImageUpload(imagePlacement),
+            icon: Icon(Icons.image, size: 18),
+            iconSize: 20,
+            padding: EdgeInsets.all(4),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -309,33 +312,39 @@ class CardEditActions extends StatelessWidget {
   final VoidCallback onSaveAndAddNext;
   final bool isNewCard;
 
-  const CardEditActions(
-      {super.key,
-      required this.onSave,
-      required this.onSaveAndAddNext,
-      required this.isNewCard});
+  const CardEditActions({
+    super.key,
+    required this.onSave,
+    required this.onSaveAndAddNext,
+    required this.isNewCard,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          spacing: 8.0,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            OutlinedButton(
-                onPressed: () => context.pop(),
-                child: Text(context.ml10n.cancelButtonLabel)),
-            FilledButton(
-                onPressed: onSave, child: Text(context.ml10n.saveButtonLabel)),
-            Visibility(
-              visible: isNewCard,
-              child: FilledButton(
-                  onPressed: onSaveAndAddNext,
-                  child: Text(context.l10n.saveAndNext)),
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        spacing: 8.0,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          OutlinedButton(
+            onPressed: () => context.pop(),
+            child: Text(context.ml10n.cancelButtonLabel),
+          ),
+          FilledButton(
+            onPressed: onSave,
+            child: Text(context.ml10n.saveButtonLabel),
+          ),
+          Visibility(
+            visible: isNewCard,
+            child: FilledButton(
+              onPressed: onSaveAndAddNext,
+              child: Text(context.l10n.saveAndNext),
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -347,17 +356,16 @@ class CardOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            Text(context.l10n.cardOptionDoubleSided),
-            FocusTraversalOrder(
-                order: const NumericFocusOrder(0),
-                child: Switch(value: value, onChanged: onChanged))
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Text(context.l10n.cardOptionDoubleSided),
+          FocusTraversalOrder(
+            order: const NumericFocusOrder(0),
+            child: Switch(value: value, onChanged: onChanged),
+          ),
+        ],
       ),
     );
   }
@@ -380,50 +388,93 @@ class _GenerateAnswerButton extends StatefulWidget {
 
 class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
   bool _isLoading = false;
+  String? _loadingType; // 'answer', 'answerHint', or null
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-        onPressed: _isLoading ? null : processLoading,
-        icon: _isLoading
-            ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                ),
-              )
-            : Icon(Icons.generating_tokens));
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ElevatedButton.icon(
+            onPressed: _loadingType != null
+                ? null
+                : () => processLoading(includeHint: false),
+            icon: _loadingType == 'answer'
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.generating_tokens),
+            label: Text(
+              _loadingType == 'answer' ? 'Generating...' : 'Generate Answer',
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton.icon(
+            onPressed: _loadingType != null
+                ? null
+                : () => processLoading(includeHint: true),
+            icon: _loadingType == 'answerHint'
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.generating_tokens),
+            label: Text(
+              _loadingType == 'answerHint'
+                  ? 'Generating...'
+                  : 'Generate Answer & Hint',
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   loadAnswer() async {
-    final category = widget.deck.category ??
+    final category =
+        widget.deck.category ??
         await context.cloudFunctions.deckCategory(
           widget.deck.name,
           widget.deck.description ?? '',
         );
     // persist the category in case it wasn't attached to deck earlier
     if (widget.deck.category == null) {
-      await context.cardRepository
-          .saveDeck(widget.deck.copyWith(category: category));
+      await context.cardRepository.saveDeck(
+        widget.deck.copyWith(category: category),
+      );
     }
-    return await context.cloudFunctions.generateCardAnswer(category,
-        widget.deck.name, widget.deck.description ?? '', widget.question);
+    return await context.cloudFunctions.generateCardAnswer(
+      category,
+      widget.deck.name,
+      widget.deck.description ?? '',
+      widget.question,
+    );
   }
 
-  void processLoading() async {
+  void processLoading({required bool includeHint}) async {
     setState(() {
       _isLoading = true;
+      _loadingType = includeHint ? 'answerHint' : 'answer';
     });
     try {
-      await loadAnswer().then((result) {
-        widget.onAnswer(result.answer, result.explanation);
-      }, onError: (e) {
-        context.showErrorSnackbar('Error generating answer: $e');
-      });
+      await loadAnswer().then(
+        (result) {
+          widget.onAnswer(result.answer, includeHint ? result.explanation : '');
+        },
+        onError: (e) {
+          context.showErrorSnackbar('Error generating answer: $e');
+        },
+      );
     } finally {
       setState(() {
         _isLoading = false;
+        _loadingType = null;
       });
     }
   }
@@ -437,10 +488,11 @@ class MarkdownPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-        valueListenable: controller,
-        builder: (context, value, _) {
-          return GptMarkdown(value.text);
-        });
+      valueListenable: controller,
+      builder: (context, value, _) {
+        return GptMarkdown(value.text);
+      },
+    );
   }
 }
 
@@ -454,25 +506,28 @@ class ImagePreview extends StatelessWidget {
 
   final String cardId;
 
-  const ImagePreview(
-      {this.height = 200.0,
-      required this.imagePlacement,
-      required this.questionImageAttached,
-      required this.explanationImageAttached,
-      required this.cardId});
+  const ImagePreview({
+    this.height = 200.0,
+    required this.imagePlacement,
+    required this.questionImageAttached,
+    required this.explanationImageAttached,
+    required this.cardId,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Visibility(
-        visible: imagePlacement == model.ImagePlacement.question &&
-                questionImageAttached ||
-            imagePlacement == model.ImagePlacement.explanation &&
-                explanationImageAttached,
-        child: CardImage(
-          cardId: cardId,
-          placement: imagePlacement,
-          height: height,
-        ));
+      visible:
+          imagePlacement == model.ImagePlacement.question &&
+              questionImageAttached ||
+          imagePlacement == model.ImagePlacement.explanation &&
+              explanationImageAttached,
+      child: CardImage(
+        cardId: cardId,
+        placement: imagePlacement,
+        height: height,
+      ),
+    );
   }
 }
 
@@ -484,57 +539,45 @@ class CardPreview extends StatelessWidget {
   final bool explanationImageAttached;
   final String cardId;
 
-  const CardPreview(
-      {super.key,
-      required this.cardQuestion,
-      required this.cardAnswer,
-      required this.cardHint,
-      required this.questionImageAttached,
-      required this.explanationImageAttached,
-      required this.cardId});
+  const CardPreview({
+    super.key,
+    required this.cardQuestion,
+    required this.cardAnswer,
+    required this.cardHint,
+    required this.questionImageAttached,
+    required this.explanationImageAttached,
+    required this.cardId,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 8.0,
-          children: [
-            Expanded(
-              flex: 2,
-              child: Column(
-                children: [
-                  GptMarkdown(cardQuestion),
-                  ImagePreview(
-                    imagePlacement: model.ImagePlacement.question,
-                    questionImageAttached: questionImageAttached,
-                    explanationImageAttached: explanationImageAttached,
-                    cardId: cardId,
-                  ),
-                ],
-              ),
-            ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GptMarkdown(cardQuestion),
+          ImagePreview(
+            imagePlacement: model.ImagePlacement.question,
+            questionImageAttached: questionImageAttached,
+            explanationImageAttached: explanationImageAttached,
+            cardId: cardId,
+          ),
+          const SizedBox(height: 8),
+          Divider(),
+          GptMarkdown(cardAnswer),
+          const SizedBox(height: 8),
+          if (cardHint.trim().isNotEmpty) ...[
             Divider(),
-            Expanded(child: GptMarkdown(cardAnswer)),
-            Divider(),
-            Expanded(
-              flex: 2,
-              child: Column(
-                children: [
-                  GptMarkdown(cardHint),
-                  ImagePreview(
-                    imagePlacement: model.ImagePlacement.explanation,
-                    questionImageAttached: questionImageAttached,
-                    explanationImageAttached: explanationImageAttached,
-                    cardId: cardId,
-                  ),
-                ],
-              ),
+            Text(cardHint, style: Theme.of(context).textTheme.bodySmall),
+            ImagePreview(
+              imagePlacement: model.ImagePlacement.explanation,
+              questionImageAttached: questionImageAttached,
+              explanationImageAttached: explanationImageAttached,
+              cardId: cardId,
             ),
           ],
-        ),
+        ],
       ),
     );
   }

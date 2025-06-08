@@ -1,109 +1,102 @@
-# flutter_flashcards
+# Apprende flashcards application
 
-## LLM features
+## Core Features
 
-There is a potential of leveraging LLM features in areas of cards creation and evaluation.
+### Deck Management
+- Create, edit, and delete decks - Organize your learning materials into customizable collections of flashcards.
+- Organize decks into groups for better management - Group related decks together to maintain a structured learning environment.
+- Set deck options:
+  - Daily card limit - Control how many cards you review each day to maintain a sustainable learning pace.
+  - New cards daily limit - Manage the introduction of new cards to prevent overwhelming your learning schedule.
+  - Maximum review interval - Set the longest time between reviews to ensure consistent learning progress.
+- Deck sharing and collaboration:
+  - Share decks with other users - Distribute your learning materials with students, colleagues, or study groups.
+  - Grant read-only access to decks - Allow others to use your decks while maintaining control over modifications.
+  - Revoke access to shared decks - Remove access when collaboration is no longer needed.
+  - View list of users with access to your decks - Keep track of who has access to your learning materials.
 
-Some potential features include:
+### Card Creation
+- Create single-sided and double-sided cards - Choose between simple question-answer cards or bidirectional learning cards.
+- Generate cards from text input - Paste any text content and let the AI analyze it to create relevant flashcards, extracting key concepts and their explanations.
+- Quick card creation mode for rapid entry - Capture new words or concepts on the go with a streamlined single-word/phrase input. These quick notes are stored in a dedicated inbox where you can later transform them into proper flashcards by adding the second side (definition, explanation, or translation). Perfect for reading sessions when you want to quickly note unfamiliar terms without interrupting your flow.
+- Edit existing cards - Modify card content, format, or settings at any time.
+- Move cards between decks - Reorganize your learning materials by transferring cards between different decks.
+- Delete cards - Remove unnecessary or outdated cards from your collection.
 
-- suggest answer when creating cards
-- create a deck based on a text such as an uploaded PDF or Google Doc
-- evaluate answer input
+### Review System
+- Spaced repetition system (FSRS) for optimal learning - Advanced algorithm that adapts to your learning patterns to maximize retention.
+- Review cards based on:
+  - New cards - Start learning fresh content
+  - Learning cards - Reinforce recently introduced concepts
+  - Review cards - Maintain knowledge of well-learned material
+  - Relearning cards - Recover forgotten information
+- Track review progress per card and deck - Monitor your learning journey with detailed progress indicators.
+- Review cards by:
+  - Individual deck - Focus on specific topics
+  - Deck group - Study related subjects together
+  - All decks - Comprehensive review of all materials
+- Record review ratings and time spent - Analyze your learning efficiency and identify areas for improvement.
 
-## Collaboration features
+### Statistics and Progress Tracking
+- View review statistics:
+  - Number of cards reviewed - Track your daily and overall learning activity.
+  - Time spent reviewing - Monitor your study time to maintain a balanced learning schedule.
+  - Success rate - Measure your learning effectiveness and identify challenging areas.
+- Track progress by:
+  - Individual deck - Monitor performance in specific subjects.
+  - Deck group - Evaluate progress across related topics.
+  - Overall progress - Get a comprehensive view of your learning journey.
+- Share statistics with other users (e.g., teachers, parents) - Enable others to monitor and support your learning progress.
+- Visual representation of progress through charts - Easily understand your learning patterns through intuitive graphs and visualizations.
 
-### Collaborators
+### Collaboration Features
+- User roles and permissions:
+  - Deck owner - Full control over deck content and sharing settings.
+  - Collaborator with read access - View and use shared decks without modification rights.
+  - Statistics viewer - Monitor learning progress without access to deck content.
+- Share decks with other users - Enable collaborative learning environments.
+- Share progress statistics - Allow mentors or teachers to track learning outcomes.
+- Manage access permissions - Control who can view or use your learning materials.
+- View shared decks from other users - Access learning materials shared by collaborators.
 
-User can add multiple other users as collaborators.
-Collaborator can be granted permissions to:
+## Technical Features
 
-- view statistics (e.g. parent, teacher)
-- access all decks
-- modify and add decks
+### Data Management
+- Firebase Firestore for data storage - Reliable and scalable cloud database for storing all application data.
+- Real-time synchronization - Instant updates across all devices and users.
+- Offline support - Continue learning even without internet connection.
+- Secure access control through Firebase Rules - Protect user data with robust security measures.
 
-#### Document structure:
+### User Interface
+- Modern, responsive design - Clean and intuitive interface that works on any device.
+- Intuitive navigation - Easy access to all features with minimal learning curve.
+- Dark/light theme support - Choose your preferred visual style for comfortable learning.
+- Mobile-first approach - Optimized experience for learning on the go.
 
-The document structure needs to enable the following operations effectively:
+## Future Features
 
-Granting user:
+### LLM Integration
+- AI-powered card creation suggestions - Get intelligent recommendations for card content based on your learning goals.
+- Automated deck generation from text - Transform any text material into a structured set of flashcards.
+- Answer evaluation and feedback - Receive AI-powered assessment of your answers and personalized improvement suggestions.
 
-- fetch all shared resources including the receiving user information.
-- Revoke grant for single resource.
-
-Receiving user:
-
-- fetch all shared resources including the granting user information.
-- secure access to shared resources based on the grant collection structure.
-
-Therefore both the resource identifier and receiving user need to be part of the document path.
-
-The structure proposal:
-
-`sharing/{userId}/resourceType/{resourceId}/grantedTo/{receivingUserId}`
-
-where `resourceType` sub-collection is one of:
-
-- `sharedDecks` - read-only access to decks. `resourceId = deckId`
-- `sharedStats` - access to progress statistics (`reviewLog`) of the user.
-  `resourceId = 'stats'`
-
-Documents need to include the following field to enable querying:
-
-- `grantedTo` - receiving userId
-
-It will not be possible to fetch information for single resource (ia. deck) due to Firebase
-limitation of such structure. At the same time it will be possible to fetch all grants of a user
-which is sufficient.
-It will be also possible to fetch information for the receiving user using `collectionGroup`
-query.
-
-**Operations execution:**
-
-Granting user - fetch all shared resources:
-
-```
-collection: sharing/{userId}/sharedDecks
-collection: sharing/{userId}/sharedStats
-```
-
-Receiving user:
-
-```
-collectionGroup: sharedDecks {grantedTo == userId}
-security rule:
-  read: decks/{userId}/userDecks/{deckId} if exists(shared/$(userId)/sharedDecks/$(deckId)/grantedTo/{request.auth.uid})
-  write: shared/{userId}/sharedDecks/{deckId} if isAuthor(userId) && ownDeck(deckId)
-
-collectionGroup: sharedStats {grantedTo == userId}
-security rule: 
-```
-
-### Classrooms
-
-Classrooms are managed by a teacher who can also delegate the management to other users.
-Teacher can add decks to a classroom and group them into categories.
-Person can join a classroom having an access to all decks defined there.
-Classroom shows separate statistics for a user and teacher.
-
-## Open issues
-
-https://github.com/bjankie1/flutter-flashcards/issues?q=is%3Aopen+is%3Aissue
+### Marketplace
+- Deck marketplace for sharing and selling decks - Create and distribute premium learning materials.
+- Subscription system for premium features - Access advanced features and exclusive content through subscription plans.
 
 ## Deployment
 
 Region: europe-central2
 
 Deployable artifacts:
+- Flutter Web to Firebase hosting - Web application accessible from any browser.
+- Functions to Firebase Functions - Serverless backend for handling complex operations.
+- Indexes and rules to Firebase Firestore - Optimized database structure for efficient queries.
+- Storage rules to Firebase Storage - Secure file storage for learning materials.
 
-- Flutter Web to Firebase hosting
-- Functions to Firebase Functions
-- Indexes and rules to Firebase firestore
-- Storage rules to Firebase Storage
-
-In future:
-
-- Android binary
-- iOS binary
+Future deployments:
+- Android binary - Native mobile application for Android devices.
+- iOS binary - Native mobile application for iOS devices.
 
 ### Marketplace and subscriptions
 

@@ -33,17 +33,23 @@ class _CardsReviewState extends State<CardsReview> {
         _answerRevealed = false;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
           backgroundColor: Theme.of(context).colorScheme.errorContainer,
           content: Row(
             children: [
               const Icon(Icons.warning_amber_rounded, color: Colors.white),
               const SizedBox(width: 8),
-              Text('Error recording answer',
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onErrorContainer)),
+              Text(
+                'Error recording answer',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onErrorContainer,
+                ),
+              ),
             ],
-          )));
+          ),
+        ),
+      );
     }
   }
 
@@ -56,20 +62,21 @@ class _CardsReviewState extends State<CardsReview> {
         if (current != null) {
           final (variant, card) = current;
           return ReviewWidget(
-              card: card,
-              variant: variant,
-              answerRevealed: _answerRevealed,
-              tapRevealAnswer: revealAnswer,
-              tapRating: (rating) => recordAnswerRating(context, rating));
+            card: card,
+            variant: variant,
+            answerRevealed: _answerRevealed,
+            tapRevealAnswer: revealAnswer,
+            tapRating: (rating) => recordAnswerRating(context, rating),
+          );
         }
         return Column(
           children: [
-            Text(context.l10n.allCardsReviewedMessage,
-                style: Theme.of(context).textTheme.headlineLarge),
+            Text(
+              context.l10n.allCardsReviewedMessage,
+              style: Theme.of(context).textTheme.headlineLarge,
+            ),
             Expanded(
-              child: Center(
-                child: Image(image: celebrationImage),
-              ),
+              child: Center(child: Image(image: celebrationImage)),
             ),
           ],
         );
@@ -88,12 +95,13 @@ class ReviewWidget extends StatelessWidget {
   final Function tapRevealAnswer;
   final Function(model.Rating) tapRating;
 
-  ReviewWidget(
-      {required this.card,
-      required this.variant,
-      required this.answerRevealed,
-      required this.tapRevealAnswer,
-      required this.tapRating});
+  ReviewWidget({
+    required this.card,
+    required this.variant,
+    required this.answerRevealed,
+    required this.tapRevealAnswer,
+    required this.tapRating,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -126,8 +134,10 @@ class ReviewWidget extends StatelessWidget {
               opacity: answerRevealed ? 1 : 0,
               duration: Duration(milliseconds: 500),
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 30.0, horizontal: 8.0),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 30.0,
+                  horizontal: 8.0,
+                ),
                 child: RateAnswer(
                   key: ValueKey('${card.id}_${variant.name}'),
                   card: card,
@@ -146,11 +156,7 @@ class AnswerCard extends StatelessWidget {
   final model.Card card;
   final model.CardReviewVariant variant;
 
-  const AnswerCard({
-    super.key,
-    required this.card,
-    required this.variant,
-  });
+  const AnswerCard({super.key, required this.card, required this.variant});
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +176,8 @@ class AnswerCard extends StatelessWidget {
                 ),
               ),
               Visibility(
-                visible: card.explanation != null &&
+                visible:
+                    card.explanation != null &&
                     card.explanation != '' &&
                     card.explanation! != card.answer,
                 child: RichTextCard(
@@ -182,7 +189,7 @@ class AnswerCard extends StatelessWidget {
                       ? model.ImagePlacement.explanation
                       : null,
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -192,36 +199,29 @@ class AnswerCard extends StatelessWidget {
 }
 
 class RevealAnswerWidget extends StatelessWidget {
-  const RevealAnswerWidget({
-    super.key,
-    required this.tapRevealAnswer,
-  });
+  const RevealAnswerWidget({super.key, required this.tapRevealAnswer});
 
   final Function tapRevealAnswer;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.all(4.0),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.0),
-            color: context.theme
-                .extension<ContainersColors>()
-                ?.mainContainerBackground,
-          ),
-          child: FittedBox(
-            child: Text(
-              '?',
-            ),
-          ),
-        ));
+      padding: EdgeInsets.all(4.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.0),
+          color: context.theme
+              .extension<ContainersColors>()
+              ?.mainContainerBackground,
+        ),
+        child: FittedBox(child: Text('?')),
+      ),
+    );
   }
 }
 
 class RateAnswer extends StatefulWidget {
   final model.Card card;
-
   final void Function(model.Rating) onRated;
 
   RateAnswer({super.key, required this.card, required this.onRated});
@@ -233,42 +233,121 @@ class RateAnswer extends StatefulWidget {
 class _RateAnswerState extends State<RateAnswer> {
   model.Rating? _reviewRate;
 
+  Color _getRatingColor(BuildContext context, model.Rating rating) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    switch (rating) {
+      case model.Rating.again:
+        return isDark ? Colors.red.shade900 : Colors.red.shade300;
+      case model.Rating.hard:
+        return isDark ? Colors.orange.shade900 : Colors.orange.shade300;
+      case model.Rating.good:
+        return isDark ? Colors.blue.shade900 : Colors.blue.shade300;
+      case model.Rating.easy:
+        return isDark ? Colors.green.shade900 : Colors.green.shade300;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final textStyle = context.isMobile ? null : context.textTheme.displaySmall;
-    return SegmentedButton<model.Rating>(
-      emptySelectionAllowed: true,
-      segments: [
-        ButtonSegment<model.Rating>(
-            value: model.Rating.again,
-            label: Text(
-              context.l10n.rateAgainLabel,
-              style: textStyle,
-            )),
-        ButtonSegment<model.Rating>(
-            value: model.Rating.hard,
-            label: Text(
-              context.l10n.rateHardLabel,
-              style: textStyle,
-            )),
-        ButtonSegment<model.Rating>(
-            value: model.Rating.good,
-            label: Text(
-              context.l10n.rateGoodLabel,
-              style: textStyle,
-            )),
-        ButtonSegment<model.Rating>(
-            value: model.Rating.easy,
-            label: Text(
-              context.l10n.rateEasyLabel,
-              style: textStyle,
-            )),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _RatingButton(
+          rating: model.Rating.again,
+          label: context.l10n.rateAgainLabel,
+          textStyle: textStyle,
+          color: _getRatingColor(context, model.Rating.again),
+          isSelected: _reviewRate == model.Rating.again,
+          onTap: () {
+            setState(() => _reviewRate = model.Rating.again);
+            widget.onRated(model.Rating.again);
+          },
+        ),
+        const SizedBox(width: 8),
+        _RatingButton(
+          rating: model.Rating.hard,
+          label: context.l10n.rateHardLabel,
+          textStyle: textStyle,
+          color: _getRatingColor(context, model.Rating.hard),
+          isSelected: _reviewRate == model.Rating.hard,
+          onTap: () {
+            setState(() => _reviewRate = model.Rating.hard);
+            widget.onRated(model.Rating.hard);
+          },
+        ),
+        const SizedBox(width: 8),
+        _RatingButton(
+          rating: model.Rating.good,
+          label: context.l10n.rateGoodLabel,
+          textStyle: textStyle,
+          color: _getRatingColor(context, model.Rating.good),
+          isSelected: _reviewRate == model.Rating.good,
+          onTap: () {
+            setState(() => _reviewRate = model.Rating.good);
+            widget.onRated(model.Rating.good);
+          },
+        ),
+        const SizedBox(width: 8),
+        _RatingButton(
+          rating: model.Rating.easy,
+          label: context.l10n.rateEasyLabel,
+          textStyle: textStyle,
+          color: _getRatingColor(context, model.Rating.easy),
+          isSelected: _reviewRate == model.Rating.easy,
+          onTap: () {
+            setState(() => _reviewRate = model.Rating.easy);
+            widget.onRated(model.Rating.easy);
+          },
+        ),
       ],
-      selected: _reviewRate != null ? {_reviewRate!} : {},
-      onSelectionChanged: (value) async {
-        setState(() => _reviewRate = value.first);
-        widget.onRated(_reviewRate!);
-      },
+    );
+  }
+}
+
+class _RatingButton extends StatelessWidget {
+  final model.Rating rating;
+  final String label;
+  final TextStyle? textStyle;
+  final Color color;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _RatingButton({
+    required this.rating,
+    required this.label,
+    required this.textStyle,
+    required this.color,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ElevatedButton(
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: theme.colorScheme.onSurface,
+        elevation: isSelected ? 3 : 1,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        minimumSize: const Size(120, 48),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        side: BorderSide(
+          color: isSelected
+              ? theme.colorScheme.outline
+              : theme.colorScheme.outline.withOpacity(0.5),
+          width: isSelected ? 2 : 1,
+        ),
+      ),
+      child: Text(
+        label,
+        style: textStyle?.copyWith(
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          color: theme.colorScheme.onSurface,
+        ),
+      ),
     );
   }
 }
@@ -333,7 +412,7 @@ class RichTextCard extends StatelessWidget {
                       ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -350,11 +429,12 @@ class QuestionAnswerContainer extends StatelessWidget {
 
   final Function onTap;
 
-  const QuestionAnswerContainer(
-      {super.key,
-      required this.color,
-      required this.text,
-      required this.onTap});
+  const QuestionAnswerContainer({
+    super.key,
+    required this.color,
+    required this.text,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -426,19 +506,6 @@ class _CardFlipAnimationState extends State<CardFlipAnimation>
     });
   }
 
-  // @override
-  // void didUpdateWidget(covariant CardFlipAnimation oldWidget) {
-  //   super.didUpdateWidget(oldWidget);
-  //
-  //   if (_showFront == false &&
-  //       (widget.front != oldWidget.front || widget.back != oldWidget.back)) {
-  //     setState(() {
-  //       _showFront = true; // Show the front of the new card
-  //       _controller.reset();
-  //     });
-  //   }
-  // }
-
   @override
   void dispose() {
     _controller.dispose();
@@ -458,8 +525,9 @@ class _CardFlipAnimationState extends State<CardFlipAnimation>
       animation: _animation,
       builder: (context, child) {
         final isHalfway = _animation.value > pi / 2;
-        final currentRotation =
-            isHalfway ? pi - _animation.value : _animation.value;
+        final currentRotation = isHalfway
+            ? pi - _animation.value
+            : _animation.value;
 
         // Apply perspective transformation
         final transform = Matrix4.identity()
