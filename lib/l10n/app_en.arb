@@ -180,5 +180,9 @@
   "provisionaryCardsReviewButton": "Review provisionary cards",
   "discard": "Discard",
   "later": "Later",
-  "noProvisionaryCardsHeadline": "No provisionary cards to review"
+  "noProvisionaryCardsHeadline": "No provisionary cards to review",
+  "switchToLightMode": "Switch to light mode",
+  "switchToDarkMode": "Switch to dark mode",
+  "switchToEnglish": "Switch to English",
+  "switchToPolish": "Switch to Polish"
 }

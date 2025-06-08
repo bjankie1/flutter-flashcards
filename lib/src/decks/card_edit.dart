@@ -148,6 +148,23 @@ class _CardEditState extends State<CardEdit> {
                 isNewCard: widget.card?.id == null,
               ),
               const SizedBox(height: 24),
+              Padding(
+                padding: EdgeInsets.only(top: 8, bottom: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Icon(Icons.visibility, size: 20, color: Colors.grey),
+                    SizedBox(width: 8),
+                    Text(
+                      'Preview',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Colors.grey[700],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               ListenableBuilder(
                 listenable: textChangeNotifier,
                 builder: (context, value) => Card(

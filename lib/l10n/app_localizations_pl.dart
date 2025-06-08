@@ -364,4 +364,16 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get noProvisionaryCardsHeadline => 'Brak notatek do przejrzenia';
+
+  @override
+  String get switchToLightMode => 'Przełącz na jasny motyw';
+
+  @override
+  String get switchToDarkMode => 'Przełącz na ciemny motyw';
+
+  @override
+  String get switchToEnglish => 'Przełącz na język angielski';
+
+  @override
+  String get switchToPolish => 'Przełącz na język polski';
 }

@@ -763,6 +763,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No provisionary cards to review'**
   String get noProvisionaryCardsHeadline;
+
+  /// No description provided for @switchToLightMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to light mode'**
+  String get switchToLightMode;
+
+  /// No description provided for @switchToDarkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to dark mode'**
+  String get switchToDarkMode;
+
+  /// No description provided for @switchToEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to English'**
+  String get switchToEnglish;
+
+  /// No description provided for @switchToPolish.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Polish'**
+  String get switchToPolish;
 }
 
 class _AppLocalizationsDelegate

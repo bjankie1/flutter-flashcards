@@ -62,9 +62,44 @@ class BaseLayout extends StatelessWidget {
                     if (constraints.maxWidth > 600)
                       ValueListenableBuilder<UserProfile?>(
                         valueListenable: context.appState.userProfile,
+                        builder: (context, userProfile, _) {
+                          final currentTheme =
+                              userProfile?.theme ?? ThemeMode.system;
+                          return SegmentedButton<ThemeMode>(
+                            multiSelectionEnabled: false,
+                            showSelectedIcon: false,
+                            selected: {currentTheme},
+                            segments: [
+                              ButtonSegment(
+                                value: ThemeMode.light,
+                                icon: Icon(Icons.light_mode),
+                                tooltip: context.l10n.switchToLightMode,
+                              ),
+                              ButtonSegment(
+                                value: ThemeMode.dark,
+                                icon: Icon(Icons.dark_mode),
+                                tooltip: context.l10n.switchToDarkMode,
+                              ),
+                            ],
+                            onSelectionChanged: (Set<ThemeMode> selected) {
+                              Provider.of<AppState>(
+                                context,
+                                listen: false,
+                              ).theme = selected.first;
+                            },
+                          );
+                        },
+                      ),
+                    if (constraints.maxWidth > 600)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: LocaleSelection(),
+                      ),
+                    if (constraints.maxWidth <= 600)
+                      ValueListenableBuilder<UserProfile?>(
+                        valueListenable: context.appState.userProfile,
                         builder: (context, userProfile, _) => IconButton(
                           icon: Icon(
-                            // Your icon based on current theme
                             userProfile?.theme == ThemeMode.light
                                 ? Icons.dark_mode
                                 : Icons.light_mode,
@@ -77,7 +112,6 @@ class BaseLayout extends StatelessWidget {
                           },
                         ),
                       ),
-                    if (constraints.maxWidth > 600) LocaleSelection(),
                     if (constraints.maxWidth > 600)
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -132,18 +166,33 @@ class LocaleSelection extends StatelessWidget {
                   (l) => l.languageCode == userProfile.locale.languageCode,
                 ),
               }
-            : {locales.first}; // Calculate selected here
+            : {locales.first};
         return SegmentedButton(
           multiSelectionEnabled: false,
+          showSelectedIcon: false,
           selected: selectedIndices,
-          segments: locales
-              .map(
-                (locale) => ButtonSegment(
-                  value: locale,
-                  label: Text(locale.languageCode.toUpperCase()),
-                ),
-              )
-              .toList(),
+          segments: locales.map((locale) {
+            String tooltip;
+            String flag;
+            switch (locale.languageCode) {
+              case 'en':
+                tooltip = context.l10n.switchToEnglish;
+                flag = '🇬🇧';
+                break;
+              case 'pl':
+                tooltip = context.l10n.switchToPolish;
+                flag = '🇵🇱';
+                break;
+              default:
+                tooltip = '';
+                flag = '';
+            }
+            return ButtonSegment(
+              value: locale,
+              label: Text(flag),
+              tooltip: tooltip,
+            );
+          }).toList(),
           onSelectionChanged: (index) {
             Logger().i('Locale selected: ${index.first}');
             context.appState.locale = index.first;

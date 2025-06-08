@@ -24,17 +24,19 @@ class DeckListItem extends StatelessWidget {
       },
       title: Text(
         deck.name,
-        style: Theme.of(context).textTheme.headlineSmall,
+        style: Theme.of(context).textTheme.titleMedium,
         overflow: TextOverflow.clip,
         softWrap: false,
       ),
-      subtitle: Row(
+      subtitle: Row(children: [DeckCardsNumber(deck: deck)]),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          DeckCardsNumber(deck: deck),
-          DeckCardsToReview(deck: deck),
+          FittedBox(child: DeckCardsToReview(deck: deck)),
+          const SizedBox(width: 8),
+          DeckContextMenu(deck: deck),
         ],
       ),
-      trailing: DeckContextMenu(deck: deck),
     );
   }
 }
@@ -203,15 +205,26 @@ class DeckCardsToReview extends StatelessWidget {
         final cardCount = data.values.reduce((agg, next) => agg + next);
         return Visibility(
           visible: cardCount > 0,
-          child: TextButton(
-            style: ButtonStyle(visualDensity: VisualDensity.compact),
+          child: ElevatedButton.icon(
             onPressed: () {
               startLearning(context, deck);
             },
-            child: Text(
+            icon: Icon(Icons.play_circle_fill, size: 18),
+            label: Text(
               context.l10n.cardsToReview(cardCount),
               overflow: TextOverflow.clip,
               softWrap: false,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+            style: ElevatedButton.styleFrom(
+              minimumSize: Size(80, 32),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              textStyle: Theme.of(context).textTheme.labelMedium,
+              elevation: 1,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
             ),
           ),
         );

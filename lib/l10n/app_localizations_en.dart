@@ -361,4 +361,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noProvisionaryCardsHeadline => 'No provisionary cards to review';
+
+  @override
+  String get switchToLightMode => 'Switch to light mode';
+
+  @override
+  String get switchToDarkMode => 'Switch to dark mode';
+
+  @override
+  String get switchToEnglish => 'Switch to English';
+
+  @override
+  String get switchToPolish => 'Switch to Polish';
 }

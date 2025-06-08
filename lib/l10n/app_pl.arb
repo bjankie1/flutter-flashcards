@@ -111,5 +111,9 @@
   "provisionaryCardsReviewButton": "Przejrzyj notatki",
   "discard": "Odrzuć",
   "later": "Potem",
-  "noProvisionaryCardsHeadline": "Brak notatek do przejrzenia"
+  "noProvisionaryCardsHeadline": "Brak notatek do przejrzenia",
+  "switchToLightMode": "Przełącz na jasny motyw",
+  "switchToDarkMode": "Przełącz na ciemny motyw",
+  "switchToEnglish": "Przełącz na język angielski",
+  "switchToPolish": "Przełącz na język polski"
 }
