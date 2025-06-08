@@ -787,6 +787,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Switch to Polish'**
   String get switchToPolish;
+
+  /// No description provided for @totalProgressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Progress'**
+  String get totalProgressLabel;
+
+  /// No description provided for @deckProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{deckName} Progress'**
+  String deckProgress(String deckName);
+
+  /// No description provided for @progressPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'+{percent}%'**
+  String progressPercent(int percent);
+
+  /// No description provided for @masteryNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get masteryNew;
+
+  /// No description provided for @masteryLearning.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning'**
+  String get masteryLearning;
+
+  /// No description provided for @masteryYoung.
+  ///
+  /// In en, this message translates to:
+  /// **'Young'**
+  String get masteryYoung;
+
+  /// No description provided for @masteryMature.
+  ///
+  /// In en, this message translates to:
+  /// **'Mature'**
+  String get masteryMature;
+
+  /// No description provided for @errorLoadingCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading cards'**
+  String get errorLoadingCards;
 }
 
 class _AppLocalizationsDelegate

@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 
 import '../fsrs/fsrs.dart';
 import 'cards.dart' as model;
+import 'package:flutter_flashcards/src/model/card_mastery.dart';
+import 'package:flutter_flashcards/src/model/deck.dart';
 
 abstract class CardsRepository extends ChangeNotifier {
   final _log = Logger();
@@ -49,22 +51,30 @@ abstract class CardsRepository extends ChangeNotifier {
 
   Future<void> deleteCard(String cardId);
 
-  Future<Iterable<(model.CardReviewVariant, model.Card)>> loadCardsToReview(
-      {model.DeckId? deckId, model.DeckGroupId? deckGroupId});
+  Future<Iterable<(model.CardReviewVariant, model.Card)>> loadCardsToReview({
+    model.DeckId? deckId,
+    model.DeckGroupId? deckGroupId,
+  });
 
-  Future<Map<model.State, int>> cardsToReviewCount(
-      {model.DeckId? deckId, model.DeckGroupId? deckGroupId});
+  Future<Map<model.State, int>> cardsToReviewCount({
+    model.DeckId? deckId,
+    model.DeckGroupId? deckGroupId,
+  });
 
   Future<model.CardStats> loadCardStats(
-      String cardId, model.CardReviewVariant variant);
+    String cardId,
+    model.CardReviewVariant variant,
+  );
 
   Future<int> getCardCount(String deckId);
 
   Future<void> recordCardAnswer(model.CardAnswer answer);
 
   Future<Iterable<model.CardAnswer>> loadAnswers(
-      DateTime dayStart, DateTime dayEnd,
-      {String? uid});
+    DateTime dayStart,
+    DateTime dayEnd, {
+    String? uid,
+  });
 
   @protected
   Future<void> saveCardStats(model.CardStats stats);
@@ -96,16 +106,24 @@ abstract class CardsRepository extends ChangeNotifier {
   /// Record an answer if it hasn't been responded today.
   /// Ignores the information if it has.
   /// Calculates next review date based on FSRS algorithm
-  Future<void> recordAnswer(String cardId, model.CardReviewVariant variant,
-      model.Rating rating, DateTime reviewStart, Duration duration) async {
+  Future<void> recordAnswer(
+    String cardId,
+    model.CardReviewVariant variant,
+    model.Rating rating,
+    DateTime reviewStart,
+    Duration duration,
+  ) async {
     _log.d('Recording answer for card $cardId with variant $variant');
     // add answer to review log
-    recordCardAnswer(model.CardAnswer(
+    recordCardAnswer(
+      model.CardAnswer(
         cardId: cardId,
         variant: variant,
         reviewStart: reviewStart,
         timeSpent: duration,
-        rating: rating));
+        rating: rating,
+      ),
+    );
     final stats = await loadCardStats(cardId, variant);
     if (stats.lastReview != null &&
         stats.lastReview!.difference(currentClockDateTime).inDays == 0 &&
@@ -121,25 +139,34 @@ abstract class CardsRepository extends ChangeNotifier {
   }
 
   Future<Map<String, model.Deck>> mapCardsToDecks(
-      Iterable<String> cardIds) async {
+    Iterable<String> cardIds,
+  ) async {
     if (cardIds.isEmpty) return {};
-    final cards =
-        await loadCardsByIds(cardIds).logError('Error loading cards by ID');
-    final decks = await loadDecksByIds(cards.map((c) => c.deckId).toSet())
-        .logError('Error loading decks for cards');
-    return Map.fromEntries(cards
-        .map((c) => MapEntry(c.id, decks.firstWhere((d) => d.id == c.deckId))));
+    final cards = await loadCardsByIds(
+      cardIds,
+    ).logError('Error loading cards by ID');
+    final decks = await loadDecksByIds(
+      cards.map((c) => c.deckId).toSet(),
+    ).logError('Error loading decks for cards');
+    return Map.fromEntries(
+      cards.map(
+        (c) => MapEntry(c.id, decks.firstWhere((d) => d.id == c.deckId)),
+      ),
+    );
   }
 
   Future<void> saveCollaborationInvitation(String receivingUserEmail);
 
   Future<Set<String>> listCollaborators();
 
-  Future<Iterable<CollaborationInvitation>> pendingInvitations(
-      {bool sent = false});
+  Future<Iterable<CollaborationInvitation>> pendingInvitations({
+    bool sent = false,
+  });
 
   Future<void> changeInvitationStatus(
-      String invitationId, InvitationStatus status);
+    String invitationId,
+    InvitationStatus status,
+  );
 
   Future<void> grantStatsAccess(String receivingUserEmail);
 
@@ -191,8 +218,9 @@ abstract class CardsRepository extends ChangeNotifier {
       return map;
     });
     final remainingDecks = decks.map((deck) => deck.id!).toSet();
-    final List<(model.DeckGroup?, List<model.Deck>)> groupedDecks =
-        List.empty(growable: true);
+    final List<(model.DeckGroup?, List<model.Deck>)> groupedDecks = List.empty(
+      growable: true,
+    );
     for (final group in groups) {
       if (group.decks == null || group.decks!.isEmpty) continue;
       remainingDecks.removeAll(group.decks!);
@@ -206,8 +234,10 @@ abstract class CardsRepository extends ChangeNotifier {
       groupedDecks.add((group, groupDecks));
     }
     if (remainingDecks.isNotEmpty) {
-      groupedDecks.add(
-          (null, remainingDecks.map((deckId) => decksMap[deckId]!).toList()));
+      groupedDecks.add((
+        null,
+        remainingDecks.map((deckId) => decksMap[deckId]!).toList(),
+      ));
     }
     return groupedDecks;
   }
@@ -221,6 +251,17 @@ abstract class CardsRepository extends ChangeNotifier {
   Future<Iterable<model.ProvisionaryCard>> listProvisionaryCards();
 
   Future<void> updateDeckGroup(model.DeckGroup group);
+
+  /// Returns a breakdown of cards by their mastery level in a deck or deck group.
+  /// The mastery levels are:
+  /// - New: Cards that haven't been reviewed yet
+  /// - Learning: Cards that are actively being memorized (in learning or relearning state)
+  /// - Young: Cards in review state with relatively short intervals (< 21 days)
+  /// - Mature: Cards in review state with long intervals (>= 21 days)
+  Future<Map<CardMastery, int>> getMasteryBreakdown({
+    DeckId? deckId,
+    DeckGroupId? deckGroupId,
+  });
 }
 
 extension ContextProviders on BuildContext {

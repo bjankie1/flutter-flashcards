@@ -373,4 +373,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get switchToPolish => 'Switch to Polish';
+
+  @override
+  String get totalProgressLabel => 'Total Progress';
+
+  @override
+  String deckProgress(String deckName) {
+    return '$deckName Progress';
+  }
+
+  @override
+  String progressPercent(int percent) {
+    return '+$percent%';
+  }
+
+  @override
+  String get masteryNew => 'New';
+
+  @override
+  String get masteryLearning => 'Learning';
+
+  @override
+  String get masteryYoung => 'Young';
+
+  @override
+  String get masteryMature => 'Mature';
+
+  @override
+  String get errorLoadingCards => 'Error loading cards';
 }

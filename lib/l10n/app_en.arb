@@ -184,5 +184,23 @@
   "switchToLightMode": "Switch to light mode",
   "switchToDarkMode": "Switch to dark mode",
   "switchToEnglish": "Switch to English",
-  "switchToPolish": "Switch to Polish"
+  "switchToPolish": "Switch to Polish",
+  "totalProgressLabel": "Total Progress",
+  "deckProgress": "{deckName} Progress",
+  "@deckProgress": {
+    "placeholders": {
+      "deckName": { "type": "String" }
+    }
+  },
+  "progressPercent": "+{percent}%",
+  "@progressPercent": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "masteryNew": "New",
+  "masteryLearning": "Learning",
+  "masteryYoung": "Young",
+  "masteryMature": "Mature",
+  "errorLoadingCards": "Error loading cards"
 }

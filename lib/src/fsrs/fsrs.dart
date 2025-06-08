@@ -15,7 +15,9 @@ class FSRS {
   }
 
   Map<model.Rating, model.SchedulingInfo> repeat(
-      model.CardStats card, DateTime now) {
+    model.CardStats card,
+    DateTime now,
+  ) {
     var reviewedCard = card.copyWith(lastReview: now).addReview();
     final s = model.SchedulingCards(reviewedCard);
     s.updateState(card.state);
@@ -36,11 +38,17 @@ class FSRS {
       case model.State.relearning:
         final hardInterval = 0;
         final goodInterval = _nextInterval(s.good.stability);
-        final easyInterval =
-            max(_nextInterval(s.easy.stability), goodInterval + 1);
+        final easyInterval = max(
+          _nextInterval(s.easy.stability),
+          goodInterval + 1,
+        );
 
-        s.schedule(now, hardInterval.toDouble(), goodInterval.toDouble(),
-            easyInterval.toDouble());
+        s.schedule(
+          now,
+          hardInterval.toDouble(),
+          goodInterval.toDouble(),
+          easyInterval.toDouble(),
+        );
       case model.State.review:
         final interval = card.elapsedDays();
         final lastD = card.difficulty;
@@ -52,10 +60,16 @@ class FSRS {
         var goodInterval = _nextInterval(s.good.stability);
         hardInterval = min(hardInterval, goodInterval);
         goodInterval = max(goodInterval, hardInterval + 1);
-        final easyInterval =
-            max(_nextInterval(s.easy.stability), goodInterval + 1);
-        s.schedule(now, hardInterval.toDouble(), goodInterval.toDouble(),
-            easyInterval.toDouble());
+        final easyInterval = max(
+          _nextInterval(s.easy.stability),
+          goodInterval + 1,
+        );
+        s.schedule(
+          now,
+          hardInterval.toDouble(),
+          goodInterval.toDouble(),
+          easyInterval.toDouble(),
+        );
     }
 
     return s.recordLog(card, now);
@@ -63,17 +77,21 @@ class FSRS {
 
   void _initDS(model.SchedulingCards s) {
     s.again = s.again.copyWith(
-        difficulty: _initDifficulty(model.Rating.again.val),
-        stability: _initStability(model.Rating.again.val));
+      difficulty: _initDifficulty(model.Rating.again.val),
+      stability: _initStability(model.Rating.again.val),
+    );
     s.hard = s.hard.copyWith(
-        difficulty: _initDifficulty(model.Rating.hard.val),
-        stability: _initStability(model.Rating.hard.val));
+      difficulty: _initDifficulty(model.Rating.hard.val),
+      stability: _initStability(model.Rating.hard.val),
+    );
     s.good = s.good.copyWith(
-        difficulty: _initDifficulty(model.Rating.good.val),
-        stability: _initStability(model.Rating.good.val));
+      difficulty: _initDifficulty(model.Rating.good.val),
+      stability: _initStability(model.Rating.good.val),
+    );
     s.easy = s.easy.copyWith(
-        difficulty: _initDifficulty(model.Rating.easy.val),
-        stability: _initStability(model.Rating.easy.val));
+      difficulty: _initDifficulty(model.Rating.easy.val),
+      stability: _initStability(model.Rating.easy.val),
+    );
   }
 
   double _initStability(int r) {
@@ -103,7 +121,11 @@ class FSRS {
   }
 
   double _nextRecallStability(
-      double d, double s, double r, model.Rating rating) {
+    double d,
+    double s,
+    double r,
+    model.Rating rating,
+  ) {
     final hardPenalty = (rating == model.Rating.hard) ? p.w[15] : 1;
     final easyBonus = (rating == model.Rating.easy) ? p.w[16] : 1;
     return s *
@@ -123,22 +145,42 @@ class FSRS {
         exp((1 - r) * p.w[14]);
   }
 
-  void _nextDS(model.SchedulingCards s, double lastD, double lastS,
-      double retrievability) {
+  void _nextDS(
+    model.SchedulingCards s,
+    double lastD,
+    double lastS,
+    double retrievability,
+  ) {
     s.again = s.again.copyWith(
-        difficulty: _nextDifficulty(lastD, model.Rating.again.val),
-        stability: _nextForgetStability(lastD, lastS, retrievability));
+      difficulty: _nextDifficulty(lastD, model.Rating.again.val),
+      stability: _nextForgetStability(lastD, lastS, retrievability),
+    );
     s.hard = s.hard.copyWith(
-        difficulty: _nextDifficulty(lastD, model.Rating.hard.val),
-        stability: _nextRecallStability(
-            lastD, lastS, retrievability, model.Rating.hard));
+      difficulty: _nextDifficulty(lastD, model.Rating.hard.val),
+      stability: _nextRecallStability(
+        lastD,
+        lastS,
+        retrievability,
+        model.Rating.hard,
+      ),
+    );
     s.good = s.good.copyWith(
-        difficulty: _nextDifficulty(lastD, model.Rating.good.val),
-        stability: _nextRecallStability(
-            lastD, lastS, retrievability, model.Rating.good));
+      difficulty: _nextDifficulty(lastD, model.Rating.good.val),
+      stability: _nextRecallStability(
+        lastD,
+        lastS,
+        retrievability,
+        model.Rating.good,
+      ),
+    );
     s.easy = s.easy.copyWith(
-        difficulty: _nextDifficulty(lastD, model.Rating.easy.val),
-        stability: _nextRecallStability(
-            lastD, lastS, retrievability, model.Rating.easy));
+      difficulty: _nextDifficulty(lastD, model.Rating.easy.val),
+      stability: _nextRecallStability(
+        lastD,
+        lastS,
+        retrievability,
+        model.Rating.easy,
+      ),
+    );
   }
 }

@@ -115,5 +115,23 @@
   "switchToLightMode": "Przełącz na jasny motyw",
   "switchToDarkMode": "Przełącz na ciemny motyw",
   "switchToEnglish": "Przełącz na język angielski",
-  "switchToPolish": "Przełącz na język polski"
+  "switchToPolish": "Przełącz na język polski",
+  "totalProgressLabel": "Całkowity postęp",
+  "deckProgress": "Postęp zestawu {deckName}",
+  "@deckProgress": {
+    "placeholders": {
+      "deckName": { "type": "String" }
+    }
+  },
+  "progressPercent": "+{percent}%",
+  "@progressPercent": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "masteryNew": "Nowe",
+  "masteryLearning": "W nauce",
+  "masteryYoung": "Młode",
+  "masteryMature": "Doświadczone",
+  "errorLoadingCards": "Błąd ładowania kart"
 }

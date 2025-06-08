@@ -376,4 +376,32 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get switchToPolish => 'Przełącz na język polski';
+
+  @override
+  String get totalProgressLabel => 'Całkowity postęp';
+
+  @override
+  String deckProgress(String deckName) {
+    return 'Postęp zestawu $deckName';
+  }
+
+  @override
+  String progressPercent(int percent) {
+    return '+$percent%';
+  }
+
+  @override
+  String get masteryNew => 'Nowe';
+
+  @override
+  String get masteryLearning => 'W nauce';
+
+  @override
+  String get masteryYoung => 'Młode';
+
+  @override
+  String get masteryMature => 'Doświadczone';
+
+  @override
+  String get errorLoadingCards => 'Błąd ładowania kart';
 }
