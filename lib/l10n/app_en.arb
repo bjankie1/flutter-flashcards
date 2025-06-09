@@ -202,5 +202,7 @@
   "masteryLearning": "Learning",
   "masteryYoung": "Young",
   "masteryMature": "Mature",
-  "errorLoadingCards": "Error loading cards"
+  "errorLoadingCards": "Error loading cards",
+  "cardQuestionDisplay": "Question:",
+  "cardAnswerDisplay": "Answer:"
 }

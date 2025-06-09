@@ -404,4 +404,10 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get errorLoadingCards => 'Błąd ładowania kart';
+
+  @override
+  String get cardQuestionDisplay => 'Pytanie:';
+
+  @override
+  String get cardAnswerDisplay => 'Odpowiedź:';
 }

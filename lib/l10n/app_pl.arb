@@ -133,5 +133,7 @@
   "masteryLearning": "W nauce",
   "masteryYoung": "Młode",
   "masteryMature": "Doświadczone",
-  "errorLoadingCards": "Błąd ładowania kart"
+  "errorLoadingCards": "Błąd ładowania kart",
+  "cardQuestionDisplay": "Pytanie:",
+  "cardAnswerDisplay": "Odpowiedź:"
 }

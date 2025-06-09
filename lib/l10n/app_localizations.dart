@@ -835,6 +835,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error loading cards'**
   String get errorLoadingCards;
+
+  /// No description provided for @cardQuestionDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Question:'**
+  String get cardQuestionDisplay;
+
+  /// No description provided for @cardAnswerDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer:'**
+  String get cardAnswerDisplay;
 }
 
 class _AppLocalizationsDelegate

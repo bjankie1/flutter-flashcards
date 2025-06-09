@@ -401,4 +401,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorLoadingCards => 'Error loading cards';
+
+  @override
+  String get cardQuestionDisplay => 'Question:';
+
+  @override
+  String get cardAnswerDisplay => 'Answer:';
 }
