@@ -262,6 +262,8 @@ abstract class CardsRepository extends ChangeNotifier {
     DeckId? deckId,
     DeckGroupId? deckGroupId,
   });
+
+  Future<List<model.CardStats>> loadCardStatsForCardIds(List<String> cardIds);
 }
 
 extension ContextProviders on BuildContext {

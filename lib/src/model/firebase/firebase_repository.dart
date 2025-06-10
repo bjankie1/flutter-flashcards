@@ -1167,4 +1167,22 @@ Mature: ${breakdown[CardMastery.mature]}''');
 
     return breakdown;
   }
+
+  /// Loads CardStats for a list of cardIds, batching requests in groups of 30.
+  @override
+  Future<List<CardStats>> loadCardStatsForCardIds(List<String> cardIds) async {
+    const int batchSize = 30;
+    List<CardStats> allStats = [];
+    for (int i = 0; i < cardIds.length; i += batchSize) {
+      final batch = cardIds.sublist(
+        i,
+        i + batchSize > cardIds.length ? cardIds.length : i + batchSize,
+      );
+      final querySnapshot = await _cardStatsCollection
+          .where('cardId', whereIn: batch)
+          .get();
+      allStats.addAll(querySnapshot.docs.map((doc) => doc.data()));
+    }
+    return allStats;
+  }
 }

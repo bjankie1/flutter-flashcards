@@ -81,21 +81,21 @@ class _CardsListState extends State<CardsList> {
               return RepositoryLoader<Iterable<model.Card>>(
                 fetcher: (repository) async {
                   final cards = await repository.loadCards(widget.deck.id!);
-                  // Load all card stats for the deck
+                  final cardIds = cards.map((c) => c.id).toList();
+                  final allStats = await repository.loadCardStatsForCardIds(
+                    cardIds,
+                  );
+                  // Map cardId -> List<CardStats> (front, [back])
                   _cardStats = {};
                   for (final card in cards) {
-                    final stats = await repository.loadCardStats(
-                      card.id,
-                      model.CardReviewVariant.front,
+                    final statsForCard = allStats
+                        .where((s) => s.cardId == card.id)
+                        .toList();
+                    // Ensure order: front first, then back if present
+                    statsForCard.sort(
+                      (a, b) => a.variant.index.compareTo(b.variant.index),
                     );
-                    _cardStats![card.id] = [stats];
-                    if (card.options?.learnBothSides == true) {
-                      final backStats = await repository.loadCardStats(
-                        card.id,
-                        model.CardReviewVariant.back,
-                      );
-                      _cardStats![card.id]!.add(backStats);
-                    }
+                    _cardStats![card.id] = statsForCard;
                   }
                   return cards;
                 },
