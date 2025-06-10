@@ -19,18 +19,19 @@ class CardStats implements FirebaseSerializable {
   final State state;
   final int numberOfLapses;
 
-  CardStats(
-      {required this.cardId,
-      this.variant = CardReviewVariant.front,
-      this.interval = 0,
-      this.lastReview,
-      this.nextReviewDate,
-      this.stability = 0,
-      this.difficulty = 0,
-      this.numberOfReviews = 0,
-      this.numberOfLapses = 0,
-      this.dateAdded,
-      this.state = State.newState}) {
+  CardStats({
+    required this.cardId,
+    this.variant = CardReviewVariant.front,
+    this.interval = 0,
+    this.lastReview,
+    this.nextReviewDate,
+    this.stability = 0,
+    this.difficulty = 0,
+    this.numberOfReviews = 0,
+    this.numberOfLapses = 0,
+    this.dateAdded,
+    this.state = State.newState,
+  }) {
     dateAdded ??= currentClockDateTime;
   }
 
@@ -93,7 +94,7 @@ class CardStats implements FirebaseSerializable {
     if (card.options?.learnBothSides == true) {
       return [
         CardStats(cardId: card.id, variant: CardReviewVariant.front),
-        CardStats(cardId: card.id, variant: CardReviewVariant.back)
+        CardStats(cardId: card.id, variant: CardReviewVariant.back),
       ];
     }
     return [CardStats(cardId: card.id, variant: CardReviewVariant.front)];
@@ -110,8 +111,8 @@ class CardStats implements FirebaseSerializable {
             .toDate(),
         numberOfReviews: data['numberOfReviews'] as int? ?? 0,
         numberOfLapses: data['numberOfLapses'] as int? ?? 0,
-        dateAdded:
-            (data['dateAdded'] as Timestamp? ?? currentClockTimestamp).toDate(),
+        dateAdded: (data['dateAdded'] as Timestamp? ?? currentClockTimestamp)
+            .toDate(),
         interval: (data['interval'] ?? 0) as int? ?? 0,
         nextReviewDate: (data['nextReviewDate'] as Timestamp?)?.toDate(),
         state: data['state'] == null
@@ -124,19 +125,19 @@ class CardStats implements FirebaseSerializable {
 
   @override
   Map<String, dynamic> toJson() => {
-        'cardId': cardId,
-        'variant': variant.name,
-        'stability': stability,
-        'difficulty': difficulty,
-        'lastReview': lastReview,
-        'numberOfReviews': numberOfReviews,
-        'numberOfLapses': numberOfLapses,
-        'dateAdded': dateAdded,
-        'interval': interval,
-        'nextReviewDate': nextReviewDate,
-        'state': state.name,
-      };
+    'cardId': cardId,
+    'variant': variant.name,
+    'stability': stability,
+    'difficulty': difficulty,
+    'lastReview': lastReview,
+    'numberOfReviews': numberOfReviews,
+    'numberOfLapses': numberOfLapses,
+    'dateAdded': dateAdded,
+    'interval': interval,
+    'nextReviewDate': nextReviewDate,
+    'state': state.name,
+  };
 
   @override
   String get idValue => '$cardId::${variant.name}';
-} 
+}

@@ -407,4 +407,93 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cardAnswerDisplay => 'Answer:';
+
+  @override
+  String get cardsSearchHint => 'Search cards...';
+
+  @override
+  String get hintIconTooltip => 'This card has a hint';
+
+  @override
+  String get cardOptionDoubleSidedTooltip =>
+      'This card can be learned from both sides';
+
+  @override
+  String get deleteCardTooltip => 'Delete card';
+
+  @override
+  String get deckDescriptionSaveErrorMessage => 'Error saving deck description';
+
+  @override
+  String get learningStatisticsDialogTitle => 'Learning Statistics';
+
+  @override
+  String get learningStatisticsMetric => 'Metric';
+
+  @override
+  String get learningStatisticsQuestion => 'Question';
+
+  @override
+  String get learningStatisticsAnswer => 'Answer';
+
+  @override
+  String get learningStatisticsValue => 'Value';
+
+  @override
+  String get learningStatisticsNumberOfReviews => 'Number of reviews';
+
+  @override
+  String get learningStatisticsDifficulty => 'Difficulty';
+
+  @override
+  String get learningStatisticsLastReview => 'Last review';
+
+  @override
+  String get learningStatisticsNextReview => 'Next review';
+
+  @override
+  String get learningStatisticsDifficultyEasy => 'Easy';
+
+  @override
+  String get learningStatisticsDifficultyMedium => 'Medium';
+
+  @override
+  String get learningStatisticsDifficultyHard => 'Hard';
+
+  @override
+  String get learningStatisticsNotScheduled => 'Not scheduled';
+
+  @override
+  String get learningStatisticsDueAlready => 'due already';
+
+  @override
+  String get learningStatisticsToday => 'Today';
+
+  @override
+  String get learningStatisticsYesterday => 'Yesterday';
+
+  @override
+  String get learningStatisticsClose => 'Close';
+
+  @override
+  String learningStatisticsDay(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# days',
+      one: '# day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String learningStatisticsHour(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# hours',
+      one: '# hour',
+    );
+    return '$_temp0';
+  }
 }

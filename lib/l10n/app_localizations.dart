@@ -847,6 +847,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Answer:'**
   String get cardAnswerDisplay;
+
+  /// No description provided for @cardsSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search cards...'**
+  String get cardsSearchHint;
+
+  /// No description provided for @hintIconTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'This card has a hint'**
+  String get hintIconTooltip;
+
+  /// No description provided for @cardOptionDoubleSidedTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'This card can be learned from both sides'**
+  String get cardOptionDoubleSidedTooltip;
+
+  /// No description provided for @deleteCardTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete card'**
+  String get deleteCardTooltip;
+
+  /// No description provided for @deckDescriptionSaveErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving deck description'**
+  String get deckDescriptionSaveErrorMessage;
+
+  /// No description provided for @learningStatisticsDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning Statistics'**
+  String get learningStatisticsDialogTitle;
+
+  /// No description provided for @learningStatisticsMetric.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric'**
+  String get learningStatisticsMetric;
+
+  /// No description provided for @learningStatisticsQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Question'**
+  String get learningStatisticsQuestion;
+
+  /// No description provided for @learningStatisticsAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer'**
+  String get learningStatisticsAnswer;
+
+  /// No description provided for @learningStatisticsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get learningStatisticsValue;
+
+  /// No description provided for @learningStatisticsNumberOfReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of reviews'**
+  String get learningStatisticsNumberOfReviews;
+
+  /// No description provided for @learningStatisticsDifficulty.
+  ///
+  /// In en, this message translates to:
+  /// **'Difficulty'**
+  String get learningStatisticsDifficulty;
+
+  /// No description provided for @learningStatisticsLastReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Last review'**
+  String get learningStatisticsLastReview;
+
+  /// No description provided for @learningStatisticsNextReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Next review'**
+  String get learningStatisticsNextReview;
+
+  /// No description provided for @learningStatisticsDifficultyEasy.
+  ///
+  /// In en, this message translates to:
+  /// **'Easy'**
+  String get learningStatisticsDifficultyEasy;
+
+  /// No description provided for @learningStatisticsDifficultyMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get learningStatisticsDifficultyMedium;
+
+  /// No description provided for @learningStatisticsDifficultyHard.
+  ///
+  /// In en, this message translates to:
+  /// **'Hard'**
+  String get learningStatisticsDifficultyHard;
+
+  /// No description provided for @learningStatisticsNotScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Not scheduled'**
+  String get learningStatisticsNotScheduled;
+
+  /// No description provided for @learningStatisticsDueAlready.
+  ///
+  /// In en, this message translates to:
+  /// **'due already'**
+  String get learningStatisticsDueAlready;
+
+  /// No description provided for @learningStatisticsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get learningStatisticsToday;
+
+  /// No description provided for @learningStatisticsYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get learningStatisticsYesterday;
+
+  /// No description provided for @learningStatisticsClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get learningStatisticsClose;
+
+  /// No description provided for @learningStatisticsDay.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {# day} other {# days}}'**
+  String learningStatisticsDay(num count);
+
+  /// No description provided for @learningStatisticsHour.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {# hour} other {# hours}}'**
+  String learningStatisticsHour(num count);
 }
 
 class _AppLocalizationsDelegate

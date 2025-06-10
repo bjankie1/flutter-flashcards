@@ -410,4 +410,98 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get cardAnswerDisplay => 'Odpowiedź:';
+
+  @override
+  String get cardsSearchHint => 'Szukaj kart...';
+
+  @override
+  String get hintIconTooltip => 'Ta karta ma podpowiedź';
+
+  @override
+  String get cardOptionDoubleSidedTooltip =>
+      'Ta karta może być uczona z obu stron';
+
+  @override
+  String get deleteCardTooltip => 'Usuń kartę';
+
+  @override
+  String get deckDescriptionSaveErrorMessage =>
+      'Nie udało się zapisać opisu zestawu';
+
+  @override
+  String get learningStatisticsDialogTitle => 'Statystyki nauki';
+
+  @override
+  String get learningStatisticsMetric => 'Metryka';
+
+  @override
+  String get learningStatisticsQuestion => 'Pytanie';
+
+  @override
+  String get learningStatisticsAnswer => 'Odpowiedź';
+
+  @override
+  String get learningStatisticsValue => 'Wartość';
+
+  @override
+  String get learningStatisticsNumberOfReviews => 'Liczba powtórek';
+
+  @override
+  String get learningStatisticsDifficulty => 'Trudność';
+
+  @override
+  String get learningStatisticsLastReview => 'Ostatnia powtórka';
+
+  @override
+  String get learningStatisticsNextReview => 'Następna powtórka';
+
+  @override
+  String get learningStatisticsDifficultyEasy => 'Łatwa';
+
+  @override
+  String get learningStatisticsDifficultyMedium => 'Średnia';
+
+  @override
+  String get learningStatisticsDifficultyHard => 'Trudna';
+
+  @override
+  String get learningStatisticsNotScheduled => 'Brak terminu';
+
+  @override
+  String get learningStatisticsDueAlready => 'już zaległa';
+
+  @override
+  String get learningStatisticsToday => 'Dzisiaj';
+
+  @override
+  String get learningStatisticsYesterday => 'Wczoraj';
+
+  @override
+  String get learningStatisticsClose => 'Zamknij';
+
+  @override
+  String learningStatisticsDay(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# dni',
+      many: '# dni',
+      few: '# dni',
+      one: '# dzień',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String learningStatisticsHour(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# godziny',
+      many: '# godzin',
+      few: '# godziny',
+      one: '# godzina',
+    );
+    return '$_temp0';
+  }
 }
