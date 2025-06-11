@@ -84,12 +84,14 @@ void main() {
       final savedDeck = await repository.saveDeck(deck);
       final deckId = savedDeck.id!;
 
-      await repository.saveCard(model.Card(
-        id: 'card1',
-        deckId: deckId,
-        question: 'Question 1',
-        answer: "Answer 1",
-      ));
+      await repository.saveCard(
+        model.Card(
+          id: 'card1',
+          deckId: deckId,
+          question: 'Question 1',
+          answer: "Answer 1",
+        ),
+      );
 
       await repository.deleteDeck(deckId);
 
@@ -115,8 +117,9 @@ void main() {
       final loadedCardsAfterDelete = await repository.loadCard(addedCard.id);
       expect(loadedCardsAfterDelete, null);
 
-      final savedCard3 =
-          await repository.saveCard(card.copyWith(answer: 'New answer'));
+      final savedCard3 = await repository.saveCard(
+        card.copyWith(answer: 'New answer'),
+      );
       final loadedCardsAfterUpdate = await repository.loadCard(savedCard3.id);
       expect(loadedCardsAfterUpdate?.answer, 'New answer');
     });
@@ -136,10 +139,12 @@ void main() {
       await repository.addDeckToGroup('deck3', group2.id);
       final groupedDecks = await repository.loadDecksInGroups();
       expect(groupedDecks, hasLength(3));
-      final group1Decks =
-          groupedDecks.firstWhere((p) => p.$1?.id == group1.id).$2;
-      final group2Decks =
-          groupedDecks.firstWhere((p) => p.$1?.id == group2.id).$2;
+      final group1Decks = groupedDecks
+          .firstWhere((p) => p.$1?.id == group1.id)
+          .$2;
+      final group2Decks = groupedDecks
+          .firstWhere((p) => p.$1?.id == group2.id)
+          .$2;
       final remainingDecks = groupedDecks.firstWhere((p) => p.$1 == null).$2;
       expect(group1Decks, hasLength(2));
       expect(group2Decks, hasLength(2));
@@ -149,17 +154,22 @@ void main() {
     test('Should fail creating deck group with same or invalid name', () async {
       await repository.createDeckGroup('name 1', null);
       await expectLater(
-          repository.createDeckGroup('name 1', null), throwsA(isA<String>()));
+        repository.createDeckGroup('name 1', null),
+        throwsA(isA<String>()),
+      );
       await expectLater(
-          repository.createDeckGroup('', null), throwsA(isA<String>()));
+        repository.createDeckGroup('', null),
+        throwsA(isA<String>()),
+      );
     });
 
     test('Should fail adding deck to a non existing group', () async {
       final deck = model.Deck(name: 'Test Deck 1', id: 'deck1');
       await repository.saveDeck(deck);
       await expectLater(
-          repository.addDeckToGroup(deck.id!, 'non-existing-group-id'),
-          throwsA(isA<String>()));
+        repository.addDeckToGroup(deck.id!, 'non-existing-group-id'),
+        throwsA(isA<String>()),
+      );
     });
   });
 
@@ -181,45 +191,55 @@ void main() {
       await repository.saveCard(card);
 
       final frontStats = await repository.loadCardStats(
-          card.id, model.CardReviewVariant.front);
+        card.id,
+        model.CardReviewVariant.front,
+      );
       expect(frontStats.cardId, card.id);
       expect(frontStats.variant, model.CardReviewVariant.front);
       expect(frontStats.state, model.State.newState);
       expect(frontStats.nextReviewDate, null);
       expect(frontStats.stability, 0);
       await expectLater(
-          repository.loadCardStats(card.id, model.CardReviewVariant.back),
-          throwsA(isA<Exception>()));
+        repository.loadCardStats(card.id, model.CardReviewVariant.back),
+        throwsA(isA<Exception>()),
+      );
     });
 
-    test('Save double-sided card and verify the stats include both sides',
-        () async {
-      final deck = model.Deck(name: 'Test Deck 3');
-      await repository.saveDeck(deck);
+    test(
+      'Save double-sided card and verify the stats include both sides',
+      () async {
+        final deck = model.Deck(name: 'Test Deck 3');
+        await repository.saveDeck(deck);
 
-      final card = model.Card(
+        final card = model.Card(
           id: 'card1',
           deckId: 'deck1',
           question: 'Question 1',
           answer: 'Answer 1',
-          options: model.CardOptions(learnBothSides: true));
-      await repository.saveCard(card);
+          options: model.CardOptions(learnBothSides: true),
+        );
+        await repository.saveCard(card);
 
-      final frontStats = await repository.loadCardStats(
-          card.id, model.CardReviewVariant.front);
-      expect(frontStats.cardId, card.id);
-      expect(frontStats.variant, model.CardReviewVariant.front);
-      expect(frontStats.state, model.State.newState);
-      expect(frontStats.nextReviewDate, null);
-      expect(frontStats.stability, 0);
-      final backStats =
-          await repository.loadCardStats(card.id, model.CardReviewVariant.back);
-      expect(backStats.cardId, card.id);
-      expect(backStats.variant, model.CardReviewVariant.back);
-      expect(backStats.state, model.State.newState);
-      expect(backStats.nextReviewDate, null);
-      expect(backStats.stability, 0);
-    });
+        final frontStats = await repository.loadCardStats(
+          card.id,
+          model.CardReviewVariant.front,
+        );
+        expect(frontStats.cardId, card.id);
+        expect(frontStats.variant, model.CardReviewVariant.front);
+        expect(frontStats.state, model.State.newState);
+        expect(frontStats.nextReviewDate, null);
+        expect(frontStats.stability, 0);
+        final backStats = await repository.loadCardStats(
+          card.id,
+          model.CardReviewVariant.back,
+        );
+        expect(backStats.cardId, card.id);
+        expect(backStats.variant, model.CardReviewVariant.back);
+        expect(backStats.state, model.State.newState);
+        expect(backStats.nextReviewDate, null);
+        expect(backStats.stability, 0);
+      },
+    );
 
     test('recorded answer reflected in stats', () async {
       final deck = model.Deck(name: 'Test Deck 3');
@@ -234,11 +254,18 @@ void main() {
       final duration = Duration(seconds: 15);
       final reviewTime = clock.agoBy(duration);
       await repository.saveCard(card);
-      repository.recordAnswer(card.id, model.CardReviewVariant.front,
-          model.Rating.good, reviewTime, duration);
+      repository.recordAnswer(
+        card.id,
+        model.CardReviewVariant.front,
+        model.Rating.good,
+        reviewTime,
+        duration,
+      );
 
       final stats = await repository.loadCardStats(
-          card.id, model.CardReviewVariant.front);
+        card.id,
+        model.CardReviewVariant.front,
+      );
       final answers = await repository.loadAnswers(reviewTime, reviewTime);
       expect(stats.difficulty, 0);
       expect(answers.length, 1);
@@ -247,42 +274,79 @@ void main() {
     });
 
     test('load cards to review when there are no cards yet', () async {
-      final cards = await repository.loadCardsToReview();
-      expect(cards.length, 0);
+      final cards = await repository.loadCardsWithStatsToReview();
+      expect(cards.isEmpty, true);
     });
 
-    test('load cards to review for a deck', () async {
-      await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
-      await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
-      await repository.saveCard(model.Card(
-          id: 'card1',
-          deckId: 'deck1',
-          question: 'Question 1',
-          answer: 'Answer 1'));
-      await repository.saveCard(model.Card(
-          id: 'card2',
-          deckId: 'deck1',
-          question: 'Question 2',
-          answer: 'Answer 2'));
-      final cards1 = await repository.loadCardsToReview(deckId: 'deck1');
+    test('load cards to review for specific deck', () async {
+      final deck = model.Deck(name: 'Test Deck 3');
+      await repository.saveDeck(deck);
+
+      final card = model.Card(
+        id: 'card1',
+        deckId: 'deck1',
+        question: 'Question 1',
+        answer: 'Answer 1',
+      );
+      await repository.saveCard(card);
+
+      final cards1 = await repository.loadCardsWithStatsToReview(
+        deckId: 'deck1',
+      );
+      expect(cards1.length, 1);
+      final cards2 = await repository.loadCardsWithStatsToReview(
+        deckId: 'deck2',
+      );
+      expect(cards2.isEmpty, true);
+    });
+
+    test('load cards to review for specific deck group', () async {
+      final deck = model.Deck(name: 'Test Deck 3');
+      await repository.saveDeck(deck);
+
+      final card = model.Card(
+        id: 'card1',
+        deckId: 'deck1',
+        question: 'Question 1',
+        answer: 'Answer 1',
+      );
+      await repository.saveCard(card);
+
+      final group = await repository.createDeckGroup('name 1', null);
+      await repository.addDeckToGroup('deck1', group.id);
+
+      final cards1 = await repository.loadCardsWithStatsToReview(
+        deckGroupId: group.id,
+      );
       expect(cards1.length, 2);
-      final cards2 = await repository.loadCardsToReview(deckId: 'deck2');
-      expect(cards2.length, 0);
+      final group2 = await repository.createDeckGroup('name 2', null);
+      await repository.addDeckToGroup('deck3', group2.id);
+
+      final cards2 = await repository.loadCardsWithStatsToReview(
+        deckGroupId: group2.id,
+      );
+      expect(cards2.length, 1);
     });
 
     test('count cards to review for all decks', () async {
       await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
       await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
-      await repository.saveCard(model.Card(
+      await repository.saveCard(
+        model.Card(
           id: 'card1',
           deckId: 'deck1',
           question: 'Question 1',
-          answer: 'Answer 1'));
-      await repository.saveCard(model.Card(
+          answer: 'Answer 1',
+        ),
+      );
+      await repository.saveCard(
+        model.Card(
           id: 'card2',
           deckId: 'deck1',
           question: 'Question 2',
-          answer: 'Answer 2'));
+          answer: 'Answer 2',
+        ),
+      );
       final cardsCount = await repository.cardsToReviewCount();
       expect(cardsCount[model.State.newState], 2);
       expect(cardsCount[model.State.learning], 0);
@@ -293,16 +357,22 @@ void main() {
     test('count cards to review for a deck', () async {
       await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
       await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
-      await repository.saveCard(model.Card(
+      await repository.saveCard(
+        model.Card(
           id: 'card1',
           deckId: 'deck1',
           question: 'Question 1',
-          answer: 'Answer 1'));
-      await repository.saveCard(model.Card(
+          answer: 'Answer 1',
+        ),
+      );
+      await repository.saveCard(
+        model.Card(
           id: 'card2',
           deckId: 'deck1',
           question: 'Question 2',
-          answer: 'Answer 2'));
+          answer: 'Answer 2',
+        ),
+      );
       final cardsCount = await repository.cardsToReviewCount(deckId: 'deck1');
       expect(cardsCount[model.State.newState], 2);
       expect(cardsCount[model.State.learning], 0);
@@ -313,16 +383,22 @@ void main() {
     test('count cards to review for an empty deck', () async {
       await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
       await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
-      await repository.saveCard(model.Card(
+      await repository.saveCard(
+        model.Card(
           id: 'card1',
           deckId: 'deck1',
           question: 'Question 1',
-          answer: 'Answer 1'));
-      await repository.saveCard(model.Card(
+          answer: 'Answer 1',
+        ),
+      );
+      await repository.saveCard(
+        model.Card(
           id: 'card2',
           deckId: 'deck1',
           question: 'Question 2',
-          answer: 'Answer 2'));
+          answer: 'Answer 2',
+        ),
+      );
       final cardsCount = await repository.cardsToReviewCount(deckId: 'deck2');
       expect(cardsCount[model.State.newState], 0);
       expect(cardsCount[model.State.learning], 0);
@@ -334,21 +410,30 @@ void main() {
       await repository.saveDeck(model.Deck(id: 'deck1', name: 'Test Deck 1'));
       await repository.saveDeck(model.Deck(id: 'deck2', name: 'Test Deck 2'));
       await repository.saveDeck(model.Deck(id: 'deck3', name: 'Test Deck 3'));
-      await repository.saveCard(model.Card(
+      await repository.saveCard(
+        model.Card(
           id: 'card1',
           deckId: 'deck1',
           question: 'Question 1',
-          answer: 'Answer 1'));
-      await repository.saveCard(model.Card(
+          answer: 'Answer 1',
+        ),
+      );
+      await repository.saveCard(
+        model.Card(
           id: 'card2',
           deckId: 'deck2',
           question: 'Question 2',
-          answer: 'Answer 2'));
-      await repository.saveCard(model.Card(
+          answer: 'Answer 2',
+        ),
+      );
+      await repository.saveCard(
+        model.Card(
           id: 'card3',
           deckId: 'deck3',
           question: 'Question 3',
-          answer: 'Answer 3'));
+          answer: 'Answer 3',
+        ),
+      );
 
       final group = await repository.createDeckGroup('name 1', null);
       await repository.addDeckToGroup('deck1', group.id);
@@ -356,32 +441,39 @@ void main() {
       final group2 = await repository.createDeckGroup('name 2', null);
       await repository.addDeckToGroup('deck3', group2.id);
 
-      final cards1 = await repository.loadCardsToReview(deckGroupId: group.id);
+      final cards1 = await repository.loadCardsWithStatsToReview(
+        deckGroupId: group.id,
+      );
       expect(cards1.length, 2);
-      final cards2 = await repository.loadCardsToReview(deckGroupId: group2.id);
+      final cards2 = await repository.loadCardsWithStatsToReview(
+        deckGroupId: group2.id,
+      );
       expect(cards2.length, 1);
     });
   });
 
   group('Collaboration Invitations', () {
     final userLogged = UserProfile(
-        id: loggedInUserId,
-        email: loggedInUserEmail,
-        name: 'john',
-        theme: ThemeMode.system,
-        locale: Locale('pl'));
+      id: loggedInUserId,
+      email: loggedInUserEmail,
+      name: 'john',
+      theme: ThemeMode.system,
+      locale: Locale('pl'),
+    );
     final user1 = UserProfile(
-        id: 'id1',
-        email: 'user1@example.com',
-        name: 'john',
-        theme: ThemeMode.system,
-        locale: Locale('pl'));
+      id: 'id1',
+      email: 'user1@example.com',
+      name: 'john',
+      theme: ThemeMode.system,
+      locale: Locale('pl'),
+    );
     final user2 = UserProfile(
-        id: 'id2',
-        email: 'user2@example.com',
-        name: 'john',
-        theme: ThemeMode.system,
-        locale: Locale('pl'));
+      id: 'id2',
+      email: 'user2@example.com',
+      name: 'john',
+      theme: ThemeMode.system,
+      locale: Locale('pl'),
+    );
 
     setUp(() async {
       await repository.saveUser(userLogged);
@@ -408,13 +500,16 @@ void main() {
       expect(invitationsSent.first.status, InvitationStatus.pending);
     });
 
-    test('saveCollaborationInvitation throws exception if user not found',
-        () async {
-      // the test would have fail if the mock supported security rules
-      await expectLater(
+    test(
+      'saveCollaborationInvitation throws exception if user not found',
+      () async {
+        // the test would have fail if the mock supported security rules
+        await expectLater(
           repository.saveCollaborationInvitation('nonexistent@example.com'),
-          throwsA(isA<Exception>()));
-    });
+          throwsA(isA<Exception>()),
+        );
+      },
+    );
 
     test('pendingInvitations retrieves received invitations', () async {
       withClock(Clock.fixed(DateTime(2021)), () async {
@@ -431,8 +526,10 @@ void main() {
         expect(invitations.length, 1);
         expect(invitations.first.receivingUserId, user2.id);
         expect(invitations.first.initiatorUserId, userLogged.id);
-        expect(invitations.first.sentTimestamp,
-            currentClockDateTime.toTimestamp());
+        expect(
+          invitations.first.sentTimestamp,
+          currentClockDateTime.toTimestamp(),
+        );
 
         final collaborators2 = await repository.listCollaborators();
         expect(collaborators2.length, 0);
@@ -440,23 +537,25 @@ void main() {
     });
 
     test(
-        'changeInvitationStatus updates invitation status both users start collaboration',
-        () async {
-      await repository.saveCollaborationInvitation(user1.email);
-      await repository.saveCollaborationInvitation(user2.email);
+      'changeInvitationStatus updates invitation status both users start collaboration',
+      () async {
+        await repository.saveCollaborationInvitation(user1.email);
+        await repository.saveCollaborationInvitation(user2.email);
 
-      await changeLogin(user1);
-      final invitations = await repository.pendingInvitations();
-      expect(invitations.length, 1);
-      expect(invitations.first.status, InvitationStatus.pending);
-      await repository.changeInvitationStatus(
-          invitations.first.id, InvitationStatus.accepted);
-      final invitationsAgain = await repository.pendingInvitations();
-      expect(invitationsAgain.length, 0);
-      final collaborators1 = await repository.listCollaborators();
-      expect(collaborators1.length, 1);
-      expect(collaborators1, contains(userLogged.id));
-      await expectLater(
+        await changeLogin(user1);
+        final invitations = await repository.pendingInvitations();
+        expect(invitations.length, 1);
+        expect(invitations.first.status, InvitationStatus.pending);
+        await repository.changeInvitationStatus(
+          invitations.first.id,
+          InvitationStatus.accepted,
+        );
+        final invitationsAgain = await repository.pendingInvitations();
+        expect(invitationsAgain.length, 0);
+        final collaborators1 = await repository.listCollaborators();
+        expect(collaborators1.length, 1);
+        expect(collaborators1, contains(userLogged.id));
+        await expectLater(
           firestore
               .collection('users')
               .doc(user1.id)
@@ -464,8 +563,9 @@ void main() {
               .doc(userLogged.id)
               .get()
               .then((doc) => doc.exists),
-          completion(isTrue));
-      await expectLater(
+          completion(isTrue),
+        );
+        await expectLater(
           firestore
               .collection('users')
               .doc(loggedInUserId)
@@ -473,90 +573,107 @@ void main() {
               .doc(user1.id)
               .get()
               .then((doc) => doc.exists),
-          completion(isTrue));
+          completion(isTrue),
+        );
 
-      // log in back the original user
-      await changeLogin(userLogged);
-      final sentInvitations = await repository.pendingInvitations(sent: true);
-      expect(sentInvitations.length, 1);
-      final collaborators = await repository.listCollaborators();
-      expect(collaborators.length, 1);
-      expect(collaborators, contains(user1.id));
-    });
-
-    test('changeInvitationStatus throws exception if invitation not found',
-        () async {
-      expectLater(
-          () => repository.changeInvitationStatus(
-              'nonexistent_id', InvitationStatus.accepted),
-          throwsA(isA<Exception>()));
-    });
+        // log in back the original user
+        await changeLogin(userLogged);
+        final sentInvitations = await repository.pendingInvitations(sent: true);
+        expect(sentInvitations.length, 1);
+        final collaborators = await repository.listCollaborators();
+        expect(collaborators.length, 1);
+        expect(collaborators, contains(user1.id));
+      },
+    );
 
     test(
-        'send the same invitation for the second time should throw an exception',
-        () async {
-      await repository.saveCollaborationInvitation(user1.email);
-      await expectLater(repository.saveCollaborationInvitation(user1.email),
-          throwsA(isA<Exception>()));
-    });
+      'changeInvitationStatus throws exception if invitation not found',
+      () async {
+        expectLater(
+          () => repository.changeInvitationStatus(
+            'nonexistent_id',
+            InvitationStatus.accepted,
+          ),
+          throwsA(isA<Exception>()),
+        );
+      },
+    );
+
+    test(
+      'send the same invitation for the second time should throw an exception',
+      () async {
+        await repository.saveCollaborationInvitation(user1.email);
+        await expectLater(
+          repository.saveCollaborationInvitation(user1.email),
+          throwsA(isA<Exception>()),
+        );
+      },
+    );
 
     test('saveUser should also store emailToUid reference', () async {
       await repository.saveUser(user1);
       final emailDigest = user1.email.sha256Digest;
       final emailToUidDoc = firestore.collection('emailToUid').doc(emailDigest);
       expectLater(
-          emailToUidDoc.get().then((doc) => doc.exists), completion(isTrue));
+        emailToUidDoc.get().then((doc) => doc.exists),
+        completion(isTrue),
+      );
     });
 
     test(
-        'grant permission to stats to user1 and verify if added to /sharing collection',
-        () async {
-      // save user1 requires them to be logged in
-      await changeLogin(user1);
+      'grant permission to stats to user1 and verify if added to /sharing collection',
+      () async {
+        // save user1 requires them to be logged in
+        await changeLogin(user1);
 
-      // login back to default user
-      await changeLogin(userLogged);
-      await repository.grantStatsAccess(user1.email);
-      final grantedList = await repository.listGivenStatsGrants();
-      expect(grantedList, hasLength(1));
-      expect(grantedList.first.id, equals(user1.id));
-      await changeLogin(user1);
-      final grants = await repository.listOwnStatsGrants();
-      expect(grants, hasLength(1));
-      expect(grants.first.id, equals(loggedInUserId));
-    });
+        // login back to default user
+        await changeLogin(userLogged);
+        await repository.grantStatsAccess(user1.email);
+        final grantedList = await repository.listGivenStatsGrants();
+        expect(grantedList, hasLength(1));
+        expect(grantedList.first.id, equals(user1.id));
+        await changeLogin(user1);
+        final grants = await repository.listOwnStatsGrants();
+        expect(grants, hasLength(1));
+        expect(grants.first.id, equals(loggedInUserId));
+      },
+    );
 
     test(
-        'grant permission to stats to user1 and user1 can get list of collaborators',
-        () async {
-      await repository.grantStatsAccess(user1.email);
+      'grant permission to stats to user1 and user1 can get list of collaborators',
+      () async {
+        await repository.grantStatsAccess(user1.email);
 
-      await changeLogin(user1);
-      final usersList = await repository.listOwnStatsGrants();
-      expect(usersList.length, 1);
-      expect(usersList.first.email, userLogged.email);
-    });
+        await changeLogin(user1);
+        final usersList = await repository.listOwnStatsGrants();
+        expect(usersList.length, 1);
+        expect(usersList.first.email, userLogged.email);
+      },
+    );
   });
 
   group('Deck grants', () {
     final userLogged = UserProfile(
-        id: loggedInUserId,
-        email: loggedInUserEmail,
-        name: 'john',
-        theme: ThemeMode.system,
-        locale: Locale('pl'));
+      id: loggedInUserId,
+      email: loggedInUserEmail,
+      name: 'john',
+      theme: ThemeMode.system,
+      locale: Locale('pl'),
+    );
     final user1 = UserProfile(
-        id: 'id1',
-        email: 'user1@example.com',
-        name: 'john',
-        theme: ThemeMode.system,
-        locale: Locale('pl'));
+      id: 'id1',
+      email: 'user1@example.com',
+      name: 'john',
+      theme: ThemeMode.system,
+      locale: Locale('pl'),
+    );
     final user2 = UserProfile(
-        id: 'id2',
-        email: 'user2@example.com',
-        name: 'john',
-        theme: ThemeMode.system,
-        locale: Locale('pl'));
+      id: 'id2',
+      email: 'user2@example.com',
+      name: 'john',
+      theme: ThemeMode.system,
+      locale: Locale('pl'),
+    );
 
     setUp(() async {
       await repository.saveUser(userLogged);
@@ -601,37 +718,42 @@ void main() {
     });
 
     test(
-        'grant access and other user incorporates shared deck into learning list',
-        () async {
-      final deck = model.Deck(name: 'Test Deck 3');
-      final savedDeck = await repository.saveDeck(deck);
-      final deckId = savedDeck.id!;
-      // add 2 cards to the deck
-      await repository.saveCard(model.Card(
-        id: 'card1',
-        deckId: deckId,
-        question: 'Question 1',
-        answer: "Answer 1",
-      ));
-      await repository.saveCard(model.Card(
-        id: 'card2',
-        deckId: deckId,
-        question: 'Question 2',
-        answer: "Answer 2",
-      ));
+      'grant access and other user incorporates shared deck into learning list',
+      () async {
+        final deck = model.Deck(name: 'Test Deck 3');
+        final savedDeck = await repository.saveDeck(deck);
+        final deckId = savedDeck.id!;
+        // add 2 cards to the deck
+        await repository.saveCard(
+          model.Card(
+            id: 'card1',
+            deckId: deckId,
+            question: 'Question 1',
+            answer: "Answer 1",
+          ),
+        );
+        await repository.saveCard(
+          model.Card(
+            id: 'card2',
+            deckId: deckId,
+            question: 'Question 2',
+            answer: "Answer 2",
+          ),
+        );
 
-      await repository.grantAccessToDeck(deckId, user1.email);
-      await changeLogin(user1);
-      final session = StudySession(repository: repository, deckId: deckId);
-      await session.startStudySession();
-      expect(session.remainingCards, equals(0));
-      await repository.incorporateSharedDeck(deckId);
-      final session2 = StudySession(repository: repository);
-      await session2.startStudySession();
-      expect(session2.remainingCards, equals(2));
-      final session3 = StudySession(repository: repository, deckId: deckId);
-      await session3.startStudySession();
-      expect(session3.remainingCards, equals(2));
-    });
+        await repository.grantAccessToDeck(deckId, user1.email);
+        await changeLogin(user1);
+        final session = StudySession(repository: repository, deckId: deckId);
+        await session.startStudySession();
+        expect(session.remainingCards, equals(0));
+        await repository.incorporateSharedDeck(deckId);
+        final session2 = StudySession(repository: repository);
+        await session2.startStudySession();
+        expect(session2.remainingCards, equals(2));
+        final session3 = StudySession(repository: repository, deckId: deckId);
+        await session3.startStudySession();
+        expect(session3.remainingCards, equals(2));
+      },
+    );
   });
 }

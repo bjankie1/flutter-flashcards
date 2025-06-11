@@ -404,7 +404,6 @@ class _GenerateAnswerButton extends StatefulWidget {
 }
 
 class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
-  bool _isLoading = false;
   String? _loadingType; // 'answer', 'answerHint', or null
 
   @override
@@ -476,7 +475,6 @@ class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
 
   void processLoading({required bool includeHint}) async {
     setState(() {
-      _isLoading = true;
       _loadingType = includeHint ? 'answerHint' : 'answer';
     });
     try {
@@ -490,7 +488,6 @@ class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
       );
     } finally {
       setState(() {
-        _isLoading = false;
         _loadingType = null;
       });
     }

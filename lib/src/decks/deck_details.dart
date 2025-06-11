@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
+import 'package:logger/logger.dart';
 
 import '../model/cards.dart' as model;
 import 'editable_text.dart' as custom;
 
 /// Shows Deck metadata information enabling user to edit those details.
 final class DeckInformation extends StatelessWidget {
+  final Logger _log = Logger();
+
   final model.Deck deck;
 
   DeckInformation({super.key, required this.deck});
@@ -27,7 +30,7 @@ final class DeckInformation extends StatelessWidget {
             );
             newDeck = newDeck.copyWith(category: category);
           } catch (e, stackTrace) {
-            // Optionally log error
+            _log.e('Error saving deck name', error: e, stackTrace: stackTrace);
           }
           await context.cardRepository.saveDeck(newDeck);
           context.showInfoSnackbar(context.l10n.deckNameSavedMessage);
@@ -45,7 +48,11 @@ final class DeckInformation extends StatelessWidget {
             );
             newDeck = newDeck.copyWith(category: category);
           } catch (e, stackTrace) {
-            // show error snackbar
+            _log.e(
+              'Error saving deck description',
+              error: e,
+              stackTrace: stackTrace,
+            );
             context.showErrorSnackbar(
               context.l10n.deckDescriptionSaveErrorMessage,
             );

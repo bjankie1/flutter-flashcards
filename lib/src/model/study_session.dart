@@ -36,10 +36,24 @@ class StudySession with ChangeNotifier {
   Future<void> startStudySession() async {
     _log.d('Starting session');
     _cards = await repository
-        .loadCardsToReview(deckId: deckId, deckGroupId: deckGroupId)
-        .then((result) => result.toList())
+        .loadCardsWithStatsToReview(deckId: deckId, deckGroupId: deckGroupId)
+        .then((result) {
+          // First shuffle to ensure randomness within same hour
+          final shuffled = result.map((cs) => (cs.$1, cs.$2)).toList()
+            ..shuffle();
+          // Then sort by due date (nextReviewDate) rounded to hours
+          shuffled.sort((a, b) {
+            final aDate = a.$1.nextReviewDate?.hourStart;
+            final bDate = b.$1.nextReviewDate?.hourStart;
+            // Handle null dates (they should come last)
+            if (aDate == null && bDate == null) return 0;
+            if (aDate == null) return 1;
+            if (bDate == null) return -1;
+            return aDate.compareTo(bDate);
+          });
+          return shuffled.map((cs) => (cs.$1.variant, cs.$2)).toList();
+        })
         .logError('Error loading cards to review');
-    _cards.shuffle();
     _currentIndex = 0;
     _reviewStart = currentClockDateTime;
     _sessionStarted = true;
@@ -56,7 +70,12 @@ class StudySession with ChangeNotifier {
     final (variant, card) = _cards[(_currentIndex)];
     final duration = currentClockDateTime.difference(_reviewStart);
     await repository.recordAnswer(
-        card.id, variant, rating, _reviewStart, duration);
+      card.id,
+      variant,
+      rating,
+      _reviewStart,
+      duration,
+    );
     _progressToNextCard(rating);
   }
 

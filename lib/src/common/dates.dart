@@ -7,6 +7,9 @@ extension DateTimeExtensions on DateTime {
   DateTime get dayStart =>
       copyWith(hour: 0, minute: 0, second: 0, millisecond: 0);
 
+  DateTime get hourStart =>
+      copyWith(minute: 0, second: 0, millisecond: 0, microsecond: 0);
+
   Timestamp toTimestamp() => Timestamp.fromDate(this);
 }
 

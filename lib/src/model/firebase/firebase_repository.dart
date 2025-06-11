@@ -306,7 +306,7 @@ class FirebaseCardsRepository extends CardsRepository {
   }) async {
     _log.d('Loading cards to review count');
 
-    final cardsWithStats = await _loadCardsWithStatsToReview(
+    final cardsWithStats = await loadCardsWithStatsToReview(
       deckId: deckId,
       deckGroupId: deckGroupId,
     );
@@ -332,7 +332,8 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     };
   }
 
-  Future<Iterable<(CardStats, Card)>> _loadCardsWithStatsToReview({
+  @override
+  Future<Iterable<(CardStats, Card)>> loadCardsWithStatsToReview({
     DeckId? deckId,
     DeckGroupId? deckGroupId,
   }) async {
@@ -374,20 +375,6 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
     return cardStatsToReview
         .where((cs) => cardsById.containsKey(cs.cardId))
         .map((cs) => (cs, cardsById[cs.cardId]!));
-  }
-
-  @override
-  Future<Iterable<(CardReviewVariant, Card)>> loadCardsToReview({
-    DeckId? deckId,
-    DeckGroupId? deckGroupId,
-  }) async {
-    _log.d('Loading cards to review');
-
-    final result = await _loadCardsWithStatsToReview(
-      deckId: deckId,
-      deckGroupId: deckGroupId,
-    );
-    return result.map((cs) => (cs.$1.variant, cs.$2));
   }
 
   /// Executes query by splitting ids into batches. The method does not verify
@@ -1124,7 +1111,7 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       'Getting mastery breakdown for deck: $deckId deckGroup: $deckGroupId',
     );
 
-    final cardsWithStats = await _loadCardsWithStatsToReview(
+    final cardsWithStats = await loadCardsWithStatsToReview(
       deckId: deckId,
       deckGroupId: deckGroupId,
     );

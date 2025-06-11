@@ -158,6 +158,6 @@
   "learningStatisticsToday": "Dzisiaj",
   "learningStatisticsYesterday": "Wczoraj",
   "learningStatisticsClose": "Zamknij",
-  "learningStatisticsDay": "{count, plural, one {# dzień} few {# dni} many {# dni} other {# dni}}",
-  "learningStatisticsHour": "{count, plural, one {# godzina} few {# godziny} many {# godzin} other {# godziny}}"
+  "learningStatisticsDay": "{count, plural, one {{count} dzień} few {{count} dni} many {{count} dni} other {{count} dni}}",
+  "learningStatisticsHour": "{count, plural, one {{count} godzina} few {{count} godziny} many {{count} godzin} other {{count} godziny}}"
 }

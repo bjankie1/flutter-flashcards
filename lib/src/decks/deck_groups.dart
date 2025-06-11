@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/containers.dart';
 import 'package:flutter_flashcards/src/common/themes.dart';
@@ -43,17 +42,17 @@ class DeckGroups extends StatelessWidget {
                                       style: context.textTheme.headlineSmall,
                                     )
                                   : custom.EditableText(
-                                      text: group!.name,
+                                      text: group.name,
                                       style: context.textTheme.headlineSmall,
                                       onTextChanged: (value) {
                                         context.cardRepository.updateDeckGroup(
-                                          group!.copyWith(name: value),
+                                          group.copyWith(name: value),
                                         );
                                       },
                                     ),
                             ),
                             if (group != null)
-                              DeckGroupReviewButton(deckGroup: group!),
+                              DeckGroupReviewButton(deckGroup: group),
                           ],
                         ),
                       ),

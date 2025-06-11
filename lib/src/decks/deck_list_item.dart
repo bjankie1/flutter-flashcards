@@ -421,7 +421,6 @@ class DeckMasteryReportDialog extends StatelessWidget {
     final total = breakdown.values.fold(0, (a, b) => a + b);
     final percent = (progress * 100).round();
     final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
