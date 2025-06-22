@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Deploy script for Flutter Flashcards App
 # This script updates version numbers and deploys the app
@@ -13,23 +13,27 @@ NC='\033[0m' # No Color
 echo -e "${BLUE}🚀 Flutter Flashcards Deployment Script${NC}"
 echo "======================================"
 
-# Bump version number
+# Check if bump_version.sh exists and is executable
+if [ ! -x "./scripts/bump_version.sh" ]; then
+    echo -e "${RED}❌ Error: scripts/bump_version.sh not found or not executable${NC}"
+    echo "Please ensure the script exists and has execute permissions:"
+    echo "  chmod +x scripts/bump_version.sh"
+    exit 1
+fi
+
+# Bump version number using our script
 echo -e "${YELLOW}📦 Bumping version number...${NC}"
-mag modify bump --targets 'build-number'
-VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-VERSION_NUMBER=$(echo $VERSION | cut -d'+' -f1)
-BUILD_NUMBER=$(echo $VERSION | cut -d'+' -f2)
+./scripts/bump_version.sh
+
+# Get version information from environment variables set by the script
+if [ -z "$VERSION" ] || [ -z "$VERSION_NUMBER" ] || [ -z "$BUILD_NUMBER" ]; then
+    # Fallback: read from pubspec.yaml if environment variables are not set
+    VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+    VERSION_NUMBER=$(echo $VERSION | cut -d'+' -f1)
+    BUILD_NUMBER=$(echo $VERSION | cut -d'+' -f2)
+fi
 
 echo -e "${GREEN}✅ New version: $VERSION_NUMBER+$BUILD_NUMBER${NC}"
-
-# Update version in index.html
-echo -e "${YELLOW}📝 Updating index.html...${NC}"
-sed -i -e "s/\"flutter_bootstrap\.js[^\"]*\"/\"flutter_bootstrap.js?v=$VERSION\"/g" web/index.html
-
-# Update service worker version
-echo -e "${YELLOW}🔧 Updating service worker...${NC}"
-sed -i -e "s/const CACHE_NAME = 'flutter-flashcards-v[^']*'/const CACHE_NAME = 'flutter-flashcards-v$VERSION'/g" web/sw.js
-sed -i -e "s/const STATIC_CACHE_NAME = 'flutter-flashcards-static-v[^']*'/const STATIC_CACHE_NAME = 'flutter-flashcards-static-v$VERSION'/g" web/sw.js
 
 # Build the app
 echo -e "${YELLOW}🔨 Building web app...${NC}"

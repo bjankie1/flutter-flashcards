@@ -53,35 +53,7 @@ jobs:
         run: flutter pub get
 
       - name: Bump version
-        run: |
-          # Install mag CLI for version bumping
-          curl -L https://github.com/mag-io/mag/releases/latest/download/mag-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m) -o mag
-          chmod +x mag
-          sudo mv mag /usr/local/bin/
-          
-          # Bump build number
-          mag modify bump --targets 'build-number'
-          
-          # Get new version
-          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-          VERSION_NUMBER=$(echo $VERSION | cut -d'+' -f1)
-          BUILD_NUMBER=$(echo $VERSION | cut -d'+' -f2)
-          
-          echo "New version: $VERSION_NUMBER+$BUILD_NUMBER"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "VERSION_NUMBER=$VERSION_NUMBER" >> $GITHUB_ENV
-          echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
-
-      - name: Update version in files
-        run: |
-          # Update index.html
-          sed -i -e "s/\"flutter_bootstrap\.js[^\"]*\"/\"flutter_bootstrap.js?v=$VERSION\"/g" web/index.html
-          
-          # Update service worker
-          sed -i -e "s/const CACHE_NAME = 'flutter-flashcards-v[^']*'/const CACHE_NAME = 'flutter-flashcards-v$VERSION'/g" web/sw.js
-          sed -i -e "s/const STATIC_CACHE_NAME = 'flutter-flashcards-static-v[^']*'/const STATIC_CACHE_NAME = 'flutter-flashcards-static-v$VERSION'/g" web/sw.js
-          
-          echo "Updated version references in web files"
+        run: ./scripts/bump_version.sh
 
       - name: Build web app
         run: flutter build web --source-maps
