@@ -5,8 +5,17 @@ import 'package:flutter_flashcards/src/model/repository.dart';
 
 import '../../model/cards.dart' as model;
 
+/// A widget that displays a list of deck groups for selection.
+///
+/// This widget allows users to view and select deck groups for a specific deck.
+/// It shows which groups the deck currently belongs to and allows toggling
+/// membership in groups.
 class DeckGroupSelectionList extends StatefulWidget {
+  /// The ID of the deck for which groups are being selected.
   final String deckId;
+
+  /// Optional callback function that is called when a group is selected.
+  /// The callback receives the ID of the selected group.
   final Function(String groupId)? onGroupSelected;
 
   DeckGroupSelectionList({required this.deckId, this.onGroupSelected});

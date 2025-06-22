@@ -8,7 +8,7 @@ import '../../common/build_context_extensions.dart';
 import '../../model/cards.dart' as model;
 import '../../model/card_mastery.dart';
 import '../../widgets.dart';
-import '../deck_groups/deck_group_selection.dart';
+import '../deck_groups/deck_group_selection_list.dart';
 import 'decks_list.dart';
 
 class DeckListItem extends StatelessWidget {
@@ -43,7 +43,7 @@ class DeckListItem extends StatelessWidget {
                   overflow: TextOverflow.clip,
                   softWrap: false,
                 ),
-                subtitle: Row(children: [DeckCardsNumber(deck: deck)]),
+                subtitle: Row(children: [DeckInfoWidget(deck: deck)]),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -70,7 +70,7 @@ class DeckListItem extends StatelessWidget {
           overflow: TextOverflow.clip,
           softWrap: false,
         ),
-        subtitle: Row(children: [DeckCardsNumber(deck: deck)]),
+        subtitle: Row(children: [DeckInfoWidget(deck: deck)]),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -240,10 +240,10 @@ class DeckContextMenu extends ConsumerWidget {
   }
 }
 
-class DeckCardsNumber extends StatelessWidget {
+class DeckInfoWidget extends StatelessWidget {
   final model.Deck deck;
 
-  const DeckCardsNumber({super.key, required this.deck});
+  const DeckInfoWidget({super.key, required this.deck});
 
   @override
   Widget build(BuildContext context) {
@@ -251,19 +251,41 @@ class DeckCardsNumber extends StatelessWidget {
       fetcher: (repository) => repository.getCardCount(deck.id!),
       builder: (context, data, _) {
         final cardCount = data;
-        return TextButton(
-          style: TextButton.styleFrom(padding: EdgeInsets.only(right: 8)),
-          onPressed: () async => {
-            await context.pushNamed(
-              'addCard',
-              pathParameters: {'deckId': deck.id!},
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Tooltip(
+              message: context.l10n.cards,
+              child: Icon(
+                Icons.style,
+                size: 16,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
-          },
-          child: Text(
-            "${context.l10n.cards}: $cardCount",
-            overflow: TextOverflow.clip,
-            softWrap: false,
-          ),
+            const SizedBox(width: 4),
+            Text(
+              cardCount.toString(),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              icon: Icon(Icons.add, size: 18),
+              onPressed: () async {
+                await context.pushNamed(
+                  'addCard',
+                  pathParameters: {'deckId': deck.id!},
+                );
+              },
+              tooltip: context.l10n.addCard,
+              style: IconButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: Size(24, 24),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ),
+          ],
         );
       },
     );

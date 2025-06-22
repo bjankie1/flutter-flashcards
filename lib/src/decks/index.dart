@@ -1,8 +1,8 @@
 // Deck Groups feature
 export 'deck_groups/deck_groups_widget.dart';
 export 'deck_groups/deck_groups_controller.dart';
-export 'deck_groups/deck_group.dart';
-export 'deck_groups/deck_group_selection.dart';
+export 'deck_groups/deck_group_horizontal_list.dart';
+export 'deck_groups/deck_group_selection_list.dart';
 
 // Decks Page feature
 export 'decks_page/decks_page.dart';
