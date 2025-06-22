@@ -86,6 +86,24 @@
 
 ## Deployment
 
+### Automated Deployment (Recommended)
+
+The app uses GitHub Actions for automated deployment to Firebase Hosting. Each merge to the main branch triggers:
+
+- ✅ Automated testing
+- ✅ Version bumping
+- ✅ Firebase Hosting deployment
+- ✅ Remote Config updates
+- ✅ Deployment notifications
+
+**Setup**: Run `./setup_github_actions.sh` and follow `GITHUB_SETUP.md`
+
+**Live Site**: https://flashcards-521f0.web.app
+
+### Manual Deployment
+
+For manual deployments, see `DEPLOYMENT_WORKFLOW.md` for detailed instructions.
+
 Region: europe-central2
 
 Deployable artifacts:

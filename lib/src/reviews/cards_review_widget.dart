@@ -322,17 +322,35 @@ class _RatingButton extends StatelessWidget {
     required this.onTap,
   });
 
+  IconData _getRatingIcon() {
+    switch (rating) {
+      case model.Rating.again:
+        return Icons.refresh;
+      case model.Rating.hard:
+        return Icons.trending_down;
+      case model.Rating.good:
+        return Icons.thumb_up;
+      case model.Rating.easy:
+        return Icons.sentiment_very_satisfied;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isMobile = context.isMobile;
+
     return ElevatedButton(
       onPressed: onTap,
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         foregroundColor: theme.colorScheme.onSurface,
         elevation: isSelected ? 3 : 1,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        minimumSize: const Size(120, 48),
+        padding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 12 : 16,
+          vertical: isMobile ? 8 : 12,
+        ),
+        minimumSize: Size(isMobile ? 48 : 120, isMobile ? 48 : 48),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         side: BorderSide(
           color: isSelected
@@ -341,13 +359,15 @@ class _RatingButton extends StatelessWidget {
           width: isSelected ? 2 : 1,
         ),
       ),
-      child: Text(
-        label,
-        style: textStyle?.copyWith(
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          color: theme.colorScheme.onSurface,
-        ),
-      ),
+      child: isMobile
+          ? Icon(_getRatingIcon(), size: 24)
+          : Text(
+              label,
+              style: textStyle?.copyWith(
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
     );
   }
 }

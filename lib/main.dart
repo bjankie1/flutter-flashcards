@@ -83,7 +83,7 @@ void main() async {
         ),
         ChangeNotifierProvider(create: (context) => DrawerState()),
         Provider(create: (context) => cloudFunctions),
-        Provider(create: (context) => appInfo),
+        ChangeNotifierProvider(create: (context) => appInfo),
       ],
       child: const FlashcardsApp(),
     ),

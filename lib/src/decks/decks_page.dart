@@ -64,7 +64,7 @@ class DecksPage extends StatelessWidget {
                                       }
                                     : null,
                                 tooltip:
-                                    "${context.l10n.learnEverything} (${totalToReview})",
+                                    "${context.l10n.learnEverything} ($totalToReview)",
                                 child: Icon(Icons.school),
                               ),
                               FloatingActionButton(
@@ -210,7 +210,7 @@ class DecksPage extends StatelessWidget {
       text: deck?.name ?? '',
     );
 
-    return showModalBottomSheet(
+    return await showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return Padding(

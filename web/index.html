@@ -31,8 +31,65 @@
 
     <title>flutter_flashcards</title>
     <link rel="manifest" href="manifest.json"/>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registered successfully:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 </head>
 <body>
-<script src="flutter_bootstrap.js?v=1.0.2+120" async></script>
+    <!-- Version Update Banner Container -->
+    <div id="version-update-banner"></div>
+    
+    <!-- Flutter App Container -->
+    <div id="flutter-app"></div>
+    
+    <script src="flutter_bootstrap.js?v=1.0.2+121" async></script>
+    
+    <!-- Version Update Script -->
+    <script>
+        // Listen for service worker messages about updates
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
+                    console.log('Update available notification received');
+                    // This will be handled by the Flutter app
+                    if (window.flutter_inappwebview) {
+                        window.flutter_inappwebview.callHandler('onUpdateAvailable');
+                    }
+                }
+            });
+        }
+        
+        // Function to reload the app (called from Flutter)
+        window.reloadApp = function() {
+            console.log('Reloading app...');
+            window.location.reload();
+        };
+        
+        // Function to check for updates (called from Flutter)
+        window.checkForUpdates = function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then(function(registration) {
+                    if (registration.active) {
+                        registration.active.postMessage({
+                            type: 'CHECK_VERSION',
+                            url: '/main.dart.js'
+                        });
+                    }
+                });
+            }
+        };
+    </script>
 </body>
 </html>

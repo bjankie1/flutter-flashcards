@@ -1,0 +1,180 @@
+name: Deploy to Firebase Hosting
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  FLUTTER_VERSION: '3.24.0'
+  FIREBASE_PROJECT_ID: flashcards-521f0
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Analyze code
+        run: flutter analyze
+
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Bump version
+        run: |
+          # Install mag CLI for version bumping
+          curl -L https://github.com/mag-io/mag/releases/latest/download/mag-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m) -o mag
+          chmod +x mag
+          sudo mv mag /usr/local/bin/
+          
+          # Bump build number
+          mag modify bump --targets 'build-number'
+          
+          # Get new version
+          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          VERSION_NUMBER=$(echo $VERSION | cut -d'+' -f1)
+          BUILD_NUMBER=$(echo $VERSION | cut -d'+' -f2)
+          
+          echo "New version: $VERSION_NUMBER+$BUILD_NUMBER"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "VERSION_NUMBER=$VERSION_NUMBER" >> $GITHUB_ENV
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
+
+      - name: Update version in files
+        run: |
+          # Update index.html
+          sed -i -e "s/\"flutter_bootstrap\.js[^\"]*\"/\"flutter_bootstrap.js?v=$VERSION\"/g" web/index.html
+          
+          # Update service worker
+          sed -i -e "s/const CACHE_NAME = 'flutter-flashcards-v[^']*'/const CACHE_NAME = 'flutter-flashcards-v$VERSION'/g" web/sw.js
+          sed -i -e "s/const STATIC_CACHE_NAME = 'flutter-flashcards-static-v[^']*'/const STATIC_CACHE_NAME = 'flutter-flashcards-static-v$VERSION'/g" web/sw.js
+          
+          echo "Updated version references in web files"
+
+      - name: Build web app
+        run: flutter build web --source-maps
+
+      - name: Setup Firebase CLI
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_SERVICE_ACCOUNT_FLASHCARDS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLASHCARDS }}
+          PROJECT_PATH: ./
+
+      - name: Create Remote Config JSON
+        run: |
+          cat > remote_config.json << EOF
+          {
+            "conditions": [
+              {
+                "name": "Default",
+                "expression": "true",
+                "tagColor": "BLUE"
+              }
+            ],
+            "parameters": {
+              "app_version": {
+                "defaultValue": {
+                  "value": "$VERSION_NUMBER"
+                },
+                "description": "Current app version (semantic versioning)",
+                "valueType": "STRING"
+              },
+              "app_build_number": {
+                "defaultValue": {
+                  "value": "$BUILD_NUMBER"
+                },
+                "description": "Current app build number",
+                "valueType": "STRING"
+              },
+              "update_message": {
+                "defaultValue": {
+                  "value": "New version available with latest features and improvements!"
+                },
+                "description": "Custom message shown to users when update is available",
+                "valueType": "STRING"
+              },
+              "update_required": {
+                "defaultValue": {
+                  "value": "false"
+                },
+                "description": "Whether the update is required (true) or optional (false)",
+                "valueType": "STRING"
+              }
+            }
+          }
+          EOF
+          
+          echo "Created Remote Config JSON for version $VERSION_NUMBER+$BUILD_NUMBER"
+
+      - name: Setup Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.FIREBASE_PROJECT_ID }}
+          service_account_key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLASHCARDS }}
+          export_default_credentials: true
+
+      - name: Update Firebase Remote Config
+        run: |
+          curl -X PUT \
+            -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+            -H "Content-Type: application/json" \
+            -d @remote_config.json \
+            "https://firebaseremoteconfig.googleapis.com/v1/projects/${{ env.FIREBASE_PROJECT_ID }}/remoteConfig"
+          
+          echo "Updated Firebase Remote Config successfully"
+
+      - name: Create deployment summary
+        run: |
+          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: $VERSION_NUMBER" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build**: $BUILD_NUMBER" >> $GITHUB_STEP_SUMMARY
+          echo "- **Project**: ${{ env.FIREBASE_PROJECT_ID }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger**: Push to main branch" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
+          echo "- [Live Site](https://${{ env.FIREBASE_PROJECT_ID }}.web.app)" >> $GITHUB_STEP_SUMMARY
+          echo "- [Firebase Console](https://console.firebase.google.com/project/${{ env.FIREBASE_PROJECT_ID }})" >> $GITHUB_STEP_SUMMARY
+          echo "- [Remote Config](https://console.firebase.google.com/project/${{ env.FIREBASE_PROJECT_ID }}/remoteConfig)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify deployment
+        if: success()
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "🌐 Live site: https://${{ env.FIREBASE_PROJECT_ID }}.web.app"
+          echo "📱 Version $VERSION_NUMBER+$BUILD_NUMBER is now live" 

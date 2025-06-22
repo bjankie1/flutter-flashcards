@@ -228,5 +228,18 @@
   "learningStatisticsYesterday": "Yesterday",
   "learningStatisticsClose": "Close",
   "learningStatisticsDay": "{count, plural, one {# day} other {# days}}",
-  "learningStatisticsHour": "{count, plural, one {# hour} other {# hours}}"
+  "learningStatisticsHour": "{count, plural, one {# hour} other {# hours}}",
+  "updateAvailable": "Update Available",
+  "updateAvailableMessage": "A new version of the app is available. Update now to get the latest features and improvements.",
+  "updateNow": "Update Now",
+  "updateLater": "Later",
+  "updatingApp": "Updating...",
+  "updateCheckFailed": "Failed to check for updates",
+  "updateDownloading": "Downloading update...",
+  "updateInstalling": "Installing update...",
+  "updateComplete": "Update complete! The app will reload.",
+  "updateError": "Update failed. Please try again.",
+  "checkingForUpdates": "Checking for updates...",
+  "noUpdateAvailable": "You're using the latest version",
+  "updateReminder": "Don't forget to update! A new version is available."
 }

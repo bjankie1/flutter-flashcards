@@ -159,5 +159,18 @@
   "learningStatisticsYesterday": "Wczoraj",
   "learningStatisticsClose": "Zamknij",
   "learningStatisticsDay": "{count, plural, one {{count} dzień} few {{count} dni} many {{count} dni} other {{count} dni}}",
-  "learningStatisticsHour": "{count, plural, one {{count} godzina} few {{count} godziny} many {{count} godzin} other {{count} godziny}}"
+  "learningStatisticsHour": "{count, plural, one {{count} godzina} few {{count} godziny} many {{count} godzin} other {{count} godziny}}",
+  "updateAvailable": "Dostępna aktualizacja",
+  "updateAvailableMessage": "Dostępna jest nowa wersja aplikacji. Zaktualizuj teraz, aby uzyskać najnowsze funkcje i ulepszenia.",
+  "updateNow": "Zaktualizuj teraz",
+  "updateLater": "Później",
+  "updatingApp": "Aktualizowanie...",
+  "updateCheckFailed": "Nie udało się sprawdzić aktualizacji",
+  "updateDownloading": "Pobieranie aktualizacji...",
+  "updateInstalling": "Instalowanie aktualizacji...",
+  "updateComplete": "Aktualizacja zakończona! Aplikacja zostanie przeładowana.",
+  "updateError": "Aktualizacja nie powiodła się. Spróbuj ponownie.",
+  "checkingForUpdates": "Sprawdzanie aktualizacji...",
+  "noUpdateAvailable": "Używasz najnowszej wersji",
+  "updateReminder": "Nie zapomnij zaktualizować! Dostępna jest nowa wersja."
 }

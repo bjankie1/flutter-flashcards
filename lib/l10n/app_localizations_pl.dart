@@ -504,4 +504,46 @@ class AppLocalizationsPl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get updateAvailable => 'Dostępna aktualizacja';
+
+  @override
+  String get updateAvailableMessage =>
+      'Dostępna jest nowa wersja aplikacji. Zaktualizuj teraz, aby uzyskać najnowsze funkcje i ulepszenia.';
+
+  @override
+  String get updateNow => 'Zaktualizuj teraz';
+
+  @override
+  String get updateLater => 'Później';
+
+  @override
+  String get updatingApp => 'Aktualizowanie...';
+
+  @override
+  String get updateCheckFailed => 'Nie udało się sprawdzić aktualizacji';
+
+  @override
+  String get updateDownloading => 'Pobieranie aktualizacji...';
+
+  @override
+  String get updateInstalling => 'Instalowanie aktualizacji...';
+
+  @override
+  String get updateComplete =>
+      'Aktualizacja zakończona! Aplikacja zostanie przeładowana.';
+
+  @override
+  String get updateError => 'Aktualizacja nie powiodła się. Spróbuj ponownie.';
+
+  @override
+  String get checkingForUpdates => 'Sprawdzanie aktualizacji...';
+
+  @override
+  String get noUpdateAvailable => 'Używasz najnowszej wersji';
+
+  @override
+  String get updateReminder =>
+      'Nie zapomnij zaktualizować! Dostępna jest nowa wersja.';
 }

@@ -496,4 +496,45 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get updateAvailable => 'Update Available';
+
+  @override
+  String get updateAvailableMessage =>
+      'A new version of the app is available. Update now to get the latest features and improvements.';
+
+  @override
+  String get updateNow => 'Update Now';
+
+  @override
+  String get updateLater => 'Later';
+
+  @override
+  String get updatingApp => 'Updating...';
+
+  @override
+  String get updateCheckFailed => 'Failed to check for updates';
+
+  @override
+  String get updateDownloading => 'Downloading update...';
+
+  @override
+  String get updateInstalling => 'Installing update...';
+
+  @override
+  String get updateComplete => 'Update complete! The app will reload.';
+
+  @override
+  String get updateError => 'Update failed. Please try again.';
+
+  @override
+  String get checkingForUpdates => 'Checking for updates...';
+
+  @override
+  String get noUpdateAvailable => 'You\'re using the latest version';
+
+  @override
+  String get updateReminder =>
+      'Don\'t forget to update! A new version is available.';
 }

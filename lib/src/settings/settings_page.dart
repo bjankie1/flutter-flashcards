@@ -55,37 +55,24 @@ class PersonalInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Personal info', style: context.textTheme.headlineMedium),
-        SizedBox(
-          height: 20,
-        ),
-        Text(
-          'My name',
-          style: context.textTheme.headlineSmall,
-        ),
+        SizedBox(height: 20),
+        Text('My name', style: context.textTheme.headlineSmall),
         ValueListenableBuilder(
-            valueListenable: context.appState.userProfile,
-            builder: (context, userProfile, _) {
-              return NameInput(userProfile);
-            }),
-        SizedBox(
-          height: 20,
+          valueListenable: context.appState.userProfile,
+          builder: (context, userProfile, _) {
+            return NameInput(userProfile);
+          },
         ),
-        Text(
-          'Email',
-          style: context.textTheme.headlineSmall,
-        ),
+        SizedBox(height: 20),
+        Text('Email', style: context.textTheme.headlineSmall),
         ValueListenableBuilder(
-            valueListenable: context.appState.userProfile,
-            builder: (context, userProfile, _) {
-              return Text(userProfile?.email ?? '');
-            }),
-        SizedBox(
-          height: 20,
+          valueListenable: context.appState.userProfile,
+          builder: (context, userProfile, _) {
+            return Text(userProfile?.email ?? '');
+          },
         ),
-        Text(
-          'Avatar',
-          style: context.textTheme.headlineSmall,
-        ),
+        SizedBox(height: 20),
+        Text('Avatar', style: context.textTheme.headlineSmall),
         UserPhoto(),
       ],
     );
@@ -101,20 +88,22 @@ class UserPhoto extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-              right: 30,
-              top: 0,
-              child: IconButton(
-                  onPressed: () {
-                    _uploadImageWeb(context);
-                  },
-                  icon: Icon(Icons.upload))),
+            right: 30,
+            top: 0,
+            child: IconButton(
+              onPressed: () {
+                _uploadImageWeb(context);
+              },
+              icon: Icon(Icons.upload),
+            ),
+          ),
           ValueListenableBuilder(
             valueListenable: context.appState.userAvatarUrl,
             builder: (context, url, _) => CircleAvatar(
               minRadius: 200,
               backgroundImage: url != null ? NetworkImage(url) : randomFace,
             ),
-          )
+          ),
         ],
       ),
     );
@@ -138,25 +127,116 @@ class UserPhoto extends StatelessWidget {
 }
 
 class AppVersion extends StatelessWidget {
-  const AppVersion({
-    super.key,
-  });
+  const AppVersion({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final appInfo = Provider.of<AppInfo>(context);
-
-    return Row(
-      spacing: 20,
-      children: [
-        Text('${appInfo.version} build ${appInfo.buildNumber}'),
-        if (kIsWeb)
-          ElevatedButton(
-              onPressed: () {
-                // html.window.location.reload();
-              },
-              child: Text('Reload script')),
-      ],
+    return Consumer<AppInfo>(
+      builder: (context, appInfo, child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('App Version', style: context.textTheme.headlineSmall),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Text('${appInfo.version} build ${appInfo.buildNumber}'),
+                const SizedBox(width: 16),
+                if (kIsWeb) ...[
+                  ElevatedButton.icon(
+                    onPressed: appInfo.isCheckingForUpdates
+                        ? null
+                        : appInfo.checkForUpdates,
+                    icon: appInfo.isCheckingForUpdates
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.refresh),
+                    label: Text(
+                      appInfo.isCheckingForUpdates
+                          ? context.l10n.checkingForUpdates
+                          : 'Check for Updates',
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  if (appInfo.isUpdateAvailable)
+                    ElevatedButton.icon(
+                      onPressed: appInfo.isUpdating
+                          ? null
+                          : appInfo.performUpdate,
+                      icon: appInfo.isUpdating
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.download),
+                      label: Text(
+                        appInfo.isUpdating
+                            ? context.l10n.updatingApp
+                            : context.l10n.updateNow,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onPrimary,
+                      ),
+                    ),
+                ],
+              ],
+            ),
+            if (appInfo.isUpdateAvailable) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.system_update,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        appInfo.updateMessage.isNotEmpty
+                            ? appInfo.updateMessage
+                            : context.l10n.updateAvailableMessage,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (kIsWeb) ...[
+              const SizedBox(height: 16),
+              Text('Update Settings', style: context.textTheme.headlineSmall),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.schedule, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Automatic update checks every 10 minutes',
+                    style: context.textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 }
@@ -183,15 +263,17 @@ class _NameInputState extends State<NameInput> {
 
   void _onTextChanged() {
     setState(() {
-      _isChanged = _nameController.text !=
+      _isChanged =
+          _nameController.text !=
           (context.appState.userProfile.value?.name ?? '');
     });
   }
 
   @override
   void dispose() {
-    _nameController
-        .removeListener(_onTextChanged); // Important: Remove listener
+    _nameController.removeListener(
+      _onTextChanged,
+    ); // Important: Remove listener
     _nameController.dispose(); // Important: Dispose of controller
     super.dispose();
   }
@@ -228,13 +310,13 @@ class _NameInputState extends State<NameInput> {
           ),
           if (_isChanged)
             IconButton(
-                onPressed: () {
-                  context.appState
-                      .updateUserProfile(name: _nameController.text);
-                  _onTextChanged();
-                  context.showInfoSnackbar(context.l10n.profileNameChanged);
-                },
-                icon: Icon(Icons.check))
+              onPressed: () {
+                context.appState.updateUserProfile(name: _nameController.text);
+                _onTextChanged();
+                context.showInfoSnackbar(context.l10n.profileNameChanged);
+              },
+              icon: Icon(Icons.check),
+            ),
         ],
       ),
     );

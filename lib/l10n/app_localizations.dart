@@ -991,6 +991,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, one {# hour} other {# hours}}'**
   String learningStatisticsHour(num count);
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Available'**
+  String get updateAvailable;
+
+  /// No description provided for @updateAvailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version of the app is available. Update now to get the latest features and improvements.'**
+  String get updateAvailableMessage;
+
+  /// No description provided for @updateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Now'**
+  String get updateNow;
+
+  /// No description provided for @updateLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get updateLater;
+
+  /// No description provided for @updatingApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating...'**
+  String get updatingApp;
+
+  /// No description provided for @updateCheckFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to check for updates'**
+  String get updateCheckFailed;
+
+  /// No description provided for @updateDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading update...'**
+  String get updateDownloading;
+
+  /// No description provided for @updateInstalling.
+  ///
+  /// In en, this message translates to:
+  /// **'Installing update...'**
+  String get updateInstalling;
+
+  /// No description provided for @updateComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Update complete! The app will reload.'**
+  String get updateComplete;
+
+  /// No description provided for @updateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Update failed. Please try again.'**
+  String get updateError;
+
+  /// No description provided for @checkingForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for updates...'**
+  String get checkingForUpdates;
+
+  /// No description provided for @noUpdateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re using the latest version'**
+  String get noUpdateAvailable;
+
+  /// No description provided for @updateReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t forget to update! A new version is available.'**
+  String get updateReminder;
 }
 
 class _AppLocalizationsDelegate

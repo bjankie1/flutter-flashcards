@@ -1,0 +1,48 @@
+{
+  "conditions": [
+    {
+      "name": "Default",
+      "expression": "true",
+      "tagColor": "BLUE"
+    }
+  ],
+  "parameters": {
+    "app_version": {
+      "defaultValue": {
+        "value": "1.0.2"
+      },
+      "description": "Current app version (semantic versioning)",
+      "valueType": "STRING"
+    },
+    "app_build_number": {
+      "defaultValue": {
+        "value": "121"
+      },
+      "description": "Current app build number",
+      "valueType": "STRING"
+    },
+    "update_message": {
+      "defaultValue": {
+        "value": "New version available with latest features and improvements!"
+      },
+      "description": "Custom message shown to users when update is available",
+      "valueType": "STRING"
+    },
+    "update_required": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "description": "Whether the update is required (true) or optional (false)",
+      "valueType": "STRING"
+    }
+  },
+  "version": {
+    "versionNumber": "1",
+    "updateTime": "2025-06-21T23:46:01Z",
+    "updateUser": {
+      "email": ""
+    },
+    "updateOrigin": "CONSOLE",
+    "updateType": "INCREMENTAL_UPDATE"
+  }
+}
