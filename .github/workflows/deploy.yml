@@ -58,13 +58,15 @@ jobs:
       - name: Build web app
         run: flutter build web --source-maps
 
-      - name: Setup Firebase CLI
-        uses: w9jds/firebase-action@master
+      - name: Setup Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v2
         with:
-          args: deploy --only hosting
-        env:
-          FIREBASE_SERVICE_ACCOUNT_FLASHCARDS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLASHCARDS }}
-          PROJECT_PATH: ./
+          project_id: ${{ env.FIREBASE_PROJECT_ID }}
+          service_account_key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLASHCARDS }}
+          export_default_credentials: true
+          
+      - name: Deploy to Firebase Hosting
+        run: npx firebase-tools@latest deploy --only hosting --project ${{ env.FIREBASE_PROJECT_ID }}
 
       - name: Create Remote Config JSON
         run: |
@@ -111,13 +113,6 @@ jobs:
           EOF
           
           echo "Created Remote Config JSON for version $VERSION_NUMBER+$BUILD_NUMBER"
-
-      - name: Setup Google Cloud CLI
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ env.FIREBASE_PROJECT_ID }}
-          service_account_key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLASHCARDS }}
-          export_default_credentials: true
 
       - name: Update Firebase Remote Config
         run: |
