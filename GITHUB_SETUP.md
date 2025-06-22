@@ -16,6 +16,7 @@ The GitHub Actions workflow will:
 1. **Firebase Project**: Already set up (`flashcards-521f0`)
 2. **GitHub Repository**: Your Flutter app repository
 3. **Firebase CLI**: Installed locally for initial setup
+4. **Flutter SDK**: Version 3.32.4 or higher (supports Dart 3.8.0+)
 
 ## 🔧 Step 1: Create Firebase Service Account
 
@@ -207,7 +208,7 @@ You can customize the workflow by modifying these variables in `.github/workflow
 
 ```yaml
 env:
-  FLUTTER_VERSION: '3.24.0'  # Change Flutter version
+  FLUTTER_VERSION: '3.32.4'  # Change Flutter version
   FIREBASE_PROJECT_ID: flashcards-521f0  # Change project ID
 ```
 

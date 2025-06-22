@@ -13,6 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 PROJECT_ID="flashcards-521f0"
+FLUTTER_VERSION="3.32.4"
 
 echo -e "${BLUE}🚀 GitHub Actions Setup for Firebase Deployment${NC}"
 echo "=============================================="
