@@ -377,6 +377,98 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
         .map((cs) => (cs, cardsById[cs.cardId]!));
   }
 
+  @override
+  Future<Map<CardMastery, int>> getMasteryBreakdown({
+    DeckId? deckId,
+    DeckGroupId? deckGroupId,
+  }) async {
+    _log.d(
+      'Getting mastery breakdown for deck: $deckId deckGroup: $deckGroupId',
+    );
+
+    final cardsWithStats = await loadCardsWithStats(
+      deckId: deckId,
+      deckGroupId: deckGroupId,
+    );
+
+    final Map<CardMastery, int> breakdown = {
+      CardMastery.new_: 0,
+      CardMastery.learning: 0,
+      CardMastery.young: 0,
+      CardMastery.mature: 0,
+    };
+
+    for (final (stats, _) in cardsWithStats) {
+      switch (stats.state) {
+        case State.newState:
+          breakdown[CardMastery.new_] = (breakdown[CardMastery.new_] ?? 0) + 1;
+          break;
+        case State.learning:
+        case State.relearning:
+          breakdown[CardMastery.learning] =
+              (breakdown[CardMastery.learning] ?? 0) + 1;
+          break;
+        case State.review:
+          if (stats.interval < 21) {
+            breakdown[CardMastery.young] =
+                (breakdown[CardMastery.young] ?? 0) + 1;
+          } else {
+            breakdown[CardMastery.mature] =
+                (breakdown[CardMastery.mature] ?? 0) + 1;
+          }
+          break;
+      }
+    }
+
+    _log.d('''
+Successfully loaded mastery breakdown:
+New: ${breakdown[CardMastery.new_]}, 
+Learning: ${breakdown[CardMastery.learning]}, 
+Young: ${breakdown[CardMastery.young]}, 
+Mature: ${breakdown[CardMastery.mature]}''');
+
+    return breakdown;
+  }
+
+  @override
+  Future<Iterable<(CardStats, Card)>> loadCardsWithStats({
+    DeckId? deckId,
+    DeckGroupId? deckGroupId,
+  }) async {
+    _log.d(
+      'Loading cards stats with cards for deck: $deckId deckGroup: $deckGroupId',
+    );
+
+    Future<Iterable<Card>> getCards() async {
+      if (deckId != null) {
+        return await _loadCards(deckIds: {deckId});
+      }
+      if (deckGroupId != null) {
+        return await _loadCardsInDeckGroup(deckGroupId);
+      }
+      return [];
+    }
+
+    final cards = await getCards();
+    if (cards.isEmpty) return Iterable.empty();
+
+    final cardIds = cards.map((c) => c.id).toList();
+    final allStats = await loadCardStatsForCardIds(cardIds);
+
+    final cardsById = Map.fromEntries(cards.map((c) => MapEntry(c.id, c)));
+
+    return allStats.map((stat) {
+      final card = cardsById[stat.cardId];
+      if (card == null) {
+        _log.w(
+          'Found stat for a card not in the specified deck/group: ${stat.cardId}',
+        );
+        return null;
+      }
+      return (stat, card);
+    }).whereType<(CardStats, Card)>();
+  }
+
   /// Executes query by splitting ids into batches. The method does not verify
   /// if the query includes other criteria that would impact the firebase OR
   /// size limitation of 30.
@@ -1094,65 +1186,6 @@ New: $newState, Learning: $learningState, Relearning: $relearningState, Review: 
       throw 'Group ${group.id} does not exists';
     }
     await docRef.set(group);
-  }
-
-  /// Returns a breakdown of cards by their mastery level in a deck or deck group.
-  /// The mastery levels are:
-  /// - New: Cards that haven't been reviewed yet
-  /// - Learning: Cards that are actively being memorized (in learning or relearning state)
-  /// - Young: Cards in review state with relatively short intervals (< 21 days)
-  /// - Mature: Cards in review state with long intervals (>= 21 days)
-  @override
-  Future<Map<CardMastery, int>> getMasteryBreakdown({
-    DeckId? deckId,
-    DeckGroupId? deckGroupId,
-  }) async {
-    _log.d(
-      'Getting mastery breakdown for deck: $deckId deckGroup: $deckGroupId',
-    );
-
-    final cardsWithStats = await loadCardsWithStatsToReview(
-      deckId: deckId,
-      deckGroupId: deckGroupId,
-    );
-
-    final Map<CardMastery, int> breakdown = {
-      CardMastery.new_: 0,
-      CardMastery.learning: 0,
-      CardMastery.young: 0,
-      CardMastery.mature: 0,
-    };
-
-    for (final (stats, _) in cardsWithStats) {
-      switch (stats.state) {
-        case State.newState:
-          breakdown[CardMastery.new_] = (breakdown[CardMastery.new_] ?? 0) + 1;
-          break;
-        case State.learning:
-        case State.relearning:
-          breakdown[CardMastery.learning] =
-              (breakdown[CardMastery.learning] ?? 0) + 1;
-          break;
-        case State.review:
-          if (stats.interval < 21) {
-            breakdown[CardMastery.young] =
-                (breakdown[CardMastery.young] ?? 0) + 1;
-          } else {
-            breakdown[CardMastery.mature] =
-                (breakdown[CardMastery.mature] ?? 0) + 1;
-          }
-          break;
-      }
-    }
-
-    _log.d('''
-Successfully loaded mastery breakdown:
-New: ${breakdown[CardMastery.new_]}, 
-Learning: ${breakdown[CardMastery.learning]}, 
-Young: ${breakdown[CardMastery.young]}, 
-Mature: ${breakdown[CardMastery.mature]}''');
-
-    return breakdown;
   }
 
   /// Loads CardStats for a list of cardIds, batching requests in groups of 30.

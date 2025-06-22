@@ -56,6 +56,11 @@ abstract class CardsRepository extends ChangeNotifier {
     model.DeckGroupId? deckGroupId,
   });
 
+  Future<Iterable<(model.CardStats, model.Card)>> loadCardsWithStats({
+    model.DeckId? deckId,
+    model.DeckGroupId? deckGroupId,
+  });
+
   Future<Map<model.State, int>> cardsToReviewCount({
     model.DeckId? deckId,
     model.DeckGroupId? deckGroupId,
