@@ -7,7 +7,7 @@ import 'package:flutter_flashcards/src/decks/card_edit_page.dart';
 import 'package:flutter_flashcards/src/decks/deck_details_page.dart';
 import 'package:flutter_flashcards/src/decks/deck_generate_from_google_doc_page.dart';
 import 'package:flutter_flashcards/src/decks/deck_generate_page.dart';
-import 'package:flutter_flashcards/src/decks/decks_page.dart';
+import 'package:flutter_flashcards/src/decks/decks_page/decks_page.dart';
 import 'package:flutter_flashcards/src/decks/provisionary_card_complete.dart';
 import 'package:flutter_flashcards/src/settings/settings_page.dart';
 import 'package:flutter_flashcards/src/statistics/statistics_page.dart';
@@ -46,7 +46,7 @@ final router = GoRouter(
         }
         return null; // Proceed with normal navigation if logged in
       },
-      builder: (context, state) => DecksPage(),
+      builder: (context, state) => const DecksPage(),
       routes: [
         GoRoute(
           path: 'sign-in',
@@ -131,7 +131,7 @@ final router = GoRouter(
       builder: (context, state) {
         final deckId = state.pathParameters['deckId'];
         if (deckId == null) {
-          return DecksPage();
+          return const DecksPage();
         }
         return RepositoryLoader(
           fetcher: (repository) async => await repository.loadDeck(deckId),
@@ -151,7 +151,7 @@ final router = GoRouter(
           builder: (context, state) {
             final deckId = state.pathParameters['deckId'];
             if (deckId == null) {
-              return DecksPage();
+              return const DecksPage();
             }
             final cardId = state.pathParameters['cardId'];
 
@@ -176,7 +176,7 @@ final router = GoRouter(
             Logger().i('Creating card');
             final deckId = state.pathParameters['deckId'];
             if (deckId == null) {
-              return DecksPage();
+              return const DecksPage();
             }
             return CardEditPage(deckId: deckId);
           },
@@ -187,7 +187,7 @@ final router = GoRouter(
       path: '/decks',
       name: NamedRoute.decks.name,
       builder: (context, state) {
-        return DecksPage();
+        return const DecksPage();
       },
       routes: [],
     ),

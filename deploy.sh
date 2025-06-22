@@ -35,6 +35,10 @@ fi
 
 echo -e "${GREEN}✅ New version: $VERSION_NUMBER+$BUILD_NUMBER${NC}"
 
+# Generate code
+echo -e "${YELLOW}🔧 Generating code...${NC}"
+dart run build_runner build --delete-conflicting-outputs
+
 # Build the app
 echo -e "${YELLOW}🔨 Building web app...${NC}"
 flutter build web --source-maps

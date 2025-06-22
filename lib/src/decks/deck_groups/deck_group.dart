@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/containers.dart';
 import 'package:flutter_flashcards/src/decks/deck_list/deck_list_item.dart';
 
-import '../model/cards.dart' as model;
+import '../../model/cards.dart' as model;
 
 class DeckGroupHorizontalList extends StatelessWidget {
   final List<model.Deck> decks;

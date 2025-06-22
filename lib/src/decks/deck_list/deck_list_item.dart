@@ -8,7 +8,7 @@ import '../../common/build_context_extensions.dart';
 import '../../model/cards.dart' as model;
 import '../../model/card_mastery.dart';
 import '../../widgets.dart';
-import '../deck_group_selection.dart';
+import '../deck_groups/deck_group_selection.dart';
 import 'decks_list.dart';
 
 class DeckListItem extends StatelessWidget {
