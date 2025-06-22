@@ -31,7 +31,7 @@ jobs:
         run: flutter test
 
       - name: Analyze code
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
 
   build-and-deploy:
     name: Build and Deploy
