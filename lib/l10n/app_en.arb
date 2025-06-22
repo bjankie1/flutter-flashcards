@@ -241,5 +241,16 @@
   "updateError": "Update failed. Please try again.",
   "checkingForUpdates": "Checking for updates...",
   "noUpdateAvailable": "You're using the latest version",
-  "updateReminder": "Don't forget to update! A new version is available."
+  "updateReminder": "Don't forget to update! A new version is available.",
+  "deckDetails": "Deck Details",
+  "@deckDetails": {
+    "description": "Title for the deck details page"
+  },
+  "generateFromGoogleDoc": "Generate from Google Doc",
+  "googleDocLink": "Google Doc Link",
+  "googleDocHelperText": "Paste the link to your Google Doc to generate cards from it.",
+  "@addCard": {
+    "description": "Label for add card button"
+  },
+  "cancelButtonLabel": "Cancel"
 }

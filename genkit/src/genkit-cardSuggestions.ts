@@ -15,7 +15,7 @@ const googleAIapiKey = defineSecret("GOOGLE_GENAI_API_KEY");
 setGlobalOptions({ region: "europe-central2" });
 
 // Initialize Genkit with the Google AI plugin
-const ai = genkit({
+export const ai = genkit({
   plugins: [
     // Load the Google AI plugin. It will use the GOOGLE_GENAI_API_KEY environment variable.
     googleAI(),

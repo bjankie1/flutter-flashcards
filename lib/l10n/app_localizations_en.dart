@@ -537,4 +537,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get updateReminder =>
       'Don\'t forget to update! A new version is available.';
+
+  @override
+  String get deckDetails => 'Deck Details';
+
+  @override
+  String get generateFromGoogleDoc => 'Generate from Google Doc';
+
+  @override
+  String get googleDocLink => 'Google Doc Link';
+
+  @override
+  String get googleDocHelperText =>
+      'Paste the link to your Google Doc to generate cards from it.';
+
+  @override
+  String get cancelButtonLabel => 'Cancel';
 }

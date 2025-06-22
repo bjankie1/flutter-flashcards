@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/collaboration/collaboration_page.dart';
 import 'package:flutter_flashcards/src/decks/card_edit_page.dart';
 import 'package:flutter_flashcards/src/decks/deck_details_page.dart';
+import 'package:flutter_flashcards/src/decks/deck_generate_from_google_doc_page.dart';
 import 'package:flutter_flashcards/src/decks/deck_generate_page.dart';
 import 'package:flutter_flashcards/src/decks/decks_page.dart';
 import 'package:flutter_flashcards/src/decks/provisionary_card_complete.dart';
@@ -23,6 +24,7 @@ enum NamedRoute {
   quickCards,
   learn,
   generateCards,
+  generateFromGoogleDoc,
   decks,
   addCard,
   editCard,
@@ -54,6 +56,11 @@ final router = GoRouter(
                 EmailAuthProvider(),
                 GoogleProvider(
                   clientId: DefaultFirebaseOptions.GOOGLE_CLIENT_ID,
+                  scopes: [
+                    'email',
+                    'https://www.googleapis.com/auth/documents.readonly',
+                    'https://www.googleapis.com/auth/drive.readonly',
+                  ],
                 ),
               ],
               actions: [
@@ -191,6 +198,14 @@ final router = GoRouter(
         final deckId = state.uri.queryParameters['deckId'];
         Logger().i('Creating deck from text');
         return DeckGeneratePage(deckId: deckId);
+      },
+    ),
+    GoRoute(
+      path: '/generate-from-google-doc',
+      name: NamedRoute.generateFromGoogleDoc.name,
+      builder: (context, state) {
+        final deckId = state.uri.queryParameters['deckId'];
+        return DeckGenerateFromGoogleDocPage(deckId: deckId);
       },
     ),
     GoRoute(

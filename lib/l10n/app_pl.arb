@@ -172,5 +172,13 @@
   "updateError": "Aktualizacja nie powiodła się. Spróbuj ponownie.",
   "checkingForUpdates": "Sprawdzanie aktualizacji...",
   "noUpdateAvailable": "Używasz najnowszej wersji",
-  "updateReminder": "Nie zapomnij zaktualizować! Dostępna jest nowa wersja."
+  "updateReminder": "Nie zapomnij zaktualizować! Dostępna jest nowa wersja.",
+  "generateFromGoogleDoc": "Generuj z Dokumentu Google",
+  "googleDocLink": "Link do Dokumentu Google",
+  "googleDocHelperText": "Wklej link do swojego Dokumentu Google, aby wygenerować z niego fiszki.",
+  "deckDetails": "Szczegóły talii",
+  "@deckDetails": {
+    "description": "Title for the deck details page"
+  },
+  "cancelButtonLabel": "Anuluj"
 }

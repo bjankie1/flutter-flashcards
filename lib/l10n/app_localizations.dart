@@ -182,7 +182,7 @@ abstract class AppLocalizations {
   /// **'Add deck'**
   String get addDeck;
 
-  /// No description provided for @addCard.
+  /// Label for add card button
   ///
   /// In en, this message translates to:
   /// **'Add card'**
@@ -1069,6 +1069,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Don\'t forget to update! A new version is available.'**
   String get updateReminder;
+
+  /// Title for the deck details page
+  ///
+  /// In en, this message translates to:
+  /// **'Deck Details'**
+  String get deckDetails;
+
+  /// No description provided for @generateFromGoogleDoc.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate from Google Doc'**
+  String get generateFromGoogleDoc;
+
+  /// No description provided for @googleDocLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Doc Link'**
+  String get googleDocLink;
+
+  /// No description provided for @googleDocHelperText.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the link to your Google Doc to generate cards from it.'**
+  String get googleDocHelperText;
+
+  /// No description provided for @cancelButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelButtonLabel;
 }
 
 class _AppLocalizationsDelegate

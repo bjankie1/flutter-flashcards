@@ -546,4 +546,20 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get updateReminder =>
       'Nie zapomnij zaktualizować! Dostępna jest nowa wersja.';
+
+  @override
+  String get deckDetails => 'Szczegóły talii';
+
+  @override
+  String get generateFromGoogleDoc => 'Generuj z Dokumentu Google';
+
+  @override
+  String get googleDocLink => 'Link do Dokumentu Google';
+
+  @override
+  String get googleDocHelperText =>
+      'Wklej link do swojego Dokumentu Google, aby wygenerować z niego fiszki.';
+
+  @override
+  String get cancelButtonLabel => 'Anuluj';
 }
