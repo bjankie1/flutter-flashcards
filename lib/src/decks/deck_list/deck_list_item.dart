@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/common/assets.dart';
 import 'package:flutter_flashcards/src/decks/deck_sharing.dart';
 import 'package:go_router/go_router.dart';
 
-import '../common/build_context_extensions.dart';
-import '../model/cards.dart' as model;
-import '../model/card_mastery.dart';
-import '../widgets.dart';
-import 'deck_group_selection.dart';
+import '../../common/build_context_extensions.dart';
+import '../../model/cards.dart' as model;
+import '../../model/card_mastery.dart';
+import '../../widgets.dart';
+import '../deck_group_selection.dart';
 import 'decks_list.dart';
 
 class DeckListItem extends StatelessWidget {
@@ -97,13 +98,13 @@ class DeckListItem extends StatelessWidget {
   }
 }
 
-class DeckContextMenu extends StatelessWidget {
+class DeckContextMenu extends ConsumerWidget {
   final model.Deck deck;
 
   const DeckContextMenu({super.key, required this.deck});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return PopupMenuButton(
       icon: Icon(Icons.more_vert),
       itemBuilder: (BuildContext context) => [
@@ -203,7 +204,7 @@ class DeckContextMenu extends StatelessWidget {
             ],
           ),
           onTap: () {
-            deleteDeck(context, deck);
+            deleteDeck(context, ref, deck);
           },
         ),
         // Add more menu items as needed
@@ -211,8 +212,11 @@ class DeckContextMenu extends StatelessWidget {
     );
   }
 
-  Future<void> deleteDeck(BuildContext context, model.Deck deck) async =>
-      DeckList().deleteDeck(context, deck);
+  Future<void> deleteDeck(
+    BuildContext context,
+    WidgetRef ref,
+    model.Deck deck,
+  ) async => DeckList().deleteDeck(context, ref, deck);
 
   _showAddDeckToGroupDialog(BuildContext context, model.DeckId deckId) {
     return showModalBottomSheet(

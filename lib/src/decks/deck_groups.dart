@@ -3,7 +3,7 @@ import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/containers.dart';
 import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/decks/deck_group.dart';
-import 'package:flutter_flashcards/src/decks/deck_list_item.dart';
+import 'package:flutter_flashcards/src/decks/deck_list/deck_list_item.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' show Deck, DeckGroup;
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';

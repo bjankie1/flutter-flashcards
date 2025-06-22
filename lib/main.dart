@@ -8,6 +8,7 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/firebase_options.dart';
 import 'package:flutter_flashcards/src/app_info.dart';
 import 'package:flutter_flashcards/src/app_state.dart';
@@ -17,11 +18,12 @@ import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
 import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as provider_package;
 import 'package:url_strategy/url_strategy.dart';
 
 import 'src/app.dart';
 import 'src/model/repository_provider.dart';
+import 'src/decks/deck_list/index.dart';
 
 final _log = Logger();
 
@@ -70,22 +72,27 @@ void main() async {
   await appInfo.init();
 
   runApp(
-    MultiProvider(
-      providers: [
-        CardsRepositoryProvider(repository),
-        Provider(
-          create: (context) {
-            return storageService;
-          },
-        ),
-        ChangeNotifierProvider(
-          create: (context) => AppState(repository, storageService),
-        ),
-        ChangeNotifierProvider(create: (context) => DrawerState()),
-        Provider(create: (context) => cloudFunctions),
-        ChangeNotifierProvider(create: (context) => appInfo),
-      ],
-      child: const FlashcardsApp(),
+    ProviderScope(
+      overrides: [cardsRepositoryProvider.overrideWithValue(repository)],
+      child: provider_package.MultiProvider(
+        providers: [
+          CardsRepositoryProvider(repository),
+          provider_package.Provider(
+            create: (context) {
+              return storageService;
+            },
+          ),
+          provider_package.ChangeNotifierProvider(
+            create: (context) => AppState(repository, storageService),
+          ),
+          provider_package.ChangeNotifierProvider(
+            create: (context) => DrawerState(),
+          ),
+          provider_package.Provider(create: (context) => cloudFunctions),
+          provider_package.ChangeNotifierProvider(create: (context) => appInfo),
+        ],
+        child: const FlashcardsApp(),
+      ),
     ),
   );
 }

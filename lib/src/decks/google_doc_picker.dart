@@ -3,7 +3,6 @@ import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
-import 'package:http/http.dart' as http;
 
 import '../../firebase_options.dart';
 
