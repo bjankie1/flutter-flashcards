@@ -48,10 +48,4 @@ class GoogleDocReader {
     }
     return buffer.toString();
   }
-
-  String? _extractDocId(String url) {
-    final regex = RegExp(r'/document/d/([a-zA-Z0-9_-]+)');
-    final match = regex.firstMatch(url);
-    return match?.group(1);
-  }
 }

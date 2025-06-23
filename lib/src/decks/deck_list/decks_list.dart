@@ -7,6 +7,13 @@ import 'package:go_router/go_router.dart';
 import '../../model/cards.dart' as model;
 import 'decks_controller.dart';
 
+/// A widget that displays a list of decks with loading, error, and empty states.
+///
+/// This widget uses Riverpod to manage state and automatically handles:
+/// - Loading state with a circular progress indicator
+/// - Error state with retry functionality
+/// - Empty state with a message when no decks exist
+/// - Data state displaying the list of decks
 class DeckList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
