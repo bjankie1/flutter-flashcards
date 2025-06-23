@@ -67,7 +67,7 @@ class _CardsListViewState extends State<_CardsListView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(context.l10n.errorLoadingCards),
-            if (error != null) ...[
+            ...[
               const SizedBox(height: 8),
               Text(
                 error.toString(),

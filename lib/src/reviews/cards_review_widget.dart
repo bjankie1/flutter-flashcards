@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/common/assets.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/card_image.dart';
@@ -9,64 +10,31 @@ import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/study_session.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
+import 'cards_review_controller.dart';
 
-class CardsReview extends StatefulWidget {
+class CardsReview extends ConsumerWidget {
   final StudySession session;
 
-  CardsReview({required this.session});
+  const CardsReview({super.key, required this.session});
 
   @override
-  State<StatefulWidget> createState() => _CardsReviewState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controllerState = ref.watch(cardsReviewControllerProvider(session));
+    final controller = ref.read(
+      cardsReviewControllerProvider(session).notifier,
+    );
 
-class _CardsReviewState extends State<CardsReview> {
-  bool _answerRevealed = false;
-
-  void revealAnswer() {
-    setState(() => _answerRevealed = true);
-  }
-
-  recordAnswerRating(BuildContext context, model.Rating rating) async {
-    try {
-      await widget.session.rateAnswer(rating);
-      setState(() {
-        _answerRevealed = false;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          content: Row(
-            children: [
-              const Icon(Icons.warning_amber_rounded, color: Colors.white),
-              const SizedBox(width: 8),
-              Text(
-                'Error recording answer',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: widget.session,
+      listenable: session,
       builder: (context, _) {
-        final current = widget.session.currentCard;
+        final current = session.currentCard;
         if (current != null) {
           final (variant, card) = current;
           return ReviewWidget(
             card: card,
             variant: variant,
-            answerRevealed: _answerRevealed,
-            tapRevealAnswer: revealAnswer,
-            tapRating: (rating) => recordAnswerRating(context, rating),
+            controllerState: controllerState,
+            controller: controller,
           );
         }
         return Column(
@@ -91,16 +59,15 @@ class _CardsReviewState extends State<CardsReview> {
 class ReviewWidget extends StatelessWidget {
   final model.Card card;
   final model.CardReviewVariant variant;
-  final bool answerRevealed;
-  final Function tapRevealAnswer;
-  final Function(model.Rating) tapRating;
+  final ReviewState controllerState;
+  final CardsReviewController controller;
 
-  ReviewWidget({
+  const ReviewWidget({
+    super.key,
     required this.card,
     required this.variant,
-    required this.answerRevealed,
-    required this.tapRevealAnswer,
-    required this.tapRating,
+    required this.controllerState,
+    required this.controller,
   });
 
   @override
@@ -125,13 +92,13 @@ class ReviewWidget extends StatelessWidget {
             Expanded(
               child: CardFlipAnimation(
                 key: Key('${card.id}_${variant.name}'),
-                front: RevealAnswerWidget(tapRevealAnswer: tapRevealAnswer),
+                front: RevealAnswerWidget(),
                 back: AnswerCard(card: card, variant: variant),
-                onFlipped: tapRevealAnswer,
+                onFlipped: controller.revealAnswer,
               ),
             ),
             AnimatedOpacity(
-              opacity: answerRevealed ? 1 : 0,
+              opacity: controllerState.answerRevealed ? 1 : 0,
               duration: Duration(milliseconds: 500),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -141,7 +108,8 @@ class ReviewWidget extends StatelessWidget {
                 child: RateAnswer(
                   key: ValueKey('${card.id}_${variant.name}'),
                   card: card,
-                  onRated: tapRating,
+                  controllerState: controllerState,
+                  onRated: controller.recordAnswerRating,
                 ),
               ),
             ),
@@ -199,9 +167,7 @@ class AnswerCard extends StatelessWidget {
 }
 
 class RevealAnswerWidget extends StatelessWidget {
-  const RevealAnswerWidget({super.key, required this.tapRevealAnswer});
-
-  final Function tapRevealAnswer;
+  const RevealAnswerWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -220,18 +186,17 @@ class RevealAnswerWidget extends StatelessWidget {
   }
 }
 
-class RateAnswer extends StatefulWidget {
+class RateAnswer extends StatelessWidget {
   final model.Card card;
+  final ReviewState controllerState;
   final void Function(model.Rating) onRated;
 
-  RateAnswer({super.key, required this.card, required this.onRated});
-
-  @override
-  State<RateAnswer> createState() => _RateAnswerState();
-}
-
-class _RateAnswerState extends State<RateAnswer> {
-  model.Rating? _reviewRate;
+  RateAnswer({
+    super.key,
+    required this.card,
+    required this.controllerState,
+    required this.onRated,
+  });
 
   Color _getRatingColor(BuildContext context, model.Rating rating) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -258,11 +223,8 @@ class _RateAnswerState extends State<RateAnswer> {
           label: context.l10n.rateAgainLabel,
           textStyle: textStyle,
           color: _getRatingColor(context, model.Rating.again),
-          isSelected: _reviewRate == model.Rating.again,
-          onTap: () {
-            setState(() => _reviewRate = model.Rating.again);
-            widget.onRated(model.Rating.again);
-          },
+          isSelected: controllerState.selectedRating == model.Rating.again,
+          onTap: () => onRated(model.Rating.again),
         ),
         const SizedBox(width: 8),
         _RatingButton(
@@ -270,11 +232,8 @@ class _RateAnswerState extends State<RateAnswer> {
           label: context.l10n.rateHardLabel,
           textStyle: textStyle,
           color: _getRatingColor(context, model.Rating.hard),
-          isSelected: _reviewRate == model.Rating.hard,
-          onTap: () {
-            setState(() => _reviewRate = model.Rating.hard);
-            widget.onRated(model.Rating.hard);
-          },
+          isSelected: controllerState.selectedRating == model.Rating.hard,
+          onTap: () => onRated(model.Rating.hard),
         ),
         const SizedBox(width: 8),
         _RatingButton(
@@ -282,11 +241,8 @@ class _RateAnswerState extends State<RateAnswer> {
           label: context.l10n.rateGoodLabel,
           textStyle: textStyle,
           color: _getRatingColor(context, model.Rating.good),
-          isSelected: _reviewRate == model.Rating.good,
-          onTap: () {
-            setState(() => _reviewRate = model.Rating.good);
-            widget.onRated(model.Rating.good);
-          },
+          isSelected: controllerState.selectedRating == model.Rating.good,
+          onTap: () => onRated(model.Rating.good),
         ),
         const SizedBox(width: 8),
         _RatingButton(
@@ -294,11 +250,8 @@ class _RateAnswerState extends State<RateAnswer> {
           label: context.l10n.rateEasyLabel,
           textStyle: textStyle,
           color: _getRatingColor(context, model.Rating.easy),
-          isSelected: _reviewRate == model.Rating.easy,
-          onTap: () {
-            setState(() => _reviewRate = model.Rating.easy);
-            widget.onRated(model.Rating.easy);
-          },
+          isSelected: controllerState.selectedRating == model.Rating.easy,
+          onTap: () => onRated(model.Rating.easy),
         ),
       ],
     );
