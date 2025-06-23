@@ -7,7 +7,7 @@ import 'package:flutter_flashcards/src/decks/deck_groups/deck_groups_controller.
 import 'package:flutter_flashcards/src/decks/deck_list/deck_list_item.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:go_router/go_router.dart';
-import 'package:flutter_flashcards/src/decks/editable_text.dart' as custom;
+import 'package:flutter_flashcards/src/common/editable_text.dart' as custom;
 
 class DeckGroupsWidget extends ConsumerWidget {
   const DeckGroupsWidget({super.key});

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
+import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../model/cards.dart' as model;
-import '../editable_text.dart' as custom;
+import '../../common/editable_text.dart' as custom;
 
 /// Shows Deck metadata information enabling user to edit those details.
 final class DeckDetails extends StatelessWidget {
@@ -24,7 +25,7 @@ final class DeckDetails extends StatelessWidget {
       children: [
         custom.EditableText(
           text: deck.name,
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: context.theme.textTheme.headlineSmall,
           onTextChanged: (value) async {
             var newDeck = deck.copyWith(name: value);
             try {
@@ -51,6 +52,7 @@ final class DeckDetails extends StatelessWidget {
             fontWeight: FontWeight.w500,
             color: Theme.of(context).colorScheme.onSurface,
           ),
+          placeholder: 'Add description',
           onTextChanged: (value) async {
             var newDeck = deck.copyWith(description: value);
             try {

@@ -5,12 +5,16 @@ class EditableText extends StatefulWidget {
   final String text;
   final Function(String) onTextChanged;
   final TextStyle? style;
+  final String placeholder;
+  final TextStyle? placeholderStyle;
 
   const EditableText({
     super.key,
     required this.text,
     required this.onTextChanged,
     this.style,
+    this.placeholder = '',
+    this.placeholderStyle,
   });
 
   @override
@@ -89,6 +93,15 @@ class _EditableTextState extends State<EditableText> {
     final fillColor = editing ? primary.withOpacity(0.08) : Colors.transparent;
 
     Widget textField;
+    final isEmpty = controller.text.isEmpty;
+    final placeholder = widget.placeholder;
+    final placeholderStyle =
+        widget.placeholderStyle ??
+        (widget.style ?? theme.textTheme.bodyMedium)?.copyWith(
+          fontStyle: FontStyle.italic,
+          color: theme.hintColor.withOpacity(0.7),
+        );
+
     if (editing) {
       textField = TextField(
         focusNode: focusNode,
@@ -101,6 +114,8 @@ class _EditableTextState extends State<EditableText> {
           filled: false,
           isDense: true,
           contentPadding: EdgeInsets.zero,
+          hintText: isEmpty ? placeholder : null,
+          hintStyle: placeholderStyle,
         ),
         autofocus: true,
         onSubmitted: (value) {
@@ -113,7 +128,7 @@ class _EditableTextState extends State<EditableText> {
         child: AbsorbPointer(
           child: TextField(
             controller: controller,
-            style: widget.style,
+            style: isEmpty ? placeholderStyle : widget.style,
             readOnly: true,
             decoration: InputDecoration(
               border: InputBorder.none,
@@ -122,6 +137,8 @@ class _EditableTextState extends State<EditableText> {
               filled: false,
               isDense: true,
               contentPadding: EdgeInsets.zero,
+              hintText: isEmpty ? placeholder : null,
+              hintStyle: placeholderStyle,
             ),
           ),
         ),
