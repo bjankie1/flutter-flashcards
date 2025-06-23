@@ -48,9 +48,9 @@ final class DeckDetails extends StatelessWidget {
         const SizedBox(height: 8),
         custom.EditableText(
           text: deck.description ?? '',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          style: context.theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w500,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: context.theme.colorScheme.onSurface,
           ),
           placeholder: 'Add description',
           onTextChanged: (value) async {
@@ -86,9 +86,9 @@ final class DeckDetails extends StatelessWidget {
                 builder: (context, totalCards, _) {
                   return Text(
                     "${context.l10n.cards}: $totalCards",
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    style: context.theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      color: context.theme.colorScheme.onSurface,
                     ),
                   );
                 },
@@ -118,24 +118,25 @@ final class DeckDetails extends StatelessWidget {
                               if (!context.mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  backgroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.errorContainer,
+                                  backgroundColor:
+                                      context.theme.colorScheme.errorContainer,
                                   content: Row(
                                     children: [
                                       Icon(
                                         Icons.warning_amber_rounded,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onErrorContainer,
+                                        color: context
+                                            .theme
+                                            .colorScheme
+                                            .onErrorContainer,
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
                                         context.l10n.errorLoadingCards,
                                         style: TextStyle(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.onErrorContainer,
+                                          color: context
+                                              .theme
+                                              .colorScheme
+                                              .onErrorContainer,
                                         ),
                                       ),
                                     ],

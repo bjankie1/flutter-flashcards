@@ -82,7 +82,6 @@
     {
       "source": "genkit",
       "codebase": "genkit",
-      "region": "europe-central2",
       "predeploy": [
         "npm --prefix \"$RESOURCE_DIR\" run lint",
         "npm --prefix \"$RESOURCE_DIR\" run build"

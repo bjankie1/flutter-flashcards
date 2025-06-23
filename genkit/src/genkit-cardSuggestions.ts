@@ -4,18 +4,8 @@ import { gemini20FlashExp, googleAI } from "@genkit-ai/googleai";
 // Import the Genkit Firebase Functions integration
 import { onCallGenkit } from "firebase-functions/https";
 
-// Import Firebase Functions related modules
-import { defineSecret } from "firebase-functions/params";
-import { setGlobalOptions } from "firebase-functions/v2";
-
-// Define secrets
-const googleAIapiKey = defineSecret("GOOGLE_GENAI_API_KEY");
-
-// Set global options for Firebase Functions (v2)
-setGlobalOptions({ region: "europe-central2" });
-
 // Initialize Genkit with the Google AI plugin
-export const ai = genkit({
+const ai = genkit({
   plugins: [
     // Load the Google AI plugin. It will use the GOOGLE_GENAI_API_KEY environment variable.
     googleAI(),
@@ -23,12 +13,6 @@ export const ai = genkit({
 });
 
 // Define Zod schemas for input and output validation
-const DeckInfoSchema = z.object({
-  deckName: z.string(),
-  deckDescription: z.string().optional(),
-});
-
-
 const CardDetailsSchema = z.object({
   deckName: z.string(),
   deckDescription: z.string().optional(),
@@ -151,33 +135,28 @@ function userPrompt(
 const cardTypeFlow = ai.defineFlow(
   {
     name: "cardTypeFlow",
-    inputSchema: DeckInfoSchema,
-    outputSchema: z.string(), // Expecting a string representing the category
+    inputSchema: z.object({
+      deckName: z.string(),
+      subject: z.string(),
+      description: z.string(),
+    }),
+    outputSchema: z.object({
+      category: z.string(),
+      confidence: z.number(),
+    }),
   },
-  async (subject) => {
+  async (subject: any) => {
     // Call the AI model to classify the deck
     const result = await ai.generate({
-      model: gemini20FlashExp, // Specify the model
-      system: `Classify flashcard based on provided information such as deckName,
-deckDescription and the question. Pick one of provided categories: language, history, science, other.
-NEVER add additional characters to the output such as extra quotes.
-Do not respond with null, always pick the best fitting category, if you are unsure select 'other'.`, // System instructions
-      prompt: `Given the following information about a deck and a question, classify the question into one of the provided categories:
-                Deck Name: ${subject.deckName}
-                Deck Description: ${subject.deckDescription}`, // User prompt with deck info
+      model: gemini20FlashExp,
+      system: `Classify flashcard based on provided information such as deckName,\ndeckDescription and the question. Pick one of provided categories: language, history, science, other.\nNEVER add additional characters to the output such as extra quotes.\nDo not respond with null, always pick the best fitting category, if you are unsure select 'other'.`,
+      prompt: `Given the following information about a deck and a question, classify the question into one of the provided categories:\n                Deck Name: ${subject.deckName}\n                Deck Description: ${subject.deckDescription}`,
       config: {
-        temperature: 0.0, // Low temperature for deterministic classification
+        temperature: 0.0,
       },
     });
-
-    // Check if the result text is valid
-    if (result.text == null) {
-      throw new Error("AI model did not return a category");
-    }
-    const responseText = result.text;
-    console.log("Direct API Response for category:", responseText);
-    // Return the classified category string
-    return responseText.trim(); // Trim whitespace
+    if (!result.text) throw new Error("AI model did not return a category");
+    return { category: result.text.trim(), confidence: 1 };
   }
 );
 
@@ -188,39 +167,40 @@ const cardAnswerSuggestionFlow = ai.defineFlow(
     inputSchema: CardDetailsSchema,
     outputSchema: AnswerAndExplanation, // Expecting an object with answer and explanation
   },
-  async (subject) => {
+  async (subject: any) => {
     // Determine the category: use provided category or classify using cardTypeFlow
     const categoryString = subject.category ?
       subject.category :
-      await cardTypeFlow(subject); // Call the classification flow if category not provided
+      await cardTypeFlow({
+        deckName: subject.deckName,
+        subject: subject.deckName,
+        description: subject.deckDescription || "",
+      });
 
-    // Convert the category string to the enum type
-    const category = stringToCategory(categoryString);
+    const category = stringToCategory(categoryString.category || categoryString);
 
     // Generate the answer and explanation using the AI model
     const { output } = await ai.generate({
       model: gemini20FlashExp, // Specify the model
       system: systemPrompt(category), // Get system prompt based on category
-      output: {
-        schema: AnswerAndExplanation, // Define the expected output schema
-      },
-      prompt: userPrompt( // Get user prompt based on category and card details
-        category,
-        subject.deckName,
-        subject.deckDescription ?? '', // Use empty string if description is null/undefined
-        subject.cardQuestion
-      ),
+      prompt: userPrompt(category, subject.deckName, subject.deckDescription || "", subject.cardQuestion), // Get user prompt
       config: {
-        temperature: 0.4, // Moderate temperature for creative but relevant answers
+        temperature: 0.7, // Moderate temperature for creative but consistent responses
       },
     });
 
-    // Validate the output
-    if (output == null) {
-      throw new Error("AI response doesn't satisfy the required schema");
-    }
-    // Return the generated answer and explanation
-    return output;
+    // Parse the response to extract answer and explanation
+    const responseText = output.text || "";
+    const lines = responseText.split('\n').filter((line: string) => line.trim() !== '');
+    
+    // Simple parsing: first line is answer, rest is explanation
+    const answer = lines[0] || "";
+    const explanation = lines.slice(1).join('\n') || "";
+
+    return {
+      answer: answer.trim(),
+      explanation: explanation.trim(),
+    };
   }
 );
 
@@ -228,77 +208,67 @@ const cardAnswerSuggestionFlow = ai.defineFlow(
 export const generateFlashCardsFromTextPrompt = ai.prompt('generateFlashCardsFromText');
 
 // Define Input Schema (using Zod, matching the prompt's input schema)
-const FlashcardRequestSchema = z.object({
-  frontLanguage: z.string(),
-  backLanguage: z.string(),
-  text: z.string(),
+const GenerateFlashCardsInputSchema = z.object({
+  text: z.string().describe("The text content to generate flashcards from"),
+  numberOfCards: z.number().optional().describe("Number of flashcards to generate (default: 5)"),
+  difficulty: z.enum(["easy", "medium", "hard"]).optional().describe("Difficulty level of the flashcards"),
 });
 
-// Define Output Schema explicitly
-// Even though it's in the prompt, defining it here provides compile-time safety.
-const FlashcardResponseSchema = z.object({
-    cards: z.array(z.object({
-        front: z.string(),
-        back: z.string()
-    }))
+// Define Output Schema (using Zod, matching the prompt's output schema)
+const GenerateFlashCardsOutputSchema = z.object({
+  flashcards: z.array(z.object({
+    question: z.string().describe("The question for the flashcard"),
+    answer: z.string().describe("The answer for the flashcard"),
+    explanation: z.string().optional().describe("Optional explanation for the answer"),
+  })).describe("Array of generated flashcards"),
 });
 
 export const flashcardGeneratorFlow = ai.defineFlow(
   {
     name: 'flashcardGeneratorFlow', // Name for tracing/debugging
-    inputSchema: FlashcardRequestSchema,
-    outputSchema: FlashcardResponseSchema, // Use the explicitly defined Zod schema
+    inputSchema: GenerateFlashCardsInputSchema,
+    outputSchema: GenerateFlashCardsOutputSchema,
   },
-  async (input) => { // Input is validated against FlashcardRequestSchema
+  async (input) => {
+    // Render the prompt with the input data
     const rendered = await generateFlashCardsFromTextPrompt.render({
-        input: input, // Pass the flow's input to the prompt's render method
+      text: input.text,
+      numberOfCards: input.numberOfCards || 5,
+      difficulty: input.difficulty || "medium",
     });
 
+    // Generate the flashcards using the AI model
     const { output } = await ai.generate({
       messages: rendered.messages, // Pass the fully rendered messages array
       model: gemini20FlashExp,     // Specify the model
       config: {
-        temperature: 0.45,      // Your config overrides
+        temperature: 0.7,          // Moderate temperature for creative but consistent responses
       },
-      output: {                 // Output constraints
-          format: 'json',
-          schema: FlashcardResponseSchema
-      }
     });
 
-    // Validate the output
-    if (output == null) {
-      throw new Error("AI response doesn't satisfy the required schema");
+    // Parse the response to extract flashcards
+    const responseText = output.text || "";
+    
+    // Simple parsing: look for question/answer pairs
+    const flashcards = [];
+    const lines = responseText.split('\n').filter((line: string) => line.trim() !== '');
+    
+    for (let i = 0; i < lines.length; i += 2) {
+      if (i + 1 < lines.length) {
+        flashcards.push({
+          question: lines[i].replace(/^Q[:\s]*/, '').trim(),
+          answer: lines[i + 1].replace(/^A[:\s]*/, '').trim(),
+        });
+      }
     }
-    // Return the generated answer and explanation
-    return output;
+
+    return {
+      flashcards: flashcards.slice(0, input.numberOfCards || 5),
+    };
   }
 );
 
-// Firebase Cloud Function endpoint to get card answer suggestions
-export const cardAnswer = onCallGenkit(
-  {
-    // Define the authentication policy
-    authPolicy: (auth, _data) => auth?.token?.['email_verified'] || false,
-    cors: "*", // Configure CORS policy (use cautiously in production)
-    secrets: [googleAIapiKey], // Specify secrets needed by the function
-  },
-  cardAnswerSuggestionFlow
-);
-
-// Firebase Cloud Function endpoint to get the deck category
-export const deckCategory = onCallGenkit({
-      authPolicy: (auth, _data) => auth?.token?.['email_verified'] || false,
-      secrets: [googleAIapiKey],
-      cors: "*",
-    },
-    cardTypeFlow
-);
-
-export const generateFlashCardsFromText = onCallGenkit({
-      authPolicy: (auth, _data) => auth?.token?.['email_verified'] || false,
-      secrets: [googleAIapiKey],
-      cors: "*",
-    },
-    flashcardGeneratorFlow
-);
+// Export the functions
+export const cardAnswer = onCallGenkit(cardAnswerSuggestionFlow);
+export const deckCategory = onCallGenkit(cardTypeFlow);
+export const generateFlashCardsFromText = onCallGenkit(flashcardGeneratorFlow);

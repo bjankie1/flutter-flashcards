@@ -41,11 +41,11 @@ dart run build_runner build --delete-conflicting-outputs
 
 # Build the app
 echo -e "${YELLOW}🔨 Building web app...${NC}"
-flutter build web --source-maps
+flutter build web --source-maps --no-tree-shake-icons
 
 # Deploy to Firebase
 echo -e "${YELLOW}🚀 Deploying to Firebase...${NC}"
-firebase deploy
+firebase deploy --only hosting
 
 echo -e "${GREEN}✅ Deployment complete!${NC}"
 echo ""

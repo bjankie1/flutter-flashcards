@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/common/assets.dart';
 import 'package:flutter_flashcards/src/decks/deck_sharing.dart';
@@ -42,7 +43,7 @@ class DeckListItem extends StatelessWidget {
                     contentPadding: EdgeInsets.zero,
                     title: Text(
                       deck.name,
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: context.theme.textTheme.titleMedium,
                       overflow: TextOverflow.clip,
                       softWrap: false,
                     ),
@@ -69,7 +70,7 @@ class DeckListItem extends StatelessWidget {
             isThreeLine: true,
             title: Text(
               deck.name,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: context.theme.textTheme.titleMedium,
               overflow: TextOverflow.clip,
               softWrap: false,
             ),
