@@ -29,18 +29,28 @@ class StatisticsCharts extends ConsumerWidget {
     );
 
     return statisticsAsync.when(
-      data: (answers) =>
-          _buildCharts(context, answers, statisticsData.selectedDateRange),
+      data: (answers) => StatisticsChartsContent(
+        answers: answers,
+        dateRange: statisticsData.selectedDateRange,
+      ),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) => Center(child: Text('Error: $error')),
     );
   }
+}
 
-  Widget _buildCharts(
-    BuildContext context,
-    Iterable<model.CardAnswer> answers,
-    DateTimeRange dateRange,
-  ) {
+class StatisticsChartsContent extends StatelessWidget {
+  final Iterable<model.CardAnswer> answers;
+  final DateTimeRange dateRange;
+
+  const StatisticsChartsContent({
+    super.key,
+    required this.answers,
+    required this.dateRange,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return CustomScrollView(

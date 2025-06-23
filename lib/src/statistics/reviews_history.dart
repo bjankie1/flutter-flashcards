@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
@@ -25,7 +26,7 @@ class ReviewHistory extends ConsumerWidget {
           child: Center(
             child: Text(
               context.l10n.cardReviewDaily,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: context.textTheme.titleMedium,
             ),
           ),
         ),
@@ -44,11 +45,10 @@ class ReviewHistory extends ConsumerWidget {
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    getTitlesWidget: (value, meta) => _getTitles(
-                      context,
-                      value,
-                      meta,
-                      reviewHistoryData.days,
+                    getTitlesWidget: (value, meta) => ReviewHistoryTitleWidget(
+                      value: value,
+                      meta: meta,
+                      days: reviewHistoryData.days,
                     ),
                     reservedSize: 100,
                   ),
@@ -66,29 +66,6 @@ class ReviewHistory extends ConsumerWidget {
     );
   }
 
-  String _formatDate(BuildContext context, DateTime date) {
-    final dateFormat = DateFormat.yMd(
-      context.appState.userProfile.value?.locale.languageCode,
-    );
-    return dateFormat.format(date);
-  }
-
-  /// Generates widgets used to display the days under the axis.
-  Widget _getTitles(
-    BuildContext context,
-    double value,
-    TitleMeta meta,
-    List<DateTime> days,
-  ) {
-    const style = TextStyle(fontWeight: FontWeight.bold);
-    Widget text = Text(_formatDate(context, days[value.toInt()]), style: style);
-    return SideTitleWidget(
-      meta: meta,
-      space: 16,
-      child: RotatedBox(quarterTurns: 3, child: text),
-    );
-  }
-
   List<BarChartGroupData> _barGroups(ReviewHistoryData data) {
     return List.generate(data.days.length, (i) => i).map((dayIndex) {
       final day = data.days[dayIndex];
@@ -98,5 +75,36 @@ class ReviewHistory extends ConsumerWidget {
         barRods: [BarChartRodData(width: 20, toY: value.toDouble())],
       );
     }).toList();
+  }
+}
+
+class ReviewHistoryTitleWidget extends StatelessWidget {
+  final double value;
+  final TitleMeta meta;
+  final List<DateTime> days;
+
+  const ReviewHistoryTitleWidget({
+    super.key,
+    required this.value,
+    required this.meta,
+    required this.days,
+  });
+
+  String _formatDate(BuildContext context, DateTime date) {
+    final dateFormat = DateFormat.yMd(
+      context.appState.userProfile.value?.locale.languageCode,
+    );
+    return dateFormat.format(date);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const style = TextStyle(fontWeight: FontWeight.bold);
+    Widget text = Text(_formatDate(context, days[value.toInt()]), style: style);
+    return SideTitleWidget(
+      meta: meta,
+      space: 16,
+      child: RotatedBox(quarterTurns: 3, child: text),
+    );
   }
 }
