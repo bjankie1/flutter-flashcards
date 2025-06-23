@@ -22,7 +22,7 @@ export {
   cardAnswer,
   deckCategory,
   generateFlashCardsFromText,
-} from "./genkit-cardSuggestions";
+} from "./genkit-cardSuggestions.js";
 
 export const getGoogleDocContent = ai.defineFlow(
   {
@@ -46,8 +46,9 @@ export const getGoogleDocContent = ai.defineFlow(
     try {
       const response = await axios.get(exportUrl);
       return response.data;
-    } catch (e: any) {
-      console.error(`Error fetching doc: ${e.message}`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      console.error(`Error fetching doc: ${errorMessage}`);
       throw new Error("Failed to load Google Doc");
     }
   }

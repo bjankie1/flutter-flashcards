@@ -1,5 +1,6 @@
 {
   "main": "lib/index.js",
+  "type": "module",
   "scripts": {
     "genkit:start": "genkit start -- tsx --watch src/genkit-cardSuggestions.ts",
     "lint": "eslint --ext .js,.ts .",
