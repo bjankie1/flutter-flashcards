@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/decks/cards_list/cards_list.dart';
 import 'package:flutter_flashcards/src/decks/cards_list/deck_details.dart';
+import 'package:flutter_flashcards/src/decks/cards_list/deck_details_page_controller.dart';
 import 'package:flutter_flashcards/src/layout/base_layout.dart';
-import 'package:flutter_flashcards/src/model/repository.dart';
-import 'package:flutter_flashcards/src/widgets.dart';
-import 'package:provider/provider.dart';
 
 import '../../model/cards.dart' as model;
-import '../card_edit_page.dart';
 
-class DeckDetailsPage extends StatelessWidget {
+class DeckDetailsPage extends ConsumerWidget {
   final model.Deck deck;
 
   const DeckDetailsPage({required this.deck});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return BaseLayout(
       title: Text(deck.name),
       currentPage: PageIndex.cards,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _addCard(context, null),
+        onPressed: () => ref
+            .read(deckDetailsPageControllerProvider.notifier)
+            .navigateToAddCard(context, deck.id!),
         label: Text(context.l10n.addCard),
         icon: const Icon(Icons.add),
       ),
@@ -32,15 +32,7 @@ class DeckDetailsPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 40.0),
             child: Column(
               children: [
-                ValueListenableBuilder(
-                  valueListenable: context
-                      .watch<CardsRepository>()
-                      .decksUpdated,
-                  builder: (context, deckChange, _) => RepositoryLoader(
-                    fetcher: (repository) => repository.loadDeck(deck.id!),
-                    builder: (context, deck, _) => DeckDetails(deck: deck!),
-                  ),
-                ),
+                DeckDetails(deck: deck),
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10),
@@ -51,15 +43,6 @@ class DeckDetailsPage extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  _addCard(BuildContext context, model.Card? card) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CardEditPage(deckId: deck.id!, card: card),
       ),
     );
   }

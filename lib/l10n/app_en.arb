@@ -252,5 +252,6 @@
   "@addCard": {
     "description": "Label for add card button"
   },
-  "cancelButtonLabel": "Cancel"
+  "cancelButtonLabel": "Cancel",
+  "retry": "Retry"
 }

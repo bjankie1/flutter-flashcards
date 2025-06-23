@@ -180,5 +180,6 @@
   "@deckDetails": {
     "description": "Title for the deck details page"
   },
-  "cancelButtonLabel": "Anuluj"
+  "cancelButtonLabel": "Anuluj",
+  "retry": "Ponów"
 }

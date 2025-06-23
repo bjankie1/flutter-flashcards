@@ -562,4 +562,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get cancelButtonLabel => 'Anuluj';
+
+  @override
+  String get retry => 'Ponów';
 }

@@ -1,33 +1,25 @@
-import 'package:flutter/material.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:logger/logger.dart';
 import '../../model/cards.dart' as model;
-import '../../model/repository.dart';
+import '../deck_list/decks_controller.dart';
 
-class CardsListController extends ChangeNotifier {
-  final String deckId;
-  final CardsRepository repository;
-  final TextEditingController searchController = TextEditingController();
+part 'cards_list_controller.g.dart';
 
-  List<model.Card> _cards = [];
-  Map<String, List<model.CardStats>> _cardStats = {};
-  String _searchQuery = '';
-  bool _loading = false;
-  bool _error = false;
+class CardsListData {
+  final List<model.Card> cards;
+  final Map<String, List<model.CardStats>> cardStats;
+  final String searchQuery;
 
-  CardsListController({required this.deckId, required this.repository}) {
-    searchController.addListener(_onSearchChanged);
-    loadCards();
-  }
-
-  List<model.Card> get cards => _cards;
-  Map<String, List<model.CardStats>> get cardStats => _cardStats;
-  String get searchQuery => _searchQuery;
-  bool get loading => _loading;
-  bool get error => _error;
+  CardsListData({
+    required this.cards,
+    required this.cardStats,
+    this.searchQuery = '',
+  });
 
   List<model.Card> get filteredCards {
-    if (_searchQuery.isEmpty) return _cards;
-    final query = _searchQuery.toLowerCase();
-    return _cards
+    if (searchQuery.isEmpty) return cards;
+    final query = searchQuery.toLowerCase();
+    return cards
         .where(
           (card) =>
               card.question.toLowerCase().contains(query) ||
@@ -36,52 +28,105 @@ class CardsListController extends ChangeNotifier {
         .toList();
   }
 
-  void _onSearchChanged() {
-    _searchQuery = searchController.text;
-    notifyListeners();
+  CardsListData copyWith({
+    List<model.Card>? cards,
+    Map<String, List<model.CardStats>>? cardStats,
+    String? searchQuery,
+  }) {
+    return CardsListData(
+      cards: cards ?? this.cards,
+      cardStats: cardStats ?? this.cardStats,
+      searchQuery: searchQuery ?? this.searchQuery,
+    );
+  }
+}
+
+/// Controller for managing cards list operations
+@riverpod
+class CardsListController extends _$CardsListController {
+  final Logger _log = Logger();
+  late String _deckId;
+
+  @override
+  AsyncValue<CardsListData> build(String deckId) {
+    _log.d(
+      'CardsListController build called for deckId: \x1B[32m$deckId\x1B[0m',
+    );
+    _deckId = deckId;
+    _loadCards();
+    return const AsyncValue.loading();
   }
 
-  Future<void> loadCards() async {
-    _loading = true;
-    _error = false;
-    notifyListeners();
+  /// Loads cards for the deck
+  Future<void> _loadCards() async {
+    _log.d(
+      '[_loadCards] Start loading cards for deck: \x1B[32m$_deckId\x1B[0m',
+    );
     try {
-      final cards = await repository.loadCards(deckId);
+      final repository = ref.read(cardsRepositoryProvider);
+      _log.d('[_loadCards] Got repository, loading cards...');
+      final cards = await repository.loadCards(_deckId);
+      _log.d('[_loadCards] Loaded cards: count=[33m${cards.length}[0m');
       final cardIds = cards.map((c) => c.id).toList();
       final allStats = await repository.loadCardStatsForCardIds(cardIds);
-      _cardStats = {};
+      _log.d('[_loadCards] Loaded card stats: count=${allStats.length}');
+      final cardStats = <String, List<model.CardStats>>{};
       for (final card in cards) {
         final statsForCard = allStats
             .where((s) => s.cardId == card.id)
             .toList();
         statsForCard.sort((a, b) => a.variant.index.compareTo(b.variant.index));
-        _cardStats[card.id] = statsForCard;
+        cardStats[card.id] = statsForCard;
       }
-      _cards = cards.toList();
-      _cards.sort(
-        (a, b) => a.question.toLowerCase().compareTo(b.question.toLowerCase()),
+      final sortedCards = cards.toList()
+        ..sort(
+          (a, b) =>
+              a.question.toLowerCase().compareTo(b.question.toLowerCase()),
+        );
+      state = AsyncValue.data(
+        CardsListData(cards: sortedCards, cardStats: cardStats),
       );
-      _loading = false;
-      notifyListeners();
-    } catch (e) {
-      _loading = false;
-      _error = true;
-      notifyListeners();
+      _log.d(
+        '[_loadCards] State updated: cards=${sortedCards.length}, isLoading=false',
+      );
+    } catch (error, stackTrace) {
+      _log.e(
+        '[_loadCards] Error loading cards for deck: $_deckId',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      state = AsyncValue.error(error, stackTrace);
+      _log.d(
+        '[_loadCards] State updated: hasError=true, errorMessage=${error.toString()}',
+      );
     }
   }
 
+  /// Updates the search query
+  void updateSearchQuery(String query) {
+    state = state.whenData((data) => data.copyWith(searchQuery: query));
+  }
+
+  /// Deletes a card
   Future<void> deleteCard(model.Card card) async {
     try {
+      _log.d('Deleting card: ${card.id} from deck: $_deckId');
+      final repository = ref.read(cardsRepositoryProvider);
       await repository.deleteCard(card.id);
-      await loadCards();
-    } catch (e) {
-      // error handling can be improved as needed
+      await _loadCards();
+      _log.d('Successfully deleted card: ${card.id}');
+    } catch (error, stackTrace) {
+      _log.e(
+        'Error deleting card: ${card.id}',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      state = AsyncValue.error(error, stackTrace);
     }
   }
 
-  @override
-  void dispose() {
-    searchController.dispose();
-    super.dispose();
+  /// Refreshes the cards data
+  Future<void> refresh() async {
+    await _loadCards();
   }
 }

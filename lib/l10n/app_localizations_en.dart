@@ -553,4 +553,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancelButtonLabel => 'Cancel';
+
+  @override
+  String get retry => 'Retry';
 }

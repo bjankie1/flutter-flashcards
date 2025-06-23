@@ -1,96 +1,152 @@
-import 'package:flutter/material.dart';
-import '../../model/cards.dart' as model;
-import '../../model/repository.dart';
 import 'package:logger/logger.dart';
-import 'package:flutter_flashcards/src/genkit/functions.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../model/cards.dart' as model;
+import '../deck_list/decks_controller.dart';
+import '../../genkit/functions.dart';
 
-class DeckDetailsController extends ChangeNotifier {
+part 'deck_details_controller.g.dart';
+
+/// Controller for managing deck details operations
+@riverpod
+class DeckDetailsController extends _$DeckDetailsController {
   final Logger _log = Logger();
-  final CardsRepository repository;
-  final String deckId;
-  final CloudFunctions cloudFunctions;
+  late String _deckId;
 
-  model.Deck? _deck;
-  int _cardCount = 0;
-  model.DeckCategory? _category;
-  bool _loading = true;
-  bool _error = false;
-
-  DeckDetailsController({
-    required this.repository,
-    required this.deckId,
-    required this.cloudFunctions,
-  }) {
+  @override
+  AsyncValue<model.Deck> build(String deckId) {
+    _deckId = deckId;
     _loadDeck();
-    _loadCardCount();
+    return const AsyncValue.loading();
   }
 
-  model.Deck? get deck => _deck;
-  int get cardCount => _cardCount;
-  model.DeckCategory? get category => _category;
-  bool get loading => _loading;
-  bool get error => _error;
-
+  /// Loads the deck details
   Future<void> _loadDeck() async {
     try {
-      _loading = true;
-      notifyListeners();
-      final loadedDeck = await repository.loadDeck(deckId);
-      _deck = loadedDeck;
-      _category = loadedDeck?.category;
-      _loading = false;
-      notifyListeners();
-    } catch (e, stackTrace) {
-      _log.e('Error loading deck', error: e, stackTrace: stackTrace);
-      _loading = false;
-      _error = true;
-      notifyListeners();
-    }
-  }
-
-  Future<void> _loadCardCount() async {
-    try {
-      final count = await repository.getCardCount(deckId);
-      _cardCount = count;
-      notifyListeners();
-    } catch (e, stackTrace) {
-      _log.e('Error loading card count', error: e, stackTrace: stackTrace);
-    }
-  }
-
-  Future<void> updateDeckName(String name) async {
-    if (_deck == null) return;
-    var newDeck = _deck!.copyWith(name: name);
-    try {
-      final category = await cloudFunctions.deckCategory(
-        name,
-        newDeck.description ?? '',
+      _log.d('Loading deck details for deck: $_deckId');
+      state = const AsyncValue.loading();
+      final repository = ref.read(cardsRepositoryProvider);
+      final deck = await repository.loadDeck(_deckId);
+      if (deck == null) {
+        throw Exception('Deck not found: $_deckId');
+      }
+      state = AsyncValue.data(deck);
+      _log.d('Successfully loaded deck details for deck: $_deckId');
+    } catch (error, stackTrace) {
+      _log.e(
+        'Error loading deck details for deck: $_deckId',
+        error: error,
+        stackTrace: stackTrace,
       );
-      newDeck = newDeck.copyWith(category: category);
-      _category = category;
-    } catch (e, stackTrace) {
-      _log.e('Error saving deck name', error: e, stackTrace: stackTrace);
+      state = AsyncValue.error(error, stackTrace);
     }
-    await repository.saveDeck(newDeck);
-    _deck = newDeck;
-    notifyListeners();
   }
 
-  Future<void> updateDeckDescription(String description) async {
-    if (_deck == null) return;
-    var newDeck = _deck!.copyWith(description: description);
+  /// Updates the deck name
+  Future<void> updateDeckName(
+    String name,
+    CloudFunctions cloudFunctions,
+  ) async {
     try {
-      final category = await cloudFunctions.deckCategory(
-        newDeck.name,
-        description,
+      _log.d('Updating deck name for deck: $_deckId to: $name');
+      final currentDeck = state.value;
+      if (currentDeck == null) {
+        throw Exception('No deck loaded');
+      }
+
+      var newDeck = currentDeck.copyWith(name: name);
+
+      // Get category from cloud functions
+      try {
+        final category = await cloudFunctions.deckCategory(
+          name,
+          newDeck.description ?? '',
+        );
+        newDeck = newDeck.copyWith(category: category);
+      } catch (e, stackTrace) {
+        _log.e('Error getting deck category', error: e, stackTrace: stackTrace);
+        // Continue without category update
+      }
+
+      // Save the deck
+      final repository = ref.read(cardsRepositoryProvider);
+      await repository.saveDeck(newDeck);
+
+      // Update state
+      state = AsyncValue.data(newDeck);
+
+      // Refresh the decks list
+      await ref.read(decksControllerProvider.notifier).refresh();
+
+      _log.d('Successfully updated deck name for deck: $_deckId');
+    } catch (error, stackTrace) {
+      _log.e(
+        'Error updating deck name for deck: $_deckId',
+        error: error,
+        stackTrace: stackTrace,
       );
-      newDeck = newDeck.copyWith(category: category);
-      _category = category;
-    } catch (e, stackTrace) {
-      _log.e('Error saving deck description', error: e, stackTrace: stackTrace);
+      rethrow;
     }
-    await repository.saveDeck(newDeck);
-    _deck = newDeck;
-    notifyListeners();
+  }
+
+  /// Updates the deck description
+  Future<void> updateDeckDescription(
+    String description,
+    CloudFunctions cloudFunctions,
+  ) async {
+    try {
+      _log.d('Updating deck description for deck: $_deckId');
+      final currentDeck = state.value;
+      if (currentDeck == null) {
+        throw Exception('No deck loaded');
+      }
+
+      var newDeck = currentDeck.copyWith(description: description);
+
+      // Get category from cloud functions
+      try {
+        final category = await cloudFunctions.deckCategory(
+          newDeck.name,
+          description,
+        );
+        newDeck = newDeck.copyWith(category: category);
+      } catch (e, stackTrace) {
+        _log.e('Error getting deck category', error: e, stackTrace: stackTrace);
+        // Continue without category update
+      }
+
+      // Save the deck
+      final repository = ref.read(cardsRepositoryProvider);
+      await repository.saveDeck(newDeck);
+
+      // Update state
+      state = AsyncValue.data(newDeck);
+
+      // Refresh the decks list
+      await ref.read(decksControllerProvider.notifier).refresh();
+
+      _log.d('Successfully updated deck description for deck: $_deckId');
+    } catch (error, stackTrace) {
+      _log.e(
+        'Error updating deck description for deck: $_deckId',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      rethrow;
+    }
+  }
+
+  /// Refreshes the deck details
+  Future<void> refresh() async {
+    await _loadDeck();
+  }
+
+  /// Gets the current deck
+  model.Deck? getDeck() {
+    return state.value;
+  }
+
+  /// Gets the deck category
+  model.DeckCategory? getCategory() {
+    return state.value?.category;
   }
 }
