@@ -45,6 +45,9 @@ export const getGoogleDocContent = ai.defineFlow(
     const exportUrl = `https://docs.google.com/document/d/${docId}/export?format=txt`;
     try {
       const response = await axios.get(exportUrl);
+      if (typeof response.data !== 'string') {
+        throw new Error('Expected document content to be a string');
+      }
       return response.data;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';

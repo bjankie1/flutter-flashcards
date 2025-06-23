@@ -279,7 +279,7 @@ export const flashcardGeneratorFlow = ai.defineFlow(
 export const cardAnswer = onCallGenkit(
   {
     // Define the authentication policy
-    authPolicy: (auth, ) => auth?.token?.['email_verified'] || false,
+    authPolicy: (auth, _data) => auth?.token?.['email_verified'] || false,
     cors: "*", // Configure CORS policy (use cautiously in production)
     secrets: [googleAIapiKey], // Specify secrets needed by the function
   },
@@ -288,7 +288,7 @@ export const cardAnswer = onCallGenkit(
 
 // Firebase Cloud Function endpoint to get the deck category
 export const deckCategory = onCallGenkit({
-      authPolicy: (auth, ) => auth?.token?.['email_verified'] || false,
+      authPolicy: (auth, _data) => auth?.token?.['email_verified'] || false,
       secrets: [googleAIapiKey],
       cors: "*",
     },
@@ -296,7 +296,7 @@ export const deckCategory = onCallGenkit({
 );
 
 export const generateFlashCardsFromText = onCallGenkit({
-      authPolicy: (auth, ) => auth?.token?.['email_verified'] || false,
+      authPolicy: (auth, _data) => auth?.token?.['email_verified'] || false,
       secrets: [googleAIapiKey],
       cors: "*",
     },
