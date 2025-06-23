@@ -6,16 +6,16 @@ import 'package:logger/logger.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
 import 'package:go_router/go_router.dart';
 
-import '../model/cards.dart' as model;
-import 'editable_text.dart' as custom;
+import '../../model/cards.dart' as model;
+import '../editable_text.dart' as custom;
 
 /// Shows Deck metadata information enabling user to edit those details.
-final class DeckInformation extends StatelessWidget {
+final class DeckDetails extends StatelessWidget {
   final Logger _log = Logger();
 
   final model.Deck deck;
 
-  DeckInformation({super.key, required this.deck});
+  DeckDetails({super.key, required this.deck});
 
   @override
   Widget build(BuildContext context) {
@@ -97,54 +97,60 @@ final class DeckInformation extends StatelessWidget {
               ],
               const Spacer(),
               RepositoryLoader(
-                fetcher: (repository) =>
-                    repository.cardsToReviewCount(deckId: deck.id!),
-                builder: (context, countStat, _) {
-                  final count = countStat.values.fold(0, (p, c) => p + c);
-                  return Badge(
-                    isLabelVisible: count > 0,
-                    label: Text(count.toString()),
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        try {
-                          context.go('/learn?deckId=${deck.id}');
-                        } on Exception {
-                          if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: Theme.of(
-                                context,
-                              ).colorScheme.errorContainer,
-                              content: Row(
-                                children: [
-                                  Icon(
-                                    Icons.warning_amber_rounded,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onErrorContainer,
+                fetcher: (repository) => repository.getCardCount(deck.id!),
+                builder: (context, totalCards, _) {
+                  if (totalCards == 0) return const SizedBox.shrink();
+                  return RepositoryLoader(
+                    fetcher: (repository) =>
+                        repository.cardsToReviewCount(deckId: deck.id!),
+                    builder: (context, countStat, _) {
+                      final count = countStat.values.fold(0, (p, c) => p + c);
+                      return Badge(
+                        isLabelVisible: count > 0,
+                        label: Text(count.toString()),
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            try {
+                              context.go('/learn?deckId=${deck.id}');
+                            } on Exception {
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.errorContainer,
+                                  content: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.warning_amber_rounded,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onErrorContainer,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        context.l10n.errorLoadingCards,
+                                        style: TextStyle(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onErrorContainer,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    context.l10n.errorLoadingCards,
-                                    style: TextStyle(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onErrorContainer,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                      icon: const Icon(Icons.play_circle_fill),
-                      label: Text(context.l10n.learn),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green[700],
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
+                                ),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.play_circle_fill),
+                          label: Text(context.l10n.learn),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green[700],
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),
