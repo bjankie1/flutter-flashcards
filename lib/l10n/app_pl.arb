@@ -118,17 +118,7 @@
   "switchToPolish": "Przełącz na język polski",
   "totalProgressLabel": "Całkowity postęp",
   "deckProgress": "Postęp zestawu {deckName}",
-  "@deckProgress": {
-    "placeholders": {
-      "deckName": { "type": "String" }
-    }
-  },
   "progressPercent": "+{percent}%",
-  "@progressPercent": {
-    "placeholders": {
-      "percent": { "type": "int" }
-    }
-  },
   "masteryNew": "Nowe",
   "masteryLearning": "W nauce",
   "masteryYoung": "Młode",
@@ -177,9 +167,12 @@
   "googleDocLink": "Link do Dokumentu Google",
   "googleDocHelperText": "Wklej link do swojego Dokumentu Google, aby wygenerować z niego fiszki.",
   "deckDetails": "Szczegóły talii",
-  "@deckDetails": {
-    "description": "Title for the deck details page"
-  },
   "cancelButtonLabel": "Anuluj",
-  "retry": "Ponów"
+  "retry": "Ponów",
+  "answersLabel": "Odpowiedzi:",
+  "totalTimeLabel": "Całkowity czas:",
+  "averageTimeLabel": "Średni czas (s):",
+  "errorLoadingCollaborators": "Błąd ładowania współpracowników: {error}",
+  "noCollaboratorsYet": "Brak współpracowników",
+  "inviteCollaboratorHint": "Zaproś kogoś do współpracy nad fiszkami"
 }

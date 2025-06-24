@@ -556,4 +556,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retry => 'Retry';
+
+  @override
+  String get answersLabel => 'Answers:';
+
+  @override
+  String get totalTimeLabel => 'Total time:';
+
+  @override
+  String get averageTimeLabel => 'Average (s):';
+
+  @override
+  String errorLoadingCollaborators(String error) {
+    return 'Error loading collaborators: $error';
+  }
+
+  @override
+  String get noCollaboratorsYet => 'No collaborators yet';
+
+  @override
+  String get inviteCollaboratorHint =>
+      'Invite someone to collaborate on your flashcards';
 }

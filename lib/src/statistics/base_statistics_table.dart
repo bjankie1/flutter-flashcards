@@ -90,21 +90,33 @@ class BaseStatistic extends StatelessWidget {
       case StatisticType.totalCount:
         return Row(
           children: [
-            ReportLabel('Answers:', alignRight: true, bold: true),
+            ReportLabel(
+              context.l10n.answersLabel,
+              alignRight: true,
+              bold: true,
+            ),
             ReportLabel(answers.length.toString()),
           ],
         );
       case StatisticType.totalTime:
         return Row(
           children: [
-            ReportLabel('Total time:', alignRight: true, bold: true),
+            ReportLabel(
+              context.l10n.totalTimeLabel,
+              alignRight: true,
+              bold: true,
+            ),
             ReportLabel(printDuration(context, totalTime)),
           ],
         );
       case StatisticType.avgTime:
         return Row(
           children: [
-            ReportLabel('Average (s):', alignRight: true, bold: true),
+            ReportLabel(
+              context.l10n.averageTimeLabel,
+              alignRight: true,
+              bold: true,
+            ),
             ReportLabel(printDuration(context, averageTime)),
           ],
         );

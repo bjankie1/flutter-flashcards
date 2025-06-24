@@ -253,5 +253,21 @@
     "description": "Label for add card button"
   },
   "cancelButtonLabel": "Cancel",
-  "retry": "Retry"
+  "retry": "Retry",
+  "answersLabel": "Answers:",
+  "totalTimeLabel": "Total time:",
+  "averageTimeLabel": "Average (s):",
+  "errorLoadingCollaborators": "Error loading collaborators: {error}",
+  "@errorLoadingCollaborators": {
+    "description": "Error message shown when collaborators list fails to load.",
+    "placeholders": {"error": {"type": "String"}}
+  },
+  "noCollaboratorsYet": "No collaborators yet",
+  "@noCollaboratorsYet": {
+    "description": "Shown when there are no collaborators in the list."
+  },
+  "inviteCollaboratorHint": "Invite someone to collaborate on your flashcards",
+  "@inviteCollaboratorHint": {
+    "description": "Hint shown when there are no collaborators."
+  }
 }

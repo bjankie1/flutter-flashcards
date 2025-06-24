@@ -565,4 +565,25 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get retry => 'Ponów';
+
+  @override
+  String get answersLabel => 'Odpowiedzi:';
+
+  @override
+  String get totalTimeLabel => 'Całkowity czas:';
+
+  @override
+  String get averageTimeLabel => 'Średni czas (s):';
+
+  @override
+  String errorLoadingCollaborators(String error) {
+    return 'Błąd ładowania współpracowników: $error';
+  }
+
+  @override
+  String get noCollaboratorsYet => 'Brak współpracowników';
+
+  @override
+  String get inviteCollaboratorHint =>
+      'Zaproś kogoś do współpracy nad fiszkami';
 }

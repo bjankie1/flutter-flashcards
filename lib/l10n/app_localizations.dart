@@ -1105,6 +1105,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
+
+  /// No description provided for @answersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Answers:'**
+  String get answersLabel;
+
+  /// No description provided for @totalTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total time:'**
+  String get totalTimeLabel;
+
+  /// No description provided for @averageTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Average (s):'**
+  String get averageTimeLabel;
+
+  /// Error message shown when collaborators list fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading collaborators: {error}'**
+  String errorLoadingCollaborators(String error);
+
+  /// Shown when there are no collaborators in the list.
+  ///
+  /// In en, this message translates to:
+  /// **'No collaborators yet'**
+  String get noCollaboratorsYet;
+
+  /// Hint shown when there are no collaborators.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite someone to collaborate on your flashcards'**
+  String get inviteCollaboratorHint;
 }
 
 class _AppLocalizationsDelegate
