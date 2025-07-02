@@ -21,19 +21,16 @@ class ReviewHistory extends ConsumerWidget {
 
     return Column(
       children: [
-        SizedBox(
-          height: 20,
-          child: Center(
-            child: Text(
-              context.l10n.cardReviewDaily,
-              style: context.textTheme.titleMedium,
-            ),
-          ),
-        ),
         Expanded(
           child: BarChart(
             BarChartData(
-              gridData: const FlGridData(show: false),
+              gridData: FlGridData(
+                show: true,
+                horizontalInterval: 1,
+                getDrawingHorizontalLine: (value) =>
+                    FlLine(color: Colors.grey.shade300, strokeWidth: 1),
+                drawVerticalLine: false,
+              ),
               titlesData: FlTitlesData(
                 show: true,
                 rightTitles: const AxisTitles(
@@ -45,16 +42,33 @@ class ReviewHistory extends ConsumerWidget {
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    getTitlesWidget: (value, meta) => ReviewHistoryTitleWidget(
-                      value: value,
-                      meta: meta,
-                      days: reviewHistoryData.days,
-                    ),
-                    reservedSize: 100,
+                    getTitlesWidget: (value, meta) =>
+                        ReviewHistoryMondayTitleWidget(
+                          value: value,
+                          meta: meta,
+                          days: reviewHistoryData.days,
+                        ),
+                    reservedSize: 40,
                   ),
                 ),
-                leftTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 32,
+                    getTitlesWidget: (value, meta) {
+                      if (value % 1 == 0 && value > 0) {
+                        return SideTitleWidget(
+                          meta: meta,
+                          space: 8,
+                          child: Text(
+                            value.toInt().toString(),
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
                 ),
               ),
               borderData: FlBorderData(show: false),
@@ -78,33 +92,42 @@ class ReviewHistory extends ConsumerWidget {
   }
 }
 
-class ReviewHistoryTitleWidget extends StatelessWidget {
+class ReviewHistoryMondayTitleWidget extends StatelessWidget {
   final double value;
   final TitleMeta meta;
   final List<DateTime> days;
 
-  const ReviewHistoryTitleWidget({
+  const ReviewHistoryMondayTitleWidget({
     super.key,
     required this.value,
     required this.meta,
     required this.days,
   });
 
-  String _formatDate(BuildContext context, DateTime date) {
-    final dateFormat = DateFormat.yMd(
-      context.appState.userProfile.value?.locale.languageCode,
-    );
-    return dateFormat.format(date);
-  }
-
   @override
   Widget build(BuildContext context) {
-    const style = TextStyle(fontWeight: FontWeight.bold);
-    Widget text = Text(_formatDate(context, days[value.toInt()]), style: style);
-    return SideTitleWidget(
-      meta: meta,
-      space: 16,
-      child: RotatedBox(quarterTurns: 3, child: text),
-    );
+    final int index = value.toInt();
+    final day = days[index];
+    final int totalDays = days.length;
+    // Calculate step to show at most 10 labels
+    final int step = (totalDays / 10).ceil().clamp(1, totalDays);
+    // Only show label for every n-th day
+    if (index % step == 0) {
+      final dateFormat = DateFormat.Md(
+        Localizations.localeOf(context).toLanguageTag(),
+      );
+      const style = TextStyle(fontWeight: FontWeight.normal);
+      Widget text = Text(dateFormat.format(day), style: style);
+      return SideTitleWidget(
+        meta: meta,
+        space: 8,
+        child: Transform.rotate(
+          angle: -0.785398, // -45 degrees in radians
+          alignment: Alignment.topRight,
+          child: text,
+        ),
+      );
+    }
+    return const SizedBox.shrink();
   }
 }

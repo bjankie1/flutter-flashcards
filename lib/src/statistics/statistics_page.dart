@@ -19,20 +19,23 @@ class StudyStatisticsPage extends ConsumerWidget {
       currentPage: PageIndex.statistics,
       child: Column(
         children: [
-          Row(
-            children: [
-              StatisticsFilter(),
-              Spacer(),
-              SelectPersonFocus(
-                userId: statisticsData.selectedUserId,
-                onUserChange: (uid) {
-                  ref
-                      .read(statisticsPageControllerProvider.notifier)
-                      .updateSelectedUser(uid);
-                },
-              ),
-              SizedBox(width: 20),
-            ],
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                StatisticsFilter(),
+                const SizedBox(width: 16),
+                SelectPersonFocus(
+                  userId: statisticsData.selectedUserId,
+                  onUserChange: (uid) {
+                    ref
+                        .read(statisticsPageControllerProvider.notifier)
+                        .updateSelectedUser(uid);
+                  },
+                ),
+              ],
+            ),
           ),
           Expanded(child: StatisticsCharts(statisticsData.selectedUserId)),
         ],

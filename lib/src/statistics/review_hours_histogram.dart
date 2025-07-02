@@ -37,10 +37,19 @@ class _ReviewHoursHistogramState extends State<ReviewHoursHistogram> {
   }
 
   Widget getTitles(double value, TitleMeta meta) {
-    const style = TextStyle(fontWeight: FontWeight.bold);
+    const style = TextStyle(fontWeight: FontWeight.normal);
     Widget text;
     if (_chartDetails == 1) {
-      text = Text(value.toString(), style: style);
+      int hour = value.toInt();
+      if (hour % 2 == 0) {
+        text = Transform.rotate(
+          angle: -0.785398, // -45 degrees in radians
+          alignment: Alignment.topRight,
+          child: Text(hour.toString(), style: style),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
     } else {
       text = Text(PartOfDay.values[value.toInt()].name, style: style);
     }
@@ -95,17 +104,6 @@ class _ReviewHoursHistogramState extends State<ReviewHoursHistogram> {
                   _chartDetails = selected.first;
                 });
               },
-            ),
-            Expanded(
-              child: SizedBox(
-                height: 40,
-                child: Center(
-                  child: Text(
-                    context.l10n.cardReviewedPerHourHeader,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-              ),
             ),
           ],
         ),

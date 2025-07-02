@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
-import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/collaboration/collaboration_page.dart';
 import 'package:flutter_flashcards/src/decks/card_edit_page.dart';
@@ -14,9 +13,10 @@ import 'package:flutter_flashcards/src/statistics/statistics_page.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_flashcards/src/app.dart' show appNavigatorKey;
 
-import '../firebase_options.dart';
 import 'reviews/study_cards_page.dart';
+import 'package:flutter_flashcards/src/login/login_screen.dart';
 
 final _log = Logger();
 
@@ -35,6 +35,19 @@ enum NamedRoute {
 
 // Add GoRouter configuration outside the App class
 final router = GoRouter(
+  navigatorKey: appNavigatorKey,
+  // Add a top-level redirect based on authentication state
+  redirect: (context, state) {
+    final loggedIn = FirebaseAuth.instance.currentUser != null;
+    final loggingIn = state.uri.path == '/sign-in';
+    if (!loggedIn && !loggingIn) {
+      return '/sign-in';
+    }
+    if (loggedIn && loggingIn) {
+      return '/';
+    }
+    return null;
+  },
   routes: [
     GoRoute(
       path: '/',
@@ -51,51 +64,7 @@ final router = GoRouter(
         GoRoute(
           path: 'sign-in',
           builder: (context, state) {
-            return SignInScreen(
-              providers: [
-                EmailAuthProvider(),
-                GoogleProvider(
-                  clientId: DefaultFirebaseOptions.GOOGLE_CLIENT_ID,
-                  scopes: [
-                    'email',
-                    'https://www.googleapis.com/auth/documents.readonly',
-                    'https://www.googleapis.com/auth/drive.readonly',
-                  ],
-                ),
-              ],
-              actions: [
-                ForgotPasswordAction(((context, email) {
-                  final uri = Uri(
-                    path: '/sign-in/forgot-password',
-                    queryParameters: <String, String?>{'email': email},
-                  );
-                  context.push(uri.toString());
-                })),
-                AuthStateChangeAction(((context, state) {
-                  final user = switch (state) {
-                    SignedIn state => state.user,
-                    UserCreated state => state.credential.user,
-                    _ => null,
-                  };
-                  if (user == null) {
-                    return;
-                  }
-                  if (state is UserCreated) {
-                    user.updateDisplayName(user.email!.split('@')[0]);
-                  }
-                  if (!user.emailVerified) {
-                    user.sendEmailVerification();
-                    const snackBar = SnackBar(
-                      content: Text(
-                        'Please check your email to verify your email address',
-                      ),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  }
-                  context.go('/');
-                })),
-              ],
-            );
+            return const LoginScreen();
           },
           routes: [
             GoRoute(
@@ -119,7 +88,7 @@ final router = GoRouter(
           providers: const [],
           actions: [
             SignedOutAction((context) {
-              context.go('/');
+              context.go('/sign-in');
             }),
           ],
         );

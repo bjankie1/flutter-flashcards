@@ -1141,6 +1141,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invite someone to collaborate on your flashcards'**
   String get inviteCollaboratorHint;
+
+  /// No description provided for @answersLabelTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Total number of answers (cards reviewed) in the selected period.'**
+  String get answersLabelTooltip;
+
+  /// No description provided for @totalTimeLabelTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Total time spent reviewing cards in the selected period.'**
+  String get totalTimeLabelTooltip;
+
+  /// No description provided for @averageTimeLabelTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Average time spent reviewing cards per day in the selected period.'**
+  String get averageTimeLabelTooltip;
+
+  /// No description provided for @cardReviewedPerHourTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Distribution of card reviews by time of day. Helps you see when you study most.'**
+  String get cardReviewedPerHourTooltip;
+
+  /// No description provided for @cardReviewDailyTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of cards reviewed each day in the selected period.'**
+  String get cardReviewDailyTooltip;
+
+  /// No description provided for @countCardsPerDeckChartTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows how many cards you studied from each deck.'**
+  String get countCardsPerDeckChartTooltip;
+
+  /// No description provided for @timePerDeckChartTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows how much time you spent studying each deck.'**
+  String get timePerDeckChartTooltip;
+
+  /// No description provided for @signInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signInTitle;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordLabel;
+
+  /// No description provided for @signInButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signInButton;
+
+  /// No description provided for @orLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get orLabel;
+
+  /// No description provided for @signInWithGoogleButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get signInWithGoogleButton;
 }
 
 class _AppLocalizationsDelegate

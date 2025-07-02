@@ -95,6 +95,18 @@ void main() async {
       ),
     ),
   );
+
+  // Global auth state navigation
+  FirebaseAuth.instance.authStateChanges().listen((user) {
+    final context = appNavigatorKey.currentContext;
+    if (context == null) return;
+    final router = GoRouter.of(context);
+    if (user == null) {
+      router.go('/sign-in');
+    } else {
+      router.go('/');
+    }
+  });
 }
 
 Future<void> _connectFirebaseEmulator() async {

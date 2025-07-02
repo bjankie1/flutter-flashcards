@@ -14,20 +14,21 @@ class UserMenu extends StatelessWidget {
     return PopupMenuButton(
       offset: Offset(0, 30),
       popUpAnimationStyle: AnimationStyle(
-          curve: Easing.emphasizedDecelerate,
-          duration: const Duration(seconds: 1)),
+        curve: Easing.emphasizedDecelerate,
+        duration: const Duration(seconds: 1),
+      ),
       itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
         PopupMenuItem<int>(
-            child: ListTile(
-          title: Text(context.appState.userProfile.value?.email ?? '-'),
-          leading: Avatar(
-            size: 20,
+          child: ListTile(
+            title: Text(context.appState.userProfile.value?.email ?? '-'),
+            leading: Avatar(size: 20),
           ),
-        )),
+        ),
         PopupMenuItem<int>(
           child: ListTile(
-              title: Text(context.l10n.settings),
-              leading: Icon(Icons.settings_outlined)),
+            title: Text(context.l10n.settings),
+            leading: Icon(Icons.settings_outlined),
+          ),
           onTap: () {
             context.goNamed('settings');
           },
@@ -35,11 +36,11 @@ class UserMenu extends StatelessWidget {
         PopupMenuDivider(),
         PopupMenuItem<int>(
           child: ListTile(
-              leading: Icon(Icons.exit_to_app),
-              title: Text(context.l10n.signOut)),
-          onTap: () {
-            FirebaseAuth.instance.signOut();
-            context.go('/');
+            leading: Icon(Icons.exit_to_app),
+            title: Text(context.l10n.signOut),
+          ),
+          onTap: () async {
+            await FirebaseAuth.instance.signOut();
           },
         ),
       ],

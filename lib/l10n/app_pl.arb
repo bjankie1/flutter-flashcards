@@ -174,5 +174,11 @@
   "averageTimeLabel": "Średni czas (s):",
   "errorLoadingCollaborators": "Błąd ładowania współpracowników: {error}",
   "noCollaboratorsYet": "Brak współpracowników",
-  "inviteCollaboratorHint": "Zaproś kogoś do współpracy nad fiszkami"
+  "inviteCollaboratorHint": "Zaproś kogoś do współpracy nad fiszkami",
+  "signInTitle": "Zaloguj się",
+  "emailLabel": "Email",
+  "passwordLabel": "Hasło",
+  "signInButton": "Zaloguj się",
+  "orLabel": "lub",
+  "signInWithGoogleButton": "Zaloguj się przez Google"
 }

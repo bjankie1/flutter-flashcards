@@ -79,6 +79,8 @@ flutter:
   assets:
     # Add assets from the images directory to the application.
     - assets/images/
+    - assets/icon/icon-32.png
+    - assets/icon/google_logo.png
 #flutter_intl:
 #  enabled: true
 

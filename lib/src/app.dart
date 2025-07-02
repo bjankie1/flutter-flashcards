@@ -6,6 +6,8 @@ import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 
 import 'app_router.dart';
 
+final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
+
 /// The Widget that configures your application.
 class FlashcardsApp extends StatelessWidget {
   const FlashcardsApp({super.key});

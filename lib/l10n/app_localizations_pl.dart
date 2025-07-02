@@ -586,4 +586,50 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get inviteCollaboratorHint =>
       'Zaproś kogoś do współpracy nad fiszkami';
+
+  @override
+  String get answersLabelTooltip =>
+      'Total number of answers (cards reviewed) in the selected period.';
+
+  @override
+  String get totalTimeLabelTooltip =>
+      'Total time spent reviewing cards in the selected period.';
+
+  @override
+  String get averageTimeLabelTooltip =>
+      'Average time spent reviewing cards per day in the selected period.';
+
+  @override
+  String get cardReviewedPerHourTooltip =>
+      'Distribution of card reviews by time of day. Helps you see when you study most.';
+
+  @override
+  String get cardReviewDailyTooltip =>
+      'Number of cards reviewed each day in the selected period.';
+
+  @override
+  String get countCardsPerDeckChartTooltip =>
+      'Shows how many cards you studied from each deck.';
+
+  @override
+  String get timePerDeckChartTooltip =>
+      'Shows how much time you spent studying each deck.';
+
+  @override
+  String get signInTitle => 'Zaloguj się';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get passwordLabel => 'Hasło';
+
+  @override
+  String get signInButton => 'Zaloguj się';
+
+  @override
+  String get orLabel => 'lub';
+
+  @override
+  String get signInWithGoogleButton => 'Zaloguj się przez Google';
 }

@@ -269,5 +269,18 @@
   "inviteCollaboratorHint": "Invite someone to collaborate on your flashcards",
   "@inviteCollaboratorHint": {
     "description": "Hint shown when there are no collaborators."
-  }
+  },
+  "answersLabelTooltip": "Total number of answers (cards reviewed) in the selected period.",
+  "totalTimeLabelTooltip": "Total time spent reviewing cards in the selected period.",
+  "averageTimeLabelTooltip": "Average time spent reviewing cards per day in the selected period.",
+  "cardReviewedPerHourTooltip": "Distribution of card reviews by time of day. Helps you see when you study most.",
+  "cardReviewDailyTooltip": "Number of cards reviewed each day in the selected period.",
+  "countCardsPerDeckChartTooltip": "Shows how many cards you studied from each deck.",
+  "timePerDeckChartTooltip": "Shows how much time you spent studying each deck.",
+  "signInTitle": "Sign In",
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "signInButton": "Sign In",
+  "orLabel": "or",
+  "signInWithGoogleButton": "Sign in with Google"
 }
