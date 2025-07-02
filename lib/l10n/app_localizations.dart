@@ -182,7 +182,7 @@ abstract class AppLocalizations {
   /// **'Add deck'**
   String get addDeck;
 
-  /// No description provided for @addCard.
+  /// Label for add card button
   ///
   /// In en, this message translates to:
   /// **'Add card'**
@@ -1069,6 +1069,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Don\'t forget to update! A new version is available.'**
   String get updateReminder;
+
+  /// Title for the deck details page
+  ///
+  /// In en, this message translates to:
+  /// **'Deck Details'**
+  String get deckDetails;
+
+  /// No description provided for @generateFromGoogleDoc.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate from Google Doc'**
+  String get generateFromGoogleDoc;
+
+  /// No description provided for @googleDocLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Doc Link'**
+  String get googleDocLink;
+
+  /// No description provided for @googleDocHelperText.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the link to your Google Doc to generate cards from it.'**
+  String get googleDocHelperText;
+
+  /// No description provided for @cancelButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelButtonLabel;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @answersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Answers:'**
+  String get answersLabel;
+
+  /// No description provided for @totalTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total time:'**
+  String get totalTimeLabel;
+
+  /// No description provided for @averageTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Average (s):'**
+  String get averageTimeLabel;
+
+  /// Error message shown when collaborators list fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading collaborators: {error}'**
+  String errorLoadingCollaborators(String error);
+
+  /// Shown when there are no collaborators in the list.
+  ///
+  /// In en, this message translates to:
+  /// **'No collaborators yet'**
+  String get noCollaboratorsYet;
+
+  /// Hint shown when there are no collaborators.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite someone to collaborate on your flashcards'**
+  String get inviteCollaboratorHint;
+
+  /// No description provided for @answersLabelTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Total number of answers (cards reviewed) in the selected period.'**
+  String get answersLabelTooltip;
+
+  /// No description provided for @totalTimeLabelTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Total time spent reviewing cards in the selected period.'**
+  String get totalTimeLabelTooltip;
+
+  /// No description provided for @averageTimeLabelTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Average time spent reviewing cards per day in the selected period.'**
+  String get averageTimeLabelTooltip;
+
+  /// No description provided for @cardReviewedPerHourTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Distribution of card reviews by time of day. Helps you see when you study most.'**
+  String get cardReviewedPerHourTooltip;
+
+  /// No description provided for @cardReviewDailyTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of cards reviewed each day in the selected period.'**
+  String get cardReviewDailyTooltip;
+
+  /// No description provided for @countCardsPerDeckChartTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows how many cards you studied from each deck.'**
+  String get countCardsPerDeckChartTooltip;
+
+  /// No description provided for @timePerDeckChartTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows how much time you spent studying each deck.'**
+  String get timePerDeckChartTooltip;
+
+  /// No description provided for @signInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signInTitle;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordLabel;
+
+  /// No description provided for @signInButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signInButton;
+
+  /// No description provided for @orLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get orLabel;
+
+  /// No description provided for @signInWithGoogleButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get signInWithGoogleButton;
 }
 
 class _AppLocalizationsDelegate

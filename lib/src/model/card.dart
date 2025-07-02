@@ -6,7 +6,7 @@ class Attachment {
 
   const Attachment({required this.id, required this.url});
 
-  toJson() => {"id": id, "url": url};
+  Map<String, dynamic> toJson() => {"id": id, "url": url};
 }
 
 class CardOptions {
@@ -49,7 +49,7 @@ class Card implements FirebaseSerializable {
     this.explanationImageAttached = false,
   });
 
-  withId({required String id}) {
+  Card withId({required String id}) {
     return Card(
       id: id,
       deckId: deckId,

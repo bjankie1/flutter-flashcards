@@ -23,10 +23,13 @@ class DeckGeneratePage extends StatelessWidget {
       fetcher: (repository) =>
           deckId == null ? Future.value(null) : repository.loadDeck(deckId!),
       builder: (context, deck, _) => BaseLayout(
-          title: GptMarkdown(deck == null
+        title: GptMarkdown(
+          deck == null
               ? context.l10n.deckGeneration
-              : context.l10n.generateCardsForDeck(deck.name)),
-          child: GenerationControllerWidget(deckId: deckId)),
+              : context.l10n.generateCardsForDeck(deck.name),
+        ),
+        child: GenerationControllerWidget(deckId: deckId),
+      ),
     );
   }
 }
@@ -63,50 +66,57 @@ class _GenerationControllerWidgetState
   Widget build(BuildContext context) {
     return proposals.isNotEmpty
         ? GeneratedCardsSelectWidget(
-            cardProposals: proposals, deckId: widget.deckId)
+            cardProposals: proposals,
+            deckId: widget.deckId,
+          )
         : Card(
             child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: FocusTraversalGroup(
-              policy: OrderedTraversalPolicy(),
-              child: Column(
-                children: [
-                  LanguageAutocompletePicker(
-                    onLanguageSelected: (lang) =>
-                        {frontLanguage = lang['name']!},
-                    label: context.l10n.backCardLabel,
-                  ),
-                  LanguageAutocompletePicker(
-                    onLanguageSelected: (lang) =>
-                        {backLanguage = lang['name']!},
-                    label: context.l10n.frontCardLabel,
-                  ),
-                  TextFormField(
-                    controller: textController,
-                    maxLines: 20,
-                    minLines: 20,
-                    decoration: InputDecoration(
+              padding: const EdgeInsets.all(8.0),
+              child: FocusTraversalGroup(
+                policy: OrderedTraversalPolicy(),
+                child: Column(
+                  children: [
+                    LanguageAutocompletePicker(
+                      onLanguageSelected: (lang) => {
+                        frontLanguage = lang['name']!,
+                      },
+                      label: context.l10n.backCardLabel,
+                    ),
+                    LanguageAutocompletePicker(
+                      onLanguageSelected: (lang) => {
+                        backLanguage = lang['name']!,
+                      },
+                      label: context.l10n.frontCardLabel,
+                    ),
+                    TextFormField(
+                      controller: textController,
+                      maxLines: 20,
+                      minLines: 20,
+                      decoration: InputDecoration(
                         label: Text(context.l10n.inputText),
                         border: OutlineInputBorder(),
-                        helperText: context.l10n.inputTextForGenerator),
-                  ),
-                  isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : FilledButton(
-                          onPressed: () async => processText(context),
-                          child: IntrinsicWidth(
-                            child: Row(
-                              children: [
-                                ImageIcon(gemini),
-                                const SizedBox(width: 8.0),
-                                Text(context.l10n.generateCards),
-                              ],
+                        helperText: context.l10n.inputTextForGenerator,
+                      ),
+                    ),
+                    isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : FilledButton(
+                            onPressed: () async => processText(context),
+                            child: IntrinsicWidth(
+                              child: Row(
+                                children: [
+                                  ImageIcon(gemini),
+                                  const SizedBox(width: 8.0),
+                                  Text(context.l10n.generateCards),
+                                ],
+                              ),
                             ),
-                          ))
-                ],
+                          ),
+                  ],
+                ),
               ),
             ),
-          ));
+          );
   }
 
   Future<void> processText(BuildContext context) async {
@@ -115,7 +125,10 @@ class _GenerationControllerWidgetState
     });
     try {
       final result = await context.cloudFunctions.generateCardsForText(
-          frontLanguage, backLanguage, textController.text);
+        frontLanguage,
+        backLanguage,
+        textController.text,
+      );
       setState(() {
         proposals = result;
       });
@@ -134,8 +147,11 @@ class GeneratedCardsSelectWidget extends StatefulWidget {
 
   bool get newDeck => deckId == null;
 
-  GeneratedCardsSelectWidget(
-      {super.key, required this.cardProposals, this.deckId});
+  GeneratedCardsSelectWidget({
+    super.key,
+    required this.cardProposals,
+    this.deckId,
+  });
 
   @override
   State<GeneratedCardsSelectWidget> createState() =>
@@ -156,26 +172,35 @@ class _GeneratedCardsSelectWidgetState
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Card(
-            child: Row(spacing: 8.0, children: [
-              IconButton(
-                isSelected: skipped.isEmpty,
-                onPressed: toggleAllSelected,
-                icon: Icon(Icons.check),
-                selectedIcon: Icon(Icons.check_outlined),
-              ),
-              IconButton(
-                isSelected: singleSided.isEmpty,
-                onPressed: toggleAllDoubleSided,
-                icon: Icon(Icons.swap_vert),
-                selectedIcon: Icon(Icons.swap_vert_circle),
-              ),
-              Expanded(
-                  child: Text(context.l10n.questionLabel,
-                      style: context.textTheme.headlineSmall)),
-              Expanded(
-                  child: Text(context.l10n.answerLabel,
-                      style: context.textTheme.headlineSmall)),
-            ]),
+            child: Row(
+              spacing: 8.0,
+              children: [
+                IconButton(
+                  isSelected: skipped.isEmpty,
+                  onPressed: toggleAllSelected,
+                  icon: Icon(Icons.check),
+                  selectedIcon: Icon(Icons.check_outlined),
+                ),
+                IconButton(
+                  isSelected: singleSided.isEmpty,
+                  onPressed: toggleAllDoubleSided,
+                  icon: Icon(Icons.swap_vert),
+                  selectedIcon: Icon(Icons.swap_vert_circle),
+                ),
+                Expanded(
+                  child: Text(
+                    context.l10n.questionLabel,
+                    style: context.textTheme.headlineSmall,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    context.l10n.answerLabel,
+                    style: context.textTheme.headlineSmall,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         Expanded(
@@ -185,28 +210,25 @@ class _GeneratedCardsSelectWidgetState
             itemBuilder: (context, index) {
               final card = sortedProposals.elementAt(index);
               return Card(
-                child: Row(spacing: 8.0, children: [
-                  IconButton(
-                    isSelected: !skipped.contains(index),
-                    onPressed: () => toggleSkipCard(index),
-                    icon: Icon(
-                      Icons.cancel,
-                      color: Colors.red,
+                child: Row(
+                  spacing: 8.0,
+                  children: [
+                    IconButton(
+                      isSelected: !skipped.contains(index),
+                      onPressed: () => toggleSkipCard(index),
+                      icon: Icon(Icons.cancel, color: Colors.red),
+                      selectedIcon: Icon(Icons.check, color: Colors.green),
                     ),
-                    selectedIcon: Icon(
-                      Icons.check,
-                      color: Colors.green,
+                    IconButton(
+                      isSelected: !singleSided.contains(index),
+                      onPressed: () => changeCardMode(index),
+                      icon: Icon(Icons.swap_vert),
+                      selectedIcon: Icon(Icons.swap_vert_circle),
                     ),
-                  ),
-                  IconButton(
-                    isSelected: !singleSided.contains(index),
-                    onPressed: () => changeCardMode(index),
-                    icon: Icon(Icons.swap_vert),
-                    selectedIcon: Icon(Icons.swap_vert_circle),
-                  ),
-                  Expanded(child: Text(card.front)),
-                  Expanded(child: Text(card.back)),
-                ]),
+                    Expanded(child: Text(card.front)),
+                    Expanded(child: Text(card.back)),
+                  ],
+                ),
               );
             },
           ),
@@ -221,7 +243,8 @@ class _GeneratedCardsSelectWidgetState
               : FilledButton(
                   onPressed: () =>
                       addToExistingDeck(widget.deckId!, sortedProposals),
-                  child: Text(context.l10n.addCardsToDeck)),
+                  child: Text(context.l10n.addCardsToDeck),
+                ),
         ),
       ],
     );
@@ -242,7 +265,8 @@ class _GeneratedCardsSelectWidgetState
     setState(() {
       if (singleSided.isEmpty) {
         singleSided.addAll(
-            List.generate(widget.cardProposals.length, (index) => index));
+          List.generate(widget.cardProposals.length, (index) => index),
+        );
       } else {
         singleSided.clear();
       }
@@ -259,42 +283,57 @@ class _GeneratedCardsSelectWidgetState
     });
   }
 
-  createNewDeck(
-      String name, String description, List<FrontBack> proposals) async {
+  void toggleAllSelected() {}
+
+  Future<void> createNewDeck(
+    String name,
+    String description,
+    List<FrontBack> proposals,
+  ) async {
     if (proposals.length == skipped.length) return;
     final repo = context.cardRepository;
-    final deck =
-        model.Deck(id: repo.nextDeckId(), name: name, description: description);
+    final deck = model.Deck(
+      id: repo.nextDeckId(),
+      name: name,
+      description: description,
+    );
     await repo.saveDeck(deck);
     await addToExistingDeck(deck.id!, proposals);
   }
 
-  addToExistingDeck(model.DeckId deckId, List<FrontBack> proposals) async {
+  Future<void> addToExistingDeck(
+    model.DeckId deckId,
+    List<FrontBack> proposals,
+  ) async {
     final repo = context.cardRepository;
     int index = 0;
-    await Future.wait(proposals.map((proposal) async {
-      final isSkipped = skipped.contains(index);
-      if (!isSkipped) {
-        final isSingleSided = singleSided.contains(index);
-        final cardId = repo.nextCardId();
-        final deckCard = model.Card(
+    await Future.wait(
+      proposals.map((proposal) async {
+        final isSkipped = skipped.contains(index);
+        if (!isSkipped) {
+          final isSingleSided = singleSided.contains(index);
+          final cardId = repo.nextCardId();
+          final deckCard = model.Card(
             deckId: deckId,
             question: proposal.front,
             answer: proposal.back,
             options: model.CardOptions(learnBothSides: !isSingleSided),
-            id: cardId);
-        await context.cardRepository.saveCard(deckCard);
-      }
-      index++;
-    })).then((_) {
-      context.showInfoSnackbar('Cards saved');
-      Navigator.pop(context);
-    }, onError: (_) {
-      context.showErrorSnackbar('Error saving cards');
-    });
+            id: cardId,
+          );
+          await context.cardRepository.saveCard(deckCard);
+        }
+        index++;
+      }),
+    ).then(
+      (_) {
+        context.showInfoSnackbar('Cards saved');
+        Navigator.pop(context);
+      },
+      onError: (_) {
+        context.showErrorSnackbar('Error saving cards');
+      },
+    );
   }
-
-  void toggleAllSelected() {}
 }
 
 class CreateNewDeckWidget extends StatelessWidget {
@@ -314,18 +353,24 @@ class CreateNewDeckWidget extends StatelessWidget {
         TextFormField(
           controller: deckNameController,
           decoration: InputDecoration(
-              label: Text(context.l10n.deckName), border: OutlineInputBorder()),
+            label: Text(context.l10n.deckName),
+            border: OutlineInputBorder(),
+          ),
         ),
         TextFormField(
           controller: deckDescriptionController,
           decoration: InputDecoration(
-              label: Text(context.l10n.deckDescription),
-              border: OutlineInputBorder()),
+            label: Text(context.l10n.deckDescription),
+            border: OutlineInputBorder(),
+          ),
         ),
         FilledButton(
-            onPressed: () => onCreateNewDeck(
-                deckNameController.text, deckDescriptionController.text),
-            child: Text('Create deck')),
+          onPressed: () => onCreateNewDeck(
+            deckNameController.text,
+            deckDescriptionController.text,
+          ),
+          child: Text('Create deck'),
+        ),
       ],
     );
   }

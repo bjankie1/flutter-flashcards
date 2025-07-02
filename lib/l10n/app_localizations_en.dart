@@ -537,4 +537,90 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get updateReminder =>
       'Don\'t forget to update! A new version is available.';
+
+  @override
+  String get deckDetails => 'Deck Details';
+
+  @override
+  String get generateFromGoogleDoc => 'Generate from Google Doc';
+
+  @override
+  String get googleDocLink => 'Google Doc Link';
+
+  @override
+  String get googleDocHelperText =>
+      'Paste the link to your Google Doc to generate cards from it.';
+
+  @override
+  String get cancelButtonLabel => 'Cancel';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get answersLabel => 'Answers:';
+
+  @override
+  String get totalTimeLabel => 'Total time:';
+
+  @override
+  String get averageTimeLabel => 'Average (s):';
+
+  @override
+  String errorLoadingCollaborators(String error) {
+    return 'Error loading collaborators: $error';
+  }
+
+  @override
+  String get noCollaboratorsYet => 'No collaborators yet';
+
+  @override
+  String get inviteCollaboratorHint =>
+      'Invite someone to collaborate on your flashcards';
+
+  @override
+  String get answersLabelTooltip =>
+      'Total number of answers (cards reviewed) in the selected period.';
+
+  @override
+  String get totalTimeLabelTooltip =>
+      'Total time spent reviewing cards in the selected period.';
+
+  @override
+  String get averageTimeLabelTooltip =>
+      'Average time spent reviewing cards per day in the selected period.';
+
+  @override
+  String get cardReviewedPerHourTooltip =>
+      'Distribution of card reviews by time of day. Helps you see when you study most.';
+
+  @override
+  String get cardReviewDailyTooltip =>
+      'Number of cards reviewed each day in the selected period.';
+
+  @override
+  String get countCardsPerDeckChartTooltip =>
+      'Shows how many cards you studied from each deck.';
+
+  @override
+  String get timePerDeckChartTooltip =>
+      'Shows how much time you spent studying each deck.';
+
+  @override
+  String get signInTitle => 'Sign In';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get passwordLabel => 'Password';
+
+  @override
+  String get signInButton => 'Sign In';
+
+  @override
+  String get orLabel => 'or';
+
+  @override
+  String get signInWithGoogleButton => 'Sign in with Google';
 }

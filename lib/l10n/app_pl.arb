@@ -118,17 +118,7 @@
   "switchToPolish": "Przełącz na język polski",
   "totalProgressLabel": "Całkowity postęp",
   "deckProgress": "Postęp zestawu {deckName}",
-  "@deckProgress": {
-    "placeholders": {
-      "deckName": { "type": "String" }
-    }
-  },
   "progressPercent": "+{percent}%",
-  "@progressPercent": {
-    "placeholders": {
-      "percent": { "type": "int" }
-    }
-  },
   "masteryNew": "Nowe",
   "masteryLearning": "W nauce",
   "masteryYoung": "Młode",
@@ -172,5 +162,23 @@
   "updateError": "Aktualizacja nie powiodła się. Spróbuj ponownie.",
   "checkingForUpdates": "Sprawdzanie aktualizacji...",
   "noUpdateAvailable": "Używasz najnowszej wersji",
-  "updateReminder": "Nie zapomnij zaktualizować! Dostępna jest nowa wersja."
+  "updateReminder": "Nie zapomnij zaktualizować! Dostępna jest nowa wersja.",
+  "generateFromGoogleDoc": "Generuj z Dokumentu Google",
+  "googleDocLink": "Link do Dokumentu Google",
+  "googleDocHelperText": "Wklej link do swojego Dokumentu Google, aby wygenerować z niego fiszki.",
+  "deckDetails": "Szczegóły talii",
+  "cancelButtonLabel": "Anuluj",
+  "retry": "Ponów",
+  "answersLabel": "Odpowiedzi:",
+  "totalTimeLabel": "Całkowity czas:",
+  "averageTimeLabel": "Średni czas (s):",
+  "errorLoadingCollaborators": "Błąd ładowania współpracowników: {error}",
+  "noCollaboratorsYet": "Brak współpracowników",
+  "inviteCollaboratorHint": "Zaproś kogoś do współpracy nad fiszkami",
+  "signInTitle": "Zaloguj się",
+  "emailLabel": "Email",
+  "passwordLabel": "Hasło",
+  "signInButton": "Zaloguj się",
+  "orLabel": "lub",
+  "signInWithGoogleButton": "Zaloguj się przez Google"
 }

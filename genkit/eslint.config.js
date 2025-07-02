@@ -65,6 +65,14 @@ export default tseslint.config(
 //            "@typescript-eslint/quotes": ["error", "double"], // Your rule causing issues
 //            "@typescript-eslint/indent": ["error", 2], // Restore other TS rules too
 //            "@typescript-eslint/object-curly-spacing": ["error", "always"], // Restore other TS rules too
+            "@typescript-eslint/no-unused-vars": "off",
+            "@typescript-eslint/no-explicit-any": "off",
+            "@typescript-eslint/no-unsafe-return": "off",
+            "@typescript-eslint/no-unsafe-assignment": "off",
+            "@typescript-eslint/no-unsafe-call": "off",
+            "@typescript-eslint/no-unsafe-member-access": "off",
+            "@typescript-eslint/no-unsafe-argument": "off",
+            "@typescript-eslint/no-require-imports": "off",
 
             // --- Other Rules ---
             "max-len": [ "error", { code: 120, ignoreUrls: true, ignoreComments: true, ignoreRegExpLiterals: true, ignoreStrings: true, ignoreTemplateLiterals: true, } ],

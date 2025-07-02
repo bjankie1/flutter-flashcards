@@ -1,97 +1,34 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
-import 'package:flutter_flashcards/src/common/dates.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
+import 'package:flutter_flashcards/src/statistics/reviews_history_controller.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
 
-class ReviewHistory extends StatefulWidget {
-  final _log = Logger();
-
+class ReviewHistory extends ConsumerWidget {
   final Iterable<model.CardAnswer> answers;
   final DateTimeRange dateRange;
 
   ReviewHistory({required this.answers, required this.dateRange});
 
-  /// List of dates within date range. Each day is represented by a [DateTime]
-  /// of the day beginning.
-  List<DateTime> get days {
-    final days = <DateTime>[];
-    DateTime current = dateRange.start.dayStart;
-    while (current.isBefore(dateRange.end)) {
-      days.add(current);
-      current = current
-          .add(const Duration(days: 1))
-          .dayStart; // start of day conversion required again due to daytime saving
-    }
-    return days;
-  }
-
-  Map<DateTime, int> get cardReviewedPerDay =>
-      answers.fold<Map<DateTime, int>>({}, (acc, answer) {
-        final day = answer.reviewStart.dayStart;
-        acc[day] = (acc[day] ?? 0) + 1;
-        return acc;
-      });
-
   @override
-  State<ReviewHistory> createState() => _ReviewHistoryState();
-}
-
-class _ReviewHistoryState extends State<ReviewHistory> {
-  String formatDate(DateTime date) {
-    final dateFormat =
-        DateFormat.yMd(context.appState.userProfile.value?.locale.languageCode);
-    return dateFormat.format(date);
-  }
-
-  /// Generates widgets used to display the days under the axis.
-  Widget getTitles(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final reviewHistoryData = ref.watch(
+      reviewHistoryControllerProvider(answers, dateRange),
     );
-    Widget text = Text(formatDate(widget.days[value.toInt()]), style: style);
-    return SideTitleWidget(
-      meta: meta,
-      space: 16,
-      child: RotatedBox(quarterTurns: 3, child: text),
-    );
-  }
 
-  List<BarChartGroupData> barGroups() {
-    widget._log.d('Generating bar groups for ${widget.cardReviewedPerDay}');
-    return List.generate(widget.days.length, (i) => i).map((dayIndex) {
-      final day = widget.days[dayIndex];
-      final value = widget.cardReviewedPerDay[day] ?? 0;
-      widget._log.d('Chart data for $dayIndex:$day:$value');
-      return BarChartGroupData(
-        x: dayIndex,
-        barRods: [
-          BarChartRodData(
-            width: 20,
-            toY: value.toDouble(),
-          ),
-        ],
-      );
-    }).toList();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
-          height: 20,
-          child: Center(
-            child: Text(context.l10n.cardReviewDaily,
-                style: Theme.of(context).textTheme.titleMedium),
-          ),
-        ),
         Expanded(
           child: BarChart(
             BarChartData(
-              gridData: const FlGridData(show: false),
+              gridData: FlGridData(
+                show: true,
+                horizontalInterval: 1,
+                getDrawingHorizontalLine: (value) =>
+                    FlLine(color: Colors.grey.shade300, strokeWidth: 1),
+                drawVerticalLine: false,
+              ),
               titlesData: FlTitlesData(
                 show: true,
                 rightTitles: const AxisTitles(
@@ -103,24 +40,92 @@ class _ReviewHistoryState extends State<ReviewHistory> {
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    getTitlesWidget: getTitles,
-                    reservedSize: 100,
+                    getTitlesWidget: (value, meta) =>
+                        ReviewHistoryMondayTitleWidget(
+                          value: value,
+                          meta: meta,
+                          days: reviewHistoryData.days,
+                        ),
+                    reservedSize: 40,
                   ),
                 ),
-                leftTitles: const AxisTitles(
+                leftTitles: AxisTitles(
                   sideTitles: SideTitles(
-                    showTitles: false,
+                    showTitles: true,
+                    reservedSize: 32,
+                    getTitlesWidget: (value, meta) {
+                      if (value % 1 == 0 && value > 0) {
+                        return SideTitleWidget(
+                          meta: meta,
+                          space: 8,
+                          child: Text(
+                            value.toInt().toString(),
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
                   ),
                 ),
               ),
-              borderData: FlBorderData(
-                show: false,
-              ),
-              barGroups: barGroups(),
+              borderData: FlBorderData(show: false),
+              barGroups: _barGroups(reviewHistoryData),
             ),
           ),
         ),
       ],
     );
+  }
+
+  List<BarChartGroupData> _barGroups(ReviewHistoryData data) {
+    return List.generate(data.days.length, (i) => i).map((dayIndex) {
+      final day = data.days[dayIndex];
+      final value = data.cardReviewedPerDay[day] ?? 0;
+      return BarChartGroupData(
+        x: dayIndex,
+        barRods: [BarChartRodData(width: 20, toY: value.toDouble())],
+      );
+    }).toList();
+  }
+}
+
+class ReviewHistoryMondayTitleWidget extends StatelessWidget {
+  final double value;
+  final TitleMeta meta;
+  final List<DateTime> days;
+
+  const ReviewHistoryMondayTitleWidget({
+    super.key,
+    required this.value,
+    required this.meta,
+    required this.days,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final int index = value.toInt();
+    final day = days[index];
+    final int totalDays = days.length;
+    // Calculate step to show at most 10 labels
+    final int step = (totalDays / 10).ceil().clamp(1, totalDays);
+    // Only show label for every n-th day
+    if (index % step == 0) {
+      final dateFormat = DateFormat.Md(
+        Localizations.localeOf(context).toLanguageTag(),
+      );
+      const style = TextStyle(fontWeight: FontWeight.normal);
+      Widget text = Text(dateFormat.format(day), style: style);
+      return SideTitleWidget(
+        meta: meta,
+        space: 8,
+        child: Transform.rotate(
+          angle: -0.785398, // -45 degrees in radians
+          alignment: Alignment.topRight,
+          child: text,
+        ),
+      );
+    }
+    return const SizedBox.shrink();
   }
 }

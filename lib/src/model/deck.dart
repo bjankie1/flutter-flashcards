@@ -21,7 +21,7 @@ class Deck implements FirebaseSerializable {
     this.category = DeckCategory.other,
   });
 
-  withId({required String id}) {
+  Deck withId({required String id}) {
     return Deck(
       id: id,
       name: name,

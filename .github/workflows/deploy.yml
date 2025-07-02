@@ -27,6 +27,9 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Generate code
+        run: dart run build_runner build --delete-conflicting-outputs
+
       - name: Run tests
         run: flutter test
 
@@ -51,6 +54,9 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
+
+      - name: Generate code
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Bump version
         run: ./scripts/bump_version.sh

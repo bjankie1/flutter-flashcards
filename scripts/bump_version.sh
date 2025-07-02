@@ -61,7 +61,7 @@ print_info "Current version: $CURRENT_VERSION"
 print_info "New version: $NEW_VERSION"
 
 # Update pubspec.yaml with new version
-sed -i "s/^version: .*/version: $NEW_VERSION/" pubspec.yaml
+sed -i '' "s/^version: .*/version: $NEW_VERSION/" pubspec.yaml
 
 if [ $? -eq 0 ]; then
     print_success "Updated pubspec.yaml with version $NEW_VERSION"
@@ -71,9 +71,11 @@ else
 fi
 
 # Output version information for GitHub Actions
-echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
-echo "VERSION_NUMBER=$VERSION_NUMBER" >> $GITHUB_ENV
-echo "BUILD_NUMBER=$NEW_BUILD" >> $GITHUB_ENV
+if [ -n "$GITHUB_ENV" ]; then
+    echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+    echo "VERSION_NUMBER=$VERSION_NUMBER" >> $GITHUB_ENV
+    echo "BUILD_NUMBER=$NEW_BUILD" >> $GITHUB_ENV
+fi
 
 print_success "Version bumped successfully!"
 print_info "Version: $VERSION_NUMBER"
@@ -82,12 +84,12 @@ print_info "Full version: $NEW_VERSION"
 
 # Optional: Update web files if they exist
 if [ -f "web/index.html" ]; then
-    sed -i -e "s/\"flutter_bootstrap\.js[^\"]*\"/\"flutter_bootstrap.js?v=$NEW_VERSION\"/g" web/index.html
+    sed -i '' -e "s/\"flutter_bootstrap\.js[^\"]*\"/\"flutter_bootstrap.js?v=$NEW_VERSION\"/g" web/index.html
     print_info "Updated web/index.html"
 fi
 
 if [ -f "web/sw.js" ]; then
-    sed -i -e "s/const CACHE_NAME = 'flutter-flashcards-v[^']*'/const CACHE_NAME = 'flutter-flashcards-v$NEW_VERSION'/g" web/sw.js
-    sed -i -e "s/const STATIC_CACHE_NAME = 'flutter-flashcards-static-v[^']*'/const STATIC_CACHE_NAME = 'flutter-flashcards-static-v$NEW_VERSION'/g" web/sw.js
+    sed -i '' -e "s/const CACHE_NAME = 'flutter-flashcards-v[^']*'/const CACHE_NAME = 'flutter-flashcards-v$NEW_VERSION'/g" web/sw.js
+    sed -i '' -e "s/const STATIC_CACHE_NAME = 'flutter-flashcards-static-v[^']*'/const STATIC_CACHE_NAME = 'flutter-flashcards-static-v$NEW_VERSION'/g" web/sw.js
     print_info "Updated web/sw.js"
 fi 
