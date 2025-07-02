@@ -8,10 +8,10 @@ import '../../firebase_options.dart';
 
 class GoogleDocPicker extends StatefulWidget {
   @override
-  _GoogleDocPickerState createState() => _GoogleDocPickerState();
+  GoogleDocPickerState createState() => GoogleDocPickerState();
 }
 
-class _GoogleDocPickerState extends State<GoogleDocPicker> {
+class GoogleDocPickerState extends State<GoogleDocPicker> {
   Future<List<drive.File>>? _filesFuture;
 
   @override
@@ -27,9 +27,7 @@ class _GoogleDocPickerState extends State<GoogleDocPicker> {
     );
 
     var account = await googleSignIn.signInSilently();
-    if (account == null) {
-      account = await googleSignIn.signIn();
-    }
+    account ??= await googleSignIn.signIn();
 
     if (account == null) {
       throw Exception('Sign in failed or was cancelled.');
@@ -60,7 +58,7 @@ class _GoogleDocPickerState extends State<GoogleDocPicker> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('Select a Google Doc'),
-      content: Container(
+      content: SizedBox(
         width: double.maxFinite,
         child: FutureBuilder<List<drive.File>>(
           future: _filesFuture,

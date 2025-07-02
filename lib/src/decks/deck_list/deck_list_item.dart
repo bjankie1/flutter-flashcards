@@ -224,7 +224,7 @@ class DeckContextMenu extends ConsumerWidget {
     model.Deck deck,
   ) async => DeckList().deleteDeck(context, ref, deck);
 
-  _showAddDeckToGroupDialog(BuildContext context, model.DeckId deckId) {
+  Future _showAddDeckToGroupDialog(BuildContext context, model.DeckId deckId) {
     return showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {

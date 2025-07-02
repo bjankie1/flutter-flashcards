@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 
 import '../model/cards.dart' as model;
 import '../model/repository.dart';
+import '../genkit/functions.dart';
 
 class CardEdit extends StatefulWidget {
   final model.Card? card;
@@ -452,7 +453,7 @@ class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
     );
   }
 
-  loadAnswer() async {
+  Future<GeneratedAnswer> loadAnswer() async {
     final category =
         widget.deck.category ??
         await context.cloudFunctions.deckCategory(

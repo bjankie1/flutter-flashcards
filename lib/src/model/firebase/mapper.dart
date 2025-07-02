@@ -11,7 +11,7 @@ abstract class FirebaseSerializer<T> {
 
   Map<String, dynamic> _serialize(T value);
 
-  _updateUserId(DocumentReference doc) async {
+  Future<void> _updateUserId(DocumentReference doc) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       await doc.set({'userId': user.uid}, SetOptions(merge: true));
