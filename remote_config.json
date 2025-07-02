@@ -16,21 +16,21 @@
     },
     "app_build_number": {
       "defaultValue": {
-        "value": "121"
+        "value": "139"
       },
       "description": "Current app build number",
       "valueType": "STRING"
     },
     "update_message": {
       "defaultValue": {
-        "value": "New version available with latest features and improvements!"
+        "value": "Login screen improvements and better statistics page"
       },
       "description": "Custom message shown to users when update is available",
       "valueType": "STRING"
     },
     "update_required": {
       "defaultValue": {
-        "value": "true"
+        "value": "false"
       },
       "description": "Whether the update is required (true) or optional (false)",
       "valueType": "STRING"
@@ -38,9 +38,9 @@
   },
   "version": {
     "versionNumber": "1",
-    "updateTime": "2025-06-21T23:46:01Z",
+    "updateTime": "2025-07-02T10:25:12Z",
     "updateUser": {
-      "email": ""
+      "email": "deployment-script@example.com"
     },
     "updateOrigin": "CONSOLE",
     "updateType": "INCREMENTAL_UPDATE"
