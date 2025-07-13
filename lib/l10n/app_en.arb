@@ -282,5 +282,13 @@
   "passwordLabel": "Password",
   "signInButton": "Sign In",
   "orLabel": "or",
-  "signInWithGoogleButton": "Sign in with Google"
+  "signInWithGoogleButton": "Sign in with Google",
+  "signUpTitle": "Create Account",
+  "signUpButton": "Sign Up",
+  "signUpWithGoogleButton": "Sign up with Google",
+  "confirmPasswordLabel": "Confirm Password",
+  "alreadyHaveAccount": "Already have an account?",
+  "dontHaveAccount": "Don't have an account?",
+  "signUpLink": "Sign up",
+  "signInLink": "Sign in"
 }

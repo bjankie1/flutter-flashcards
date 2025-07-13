@@ -623,4 +623,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInWithGoogleButton => 'Sign in with Google';
+
+  @override
+  String get signUpTitle => 'Create Account';
+
+  @override
+  String get signUpButton => 'Sign Up';
+
+  @override
+  String get signUpWithGoogleButton => 'Sign up with Google';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm Password';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account?';
+
+  @override
+  String get signUpLink => 'Sign up';
+
+  @override
+  String get signInLink => 'Sign in';
 }

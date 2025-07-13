@@ -17,6 +17,7 @@ import 'package:flutter_flashcards/src/app.dart' show appNavigatorKey;
 
 import 'reviews/study_cards_page.dart';
 import 'package:flutter_flashcards/src/login/login_screen.dart';
+import 'package:flutter_flashcards/src/signup/signup_screen.dart';
 
 final _log = Logger();
 
@@ -213,6 +214,10 @@ final router = GoRouter(
       builder: (context, state) {
         return CollaborationPage();
       },
+    ),
+    GoRoute(
+      path: '/sign-up',
+      builder: (context, state) => const SignupScreen(),
     ),
   ],
 );

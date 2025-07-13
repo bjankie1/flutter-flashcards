@@ -632,4 +632,28 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get signInWithGoogleButton => 'Zaloguj się przez Google';
+
+  @override
+  String get signUpTitle => 'Utwórz konto';
+
+  @override
+  String get signUpButton => 'Zarejestruj się';
+
+  @override
+  String get signUpWithGoogleButton => 'Zarejestruj się przez Google';
+
+  @override
+  String get confirmPasswordLabel => 'Potwierdź hasło';
+
+  @override
+  String get alreadyHaveAccount => 'Masz już konto?';
+
+  @override
+  String get dontHaveAccount => 'Nie masz konta?';
+
+  @override
+  String get signUpLink => 'Zarejestruj się';
+
+  @override
+  String get signInLink => 'Zaloguj się';
 }

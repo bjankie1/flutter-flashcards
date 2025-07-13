@@ -180,5 +180,13 @@
   "passwordLabel": "Hasło",
   "signInButton": "Zaloguj się",
   "orLabel": "lub",
-  "signInWithGoogleButton": "Zaloguj się przez Google"
+  "signInWithGoogleButton": "Zaloguj się przez Google",
+  "signUpTitle": "Utwórz konto",
+  "signUpButton": "Zarejestruj się",
+  "signUpWithGoogleButton": "Zarejestruj się przez Google",
+  "confirmPasswordLabel": "Potwierdź hasło",
+  "alreadyHaveAccount": "Masz już konto?",
+  "dontHaveAccount": "Nie masz konta?",
+  "signUpLink": "Zarejestruj się",
+  "signInLink": "Zaloguj się"
 }
