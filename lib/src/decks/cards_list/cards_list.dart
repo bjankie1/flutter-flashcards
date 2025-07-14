@@ -5,6 +5,7 @@ import '../../model/cards.dart' as model;
 import 'cards_list_controller.dart';
 import 'cards_list_widgets.dart';
 
+/// Widget for displaying the cards list
 class CardsList extends ConsumerWidget {
   final model.Deck deck;
 

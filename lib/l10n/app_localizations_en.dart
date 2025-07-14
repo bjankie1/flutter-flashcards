@@ -552,6 +552,39 @@ class AppLocalizationsEn extends AppLocalizations {
       'Paste the link to your Google Doc to generate cards from it.';
 
   @override
+  String get selectGoogleDoc => 'Select Google Doc';
+
+  @override
+  String docContentLength(int length) {
+    return 'Doc content length: $length';
+  }
+
+  @override
+  String errorPrefix(String message) {
+    return 'Error: $message';
+  }
+
+  @override
+  String get enterGoogleDocUrl => 'Enter Google Doc URL:';
+
+  @override
+  String get googleDocUrlHint => 'https://docs.google.com/document/d/...';
+
+  @override
+  String get googleDocUrlExample =>
+      'Example: https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit';
+
+  @override
+  String get pleaseEnterGoogleDocUrl => 'Please enter a Google Doc URL';
+
+  @override
+  String get invalidGoogleDocUrl =>
+      'Invalid Google Doc URL. Please check the URL and try again.';
+
+  @override
+  String get loadButton => 'Load';
+
+  @override
   String get cancelButtonLabel => 'Cancel';
 
   @override

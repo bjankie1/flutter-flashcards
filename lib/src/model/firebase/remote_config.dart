@@ -1,6 +1,7 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_flashcards/src/app_config.dart';
 
 class RemoteConfigProvider {
   final remoteConfig = FirebaseRemoteConfig.instance;
@@ -103,7 +104,7 @@ class RemoteConfigProvider {
     if (message.isNotEmpty) {
       return message;
     }
-    return kDebugMode
+    return AppConfig.useFirebaseEmulator
         ? 'Debug: Update available'
         : 'A new version is available';
   }

@@ -24,6 +24,7 @@ import 'package:url_strategy/url_strategy.dart';
 import 'src/app.dart';
 import 'src/model/repository_provider.dart';
 import 'src/decks/deck_list/index.dart';
+import 'src/app_config.dart';
 
 final _log = Logger();
 
@@ -50,7 +51,7 @@ void main() async {
   GoRouter.optionURLReflectsImperativeAPIs = true;
   setPathUrlStrategy();
 
-  if (kDebugMode) {
+  if (AppConfig.useFirebaseEmulator) {
     // Connect to the Firestore emulator
     await _connectFirebaseEmulator();
   } else {
@@ -66,7 +67,9 @@ void main() async {
     repository.user = user;
   });
 
-  final cloudFunctions = CloudFunctions(useEmulator: kDebugMode);
+  final cloudFunctions = CloudFunctions(
+    useEmulator: AppConfig.useFirebaseEmulator,
+  );
   var storageService = StorageService();
   final appInfo = AppInfo();
   await appInfo.init();

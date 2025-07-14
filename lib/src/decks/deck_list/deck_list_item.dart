@@ -6,6 +6,7 @@ import 'package:flutter_flashcards/src/decks/deck_sharing.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../common/build_context_extensions.dart';
+import '../../layout/layout_constraints.dart';
 import '../../model/cards.dart' as model;
 import '../deck_groups/deck_group_selection_list.dart';
 import 'decks_list.dart';
@@ -20,87 +21,83 @@ class DeckListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isWide = constraints.maxWidth > 600;
+    final isWide = context.isWideLayout;
 
-        if (isWide) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: DeckMasteryProgress(deck: deck, isWide: true),
+    if (isWide) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: DeckMasteryProgress(deck: deck, isWide: true),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ListTile(
+                dense: true,
+                isThreeLine: true,
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  deck.name,
+                  style: context.theme.textTheme.titleMedium,
+                  overflow: TextOverflow.clip,
+                  softWrap: false,
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ListTile(
-                    dense: true,
-                    isThreeLine: true,
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      deck.name,
-                      style: context.theme.textTheme.titleMedium,
-                      overflow: TextOverflow.clip,
-                      softWrap: false,
-                    ),
-                    subtitle: Row(children: [DeckInfoWidget(deck: deck)]),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        FittedBox(child: DeckCardsToReviewWidget(deck: deck)),
-                        const SizedBox(width: 8),
-                        DeckContextMenu(deck: deck),
-                      ],
-                    ),
-                    onTap: () async {
-                      await context.push('/decks/${deck.id}');
-                    },
-                  ),
+                subtitle: Row(children: [DeckInfoWidget(deck: deck)]),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FittedBox(child: DeckCardsToReviewWidget(deck: deck)),
+                    const SizedBox(width: 8),
+                    DeckContextMenu(deck: deck),
+                  ],
                 ),
-              ],
-            ),
-          );
-        } else {
-          final tile = ListTile(
-            dense: true,
-            isThreeLine: true,
-            title: Text(
-              deck.name,
-              style: context.theme.textTheme.titleMedium,
-              overflow: TextOverflow.clip,
-              softWrap: false,
-            ),
-            subtitle: Row(children: [DeckInfoWidget(deck: deck)]),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FittedBox(child: DeckCardsToReviewWidget(deck: deck)),
-                const SizedBox(width: 8),
-                DeckContextMenu(deck: deck),
-              ],
-            ),
-            onTap: () async {
-              await context.push('/decks/${deck.id}');
-            },
-          );
-          return Stack(
-            children: [
-              tile,
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: DeckMasteryProgress(deck: deck, isWide: false),
+                onTap: () async {
+                  await context.push('/decks/${deck.id}');
+                },
               ),
-            ],
-          );
-        }
-      },
-    );
+            ),
+          ],
+        ),
+      );
+    } else {
+      final tile = ListTile(
+        dense: true,
+        isThreeLine: true,
+        title: Text(
+          deck.name,
+          style: context.theme.textTheme.titleMedium,
+          overflow: TextOverflow.clip,
+          softWrap: false,
+        ),
+        subtitle: Row(children: [DeckInfoWidget(deck: deck)]),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FittedBox(child: DeckCardsToReviewWidget(deck: deck)),
+            const SizedBox(width: 8),
+            DeckContextMenu(deck: deck),
+          ],
+        ),
+        onTap: () async {
+          await context.push('/decks/${deck.id}');
+        },
+      );
+      return Stack(
+        children: [
+          tile,
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: DeckMasteryProgress(deck: deck, isWide: false),
+          ),
+        ],
+      );
+    }
   }
 }
 

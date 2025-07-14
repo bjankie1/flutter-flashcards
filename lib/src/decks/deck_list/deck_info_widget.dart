@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../common/build_context_extensions.dart';
+import '../../common/category_image.dart';
 import '../../model/cards.dart' as model;
 import 'deck_info_controller.dart';
 
@@ -35,6 +36,14 @@ class DeckInfoWidget extends ConsumerWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
+          if (deck.category != null) ...[
+            const SizedBox(width: 8),
+            CategoryImage(
+              category: deck.category!,
+              size: 16,
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ],
           const SizedBox(width: 8),
           IconButton(
             icon: Icon(Icons.add, size: 18),

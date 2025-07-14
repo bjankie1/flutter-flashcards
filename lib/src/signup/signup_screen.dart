@@ -7,6 +7,7 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_flashcards/firebase_options.dart';
+import 'package:flutter_flashcards/src/app_config.dart';
 
 class SignupScreen extends ConsumerWidget {
   const SignupScreen({super.key});
@@ -43,7 +44,7 @@ class SignupScreen extends ConsumerWidget {
                             constraints: const BoxConstraints(maxWidth: 400),
                             child: Padding(
                               padding: const EdgeInsets.all(32.0),
-                              child: kDebugMode
+                              child: AppConfig.showFirebaseUIAuth
                                   ? RegisterScreen(
                                       providers: [
                                         EmailAuthProvider(),
@@ -99,7 +100,7 @@ class SignupScreen extends ConsumerWidget {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(32.0),
-                          child: kDebugMode
+                          child: AppConfig.showFirebaseUIAuth
                               ? RegisterScreen(
                                   providers: [
                                     EmailAuthProvider(),

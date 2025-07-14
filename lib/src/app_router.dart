@@ -34,6 +34,93 @@ enum NamedRoute {
   collaboration,
 }
 
+/// Navigation service to encapsulate navigation logic
+class AppNavigation {
+  /// Navigate to learn page with deck ID
+  static void goToLearn(BuildContext context, String deckId) {
+    context.go('/learn?deckId=$deckId');
+  }
+
+  /// Navigate to learn page with deck ID and deck group ID
+  static void goToLearnWithGroup(
+    BuildContext context,
+    String deckId,
+    String deckGroupId,
+  ) {
+    context.go('/learn?deckId=$deckId&deckGroupId=$deckGroupId');
+  }
+
+  /// Navigate to deck details page
+  static void goToDeck(BuildContext context, String deckId) {
+    context.go('/decks/$deckId');
+  }
+
+  /// Navigate to add card page
+  static void goToAddCard(BuildContext context, String deckId) {
+    context.go('/decks/$deckId/add');
+  }
+
+  /// Navigate to edit card page
+  static void goToEditCard(BuildContext context, String deckId, String cardId) {
+    context.go('/decks/$deckId/cards/$cardId');
+  }
+
+  /// Navigate to generate cards page
+  static void goToGenerateCards(BuildContext context, {String? deckId}) {
+    final queryParams = deckId != null ? '?deckId=$deckId' : '';
+    context.go('/generate$queryParams');
+  }
+
+  /// Navigate to generate from Google Doc page
+  static void goToGenerateFromGoogleDoc(
+    BuildContext context, {
+    String? deckId,
+  }) {
+    final queryParams = deckId != null ? '?deckId=$deckId' : '';
+    context.go('/generate-from-google-doc$queryParams');
+  }
+
+  /// Navigate to quick cards page
+  static void goToQuickCards(BuildContext context) {
+    context.go('/quick-cards');
+  }
+
+  /// Navigate to statistics page
+  static void goToStatistics(BuildContext context) {
+    context.go('/statistics');
+  }
+
+  /// Navigate to settings page
+  static void goToSettings(BuildContext context) {
+    context.go('/settings');
+  }
+
+  /// Navigate to collaboration page
+  static void goToCollaboration(BuildContext context) {
+    context.go('/collaboration');
+  }
+
+  /// Navigate to sign in page
+  static void goToSignIn(BuildContext context) {
+    context.go('/sign-in');
+  }
+
+  /// Navigate to sign up page
+  static void goToSignUp(BuildContext context) {
+    context.go('/sign-up');
+  }
+
+  /// Navigate to profile page
+  static void goToProfile(BuildContext context) {
+    context.go('/profile');
+  }
+
+  /// Navigate to home page
+  static void goToHome(BuildContext context) {
+    context.go('/');
+  }
+}
+
 // Add GoRouter configuration outside the App class
 final router = GoRouter(
   navigatorKey: appNavigatorKey,

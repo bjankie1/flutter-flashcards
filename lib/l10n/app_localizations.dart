@@ -1094,6 +1094,60 @@ abstract class AppLocalizations {
   /// **'Paste the link to your Google Doc to generate cards from it.'**
   String get googleDocHelperText;
 
+  /// No description provided for @selectGoogleDoc.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Google Doc'**
+  String get selectGoogleDoc;
+
+  /// No description provided for @docContentLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Doc content length: {length}'**
+  String docContentLength(int length);
+
+  /// No description provided for @errorPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {message}'**
+  String errorPrefix(String message);
+
+  /// No description provided for @enterGoogleDocUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Google Doc URL:'**
+  String get enterGoogleDocUrl;
+
+  /// No description provided for @googleDocUrlHint.
+  ///
+  /// In en, this message translates to:
+  /// **'https://docs.google.com/document/d/...'**
+  String get googleDocUrlHint;
+
+  /// No description provided for @googleDocUrlExample.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit'**
+  String get googleDocUrlExample;
+
+  /// No description provided for @pleaseEnterGoogleDocUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a Google Doc URL'**
+  String get pleaseEnterGoogleDocUrl;
+
+  /// No description provided for @invalidGoogleDocUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Google Doc URL. Please check the URL and try again.'**
+  String get invalidGoogleDocUrl;
+
+  /// No description provided for @loadButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Load'**
+  String get loadButton;
+
   /// No description provided for @cancelButtonLabel.
   ///
   /// In en, this message translates to:

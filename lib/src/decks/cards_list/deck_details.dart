@@ -3,11 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:flutter_flashcards/src/common/themes.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_flashcards/src/common/category_image.dart';
 import 'package:logger/logger.dart';
 
 import '../../model/cards.dart' as model;
 import '../../common/editable_text.dart' as custom;
+import '../../app_router.dart';
 import 'deck_details_controller.dart';
 import '../deck_list/deck_info_controller.dart';
 import '../deck_list/deck_cards_to_review_controller.dart';
@@ -25,7 +26,8 @@ final class DeckDetails extends ConsumerWidget {
     final deckDetailsAsync = ref.watch(deckDetailsControllerProvider(deck.id!));
 
     return deckDetailsAsync.when(
-      data: (currentDeck) => _buildDeckDetails(context, ref, currentDeck),
+      data: (currentDeck) =>
+          DeckDetailsContent(deck: deck, currentDeck: currentDeck),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) {
         _log.e(
@@ -59,13 +61,32 @@ final class DeckDetails extends ConsumerWidget {
       },
     );
   }
+}
 
-  Widget _buildDeckDetails(
-    BuildContext context,
-    WidgetRef ref,
-    model.Deck currentDeck,
-  ) {
-    return Column(
+/// Content widget for displaying and editing deck details
+final class DeckDetailsContent extends ConsumerWidget {
+  final Logger _log = Logger();
+
+  final model.Deck deck;
+  final model.Deck currentDeck;
+
+  DeckDetailsContent({
+    super.key,
+    required this.deck,
+    required this.currentDeck,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final categoryImage = currentDeck.category != null
+        ? CategoryImage(
+            category: currentDeck.category!,
+            size: 120,
+            borderRadius: BorderRadius.circular(24),
+          )
+        : null;
+
+    final leftColumn = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         custom.EditableText(
@@ -89,7 +110,6 @@ final class DeckDetails extends ConsumerWidget {
             }
           },
         ),
-        const SizedBox(height: 8),
         custom.EditableText(
           text: currentDeck.description ?? '',
           style: context.theme.textTheme.titleMedium?.copyWith(
@@ -119,26 +139,57 @@ final class DeckDetails extends ConsumerWidget {
         ),
         const SizedBox(height: 12),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14.0),
-          child: Row(
+          padding: const EdgeInsets.only(left: 12.0),
+          child: CardCountWidget(deckId: deck.id!),
+        ),
+      ],
+    );
+
+    final rightColumn = categoryImage != null
+        ? Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
+            children: [categoryImage],
+          )
+        : const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: leftColumn),
+            const SizedBox(width: 32),
+            rightColumn,
+          ],
+        ),
+        const SizedBox(height: 20),
+        Align(
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildCardCount(context, ref),
-              if (currentDeck.category != null && !context.isMobile) ...[
-                const SizedBox(width: 16),
-                Chip(label: Text(currentDeck.category?.name ?? '')),
-              ],
-              const Spacer(),
-              _buildLearnButton(context, ref),
+              LearnButtonWidget(deckId: deck.id!),
+              const SizedBox(width: 16),
+              GenerateFromGoogleDocButtonWidget(deckId: deck.id!),
             ],
           ),
         ),
       ],
     );
   }
+}
 
-  Widget _buildCardCount(BuildContext context, WidgetRef ref) {
-    final cardCountAsync = ref.watch(deckInfoControllerProvider(deck.id!));
+/// Widget for displaying the card count
+final class CardCountWidget extends ConsumerWidget {
+  final String deckId;
+
+  const CardCountWidget({super.key, required this.deckId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cardCountAsync = ref.watch(deckInfoControllerProvider(deckId));
 
     return cardCountAsync.when(
       data: (totalCards) => Text(
@@ -162,16 +213,24 @@ final class DeckDetails extends ConsumerWidget {
       ),
     );
   }
+}
 
-  Widget _buildLearnButton(BuildContext context, WidgetRef ref) {
-    final cardCountAsync = ref.watch(deckInfoControllerProvider(deck.id!));
+/// Widget for the learn button with review count badge
+final class LearnButtonWidget extends ConsumerWidget {
+  final String deckId;
+
+  const LearnButtonWidget({super.key, required this.deckId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cardCountAsync = ref.watch(deckInfoControllerProvider(deckId));
 
     return cardCountAsync.when(
       data: (totalCards) {
         if (totalCards == 0) return const SizedBox.shrink();
 
         final cardsToReviewAsync = ref.watch(
-          deckCardsToReviewControllerProvider(deck.id!),
+          deckCardsToReviewControllerProvider(deckId),
         );
 
         return cardsToReviewAsync.when(
@@ -183,35 +242,27 @@ final class DeckDetails extends ConsumerWidget {
               child: ElevatedButton.icon(
                 onPressed: () {
                   try {
-                    context.go('/learn?deckId=${deck.id}');
+                    AppNavigation.goToLearn(context, deckId);
                   } on Exception {
                     if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor:
-                            context.theme.colorScheme.errorContainer,
-                        content: Row(
-                          children: [
-                            Icon(
-                              Icons.warning_amber_rounded,
-                              color: context.theme.colorScheme.onErrorContainer,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              context.l10n.errorLoadingCards,
-                              style: TextStyle(
-                                color:
-                                    context.theme.colorScheme.onErrorContainer,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                    context.showErrorSnackbar(context.l10n.errorLoadingCards);
                   }
                 },
-                icon: const Icon(Icons.play_circle_fill),
-                label: Text(context.l10n.learn),
+                icon: const Icon(
+                  Icons.play_circle_fill,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                label: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Text(
+                    context.l10n.learn,
+                    style: context.theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[700],
                   foregroundColor: Colors.white,
@@ -227,29 +278,10 @@ final class DeckDetails extends ConsumerWidget {
           error: (error, stackTrace) => ElevatedButton.icon(
             onPressed: () {
               try {
-                context.go('/learn?deckId=${deck.id}');
+                AppNavigation.goToLearn(context, deckId);
               } on Exception {
                 if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: context.theme.colorScheme.errorContainer,
-                    content: Row(
-                      children: [
-                        Icon(
-                          Icons.warning_amber_rounded,
-                          color: context.theme.colorScheme.onErrorContainer,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          context.l10n.errorLoadingCards,
-                          style: TextStyle(
-                            color: context.theme.colorScheme.onErrorContainer,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                context.showErrorSnackbar(context.l10n.errorLoadingCards);
               }
             },
             icon: const Icon(Icons.play_circle_fill),
@@ -263,6 +295,42 @@ final class DeckDetails extends ConsumerWidget {
       },
       loading: () => const SizedBox.shrink(),
       error: (error, stackTrace) => const SizedBox.shrink(),
+    );
+  }
+}
+
+/// Widget for the generate from Google Doc button
+final class GenerateFromGoogleDocButtonWidget extends ConsumerWidget {
+  final String deckId;
+
+  const GenerateFromGoogleDocButtonWidget({super.key, required this.deckId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ElevatedButton.icon(
+      onPressed: () {
+        try {
+          AppNavigation.goToGenerateFromGoogleDoc(context, deckId: deckId);
+        } on Exception {
+          if (!context.mounted) return;
+          context.showErrorSnackbar(context.l10n.errorLoadingCards);
+        }
+      },
+      icon: const Icon(Icons.description, color: Colors.white, size: 24),
+      label: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Text(
+          context.l10n.generateFromGoogleDoc,
+          style: context.theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blue[700],
+        foregroundColor: Colors.white,
+      ),
     );
   }
 }

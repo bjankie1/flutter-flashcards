@@ -30,6 +30,9 @@ enum Category {
   language,
   history,
   science,
+  biology,
+  geography,
+  math,
   other,
 }
 
@@ -47,6 +50,12 @@ function stringToCategory(value: string): Category {
     return Category.history;
   case "science":
     return Category.science;
+  case "biology":
+    return Category.biology;
+  case "geography":
+    return Category.geography;
+  case "math":
+    return Category.math;
   default:
     return Category.other;
   }
@@ -91,6 +100,34 @@ function systemPrompt(category: Category): string {
        or calculations, express formulas using LaTeX inline math mode (e.g., $E=mc^2$). If a
        question requires calculations to arrive at the answer, include a clear, step-by-step
        explanation of the calculation process.`;
+  case Category.biology:
+    return `You are a flashcard creation assistant. Given a question or term related to biology,
+               provide a concise and informative answer suitable for a flashcard.
+               Answers should be accurate and easy to understand for studying.
+               Both answer and explanation should be provided in the same language as question and
+               deck description.
+               For biological concepts, include relevant scientific terminology and explanations
+               that help with understanding. Use markdown formatting when necessary to highlight
+               important terms or concepts.`;
+  case Category.geography:
+    return `You are a flashcard creation assistant. Given a question or term related to geography,
+               provide a concise and informative answer suitable for a flashcard.
+               Answers should be accurate and easy to understand for studying.
+               Both answer and explanation should be provided in the same language as question and
+               deck description.
+               For geographical concepts, include relevant location details, climate information,
+               or cultural context as appropriate. Use markdown formatting when necessary to
+               highlight important geographical features or terms.`;
+  case Category.math:
+    return `You are a flashcard creation assistant. Given a question or term related to mathematics,
+               provide a concise and informative answer suitable for a flashcard.
+               Answers should be accurate and easy to understand for studying.
+               Both answer and explanation should be provided in the same language as question and
+               deck description.
+               For mathematical concepts, express formulas using LaTeX inline math mode (e.g., $E=mc^2$).
+               If a question requires calculations, include a clear, step-by-step explanation
+               of the calculation process. Use markdown formatting to structure mathematical
+               expressions and explanations clearly.`;
   default: // Category.other
     return `You are a flashcard creation assistant. Given a question or term,
                provide a concise and informative answer suitable for a flashcard.
@@ -149,7 +186,7 @@ const cardTypeFlow = ai.defineFlow(
     // Call the AI model to classify the deck
     const result = await ai.generate({
       model: gemini20FlashExp,
-      system: `Classify flashcard based on provided information such as deckName,\ndeckDescription and the question. Pick one of provided categories: language, history, science, other.\nNEVER add additional characters to the output such as extra quotes.\nDo not respond with null, always pick the best fitting category, if you are unsure select 'other'.`,
+      system: `Classify flashcard based on provided information such as deckName,\ndeckDescription and the question. Pick one of provided categories: language, history, science, biology, geography, math, other.\nNEVER add additional characters to the output such as extra quotes.\nDo not respond with null, always pick the best fitting category, if you are unsure select 'other'.`,
       prompt: `Given the following information about a deck and a question, classify the question into one of the provided categories:\n                Deck Name: ${subject.deckName}\n                Deck Description: ${subject.deckDescription}`,
       config: {
         temperature: 0.0,

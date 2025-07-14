@@ -561,6 +561,40 @@ class AppLocalizationsPl extends AppLocalizations {
       'Wklej link do swojego Dokumentu Google, aby wygenerować z niego fiszki.';
 
   @override
+  String get selectGoogleDoc => 'Wybierz Dokument Google';
+
+  @override
+  String docContentLength(int length) {
+    return 'Długość treści dokumentu: $length';
+  }
+
+  @override
+  String errorPrefix(String message) {
+    return 'Błąd: $message';
+  }
+
+  @override
+  String get enterGoogleDocUrl => 'Wprowadź URL Dokumentu Google:';
+
+  @override
+  String get googleDocUrlHint => 'https://docs.google.com/document/d/...';
+
+  @override
+  String get googleDocUrlExample =>
+      'Przykład: https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit';
+
+  @override
+  String get pleaseEnterGoogleDocUrl =>
+      'Proszę wprowadzić URL Dokumentu Google';
+
+  @override
+  String get invalidGoogleDocUrl =>
+      'Nieprawidłowy URL Dokumentu Google. Sprawdź URL i spróbuj ponownie.';
+
+  @override
+  String get loadButton => 'Załaduj';
+
+  @override
   String get cancelButtonLabel => 'Anuluj';
 
   @override

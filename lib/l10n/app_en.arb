@@ -249,6 +249,29 @@
   "generateFromGoogleDoc": "Generate from Google Doc",
   "googleDocLink": "Google Doc Link",
   "googleDocHelperText": "Paste the link to your Google Doc to generate cards from it.",
+  "selectGoogleDoc": "Select Google Doc",
+  "docContentLength": "Doc content length: {length}",
+  "@docContentLength": {
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "errorPrefix": "Error: {message}",
+  "@errorPrefix": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "enterGoogleDocUrl": "Enter Google Doc URL:",
+  "googleDocUrlHint": "https://docs.google.com/document/d/...",
+  "googleDocUrlExample": "Example: https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit",
+  "pleaseEnterGoogleDocUrl": "Please enter a Google Doc URL",
+  "invalidGoogleDocUrl": "Invalid Google Doc URL. Please check the URL and try again.",
+  "loadButton": "Load",
   "@addCard": {
     "description": "Label for add card button"
   },
