@@ -167,6 +167,7 @@
   "deckGeneration": "Generate cards",
   "inputTextForGenerator": "Text to generate flashcards for",
   "generateCards": "Generate cards",
+  "generateFlashcards": "Generate flashcards",
   "inputText": "Text",
   "addCardsToDeck": "Add cards to deck",
   "createNewDeck": "Create new deck",

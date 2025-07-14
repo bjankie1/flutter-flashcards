@@ -323,6 +323,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get generateCards => 'Generuj karty';
 
   @override
+  String get generateFlashcards => 'Generuj fiszki';
+
+  @override
   String get inputText => 'Tekst';
 
   @override

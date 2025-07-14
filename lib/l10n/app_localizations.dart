@@ -680,6 +680,12 @@ abstract class AppLocalizations {
   /// **'Generate cards'**
   String get generateCards;
 
+  /// No description provided for @generateFlashcards.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate flashcards'**
+  String get generateFlashcards;
+
   /// No description provided for @inputText.
   ///
   /// In en, this message translates to:

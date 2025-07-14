@@ -321,6 +321,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get generateCards => 'Generate cards';
 
   @override
+  String get generateFlashcards => 'Generate flashcards';
+
+  @override
   String get inputText => 'Text';
 
   @override

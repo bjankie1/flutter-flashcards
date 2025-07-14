@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
@@ -70,11 +71,71 @@ class GoogleDocImportWidget extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(
-                  context.l10n.docContentLength(state.content!.length),
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          context.l10n.docContentLength(state.content!.length),
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.copy),
+                          onPressed: () async {
+                            await Clipboard.setData(
+                              ClipboardData(text: state.content!),
+                            );
+                            if (context.mounted) {
+                              context.showInfoSnackbar(
+                                'Content copied to clipboard',
+                              );
+                            }
+                          },
+                          tooltip: 'Copy content',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.outline.withOpacity(0.3),
+                        ),
+                      ),
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(12),
+                        child: SelectableText(
+                          state.content!,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 14,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        icon: const Icon(Icons.auto_awesome),
+                        label: Text(context.l10n.generateFlashcards),
+                        onPressed: () => _generateFlashcards(context, ref),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -104,6 +165,21 @@ class GoogleDocImportWidget extends ConsumerWidget {
       if (context.mounted) {
         context.showErrorSnackbar(context.l10n.errorPrefix(e.toString()));
       }
+    }
+  }
+
+  Future<void> _generateFlashcards(BuildContext context, WidgetRef ref) async {
+    final state = ref.read(googleDocImportControllerProvider);
+    if (state.content == null) return;
+
+    // TODO: Implement flashcard generation from content
+    // This would typically involve:
+    // 1. Sending the content to a flashcard generation service
+    // 2. Processing the generated cards
+    // 3. Adding them to the selected deck or creating a new deck
+
+    if (context.mounted) {
+      context.showInfoSnackbar('Flashcard generation feature coming soon!');
     }
   }
 }

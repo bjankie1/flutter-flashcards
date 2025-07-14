@@ -97,6 +97,7 @@
   "deckGeneration": "Generowanie zestawów kart",
   "inputTextForGenerator": "Wprowadź tekst na podstawie którego chcesz wygenerować karty",
   "generateCards": "Generuj karty",
+  "generateFlashcards": "Generuj fiszki",
   "inputText": "Tekst",
   "addCardsToDeck": "Dodaj karty",
   "createNewDeck": "Utwórz nowy zestaw",
