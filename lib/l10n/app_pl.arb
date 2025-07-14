@@ -198,5 +198,16 @@
   "alreadyHaveAccount": "Masz już konto?",
   "dontHaveAccount": "Nie masz konta?",
   "signUpLink": "Zarejestruj się",
-  "signInLink": "Zaloguj się"
+  "signInLink": "Zaloguj się",
+  "selectCard": "Zaznacz fiszkę",
+  "deselectCard": "Odznacz fiszkę",
+  "uploadNewFile": "Wyślij nowy plik",
+  "regenerateFlashcards": "Wygeneruj fiszki ponownie",
+  "generatedFlashcards": "Wygenerowane fiszki ({count})",
+  "editCards": "Edytuj fiszki",
+  "saveToDeck": "Zapisz do talii",
+  "showContent": "Pokaż treść",
+  "close": "Zamknij",
+  "docLength": "Długość dokumentu: {length}",
+  "explanationLabel": "Wyjaśnienie:"
 }

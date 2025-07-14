@@ -617,7 +617,7 @@ abstract class AppLocalizations {
   /// No description provided for @explanationLabel.
   ///
   /// In en, this message translates to:
-  /// **'Explanation'**
+  /// **'Explanation:'**
   String get explanationLabel;
 
   /// No description provided for @cardReviewDaily.
@@ -1327,6 +1327,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign in'**
   String get signInLink;
+
+  /// No description provided for @selectCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Select card'**
+  String get selectCard;
+
+  /// No description provided for @deselectCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect card'**
+  String get deselectCard;
+
+  /// No description provided for @uploadNewFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload new file'**
+  String get uploadNewFile;
+
+  /// No description provided for @regenerateFlashcards.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate flashcards'**
+  String get regenerateFlashcards;
+
+  /// No description provided for @generatedFlashcards.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated Flashcards ({count})'**
+  String generatedFlashcards(Object count);
+
+  /// No description provided for @editCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Cards'**
+  String get editCards;
+
+  /// No description provided for @saveToDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Save to Deck'**
+  String get saveToDeck;
+
+  /// No description provided for @showContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Show content'**
+  String get showContent;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @docLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Doc length: {length}'**
+  String docLength(Object length);
 }
 
 class _AppLocalizationsDelegate

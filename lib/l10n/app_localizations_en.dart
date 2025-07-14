@@ -288,7 +288,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newDeckGroupAddedMessage => 'New deck group added';
 
   @override
-  String get explanationLabel => 'Explanation';
+  String get explanationLabel => 'Explanation:';
 
   @override
   String get cardReviewDaily => 'Cards reviews per day';
@@ -683,4 +683,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInLink => 'Sign in';
+
+  @override
+  String get selectCard => 'Select card';
+
+  @override
+  String get deselectCard => 'Deselect card';
+
+  @override
+  String get uploadNewFile => 'Upload new file';
+
+  @override
+  String get regenerateFlashcards => 'Regenerate flashcards';
+
+  @override
+  String generatedFlashcards(Object count) {
+    return 'Generated Flashcards ($count)';
+  }
+
+  @override
+  String get editCards => 'Edit Cards';
+
+  @override
+  String get saveToDeck => 'Save to Deck';
+
+  @override
+  String get showContent => 'Show content';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String docLength(Object length) {
+    return 'Doc length: $length';
+  }
 }

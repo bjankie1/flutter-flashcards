@@ -156,7 +156,7 @@
   "newDeckGroupName": "New deck group",
   "newDeckGroupHelper": "Enter new deck group name",
   "newDeckGroupAddedMessage": "New deck group added",
-  "explanationLabel": "Explanation",
+  "explanationLabel": "Explanation:",
   "cardReviewDaily": "Cards reviews per day",
   "frontCardLabel": "Front card language",
   "languageHint": "Choose language",
@@ -314,5 +314,15 @@
   "alreadyHaveAccount": "Already have an account?",
   "dontHaveAccount": "Don't have an account?",
   "signUpLink": "Sign up",
-  "signInLink": "Sign in"
+  "signInLink": "Sign in",
+  "selectCard": "Select card",
+  "deselectCard": "Deselect card",
+  "uploadNewFile": "Upload new file",
+  "regenerateFlashcards": "Regenerate flashcards",
+  "generatedFlashcards": "Generated Flashcards ({count})",
+  "editCards": "Edit Cards",
+  "saveToDeck": "Save to Deck",
+  "showContent": "Show content",
+  "close": "Close",
+  "docLength": "Doc length: {length}"
 }

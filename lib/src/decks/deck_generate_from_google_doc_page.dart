@@ -90,7 +90,9 @@ class DeckGenerateFromGoogleDocPage extends ConsumerWidget {
                                             showDialog(
                                               context: context,
                                               builder: (context) => AlertDialog(
-                                                title: Text('Show content'),
+                                                title: Text(
+                                                  context.l10n.showContent,
+                                                ),
                                                 content: SizedBox(
                                                   width: double.maxFinite,
                                                   height: 400,
@@ -113,7 +115,9 @@ class DeckGenerateFromGoogleDocPage extends ConsumerWidget {
                                                         Navigator.of(
                                                           context,
                                                         ).pop(),
-                                                    child: Text('Close'),
+                                                    child: Text(
+                                                      context.l10n.close,
+                                                    ),
                                                   ),
                                                 ],
                                               ),
@@ -144,7 +148,7 @@ class DeckGenerateFromGoogleDocPage extends ConsumerWidget {
                                   if (state.content != null) ...[
                                     const SizedBox(height: 8),
                                     Text(
-                                      'Doc length: $docLength',
+                                      context.l10n.docLength(docLength),
                                       style: context.textTheme.bodySmall
                                           ?.copyWith(
                                             color: Theme.of(context).hintColor,
@@ -163,7 +167,7 @@ class DeckGenerateFromGoogleDocPage extends ConsumerWidget {
                                   if (hasDoc)
                                     OutlinedButton.icon(
                                       icon: const Icon(Icons.upload_file),
-                                      label: const Text('Upload new file'),
+                                      label: Text(context.l10n.uploadNewFile),
                                       onPressed: () async {
                                         final controller = ref.read(
                                           googleDocImportControllerProvider
@@ -188,7 +192,9 @@ class DeckGenerateFromGoogleDocPage extends ConsumerWidget {
                                                     state
                                                         .generatedFlashcards!
                                                         .isNotEmpty
-                                                ? 'Regenerate flashcards'
+                                                ? context
+                                                      .l10n
+                                                      .regenerateFlashcards
                                                 : context
                                                       .l10n
                                                       .generateFlashcards,
@@ -250,7 +256,9 @@ class DeckGenerateFromGoogleDocPage extends ConsumerWidget {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Text(
-                        'Generated Flashcards (${state.generatedFlashcards!.length})',
+                        context.l10n.generatedFlashcards(
+                          state.generatedFlashcards!.length,
+                        ),
                         style: context.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -258,44 +266,89 @@ class DeckGenerateFromGoogleDocPage extends ConsumerWidget {
                     );
                   }
                   final flashcard = state.generatedFlashcards![index - 1];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    child: ExpansionTile(
-                      title: Text(
-                        flashcard.question,
-                        style: const TextStyle(fontWeight: FontWeight.w500),
+                  final isSelected = state.selectedFlashcardIndexes.contains(
+                    index - 1,
+                  );
+                  final hasExplanation =
+                      flashcard.explanation != null &&
+                      flashcard.explanation!.trim().isNotEmpty;
+                  return InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      ref
+                          .read(googleDocImportControllerProvider.notifier)
+                          .toggleFlashcardSelection(index - 1);
+                    },
+                    child: Card(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
                       ),
-                      subtitle: Text(
-                        flashcard.answer,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      children: [
-                        if (flashcard.explanation != null) ...[
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                      child: hasExplanation
+                          ? ExpansionTile(
+                              leading: Icon(
+                                isSelected
+                                    ? Icons.check_box
+                                    : Icons.check_box_outline_blank,
+                                color: isSelected
+                                    ? Theme.of(context).colorScheme.primary
+                                    : null,
+                              ),
+                              title: Text(
+                                flashcard.question,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              subtitle: Text(
+                                flashcard.answer,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                               children: [
-                                Text(
-                                  'Explanation:',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        context.l10n.explanationLabel,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.primary,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(flashcard.explanation!),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(height: 8),
-                                Text(flashcard.explanation!),
                               ],
+                            )
+                          : ListTile(
+                              leading: Icon(
+                                isSelected
+                                    ? Icons.check_box
+                                    : Icons.check_box_outline_blank,
+                                color: isSelected
+                                    ? Theme.of(context).colorScheme.primary
+                                    : null,
+                              ),
+                              title: Text(
+                                flashcard.question,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              subtitle: Text(
+                                flashcard.answer,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
-                        ],
-                      ],
                     ),
                   );
                 }, childCount: 1 + state.generatedFlashcards!.length),
@@ -313,7 +366,7 @@ class DeckGenerateFromGoogleDocPage extends ConsumerWidget {
                     Expanded(
                       child: OutlinedButton.icon(
                         icon: const Icon(Icons.edit),
-                        label: const Text('Edit Cards'),
+                        label: Text(context.l10n.editCards),
                         onPressed: () {
                           context.showInfoSnackbar('Edit feature coming soon!');
                         },
@@ -323,7 +376,7 @@ class DeckGenerateFromGoogleDocPage extends ConsumerWidget {
                     Expanded(
                       child: FilledButton.icon(
                         icon: const Icon(Icons.save),
-                        label: const Text('Save to Deck'),
+                        label: Text(context.l10n.saveToDeck),
                         onPressed: () {
                           context.showInfoSnackbar('Save feature coming soon!');
                         },

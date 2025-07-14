@@ -289,7 +289,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get newDeckGroupAddedMessage => 'Grupa została dodana';
 
   @override
-  String get explanationLabel => 'Wyjaśnienie';
+  String get explanationLabel => 'Wyjaśnienie:';
 
   @override
   String get cardReviewDaily => 'Liczba powtórek dziennie';
@@ -693,4 +693,38 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get signInLink => 'Zaloguj się';
+
+  @override
+  String get selectCard => 'Zaznacz fiszkę';
+
+  @override
+  String get deselectCard => 'Odznacz fiszkę';
+
+  @override
+  String get uploadNewFile => 'Wyślij nowy plik';
+
+  @override
+  String get regenerateFlashcards => 'Wygeneruj fiszki ponownie';
+
+  @override
+  String generatedFlashcards(Object count) {
+    return 'Wygenerowane fiszki ($count)';
+  }
+
+  @override
+  String get editCards => 'Edytuj fiszki';
+
+  @override
+  String get saveToDeck => 'Zapisz do talii';
+
+  @override
+  String get showContent => 'Pokaż treść';
+
+  @override
+  String get close => 'Zamknij';
+
+  @override
+  String docLength(Object length) {
+    return 'Długość dokumentu: $length';
+  }
 }
