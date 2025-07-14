@@ -4,8 +4,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/docs/v1.dart' as docs;
 import 'package:http/http.dart' as http;
 
+class GoogleDocData {
+  final String title;
+  final String content;
+  const GoogleDocData({required this.title, required this.content});
+}
+
 class GoogleDocReader {
-  Future<String> readDoc(String docId) async {
+  Future<GoogleDocData> readDoc(String docId) async {
     final googleSignIn = GoogleSignIn(
       clientId: DefaultFirebaseOptions.GOOGLE_CLIENT_ID,
       scopes: [docs.DocsApi.documentsReadonlyScope],
@@ -25,7 +31,9 @@ class GoogleDocReader {
 
     try {
       final document = await docsApi.documents.get(docId);
-      return _extractText(document);
+      final title = document.title ?? 'Untitled';
+      final content = _extractText(document);
+      return GoogleDocData(title: title, content: content);
     } catch (e) {
       throw Exception('Failed to load Google Doc: $e');
     } finally {

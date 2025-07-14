@@ -77,7 +77,7 @@ class AppNavigation {
     String? deckId,
   }) {
     final queryParams = deckId != null ? '?deckId=$deckId' : '';
-    context.go('/generate-from-google-doc$queryParams');
+    context.push('/generate-from-google-doc$queryParams');
   }
 
   /// Navigate to quick cards page

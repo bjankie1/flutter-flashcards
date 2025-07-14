@@ -53,6 +53,7 @@ dependencies:
   http: ^1.4.0
   googleapis: ^14.0.0
   extension_google_sign_in_as_googleapis_auth: ^2.0.13
+  firebase_ai: ^2.2.1
 
 dev_dependencies:
   flutter_test:
