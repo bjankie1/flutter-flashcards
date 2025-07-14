@@ -171,6 +171,27 @@ class AppInfo extends ChangeNotifier {
     _log.d('Update notification dismissed');
   }
 
+  /// Get the latest available version from remote config
+  String getLatestVersion() {
+    return _remoteConfig.latest_version;
+  }
+
+  /// Get the latest available build number from remote config
+  String getLatestBuildNumber() {
+    return _remoteConfig.latest_build_number;
+  }
+
+  /// Get the minimum required version from remote config
+  String getMinimumVersion() {
+    return _remoteConfig.remoteConfig.getString('minimum_version') ?? '1.0.0';
+  }
+
+  /// Get the minimum required build number from remote config
+  String getMinimumBuildNumber() {
+    return _remoteConfig.remoteConfig.getString('minimum_build_number') ??
+        '100';
+  }
+
   @override
   void dispose() {
     stopPeriodicUpdateCheck();

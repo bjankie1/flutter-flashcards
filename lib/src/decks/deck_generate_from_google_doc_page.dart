@@ -248,144 +248,8 @@ class DeckGenerateFromGoogleDocPage extends ConsumerWidget {
             ),
           ),
           if (state.generatedFlashcards != null)
-            SliverPadding(
-              padding: const EdgeInsets.all(16.0),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  if (index == 0) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Text(
-                        context.l10n.generatedFlashcards(
-                          state.generatedFlashcards!.length,
-                        ),
-                        style: context.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    );
-                  }
-                  final flashcard = state.generatedFlashcards![index - 1];
-                  final isSelected = state.selectedFlashcardIndexes.contains(
-                    index - 1,
-                  );
-                  final hasExplanation =
-                      flashcard.explanation != null &&
-                      flashcard.explanation!.trim().isNotEmpty;
-                  return InkWell(
-                    borderRadius: BorderRadius.circular(12),
-                    onTap: () {
-                      ref
-                          .read(googleDocImportControllerProvider.notifier)
-                          .toggleFlashcardSelection(index - 1);
-                    },
-                    child: Card(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      child: hasExplanation
-                          ? ExpansionTile(
-                              leading: Icon(
-                                isSelected
-                                    ? Icons.check_box
-                                    : Icons.check_box_outline_blank,
-                                color: isSelected
-                                    ? Theme.of(context).colorScheme.primary
-                                    : null,
-                              ),
-                              title: Text(
-                                flashcard.question,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              subtitle: Text(
-                                flashcard.answer,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        context.l10n.explanationLabel,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.primary,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(flashcard.explanation!),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            )
-                          : ListTile(
-                              leading: Icon(
-                                isSelected
-                                    ? Icons.check_box
-                                    : Icons.check_box_outline_blank,
-                                color: isSelected
-                                    ? Theme.of(context).colorScheme.primary
-                                    : null,
-                              ),
-                              title: Text(
-                                flashcard.question,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              subtitle: Text(
-                                flashcard.answer,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                    ),
-                  );
-                }, childCount: 1 + state.generatedFlashcards!.length),
-              ),
-            ),
-          if (state.generatedFlashcards != null)
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
-              ),
-              sliver: SliverToBoxAdapter(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        icon: const Icon(Icons.edit),
-                        label: Text(context.l10n.editCards),
-                        onPressed: () {
-                          context.showInfoSnackbar('Edit feature coming soon!');
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: FilledButton.icon(
-                        icon: const Icon(Icons.save),
-                        label: Text(context.l10n.saveToDeck),
-                        onPressed: () {
-                          context.showInfoSnackbar('Save feature coming soon!');
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _GeneratedCardsList(state: state),
+          if (state.generatedFlashcards != null) _FinalActionsBar(),
         ],
       ),
     );
@@ -433,6 +297,150 @@ class DeckGenerateFromGoogleDocPage extends ConsumerWidget {
         context.showErrorSnackbar(context.l10n.errorPrefix(e.toString()));
       }
     }
+  }
+}
+
+class _FinalActionsBar extends StatelessWidget {
+  const _FinalActionsBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      sliver: SliverToBoxAdapter(
+        child: Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.edit),
+                label: Text(context.l10n.editCards),
+                onPressed: () {
+                  context.showInfoSnackbar('Edit feature coming soon!');
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: FilledButton.icon(
+                icon: const Icon(Icons.save),
+                label: Text(context.l10n.saveToDeck),
+                onPressed: () {
+                  context.showInfoSnackbar('Save feature coming soon!');
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GeneratedCardsList extends StatelessWidget {
+  const _GeneratedCardsList({required this.state});
+
+  final GoogleDocImportState state;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPadding(
+      padding: const EdgeInsets.all(16.0),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate((context, index) {
+          if (index == 0) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                context.l10n.generatedFlashcards(
+                  state.generatedFlashcards!.length,
+                ),
+                style: context.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            );
+          }
+          final flashcard = state.generatedFlashcards![index - 1];
+          final isSelected = state.selectedFlashcardIndexes.contains(index - 1);
+          final hasExplanation =
+              flashcard.explanation != null &&
+              flashcard.explanation!.trim().isNotEmpty;
+          return Consumer(
+            builder: (context, ref, _) => InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () {
+                ref
+                    .read(googleDocImportControllerProvider.notifier)
+                    .toggleFlashcardSelection(index - 1);
+              },
+              child: Card(
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: hasExplanation
+                    ? ExpansionTile(
+                        leading: Icon(
+                          isSelected
+                              ? Icons.check_box
+                              : Icons.check_box_outline_blank,
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.primary
+                              : null,
+                        ),
+                        title: Text(
+                          flashcard.question,
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        subtitle: Text(
+                          flashcard.answer,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  context.l10n.explanationLabel,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(flashcard.explanation!),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    : ListTile(
+                        leading: Icon(
+                          isSelected
+                              ? Icons.check_box
+                              : Icons.check_box_outline_blank,
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.primary
+                              : null,
+                        ),
+                        title: Text(
+                          flashcard.question,
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        subtitle: Text(
+                          flashcard.answer,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+              ),
+            ),
+          );
+        }, childCount: 1 + state.generatedFlashcards!.length),
+      ),
+    );
   }
 }
 

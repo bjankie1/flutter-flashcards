@@ -557,6 +557,50 @@ class AppLocalizationsPl extends AppLocalizations {
   String get generateFromGoogleDoc => 'Generuj z Dokumentu Google';
 
   @override
+  String get personalInfo => 'Informacje osobiste';
+
+  @override
+  String get myName => 'Moje imię';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get yourName => 'Twoje imię';
+
+  @override
+  String get imageRecorded => 'Obraz zapisany';
+
+  @override
+  String get errorUploadingImage => 'Błąd podczas przesyłania obrazu';
+
+  @override
+  String get appVersion => 'Wersja aplikacji';
+
+  @override
+  String get currentVersion => 'Aktualna wersja';
+
+  @override
+  String get latestAvailableVersion => 'Najnowsza dostępna wersja';
+
+  @override
+  String get minimumRequiredVersion => 'Minimalna wymagana wersja';
+
+  @override
+  String get checkForUpdates => 'Sprawdź aktualizacje';
+
+  @override
+  String get updateSettings => 'Ustawienia aktualizacji';
+
+  @override
+  String get automaticUpdateChecks =>
+      'Automatyczne sprawdzanie aktualizacji co 10 minut';
+
+  @override
+  String get versionCheckingWebOnly =>
+      'Sprawdzanie wersji jest dostępne tylko na platformie web';
+
+  @override
   String get googleDocLink => 'Link do Dokumentu Google';
 
   @override
@@ -724,7 +768,38 @@ class AppLocalizationsPl extends AppLocalizations {
   String get close => 'Zamknij';
 
   @override
-  String docLength(Object length) {
+  String docLength(int length) {
     return 'Długość dokumentu: $length';
+  }
+
+  @override
+  String fileSize(int size) {
+    return 'Rozmiar pliku: $size bajtów';
+  }
+
+  @override
+  String get selectInputSource => 'Wybierz źródło danych';
+
+  @override
+  String get pasteText => 'Wklej tekst';
+
+  @override
+  String get uploadPdf => 'Wyślij PDF';
+
+  @override
+  String get uploadImage => 'Wyślij obraz';
+
+  @override
+  String get cancel => 'Anuluj';
+
+  @override
+  String get confirm => 'Potwierdź';
+
+  @override
+  String get pasteTextHint => 'Wklej swój tekst tutaj...';
+
+  @override
+  String textContentLength(int length) {
+    return 'Długość tekstu: $length';
   }
 }

@@ -1088,6 +1088,90 @@ abstract class AppLocalizations {
   /// **'Generate from Google Doc'**
   String get generateFromGoogleDoc;
 
+  /// No description provided for @personalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal info'**
+  String get personalInfo;
+
+  /// No description provided for @myName.
+  ///
+  /// In en, this message translates to:
+  /// **'My name'**
+  String get myName;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @yourName.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get yourName;
+
+  /// No description provided for @imageRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Image recorded'**
+  String get imageRecorded;
+
+  /// No description provided for @errorUploadingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error uploading image'**
+  String get errorUploadingImage;
+
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'App Version'**
+  String get appVersion;
+
+  /// No description provided for @currentVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Version'**
+  String get currentVersion;
+
+  /// No description provided for @latestAvailableVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Available Version'**
+  String get latestAvailableVersion;
+
+  /// No description provided for @minimumRequiredVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum Required Version'**
+  String get minimumRequiredVersion;
+
+  /// No description provided for @checkForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for Updates'**
+  String get checkForUpdates;
+
+  /// No description provided for @updateSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Settings'**
+  String get updateSettings;
+
+  /// No description provided for @automaticUpdateChecks.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic update checks every 10 minutes'**
+  String get automaticUpdateChecks;
+
+  /// No description provided for @versionCheckingWebOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Version checking is only available on web platform'**
+  String get versionCheckingWebOnly;
+
   /// No description provided for @googleDocLink.
   ///
   /// In en, this message translates to:
@@ -1386,7 +1470,61 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Doc length: {length}'**
-  String docLength(Object length);
+  String docLength(int length);
+
+  /// No description provided for @fileSize.
+  ///
+  /// In en, this message translates to:
+  /// **'File size: {size} bytes'**
+  String fileSize(int size);
+
+  /// No description provided for @selectInputSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Select input source'**
+  String get selectInputSource;
+
+  /// No description provided for @pasteText.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste text'**
+  String get pasteText;
+
+  /// No description provided for @uploadPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload PDF'**
+  String get uploadPdf;
+
+  /// No description provided for @uploadImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload image'**
+  String get uploadImage;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @pasteTextHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste your text here...'**
+  String get pasteTextHint;
+
+  /// No description provided for @textContentLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Text content length: {length}'**
+  String textContentLength(int length);
 }
 
 class _AppLocalizationsDelegate

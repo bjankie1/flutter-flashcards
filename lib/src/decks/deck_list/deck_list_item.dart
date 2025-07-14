@@ -160,24 +160,6 @@ class DeckContextMenu extends ConsumerWidget {
             );
           },
         ),
-        PopupMenuItem<String>(
-          value: 'generateFromGoogleDoc',
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: const Icon(Icons.description),
-              ),
-              Text(context.l10n.generateFromGoogleDoc),
-            ],
-          ),
-          onTap: () {
-            context.pushNamed(
-              'generateFromGoogleDoc',
-              queryParameters: {'deckId': deck.id},
-            );
-          },
-        ),
         PopupMenuItem(
           child: Row(
             children: [

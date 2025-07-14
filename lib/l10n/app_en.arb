@@ -248,6 +248,20 @@
     "description": "Title for the deck details page"
   },
   "generateFromGoogleDoc": "Generate from Google Doc",
+  "personalInfo": "Personal info",
+  "myName": "My name",
+  "email": "Email",
+  "yourName": "Your name",
+  "imageRecorded": "Image recorded",
+  "errorUploadingImage": "Error uploading image",
+  "appVersion": "App Version",
+  "currentVersion": "Current Version",
+  "latestAvailableVersion": "Latest Available Version",
+  "minimumRequiredVersion": "Minimum Required Version",
+  "checkForUpdates": "Check for Updates",
+  "updateSettings": "Update Settings",
+  "automaticUpdateChecks": "Automatic update checks every 10 minutes",
+  "versionCheckingWebOnly": "Version checking is only available on web platform",
   "googleDocLink": "Google Doc Link",
   "googleDocHelperText": "Paste the link to your Google Doc to generate cards from it.",
   "selectGoogleDoc": "Select Google Doc",
@@ -324,5 +338,35 @@
   "saveToDeck": "Save to Deck",
   "showContent": "Show content",
   "close": "Close",
-  "docLength": "Doc length: {length}"
+  "docLength": "Doc length: {length}",
+  "@docLength": {
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "fileSize": "File size: {size} bytes",
+  "@fileSize": {
+    "placeholders": {
+      "size": {
+        "type": "int"
+      }
+    }
+  },
+  "selectInputSource": "Select input source",
+  "pasteText": "Paste text",
+  "uploadPdf": "Upload PDF",
+  "uploadImage": "Upload image",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "pasteTextHint": "Paste your text here...",
+  "textContentLength": "Text content length: {length}",
+  "@textContentLength": {
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    }
+  }
 }

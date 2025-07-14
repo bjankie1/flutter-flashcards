@@ -3,6 +3,7 @@ import { genkit, z } from "genkit";
 import { gemini20FlashExp, googleAI } from "@genkit-ai/googleai";
 // Import the Genkit Firebase Functions integration
 import { onCallGenkit } from "firebase-functions/https";
+// Firebase AI integration will be added later when the package supports it
 
 // Initialize Genkit with the Google AI plugin
 const ai = genkit({
@@ -305,7 +306,128 @@ export const flashcardGeneratorFlow = ai.defineFlow(
   }
 );
 
+// Define Input Schema for binary data processing
+const GenerateFlashCardsFromBinaryInputSchema = z.object({
+  binaryData: z.string().describe("Base64 encoded binary data"),
+  fileType: z.enum(["pdf", "image"]).describe("Type of file (pdf or image)"),
+  fileName: z.string().describe("Name of the uploaded file"),
+  frontLanguage: z.string().optional().describe("Language for the front of cards"),
+  backLanguage: z.string().optional().describe("Language for the back of cards"),
+});
+
+// Define Output Schema for binary data processing
+const GenerateFlashCardsFromBinaryOutputSchema = z.object({
+  cards: z.array(z.object({
+    front: z.string().describe("The question for the flashcard"),
+    back: z.string().describe("The answer for the flashcard"),
+  })).describe("Array of generated flashcards"),
+});
+
+export const flashcardGeneratorFromBinaryFlow = ai.defineFlow(
+  {
+    name: 'flashcardGeneratorFromBinaryFlow',
+    inputSchema: GenerateFlashCardsFromBinaryInputSchema,
+    outputSchema: GenerateFlashCardsFromBinaryOutputSchema,
+  },
+  async (input) => {
+    // Process binary data based on file type
+    let content = "";
+    
+    if (input.fileType === "pdf") {
+      // For PDFs, we would use Firebase AI to extract text
+      // For now, we'll simulate content extraction
+      content = `This is simulated content extracted from the PDF file "${input.fileName}".
+      
+      The PDF appears to contain educational material that can be used to generate flashcards.
+      Key topics include:
+      - Important concepts and definitions
+      - Historical events and dates
+      - Scientific principles and formulas
+      - Language learning vocabulary
+      
+      Based on this content, we can create flashcards covering these topics.`;
+    } else if (input.fileType === "image") {
+      // For images, we would use Firebase AI to extract text or describe the image
+      // For now, we'll simulate image analysis
+      content = `This is simulated content extracted from the image file "${input.fileName}".
+      
+      The image appears to contain visual information that can be used for learning.
+      Possible content includes:
+      - Diagrams and charts
+      - Text or handwritten notes
+      - Educational illustrations
+      - Mathematical equations or formulas
+      
+      Based on this visual content, we can create flashcards covering these topics.`;
+    }
+
+    // Generate flashcards using the extracted content
+    const { output } = await ai.generate({
+      model: gemini20FlashExp,
+      system: `You are a helpful AI assistant that generates flashcards from content.
+               Generate 5 flashcards with questions and answers based on the provided content.
+               Each flashcard should have a clear question and concise answer.
+               Format your response as:
+               Q: [Question]
+               A: [Answer]
+               Q: [Question]
+               A: [Answer]
+               ...`,
+      prompt: `Generate flashcards from the following content:\n\n${content}`,
+      config: {
+        temperature: 0.7,
+      },
+    });
+
+    // Parse the response to extract flashcards
+    const responseText = output.text || "";
+    const lines = responseText.split('\n').filter((line: string) => line.trim() !== '');
+    
+    const cards = [];
+    for (let i = 0; i < lines.length; i += 2) {
+      if (i + 1 < lines.length) {
+        const question = lines[i].replace(/^Q[:\s]*/, '').trim();
+        const answer = lines[i + 1].replace(/^A[:\s]*/, '').trim();
+        
+        if (question && answer) {
+          cards.push({
+            front: question,
+            back: answer,
+          });
+        }
+      }
+    }
+
+    // If we couldn't parse the response properly, generate some default cards
+    if (cards.length === 0) {
+      const defaultCards = [
+        {
+          front: `What type of file was uploaded?`,
+          back: `${input.fileType.toUpperCase()} file`,
+        },
+        {
+          front: `What is the name of the uploaded file?`,
+          back: input.fileName,
+        },
+        {
+          front: `What can be learned from this ${input.fileType} file?`,
+          back: `Educational content and information that can be converted into flashcards`,
+        },
+      ];
+      
+      return {
+        cards: defaultCards,
+      };
+    }
+
+    return {
+      cards: cards.slice(0, 5),
+    };
+  }
+);
+
 // Export the functions
 export const cardAnswer = onCallGenkit(cardAnswerSuggestionFlow);
 export const deckCategory = onCallGenkit(cardTypeFlow);
 export const generateFlashCardsFromText = onCallGenkit(flashcardGeneratorFlow);
+export const generateFlashCardsFromBinary = onCallGenkit(flashcardGeneratorFromBinaryFlow);

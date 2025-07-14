@@ -548,6 +548,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get generateFromGoogleDoc => 'Generate from Google Doc';
 
   @override
+  String get personalInfo => 'Personal info';
+
+  @override
+  String get myName => 'My name';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get yourName => 'Your name';
+
+  @override
+  String get imageRecorded => 'Image recorded';
+
+  @override
+  String get errorUploadingImage => 'Error uploading image';
+
+  @override
+  String get appVersion => 'App Version';
+
+  @override
+  String get currentVersion => 'Current Version';
+
+  @override
+  String get latestAvailableVersion => 'Latest Available Version';
+
+  @override
+  String get minimumRequiredVersion => 'Minimum Required Version';
+
+  @override
+  String get checkForUpdates => 'Check for Updates';
+
+  @override
+  String get updateSettings => 'Update Settings';
+
+  @override
+  String get automaticUpdateChecks =>
+      'Automatic update checks every 10 minutes';
+
+  @override
+  String get versionCheckingWebOnly =>
+      'Version checking is only available on web platform';
+
+  @override
   String get googleDocLink => 'Google Doc Link';
 
   @override
@@ -714,7 +758,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get close => 'Close';
 
   @override
-  String docLength(Object length) {
+  String docLength(int length) {
     return 'Doc length: $length';
+  }
+
+  @override
+  String fileSize(int size) {
+    return 'File size: $size bytes';
+  }
+
+  @override
+  String get selectInputSource => 'Select input source';
+
+  @override
+  String get pasteText => 'Paste text';
+
+  @override
+  String get uploadPdf => 'Upload PDF';
+
+  @override
+  String get uploadImage => 'Upload image';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get pasteTextHint => 'Paste your text here...';
+
+  @override
+  String textContentLength(int length) {
+    return 'Text content length: $length';
   }
 }

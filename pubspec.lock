@@ -801,10 +801,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_tex
-      sha256: "3f12e4320ebe54f139dcedb3ee69e851765c35f6754fe85c8928ba6ab3b03ef0"
+      sha256: "5fe2fb93601acb191c9a14578e1dff1e687829e76a8b09afbdf6e48062e561b7"
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.8"
+    version: "5.1.9"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -890,14 +890,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.9.0"
-  google_sign_in_mocks:
-    dependency: "direct dev"
-    description:
-      name: google_sign_in_mocks
-      sha256: "09312785f1076b0646bb675a324355c33524bbdb760d1c6ebd5e4dcf04d9a343"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.0"
   google_sign_in_platform_interface:
     dependency: transitive
     description:
@@ -934,10 +926,10 @@ packages:
     dependency: "direct main"
     description:
       name: gpt_markdown
-      sha256: "0ef0d258b8a97ed11a985a5ed348e9ec9428199f73011704704ddd0620a894eb"
+      sha256: "68d5337c8a00fc03a37dbddf84a6fd90401c30e99b6baf497ef9522a81fc34ee"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.1"
+    version: "1.1.2"
   graphs:
     dependency: transitive
     description:
@@ -1539,10 +1531,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher
-      sha256: "9d06212b1362abc2f0f0d78e6f09f726608c74e3b9462e8368bb03314aa8d603"
+      sha256: f6a7e5c4835bb4e3026a04793a4199ca2d14c739ec378fdfe23fc8075d0439f8
       url: "https://pub.dev"
     source: hosted
-    version: "6.3.1"
+    version: "6.3.2"
   url_launcher_android:
     dependency: transitive
     description:

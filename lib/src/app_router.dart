@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/collaboration/collaboration_page.dart';
 import 'package:flutter_flashcards/src/decks/card_edit_page.dart';
 import 'package:flutter_flashcards/src/decks/cards_list/deck_details_page.dart';
-import 'package:flutter_flashcards/src/decks/deck_generate_from_google_doc_page.dart';
+// Removed import for deck_generate_from_google_doc_page.dart - now using generic deck_generate_page.dart
 import 'package:flutter_flashcards/src/decks/deck_generate_page.dart';
 import 'package:flutter_flashcards/src/decks/deck_groups/deck_groups_page.dart';
 import 'package:flutter_flashcards/src/decks/provisionary_card_complete.dart';
@@ -71,13 +71,12 @@ class AppNavigation {
     context.go('/generate$queryParams');
   }
 
-  /// Navigate to generate from Google Doc page
+  /// Navigate to generate from Google Doc page (deprecated, use goToGenerateCards)
   static void goToGenerateFromGoogleDoc(
     BuildContext context, {
     String? deckId,
   }) {
-    final queryParams = deckId != null ? '?deckId=$deckId' : '';
-    context.push('/generate-from-google-doc$queryParams');
+    goToGenerateCards(context, deckId: deckId);
   }
 
   /// Navigate to quick cards page
@@ -257,14 +256,7 @@ final router = GoRouter(
         return DeckGeneratePage(deckId: deckId);
       },
     ),
-    GoRoute(
-      path: '/generate-from-google-doc',
-      name: NamedRoute.generateFromGoogleDoc.name,
-      builder: (context, state) {
-        final deckId = state.uri.queryParameters['deckId'];
-        return DeckGenerateFromGoogleDocPage(deckId: deckId);
-      },
-    ),
+    // Removed Google Doc specific route - now handled by generic generate route
     GoRoute(
       path: '/quick-cards',
       name: NamedRoute.quickCards.name,

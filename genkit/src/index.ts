@@ -23,6 +23,7 @@ export {
   cardAnswer,
   deckCategory,
   generateFlashCardsFromText,
+  generateFlashCardsFromBinary,
 } from "./genkit-cardSuggestions.js";
 
 export const getGoogleDocContent = ai.defineFlow(

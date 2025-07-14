@@ -19,12 +19,7 @@ class GoogleDocImportState {
     this.generatedFlashcards,
     this.isGeneratingFlashcards = false,
     Set<int>? selectedFlashcardIndexes,
-  }) : selectedFlashcardIndexes = selectedFlashcardIndexes ?? const {} {
-    assert(
-      this.selectedFlashcardIndexes != null,
-      'selectedFlashcardIndexes must not be null',
-    );
-  }
+  }) : selectedFlashcardIndexes = selectedFlashcardIndexes ?? const {};
 
   GoogleDocImportState copyWith({
     bool? isLoading,

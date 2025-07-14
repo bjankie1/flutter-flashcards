@@ -26,22 +26,33 @@ class SettingsPage extends StatelessWidget {
       builder: (context, title, _) => BaseLayout(
         title: Text(title),
         currentPage: PageIndex.settings,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: SizedBox(
-              width: 500,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ThemeSelector(),
-                  PersonalInfo(),
-                  Spacer(),
-                  AppVersion(),
-                ],
+        child: CustomScrollView(
+          slivers: [
+            // Avatar sliver that shrinks when scrolled
+            UserPhoto(),
+
+            // Main content
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Center(
+                  child: SizedBox(
+                    width: 500,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        PersonalInfo(),
+                        SizedBox(height: 40),
+                        Divider(),
+                        SizedBox(height: 40),
+                        AppVersion(),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -54,9 +65,7 @@ class PersonalInfo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Personal info', style: context.textTheme.headlineMedium),
         SizedBox(height: 20),
-        Text('My name', style: context.textTheme.headlineSmall),
         ValueListenableBuilder(
           valueListenable: context.appState.userProfile,
           builder: (context, userProfile, _) {
@@ -64,16 +73,38 @@ class PersonalInfo extends StatelessWidget {
           },
         ),
         SizedBox(height: 20),
-        Text('Email', style: context.textTheme.headlineSmall),
         ValueListenableBuilder(
           valueListenable: context.appState.userProfile,
           builder: (context, userProfile, _) {
-            return Text(userProfile?.email ?? '');
+            return Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceVariant,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.email,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      userProfile?.email ?? '',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                ],
+              ),
+            );
           },
         ),
-        SizedBox(height: 20),
-        Text('Avatar', style: context.textTheme.headlineSmall),
-        UserPhoto(),
       ],
     );
   }
@@ -82,29 +113,39 @@ class PersonalInfo extends StatelessWidget {
 class UserPhoto extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 500,
-      width: 500,
-      child: Stack(
-        children: [
-          Positioned(
-            right: 30,
-            top: 0,
-            child: IconButton(
-              onPressed: () {
-                _uploadImageWeb(context);
-              },
-              icon: Icon(Icons.upload),
+    return SliverPersistentHeader(
+      pinned: false,
+      delegate: _AvatarSliverDelegate(
+        minHeight: 32,
+        maxHeight: 350,
+        child: ValueListenableBuilder(
+          valueListenable: context.appState.userAvatarUrl,
+          builder: (context, url, _) => CircleAvatar(
+            backgroundImage: url != null ? NetworkImage(url) : randomFace,
+            child: Stack(
+              children: [
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        _uploadImageWeb(context);
+                      },
+                      icon: Icon(Icons.upload, size: 16),
+                      padding: EdgeInsets.all(4),
+                      constraints: BoxConstraints(minWidth: 24, minHeight: 24),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          ValueListenableBuilder(
-            valueListenable: context.appState.userAvatarUrl,
-            builder: (context, url, _) => CircleAvatar(
-              minRadius: 200,
-              backgroundImage: url != null ? NetworkImage(url) : randomFace,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -117,12 +158,54 @@ class UserPhoto extends StatelessWidget {
       await service.uploadUserAvatar(
         image,
         onSuccess: () async {
-          context.showInfoSnackbar('Image recorded');
+          context.showInfoSnackbar(context.l10n.imageRecorded);
         },
-        onError: () => context.showErrorSnackbar('Error uploading image'),
+        onError: () =>
+            context.showErrorSnackbar(context.l10n.errorUploadingImage),
       );
       context.appState.updateUserProfile(newAvatar: true);
     }
+  }
+}
+
+class _AvatarSliverDelegate extends SliverPersistentHeaderDelegate {
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  _AvatarSliverDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    final progress = shrinkOffset / (maxHeight - minHeight);
+    final avatarSize = maxHeight - (progress * (maxHeight - minHeight));
+
+    return Container(
+      height: avatarSize,
+      width: double.infinity,
+      child: Center(
+        child: SizedBox(width: avatarSize, height: avatarSize, child: child),
+      ),
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return oldDelegate != this;
   }
 }
 
@@ -136,13 +219,55 @@ class AppVersion extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('App Version', style: context.textTheme.headlineSmall),
+            Text(
+              context.l10n.appVersion,
+              style: context.textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 16),
+
+            // Current version information
+            _VersionInfoCard(
+              title: context.l10n.currentVersion,
+              version: '${appInfo.version}',
+              buildNumber: '${appInfo.buildNumber}',
+              icon: Icons.info_outline,
+              color: Theme.of(context).colorScheme.primaryContainer,
+            ),
+
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Text('${appInfo.version} build ${appInfo.buildNumber}'),
-                const SizedBox(width: 16),
-                if (kIsWeb) ...[
+
+            // Latest available version
+            if (kIsWeb) ...[
+              _VersionInfoCard(
+                title: context.l10n.latestAvailableVersion,
+                version: appInfo.isUpdateAvailable
+                    ? _getLatestVersion(appInfo)
+                    : '${appInfo.version}',
+                buildNumber: appInfo.isUpdateAvailable
+                    ? _getLatestBuildNumber(appInfo)
+                    : '${appInfo.buildNumber}',
+                icon: Icons.system_update,
+                color: appInfo.isUpdateAvailable
+                    ? Theme.of(context).colorScheme.secondaryContainer
+                    : Theme.of(context).colorScheme.surfaceVariant,
+              ),
+
+              const SizedBox(height: 12),
+
+              // Minimum required version
+              _VersionInfoCard(
+                title: context.l10n.minimumRequiredVersion,
+                version: _getMinimumVersion(appInfo),
+                buildNumber: _getMinimumBuildNumber(appInfo),
+                icon: Icons.warning_outlined,
+                color: Theme.of(context).colorScheme.errorContainer,
+              ),
+
+              const SizedBox(height: 16),
+
+              // Update actions
+              Row(
+                children: [
                   ElevatedButton.icon(
                     onPressed: appInfo.isCheckingForUpdates
                         ? null
@@ -157,10 +282,10 @@ class AppVersion extends StatelessWidget {
                     label: Text(
                       appInfo.isCheckingForUpdates
                           ? context.l10n.checkingForUpdates
-                          : 'Check for Updates',
+                          : context.l10n.checkForUpdates,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12),
                   if (appInfo.isUpdateAvailable)
                     ElevatedButton.icon(
                       onPressed: appInfo.isUpdating
@@ -186,57 +311,144 @@ class AppVersion extends StatelessWidget {
                       ),
                     ),
                 ],
-              ],
-            ),
-            if (appInfo.isUpdateAvailable) ...[
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.system_update,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        appInfo.updateMessage.isNotEmpty
-                            ? appInfo.updateMessage
-                            : context.l10n.updateAvailableMessage,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onPrimaryContainer,
+              ),
+
+              if (appInfo.isUpdateAvailable) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.system_update,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          appInfo.updateMessage.isNotEmpty
+                              ? appInfo.updateMessage
+                              : context.l10n.updateAvailableMessage,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onPrimaryContainer,
+                              ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-            if (kIsWeb) ...[
+              ],
+
               const SizedBox(height: 16),
-              Text('Update Settings', style: context.textTheme.headlineSmall),
+              Text(
+                context.l10n.updateSettings,
+                style: context.textTheme.headlineSmall,
+              ),
               const SizedBox(height: 8),
               Row(
                 children: [
                   const Icon(Icons.schedule, size: 20),
                   const SizedBox(width: 8),
                   Text(
-                    'Automatic update checks every 10 minutes',
+                    context.l10n.automaticUpdateChecks,
                     style: context.textTheme.bodyMedium,
                   ),
                 ],
+              ),
+            ] else ...[
+              // For non-web platforms, show basic version info
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  context.l10n.versionCheckingWebOnly,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               ),
             ],
           ],
         );
       },
+    );
+  }
+
+  String _getLatestVersion(AppInfo appInfo) {
+    return appInfo.getLatestVersion();
+  }
+
+  String _getLatestBuildNumber(AppInfo appInfo) {
+    return appInfo.getLatestBuildNumber();
+  }
+
+  String _getMinimumVersion(AppInfo appInfo) {
+    return appInfo.getMinimumVersion();
+  }
+
+  String _getMinimumBuildNumber(AppInfo appInfo) {
+    return appInfo.getMinimumBuildNumber();
+  }
+}
+
+class _VersionInfoCard extends StatelessWidget {
+  final String title;
+  final String version;
+  final String buildNumber;
+  final IconData icon;
+  final Color color;
+
+  const _VersionInfoCard({
+    required this.title,
+    required this.version,
+    required this.buildNumber,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            size: 20,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500),
+                ),
+                Text(
+                  '$version build $buildNumber',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -271,10 +483,8 @@ class _NameInputState extends State<NameInput> {
 
   @override
   void dispose() {
-    _nameController.removeListener(
-      _onTextChanged,
-    ); // Important: Remove listener
-    _nameController.dispose(); // Important: Dispose of controller
+    _nameController.removeListener(_onTextChanged);
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -305,7 +515,38 @@ class _NameInputState extends State<NameInput> {
           Expanded(
             child: TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Your name'),
+              decoration: InputDecoration(
+                labelText: context.l10n.yourName,
+                prefixIcon: Icon(
+                  Icons.person,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                suffixIcon: Icon(
+                  Icons.edit,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                filled: true,
+                fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 2,
+                  ),
+                ),
+              ),
             ),
           ),
           if (_isChanged)

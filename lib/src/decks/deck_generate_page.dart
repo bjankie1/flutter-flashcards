@@ -1,377 +1,647 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/common/assets.dart';
-import 'package:flutter_flashcards/src/common/language_selector.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:flutter_flashcards/src/common/themes.dart';
+import 'package:flutter_flashcards/src/decks/deck_generate_controller.dart';
+import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
-import 'package:flutter_flashcards/src/model/repository.dart';
-import 'package:flutter_flashcards/src/widgets.dart';
-import 'package:gpt_markdown/gpt_markdown.dart';
+import 'package:logger/logger.dart';
 
-import "../common/build_context_extensions.dart";
-import '../genkit/functions.dart';
-import '../layout/base_layout.dart';
+import 'google_doc_picker.dart';
+import 'package:flutter_flashcards/src/decks/cards_list/deck_details_controller.dart';
 
-class DeckGeneratePage extends StatelessWidget {
+final _log = Logger();
+
+class DeckGeneratePage extends ConsumerStatefulWidget {
   final model.DeckId? deckId;
 
   const DeckGeneratePage({super.key, this.deckId});
 
   @override
+  ConsumerState<DeckGeneratePage> createState() => _DeckGeneratePageState();
+}
+
+class _DeckGeneratePageState extends ConsumerState<DeckGeneratePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Reset the controller when the page is loaded
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final controller = ref.read(generateControllerProvider.notifier);
+      controller.reset();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return RepositoryLoader(
-      fetcher: (repository) =>
-          deckId == null ? Future.value(null) : repository.loadDeck(deckId!),
-      builder: (context, deck, _) => BaseLayout(
-        title: GptMarkdown(
-          deck == null
-              ? context.l10n.deckGeneration
-              : context.l10n.generateCardsForDeck(deck.name),
+    final state = ref.watch(generateControllerProvider);
+    final hasContent = state.content != null || state.binaryData != null;
+
+    // Debug logging for UI state
+    if (state.binaryData != null) {
+      _log.i(
+        'UI: binaryData present, size: ${state.binaryData!.length} bytes, fileName: ${state.fileName}',
+      );
+    }
+    if (state.content != null) {
+      _log.i(
+        'UI: content present, length: ${state.content!.length} characters',
+      );
+    }
+    _log.i('UI: hasContent = $hasContent, isLoading = ${state.isLoading}');
+
+    Widget? deckNameWidget;
+    if (widget.deckId != null) {
+      deckNameWidget = Consumer(
+        builder: (context, ref, _) {
+          final deckAsync = ref.watch(
+            deckDetailsControllerProvider(widget.deckId!),
+          );
+          return deckAsync.when(
+            data: (deck) => Text(
+              deck.name,
+              style: context.textTheme.titleSmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            loading: () => const SizedBox(
+              width: 60,
+              height: 16,
+              child: LinearProgressIndicator(),
+            ),
+            error: (e, st) => const SizedBox(),
+          );
+        },
+      );
+    }
+
+    return BaseLayout(
+      title: Text(context.l10n.generateCards),
+      child: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            automaticallyImplyLeading: false,
+            elevation: 2,
+            toolbarHeight: 140,
+            collapsedHeight: 140,
+            expandedHeight: 140,
+            flexibleSpace: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: SizedBox(
+                height: 124,
+                child: Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  GestureDetector(
+                                    onTap: hasContent && state.content != null
+                                        ? () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                title: Text(
+                                                  context.l10n.showContent,
+                                                ),
+                                                content: SizedBox(
+                                                  width: double.maxFinite,
+                                                  height: 400,
+                                                  child: SingleChildScrollView(
+                                                    child: SelectableText(
+                                                      state.content!,
+                                                      style: TextStyle(
+                                                        color: Theme.of(
+                                                          context,
+                                                        ).colorScheme.onSurface,
+                                                        fontSize: 14,
+                                                        height: 1.4,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop(),
+                                                    child: Text(
+                                                      context.l10n.close,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }
+                                        : null,
+                                    child: Text(
+                                      hasContent
+                                          ? (state.title ?? 'Untitled')
+                                          : context.l10n.generateCards,
+                                      style: context.textTheme.titleMedium
+                                          ?.copyWith(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                            decoration: hasContent
+                                                ? TextDecoration.underline
+                                                : null,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  if (deckNameWidget != null) ...[
+                                    const SizedBox(height: 2),
+                                    deckNameWidget,
+                                  ],
+                                  if (state.content != null) ...[
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      context.l10n.docLength(
+                                        state.content!.length,
+                                      ),
+                                      style: context.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: Theme.of(context).hintColor,
+                                          ),
+                                    ),
+                                  ],
+                                  if (state.binaryData != null) ...[
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      context.l10n.fileSize(
+                                        state.binaryData!.length,
+                                      ),
+                                      style: context.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: Theme.of(context).hintColor,
+                                          ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            SizedBox(
+                              height: 44,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (hasContent)
+                                    OutlinedButton.icon(
+                                      icon: const Icon(Icons.upload_file),
+                                      label: Text(context.l10n.uploadNewFile),
+                                      onPressed: () async {
+                                        final controller = ref.read(
+                                          generateControllerProvider.notifier,
+                                        );
+                                        controller.clearContent();
+                                        await _showInputSourceDialog(
+                                          context,
+                                          ref,
+                                        );
+                                      },
+                                      style: OutlinedButton.styleFrom(
+                                        minimumSize: const Size(44, 44),
+                                      ),
+                                    ),
+                                  if (hasContent) const SizedBox(width: 8),
+                                  hasContent
+                                      ? FilledButton.icon(
+                                          icon: const Icon(Icons.auto_awesome),
+                                          label: Text(
+                                            state.generatedFlashcards != null &&
+                                                    state
+                                                        .generatedFlashcards!
+                                                        .isNotEmpty
+                                                ? context
+                                                      .l10n
+                                                      .regenerateFlashcards
+                                                : context
+                                                      .l10n
+                                                      .generateFlashcards,
+                                          ),
+                                          onPressed:
+                                              state.isGeneratingFlashcards
+                                              ? null
+                                              : () => _generateFlashcards(
+                                                  context,
+                                                  ref,
+                                                ),
+                                          style: FilledButton.styleFrom(
+                                            minimumSize: const Size(44, 44),
+                                          ),
+                                        )
+                                      : Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            FilledButton.icon(
+                                              icon: const Icon(Icons.add),
+                                              label: Text(
+                                                context.l10n.selectInputSource,
+                                              ),
+                                              onPressed: state.isLoading
+                                                  ? null
+                                                  : () =>
+                                                        _showInputSourceDialog(
+                                                          context,
+                                                          ref,
+                                                        ),
+                                              style: FilledButton.styleFrom(
+                                                minimumSize: const Size(44, 44),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            OutlinedButton.icon(
+                                              icon: const Icon(
+                                                Icons.bug_report,
+                                              ),
+                                              label: const Text('Test'),
+                                              onPressed: () async {
+                                                final controller = ref.read(
+                                                  generateControllerProvider
+                                                      .notifier,
+                                                );
+                                                await controller
+                                                    .testFilePicker();
+                                              },
+                                              style: OutlinedButton.styleFrom(
+                                                minimumSize: const Size(44, 44),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (state.error != null) ...[
+                          const SizedBox(height: 16),
+                          _ErrorMessageContainer(state: state),
+                        ],
+                        if (state.isGeneratingFlashcards) ...[
+                          const SizedBox(height: 16),
+                          const Center(child: CircularProgressIndicator()),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          if (state.generatedFlashcards != null)
+            _GeneratedCardsList(state: state),
+          if (state.generatedFlashcards != null) _FinalActionsBar(),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showInputSourceDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final result = await showDialog<InputSource>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.selectInputSource),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.text_fields),
+              title: Text(context.l10n.pasteText),
+              onTap: () => Navigator.of(context).pop(InputSource.text),
+            ),
+            ListTile(
+              leading: const Icon(Icons.picture_as_pdf),
+              title: Text(context.l10n.uploadPdf),
+              onTap: () => Navigator.of(context).pop(InputSource.pdf),
+            ),
+            ListTile(
+              leading: const Icon(Icons.image),
+              title: Text(context.l10n.uploadImage),
+              onTap: () => Navigator.of(context).pop(InputSource.image),
+            ),
+            ListTile(
+              leading: const Icon(Icons.description),
+              title: Text(context.l10n.selectGoogleDoc),
+              onTap: () => Navigator.of(context).pop(InputSource.googleDoc),
+            ),
+          ],
         ),
-        child: GenerationControllerWidget(deckId: deckId),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(context.l10n.cancel),
+          ),
+        ],
+      ),
+    );
+
+    if (result == null || !context.mounted) return;
+
+    final controller = ref.read(generateControllerProvider.notifier);
+
+    try {
+      switch (result) {
+        case InputSource.text:
+          await _showTextInputDialog(context, ref);
+          break;
+        case InputSource.pdf:
+        case InputSource.image:
+          await controller.pickAndProcessFile(result);
+          break;
+        case InputSource.googleDoc:
+          await _selectAndProcessGoogleDoc(context, ref);
+          break;
+      }
+    } catch (e, st) {
+      _log.e('Error processing input source', error: e, stackTrace: st);
+      if (context.mounted) {
+        context.showErrorSnackbar(context.l10n.errorPrefix(e.toString()));
+      }
+    }
+  }
+
+  Future<void> _showTextInputDialog(BuildContext context, WidgetRef ref) async {
+    final textController = TextEditingController();
+
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.pasteText),
+        content: TextField(
+          controller: textController,
+          maxLines: 10,
+          decoration: InputDecoration(
+            hintText: context.l10n.pasteTextHint,
+            border: const OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(context.l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(textController.text),
+            child: Text(context.l10n.confirm),
+          ),
+        ],
+      ),
+    );
+
+    if (result == null || !context.mounted) return;
+
+    final controller = ref.read(generateControllerProvider.notifier);
+    try {
+      await controller.setTextContent(result);
+      if (context.mounted) {
+        context.showInfoSnackbar(context.l10n.textContentLength(result.length));
+      }
+    } catch (e, st) {
+      _log.e('Error processing text content', error: e, stackTrace: st);
+      if (context.mounted) {
+        context.showErrorSnackbar(context.l10n.errorPrefix(e.toString()));
+      }
+    }
+  }
+
+  Future<void> _selectAndProcessGoogleDoc(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final docId = await showDialog<String>(
+      context: context,
+      builder: (context) => GoogleDocPicker(),
+    );
+
+    if (docId == null || !context.mounted) return;
+
+    final controller = ref.read(generateControllerProvider.notifier);
+    try {
+      await controller.processGoogleDoc(docId);
+      if (context.mounted) {
+        final currentState = ref.read(generateControllerProvider);
+        context.showInfoSnackbar(
+          context.l10n.docContentLength(currentState.content?.length ?? 0),
+        );
+      }
+    } catch (e, st) {
+      _log.e('Error processing google doc', error: e, stackTrace: st);
+      if (context.mounted) {
+        context.showErrorSnackbar(context.l10n.errorPrefix(e.toString()));
+      }
+    }
+  }
+
+  Future<void> _generateFlashcards(BuildContext context, WidgetRef ref) async {
+    final state = ref.read(generateControllerProvider);
+    if (state.source == null) return;
+
+    try {
+      final controller = ref.read(generateControllerProvider.notifier);
+      await controller.generateFlashcards();
+
+      if (context.mounted) {
+        context.showInfoSnackbar(
+          'Generated ${state.generatedFlashcards?.length ?? 0} flashcards!',
+        );
+      }
+    } catch (e, st) {
+      _log.e('Error generating flashcards', error: e, stackTrace: st);
+      if (context.mounted) {
+        context.showErrorSnackbar(context.l10n.errorPrefix(e.toString()));
+      }
+    }
+  }
+}
+
+class _FinalActionsBar extends StatelessWidget {
+  const _FinalActionsBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      sliver: SliverToBoxAdapter(
+        child: Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.edit),
+                label: Text(context.l10n.editCards),
+                onPressed: () {
+                  context.showInfoSnackbar('Edit feature coming soon!');
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: FilledButton.icon(
+                icon: const Icon(Icons.save),
+                label: Text(context.l10n.saveToDeck),
+                onPressed: () {
+                  context.showInfoSnackbar('Save feature coming soon!');
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class GenerationControllerWidget extends StatefulWidget {
-  final model.DeckId? deckId;
+class _GeneratedCardsList extends StatelessWidget {
+  const _GeneratedCardsList({required this.state});
 
-  const GenerationControllerWidget({super.key, this.deckId});
-
-  @override
-  State<GenerationControllerWidget> createState() =>
-      _GenerationControllerWidgetState();
-}
-
-class _GenerationControllerWidgetState
-    extends State<GenerationControllerWidget> {
-  String backLanguage = '';
-
-  String frontLanguage = '';
-
-  final textController = TextEditingController();
-
-  bool isLoading = false;
-
-  Iterable<FrontBack> proposals = Iterable.empty();
-
-  @override
-  void dispose() {
-    super.dispose();
-    textController.dispose();
-  }
+  final GenerateState state;
 
   @override
   Widget build(BuildContext context) {
-    return proposals.isNotEmpty
-        ? GeneratedCardsSelectWidget(
-            cardProposals: proposals,
-            deckId: widget.deckId,
-          )
-        : Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: FocusTraversalGroup(
-                policy: OrderedTraversalPolicy(),
-                child: Column(
-                  children: [
-                    LanguageAutocompletePicker(
-                      onLanguageSelected: (lang) => {
-                        frontLanguage = lang['name']!,
-                      },
-                      label: context.l10n.backCardLabel,
-                    ),
-                    LanguageAutocompletePicker(
-                      onLanguageSelected: (lang) => {
-                        backLanguage = lang['name']!,
-                      },
-                      label: context.l10n.frontCardLabel,
-                    ),
-                    TextFormField(
-                      controller: textController,
-                      maxLines: 20,
-                      minLines: 20,
-                      decoration: InputDecoration(
-                        label: Text(context.l10n.inputText),
-                        border: OutlineInputBorder(),
-                        helperText: context.l10n.inputTextForGenerator,
-                      ),
-                    ),
-                    isLoading
-                        ? Center(child: CircularProgressIndicator())
-                        : FilledButton(
-                            onPressed: () async => processText(context),
-                            child: IntrinsicWidth(
-                              child: Row(
-                                children: [
-                                  ImageIcon(gemini),
-                                  const SizedBox(width: 8.0),
-                                  Text(context.l10n.generateCards),
-                                ],
-                              ),
+    return SliverPadding(
+      padding: const EdgeInsets.all(16.0),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate((context, index) {
+          if (index == 0) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                context.l10n.generatedFlashcards(
+                  state.generatedFlashcards!.length,
+                ),
+                style: context.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            );
+          }
+          final flashcard = state.generatedFlashcards![index - 1];
+          final isSelected = state.selectedFlashcardIndexes.contains(index - 1);
+          final hasExplanation =
+              flashcard.explanation != null &&
+              flashcard.explanation!.trim().isNotEmpty;
+          return Consumer(
+            builder: (context, ref, _) => InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () {
+                ref
+                    .read(generateControllerProvider.notifier)
+                    .toggleFlashcardSelection(index - 1);
+              },
+              child: Card(
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: hasExplanation
+                    ? ExpansionTile(
+                        leading: Icon(
+                          isSelected
+                              ? Icons.check_box
+                              : Icons.check_box_outline_blank,
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.primary
+                              : null,
+                        ),
+                        title: Text(
+                          flashcard.question,
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        subtitle: Text(
+                          flashcard.answer,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  context.l10n.explanationLabel,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(flashcard.explanation!),
+                              ],
                             ),
                           ),
-                  ],
-                ),
+                        ],
+                      )
+                    : ListTile(
+                        leading: Icon(
+                          isSelected
+                              ? Icons.check_box
+                              : Icons.check_box_outline_blank,
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.primary
+                              : null,
+                        ),
+                        title: Text(
+                          flashcard.question,
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        subtitle: Text(
+                          flashcard.answer,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
               ),
             ),
           );
-  }
-
-  Future<void> processText(BuildContext context) async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      final result = await context.cloudFunctions.generateCardsForText(
-        frontLanguage,
-        backLanguage,
-        textController.text,
-      );
-      setState(() {
-        proposals = result;
-      });
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
+        }, childCount: 1 + state.generatedFlashcards!.length),
+      ),
+    );
   }
 }
 
-class GeneratedCardsSelectWidget extends StatefulWidget {
-  final Iterable<FrontBack> cardProposals;
+class _ErrorMessageContainer extends StatelessWidget {
+  const _ErrorMessageContainer({required this.state});
 
-  final model.DeckId? deckId;
-
-  bool get newDeck => deckId == null;
-
-  GeneratedCardsSelectWidget({
-    super.key,
-    required this.cardProposals,
-    this.deckId,
-  });
-
-  @override
-  State<GeneratedCardsSelectWidget> createState() =>
-      _GeneratedCardsSelectWidgetState();
-}
-
-class _GeneratedCardsSelectWidgetState
-    extends State<GeneratedCardsSelectWidget> {
-  final Set<int> singleSided = {};
-  final Set<int> skipped = {};
+  final GenerateState state;
 
   @override
   Widget build(BuildContext context) {
-    final sortedProposals = widget.cardProposals.toList()
-      ..sort((a, b) => a.front.compareTo(b.front));
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Card(
-            child: Row(
-              spacing: 8.0,
-              children: [
-                IconButton(
-                  isSelected: skipped.isEmpty,
-                  onPressed: toggleAllSelected,
-                  icon: Icon(Icons.check),
-                  selectedIcon: Icon(Icons.check_outlined),
-                ),
-                IconButton(
-                  isSelected: singleSided.isEmpty,
-                  onPressed: toggleAllDoubleSided,
-                  icon: Icon(Icons.swap_vert),
-                  selectedIcon: Icon(Icons.swap_vert_circle),
-                ),
-                Expanded(
-                  child: Text(
-                    context.l10n.questionLabel,
-                    style: context.textTheme.headlineSmall,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    context.l10n.answerLabel,
-                    style: context.textTheme.headlineSmall,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: sortedProposals.length,
-            padding: const EdgeInsets.all(8.0),
-            itemBuilder: (context, index) {
-              final card = sortedProposals.elementAt(index);
-              return Card(
-                child: Row(
-                  spacing: 8.0,
-                  children: [
-                    IconButton(
-                      isSelected: !skipped.contains(index),
-                      onPressed: () => toggleSkipCard(index),
-                      icon: Icon(Icons.cancel, color: Colors.red),
-                      selectedIcon: Icon(Icons.check, color: Colors.green),
-                    ),
-                    IconButton(
-                      isSelected: !singleSided.contains(index),
-                      onPressed: () => changeCardMode(index),
-                      icon: Icon(Icons.swap_vert),
-                      selectedIcon: Icon(Icons.swap_vert_circle),
-                    ),
-                    Expanded(child: Text(card.front)),
-                    Expanded(child: Text(card.back)),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: widget.newDeck
-              ? CreateNewDeckWidget(
-                  onCreateNewDeck: (name, description) =>
-                      createNewDeck(name, description, sortedProposals),
-                )
-              : FilledButton(
-                  onPressed: () =>
-                      addToExistingDeck(widget.deckId!, sortedProposals),
-                  child: Text(context.l10n.addCardsToDeck),
-                ),
-        ),
-      ],
-    );
-  }
-
-  void changeCardMode(int index) {
-    final isSingleSided = singleSided.contains(index);
-    setState(() {
-      if (isSingleSided) {
-        singleSided.remove(index);
-      } else {
-        singleSided.add(index);
-      }
-    });
-  }
-
-  void toggleAllDoubleSided() {
-    setState(() {
-      if (singleSided.isEmpty) {
-        singleSided.addAll(
-          List.generate(widget.cardProposals.length, (index) => index),
-        );
-      } else {
-        singleSided.clear();
-      }
-    });
-  }
-
-  void toggleSkipCard(int index) {
-    setState(() {
-      if (skipped.contains(index)) {
-        skipped.remove(index);
-      } else {
-        skipped.add(index);
-      }
-    });
-  }
-
-  void toggleAllSelected() {}
-
-  Future<void> createNewDeck(
-    String name,
-    String description,
-    List<FrontBack> proposals,
-  ) async {
-    if (proposals.length == skipped.length) return;
-    final repo = context.cardRepository;
-    final deck = model.Deck(
-      id: repo.nextDeckId(),
-      name: name,
-      description: description,
-    );
-    await repo.saveDeck(deck);
-    await addToExistingDeck(deck.id!, proposals);
-  }
-
-  Future<void> addToExistingDeck(
-    model.DeckId deckId,
-    List<FrontBack> proposals,
-  ) async {
-    final repo = context.cardRepository;
-    int index = 0;
-    await Future.wait(
-      proposals.map((proposal) async {
-        final isSkipped = skipped.contains(index);
-        if (!isSkipped) {
-          final isSingleSided = singleSided.contains(index);
-          final cardId = repo.nextCardId();
-          final deckCard = model.Card(
-            deckId: deckId,
-            question: proposal.front,
-            answer: proposal.back,
-            options: model.CardOptions(learnBothSides: !isSingleSided),
-            id: cardId,
-          );
-          await context.cardRepository.saveCard(deckCard);
-        }
-        index++;
-      }),
-    ).then(
-      (_) {
-        context.showInfoSnackbar('Cards saved');
-        Navigator.pop(context);
-      },
-      onError: (_) {
-        context.showErrorSnackbar('Error saving cards');
-      },
-    );
-  }
-}
-
-class CreateNewDeckWidget extends StatelessWidget {
-  final deckNameController = TextEditingController();
-
-  final deckDescriptionController = TextEditingController();
-
-  final Function(String name, String description) onCreateNewDeck;
-
-  CreateNewDeckWidget({super.key, required this.onCreateNewDeck});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      spacing: 8.0,
-      children: [
-        TextFormField(
-          controller: deckNameController,
-          decoration: InputDecoration(
-            label: Text(context.l10n.deckName),
-            border: OutlineInputBorder(),
-          ),
-        ),
-        TextFormField(
-          controller: deckDescriptionController,
-          decoration: InputDecoration(
-            label: Text(context.l10n.deckDescription),
-            border: OutlineInputBorder(),
-          ),
-        ),
-        FilledButton(
-          onPressed: () => onCreateNewDeck(
-            deckNameController.text,
-            deckDescriptionController.text,
-          ),
-          child: Text('Create deck'),
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.errorContainer,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        state.error!,
+        style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+      ),
     );
   }
 }
