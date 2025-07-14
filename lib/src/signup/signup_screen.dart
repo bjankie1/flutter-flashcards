@@ -5,7 +5,6 @@ import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_flashcards/firebase_options.dart';
 import 'package:flutter_flashcards/src/app_config.dart';
 
