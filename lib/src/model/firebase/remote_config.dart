@@ -31,6 +31,17 @@ class RemoteConfigProvider {
 
   bool get isUpdateRequired => update_required.toLowerCase() == 'true';
 
+  /// Get minimum version (supports both naming conventions)
+  String get minimum_version {
+    final minVersion = remoteConfig.getString('minimum_version');
+    if (minVersion.isNotEmpty) return minVersion;
+    return remoteConfig.getString('min_version');
+  }
+
+  /// Get minimum build number
+  String get minimum_build_number =>
+      remoteConfig.getString('minimum_build_number');
+
   /// Check if there's a newer version available
   /// Returns true if current version is older than remote version
   bool isNewVersionAvailable(String currentVersion, String currentBuildNumber) {

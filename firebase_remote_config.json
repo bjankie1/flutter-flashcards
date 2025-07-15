@@ -1,0 +1,72 @@
+{
+  "conditions": [
+    {
+      "name": "Production",
+      "expression": "true",
+      "tagColor": "BLUE"
+    },
+    {
+      "name": "Staging",
+      "expression": "true",
+      "tagColor": "GREEN"
+    }
+  ],
+  "parameters": {
+    "app_version": {
+      "defaultValue": {
+        "value": "1.0.3"
+      },
+      "description": "Current app version (semantic versioning)",
+      "valueType": "STRING"
+    },
+    "app_build_number": {
+      "defaultValue": {
+        "value": "1"
+      },
+      "description": "Current app build number",
+      "valueType": "STRING"
+    },
+    "min_version": {
+      "defaultValue": {
+        "value": "1.0.0"
+      },
+      "description": "Minimum supported version",
+      "valueType": "STRING"
+    },
+    "minimum_version": {
+      "defaultValue": {
+        "value": "1.0.3"
+      },
+      "description": "Minimum supported version (alias for min_version)",
+      "valueType": "STRING"
+    },
+    "minimum_build_number": {
+      "defaultValue": {
+        "value": "1"
+      },
+      "description": "Minimum supported build number",
+      "valueType": "STRING"
+    },
+    "force_update": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "Force users to update the app",
+      "valueType": "BOOLEAN"
+    },
+    "update_required": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "Whether update is required (alias for force_update)",
+      "valueType": "STRING"
+    },
+    "update_message": {
+      "defaultValue": {
+        "value": "A new version of the app is available with bug fixes and improvements."
+      },
+      "description": "Custom message to display when update is available",
+      "valueType": "STRING"
+    }
+  }
+}

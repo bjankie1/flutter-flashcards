@@ -39,7 +39,6 @@ class MockGoogleSignInAccount extends Mock implements GoogleSignInAccount {
   @override
   String? get photoUrl => null;
 
-  @override
   String get idToken => 'mock_id_token';
 
   @override

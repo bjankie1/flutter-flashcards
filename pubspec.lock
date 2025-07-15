@@ -206,22 +206,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.6.11"
-  cloud_firestore_odm:
-    dependency: transitive
-    description:
-      name: cloud_firestore_odm
-      sha256: aa1fc8693e064805c0f414037e841e886b52775307308f93bd9895beaa2ba415
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0-dev.88"
-  cloud_firestore_odm_generator:
-    dependency: "direct dev"
-    description:
-      name: cloud_firestore_odm_generator
-      sha256: "60d3b7bce057c156cdb5e0eb3ba099a1a3cee9be43215b01877a6289e5b037a2"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0-dev.90"
   cloud_firestore_platform_interface:
     dependency: transitive
     description:
@@ -819,7 +803,7 @@ packages:
     source: hosted
     version: "2.5.7"
   freezed_annotation:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: freezed_annotation
       sha256: c2e2d632dd9b8a2b7751117abcfc2b4888ecfe181bd9fca7170d9ef02e595fe2
@@ -1338,14 +1322,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.4"
-  recase:
-    dependency: transitive
-    description:
-      name: recase
-      sha256: e4eb4ec2dcdee52dcf99cb4ceabaffc631d7424ee55e56f280bc039737f89213
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.1.0"
   riverpod:
     dependency: transitive
     description:
@@ -1691,10 +1667,10 @@ packages:
     dependency: transitive
     description:
       name: webview_flutter_android
-      sha256: f6e6afef6e234801da77170f7a1847ded8450778caf2fe13979d140484be3678
+      sha256: "769f34fc9855f7d7789b786b79b7c37a60e92ff08f71e3a429208d7f5b81d944"
       url: "https://pub.dev"
     source: hosted
-    version: "4.7.0"
+    version: "4.8.0"
   webview_flutter_platform_interface:
     dependency: transitive
     description:

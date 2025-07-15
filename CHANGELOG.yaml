@@ -2,3 +2,9 @@
   date: 2024-06-20
   changes:
     - Initial release
+
+- version: 1.0.3
+  date: 2024-12-19
+  changes:
+    - Fixed version alignment issues
+    - Updated Firebase Remote Config parameters

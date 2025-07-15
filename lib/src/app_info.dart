@@ -183,13 +183,12 @@ class AppInfo extends ChangeNotifier {
 
   /// Get the minimum required version from remote config
   String getMinimumVersion() {
-    return _remoteConfig.remoteConfig.getString('minimum_version') ?? '1.0.0';
+    return _remoteConfig.remoteConfig.getString('minimum_version');
   }
 
   /// Get the minimum required build number from remote config
   String getMinimumBuildNumber() {
-    return _remoteConfig.remoteConfig.getString('minimum_build_number') ??
-        '100';
+    return _remoteConfig.remoteConfig.getString('minimum_build_number');
   }
 
   @override

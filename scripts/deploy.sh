@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Apprende Verbs Deployment Script
+# Flutter Flashcards Deployment Script
 # This script automates the deployment process including version management and Firebase Remote Config updates
 
 set -e  # Exit on any error
@@ -63,6 +63,9 @@ show_usage() {
     echo "  $0 --minor --message \"New feature\" --force-update  # Bump minor version with force update"
     echo "  $0 --force-update             # Deploy without version change, force update"
     echo "  $0 --rollback                 # Rollback to previous version"
+    echo ""
+    echo "Simple deployment (no version change):"
+    echo "  $0                        # Deploy current version"
 }
 
 # Function to parse command line arguments
@@ -155,10 +158,37 @@ check_prerequisites() {
         exit 1
     fi
     
+    # Check if bump_version.sh exists and is executable
+    if [ ! -x "./scripts/bump_version.sh" ]; then
+        print_error "scripts/bump_version.sh not found or not executable"
+        print_status "Please ensure the script exists and has execute permissions:"
+        print_status "  chmod +x scripts/bump_version.sh"
+        exit 1
+    fi
+    
     print_success "Prerequisites check passed"
 }
 
-
+# Function to handle simple version bump (from new deploy.sh)
+handle_simple_version_bump() {
+    if [ "$DRY_RUN" = true ]; then
+        print_status "DRY RUN: Would bump version number using bump_version.sh"
+        return
+    fi
+    
+    print_status "📦 Bumping version number..."
+    ./scripts/bump_version.sh
+    
+    # Get version information from environment variables set by the script
+    if [ -z "$VERSION" ] || [ -z "$VERSION_NUMBER" ] || [ -z "$BUILD_NUMBER" ]; then
+        # Fallback: read from pubspec.yaml if environment variables are not set
+        VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+        VERSION_NUMBER=$(echo $VERSION | cut -d'+' -f1)
+        BUILD_NUMBER=$(echo $VERSION | cut -d'+' -f2)
+    fi
+    
+    print_success "✅ New version: $VERSION_NUMBER+$BUILD_NUMBER"
+}
 
 # Function to update Firebase Remote Config
 update_remote_config() {
@@ -219,14 +249,18 @@ build_app() {
     
     print_status "Building Flutter web app..."
     
+    # Generate code (from new deploy.sh)
+    print_status "🔧 Generating code..."
+    dart run build_runner build --delete-conflicting-outputs
+    
     # Clean previous build
     flutter clean
     
     # Get dependencies
     flutter pub get
     
-    # Build for web
-    flutter build web --release || {
+    # Build for web (using options from new deploy.sh)
+    flutter build web --source-maps --no-tree-shake-icons || {
         print_error "Failed to build Flutter web app"
         exit 1
     }
@@ -241,7 +275,7 @@ deploy_to_firebase() {
         return
     fi
     
-    print_status "Deploying to Firebase Hosting..."
+    print_status "🚀 Deploying to Firebase Hosting..."
     
     # Deploy to Firebase Hosting
     firebase deploy --only hosting || {
@@ -249,7 +283,7 @@ deploy_to_firebase() {
         exit 1
     }
     
-    print_success "Deployed to Firebase Hosting successfully"
+    print_success "✅ Deployed to Firebase Hosting successfully"
 }
 
 # Function to rollback deployment
@@ -328,10 +362,10 @@ set_firebase_project() {
     if [ -z "$project_id" ]; then
         case $ENVIRONMENT in
             "production")
-                project_id="apprende-conjugations"
+                project_id="flashcards-521f0"
                 ;;
             "staging")
-                project_id="apprende-conjugations-staging"
+                project_id="flashcards-521f0-staging"
                 ;;
             *)
                 print_error "Unknown environment: $ENVIRONMENT. Use --firebase-project to specify project ID directly."
@@ -358,9 +392,59 @@ set_firebase_project() {
     print_success "Firebase project set to $project_id"
 }
 
+# Function to show deployment summary
+show_deployment_summary() {
+    print_success "Deployment completed successfully!"
+    echo ""
+    print_status "📋 Deployment Summary:"
+    if [ -n "$VERSION_TYPE" ] || [ -n "$VERSION" ]; then
+        print_status "  Version Change: Yes"
+        print_status "  Version Type: $VERSION_TYPE"
+        print_status "  Version Message: $VERSION_MESSAGE"
+    else
+        print_status "  Version Change: No"
+        if [ -n "$VERSION_NUMBER" ]; then
+            print_status "  Version: $VERSION_NUMBER"
+            print_status "  Build: $BUILD_NUMBER"
+        fi
+    fi
+    print_status "  Environment: $ENVIRONMENT"
+    if [ -n "$FIREBASE_PROJECT" ]; then
+        print_status "  Firebase Project: $FIREBASE_PROJECT"
+    else
+        case $ENVIRONMENT in
+            "production")
+                print_status "  Firebase Project: flashcards-521f0"
+                ;;
+            "staging")
+                print_status "  Firebase Project: flashcards-521f0-staging"
+                ;;
+        esac
+    fi
+    print_status "  Force Update: $FORCE_UPDATE"
+    if [ -n "$MIN_VERSION" ]; then
+        print_status "  Minimum Version: $MIN_VERSION"
+    fi
+    print_status "  Deployed to: Firebase Hosting"
+    echo ""
+    print_warning "⚠️  Important: Update Firebase Remote Config"
+    print_status "  Run: ./scripts/setup_remote_config.sh"
+    print_status "  Or manually update in Firebase Console:"
+    if [ -n "$VERSION_NUMBER" ]; then
+        print_status "    - app_version: $VERSION_NUMBER"
+        print_status "    - app_build_number: $BUILD_NUMBER"
+    fi
+    echo ""
+    print_status "💡 Next steps:"
+    print_status "  1. Update Remote Config (if not done automatically)"
+    print_status "  2. Test the update notification"
+    print_status "  3. Monitor user update adoption"
+}
+
 # Main deployment function
 main() {
-    print_status "Starting Apprende Verbs deployment..."
+    print_status "🚀 Starting Flutter Flashcards deployment..."
+    echo "======================================"
     
     # Parse command line arguments
     parse_arguments "$@"
@@ -388,6 +472,9 @@ main() {
         
         # Handle version change
         handle_version_change "$VERSION_TYPE" "$VERSION" "$VERSION_MESSAGE"
+    else
+        # Simple version bump (from new deploy.sh)
+        handle_simple_version_bump
     fi
     
     # Build the app
@@ -399,31 +486,8 @@ main() {
     # Deploy to Firebase Hosting
     deploy_to_firebase
     
-    print_success "Deployment completed successfully!"
-    if [ -n "$VERSION_TYPE" ] || [ -n "$VERSION" ]; then
-        print_status "Version Change: Yes"
-        print_status "Version Type: $VERSION_TYPE"
-        print_status "Version Message: $VERSION_MESSAGE"
-    else
-        print_status "Version Change: No"
-    fi
-    print_status "Environment: $ENVIRONMENT"
-    if [ -n "$FIREBASE_PROJECT" ]; then
-        print_status "Firebase Project: $FIREBASE_PROJECT"
-    else
-        case $ENVIRONMENT in
-            "production")
-                print_status "Firebase Project: apprende-conjugations"
-                ;;
-            "staging")
-                print_status "Firebase Project: apprende-conjugations-staging"
-                ;;
-        esac
-    fi
-    print_status "Force Update: $FORCE_UPDATE"
-    if [ -n "$MIN_VERSION" ]; then
-        print_status "Minimum Version: $MIN_VERSION"
-    fi
+    # Show deployment summary
+    show_deployment_summary
 }
 
 # Run main function with all arguments

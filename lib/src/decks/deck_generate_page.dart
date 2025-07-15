@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/services/gemini_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
@@ -51,33 +52,6 @@ class _DeckGeneratePageState extends ConsumerState<DeckGeneratePage> {
     }
     _log.i('UI: hasContent = $hasContent, isLoading = ${state.isLoading}');
 
-    Widget? deckNameWidget;
-    if (widget.deckId != null) {
-      deckNameWidget = Consumer(
-        builder: (context, ref, _) {
-          final deckAsync = ref.watch(
-            deckDetailsControllerProvider(widget.deckId!),
-          );
-          return deckAsync.when(
-            data: (deck) => Text(
-              deck.name,
-              style: context.textTheme.titleSmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-            loading: () => const SizedBox(
-              width: 60,
-              height: 16,
-              child: LinearProgressIndicator(),
-            ),
-            error: (e, st) => const SizedBox(),
-          );
-        },
-      );
-    }
-
     return BaseLayout(
       title: Text(context.l10n.generateCards),
       child: CustomScrollView(
@@ -111,189 +85,34 @@ class _DeckGeneratePageState extends ConsumerState<DeckGeneratePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  GestureDetector(
-                                    onTap: hasContent && state.content != null
-                                        ? () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => AlertDialog(
-                                                title: Text(
-                                                  context.l10n.showContent,
-                                                ),
-                                                content: SizedBox(
-                                                  width: double.maxFinite,
-                                                  height: 400,
-                                                  child: SingleChildScrollView(
-                                                    child: SelectableText(
-                                                      state.content!,
-                                                      style: TextStyle(
-                                                        color: Theme.of(
-                                                          context,
-                                                        ).colorScheme.onSurface,
-                                                        fontSize: 14,
-                                                        height: 1.4,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.of(
-                                                          context,
-                                                        ).pop(),
-                                                    child: Text(
-                                                      context.l10n.close,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          }
-                                        : null,
-                                    child: Text(
-                                      hasContent
-                                          ? (state.title ?? 'Untitled')
-                                          : context.l10n.generateCards,
-                                      style: context.textTheme.titleMedium
-                                          ?.copyWith(
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.primary,
-                                            decoration: hasContent
-                                                ? TextDecoration.underline
-                                                : null,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  if (deckNameWidget != null) ...[
-                                    const SizedBox(height: 2),
-                                    deckNameWidget,
-                                  ],
-                                  if (state.content != null) ...[
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      context.l10n.docLength(
-                                        state.content!.length,
-                                      ),
-                                      style: context.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color: Theme.of(context).hintColor,
-                                          ),
-                                    ),
-                                  ],
-                                  if (state.binaryData != null) ...[
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      context.l10n.fileSize(
-                                        state.binaryData!.length,
-                                      ),
-                                      style: context.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color: Theme.of(context).hintColor,
-                                          ),
-                                    ),
-                                  ],
-                                ],
+                              child: _ContentInfoSection(
+                                state: state,
+                                deckId: widget.deckId,
+                                hasContent: hasContent,
+                                onShowContent: () =>
+                                    _showContentDialog(context, state),
                               ),
                             ),
                             const SizedBox(width: 12),
-                            SizedBox(
-                              height: 44,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (hasContent)
-                                    OutlinedButton.icon(
-                                      icon: const Icon(Icons.upload_file),
-                                      label: Text(context.l10n.uploadNewFile),
-                                      onPressed: () async {
-                                        final controller = ref.read(
-                                          generateControllerProvider.notifier,
-                                        );
-                                        controller.clearContent();
-                                        await _showInputSourceDialog(
-                                          context,
-                                          ref,
-                                        );
-                                      },
-                                      style: OutlinedButton.styleFrom(
-                                        minimumSize: const Size(44, 44),
-                                      ),
-                                    ),
-                                  if (hasContent) const SizedBox(width: 8),
-                                  hasContent
-                                      ? FilledButton.icon(
-                                          icon: const Icon(Icons.auto_awesome),
-                                          label: Text(
-                                            state.generatedFlashcards != null &&
-                                                    state
-                                                        .generatedFlashcards!
-                                                        .isNotEmpty
-                                                ? context
-                                                      .l10n
-                                                      .regenerateFlashcards
-                                                : context
-                                                      .l10n
-                                                      .generateFlashcards,
-                                          ),
-                                          onPressed:
-                                              state.isGeneratingFlashcards
-                                              ? null
-                                              : () => _generateFlashcards(
-                                                  context,
-                                                  ref,
-                                                ),
-                                          style: FilledButton.styleFrom(
-                                            minimumSize: const Size(44, 44),
-                                          ),
-                                        )
-                                      : Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            FilledButton.icon(
-                                              icon: const Icon(Icons.add),
-                                              label: Text(
-                                                context.l10n.selectInputSource,
-                                              ),
-                                              onPressed: state.isLoading
-                                                  ? null
-                                                  : () =>
-                                                        _showInputSourceDialog(
-                                                          context,
-                                                          ref,
-                                                        ),
-                                              style: FilledButton.styleFrom(
-                                                minimumSize: const Size(44, 44),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            OutlinedButton.icon(
-                                              icon: const Icon(
-                                                Icons.bug_report,
-                                              ),
-                                              label: const Text('Test'),
-                                              onPressed: () async {
-                                                final controller = ref.read(
-                                                  generateControllerProvider
-                                                      .notifier,
-                                                );
-                                                await controller
-                                                    .testFilePicker();
-                                              },
-                                              style: OutlinedButton.styleFrom(
-                                                minimumSize: const Size(44, 44),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                ],
-                              ),
+                            _ActionButtonsSection(
+                              state: state,
+                              hasContent: hasContent,
+                              onShowInputSource: () =>
+                                  _showInputSourceDialog(context, ref),
+                              onGenerateFlashcards: () =>
+                                  _generateFlashcards(context, ref),
+                              onClearContent: () {
+                                final controller = ref.read(
+                                  generateControllerProvider.notifier,
+                                );
+                                controller.clearContent();
+                              },
+                              onTestFilePicker: () {
+                                final controller = ref.read(
+                                  generateControllerProvider.notifier,
+                                );
+                                controller.testFilePicker();
+                              },
                             ),
                           ],
                         ),
@@ -320,10 +139,205 @@ class _DeckGeneratePageState extends ConsumerState<DeckGeneratePage> {
     );
   }
 
+  Future<dynamic> _showContentDialog(
+    BuildContext context,
+    GenerateState state,
+  ) {
+    return _ContentDialog.show(context, state);
+  }
+
   Future<void> _showInputSourceDialog(
     BuildContext context,
     WidgetRef ref,
   ) async {
+    await _InputSourceDialog.show(context, ref);
+  }
+
+  Future<void> _generateFlashcards(BuildContext context, WidgetRef ref) async {
+    final state = ref.read(generateControllerProvider);
+    if (state.source == null) return;
+
+    try {
+      final controller = ref.read(generateControllerProvider.notifier);
+      await controller.generateFlashcards();
+
+      if (context.mounted) {
+        context.showInfoSnackbar(
+          'Generated ${state.generatedFlashcards?.length ?? 0} flashcards!',
+        );
+      }
+    } catch (e, st) {
+      _log.e('Error generating flashcards', error: e, stackTrace: st);
+      if (context.mounted) {
+        context.showErrorSnackbar(context.l10n.errorPrefix(e.toString()));
+      }
+    }
+  }
+}
+
+class _ContentInfoSection extends StatelessWidget {
+  const _ContentInfoSection({
+    required this.state,
+    required this.deckId,
+    required this.hasContent,
+    required this.onShowContent,
+  });
+
+  final GenerateState state;
+  final model.DeckId? deckId;
+  final bool hasContent;
+  final VoidCallback onShowContent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: hasContent && state.content != null ? onShowContent : null,
+          child: _ContentTitle(key: ValueKey(state.content), state: state),
+        ),
+        if (deckId != null) ...[
+          const SizedBox(height: 2),
+          _DeckNameWidget(deckId: deckId!),
+        ],
+        if (state.content != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            context.l10n.docLength(state.content!.length),
+            style: context.textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).hintColor,
+            ),
+          ),
+        ],
+        if (state.binaryData != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            context.l10n.fileSize(state.binaryData!.length),
+            style: context.textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).hintColor,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _ActionButtonsSection extends StatelessWidget {
+  const _ActionButtonsSection({
+    required this.state,
+    required this.hasContent,
+    required this.onShowInputSource,
+    required this.onGenerateFlashcards,
+    required this.onClearContent,
+    required this.onTestFilePicker,
+  });
+
+  final GenerateState state;
+  final bool hasContent;
+  final Future<void> Function() onShowInputSource;
+  final VoidCallback onGenerateFlashcards;
+  final VoidCallback onClearContent;
+  final VoidCallback onTestFilePicker;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 44,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (hasContent)
+            OutlinedButton.icon(
+              icon: const Icon(Icons.upload_file),
+              label: Text(context.l10n.uploadNewFile),
+              onPressed: () async {
+                onClearContent();
+                await onShowInputSource();
+              },
+              style: OutlinedButton.styleFrom(minimumSize: const Size(44, 44)),
+            ),
+          if (hasContent) const SizedBox(width: 8),
+          hasContent
+              ? FilledButton.icon(
+                  icon: const Icon(Icons.auto_awesome),
+                  label: Text(
+                    state.generatedFlashcards != null &&
+                            state.generatedFlashcards!.isNotEmpty
+                        ? context.l10n.regenerateFlashcards
+                        : context.l10n.generateFlashcards,
+                  ),
+                  onPressed: state.isGeneratingFlashcards
+                      ? null
+                      : onGenerateFlashcards,
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(44, 44),
+                  ),
+                )
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FilledButton.icon(
+                      icon: const Icon(Icons.add),
+                      label: Text(context.l10n.selectInputSource),
+                      onPressed: state.isLoading
+                          ? null
+                          : () => onShowInputSource(),
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(44, 44),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    OutlinedButton.icon(
+                      icon: const Icon(Icons.bug_report),
+                      label: const Text('Test'),
+                      onPressed: onTestFilePicker,
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(44, 44),
+                      ),
+                    ),
+                  ],
+                ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ContentDialog {
+  static Future<dynamic> show(BuildContext context, GenerateState state) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.showContent),
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 400,
+          child: SingleChildScrollView(
+            child: SelectableText(
+              state.content!,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontSize: 14,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(context.l10n.close),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InputSourceDialog {
+  static Future<void> show(BuildContext context, WidgetRef ref) async {
     final result = await showDialog<InputSource>(
       context: context,
       builder: (context) => AlertDialog(
@@ -369,14 +383,14 @@ class _DeckGeneratePageState extends ConsumerState<DeckGeneratePage> {
     try {
       switch (result) {
         case InputSource.text:
-          await _showTextInputDialog(context, ref);
+          await _TextInputDialog.show(context, ref);
           break;
         case InputSource.pdf:
         case InputSource.image:
           await controller.pickAndProcessFile(result);
           break;
         case InputSource.googleDoc:
-          await _selectAndProcessGoogleDoc(context, ref);
+          await _GoogleDocDialog.show(context, ref);
           break;
       }
     } catch (e, st) {
@@ -386,8 +400,10 @@ class _DeckGeneratePageState extends ConsumerState<DeckGeneratePage> {
       }
     }
   }
+}
 
-  Future<void> _showTextInputDialog(BuildContext context, WidgetRef ref) async {
+class _TextInputDialog {
+  static Future<void> show(BuildContext context, WidgetRef ref) async {
     final textController = TextEditingController();
 
     final result = await showDialog<String>(
@@ -430,11 +446,10 @@ class _DeckGeneratePageState extends ConsumerState<DeckGeneratePage> {
       }
     }
   }
+}
 
-  Future<void> _selectAndProcessGoogleDoc(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
+class _GoogleDocDialog {
+  static Future<void> show(BuildContext context, WidgetRef ref) async {
     final docId = await showDialog<String>(
       context: context,
       builder: (context) => GoogleDocPicker(),
@@ -458,26 +473,56 @@ class _DeckGeneratePageState extends ConsumerState<DeckGeneratePage> {
       }
     }
   }
+}
 
-  Future<void> _generateFlashcards(BuildContext context, WidgetRef ref) async {
-    final state = ref.read(generateControllerProvider);
-    if (state.source == null) return;
+class _ContentTitle extends StatelessWidget {
+  const _ContentTitle({super.key, required this.state});
 
-    try {
-      final controller = ref.read(generateControllerProvider.notifier);
-      await controller.generateFlashcards();
+  final GenerateState state;
 
-      if (context.mounted) {
-        context.showInfoSnackbar(
-          'Generated ${state.generatedFlashcards?.length ?? 0} flashcards!',
+  @override
+  Widget build(BuildContext context) {
+    final hasContent = state.content != null || state.binaryData != null;
+    return Text(
+      hasContent ? (state.title ?? 'Untitled') : context.l10n.generateCards,
+      style: context.textTheme.titleMedium?.copyWith(
+        color: Theme.of(context).colorScheme.primary,
+        decoration: hasContent ? TextDecoration.underline : null,
+        fontWeight: FontWeight.bold,
+      ),
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+}
+
+class _DeckNameWidget extends StatelessWidget {
+  const _DeckNameWidget({required this.deckId});
+
+  final model.DeckId deckId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (context, ref, _) {
+        final deckAsync = ref.watch(deckDetailsControllerProvider(deckId));
+        return deckAsync.when(
+          data: (deck) => Text(
+            deck.name,
+            style: context.textTheme.titleSmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          loading: () => const SizedBox(
+            width: 60,
+            height: 16,
+            child: LinearProgressIndicator(),
+          ),
+          error: (e, st) => const SizedBox(),
         );
-      }
-    } catch (e, st) {
-      _log.e('Error generating flashcards', error: e, stackTrace: st);
-      if (context.mounted) {
-        context.showErrorSnackbar(context.l10n.errorPrefix(e.toString()));
-      }
-    }
+      },
+    );
   }
 }
 
@@ -554,73 +599,90 @@ class _GeneratedCardsList extends StatelessWidget {
                     .read(generateControllerProvider.notifier)
                     .toggleFlashcardSelection(index - 1);
               },
-              child: Card(
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: hasExplanation
-                    ? ExpansionTile(
-                        leading: Icon(
-                          isSelected
-                              ? Icons.check_box
-                              : Icons.check_box_outline_blank,
-                          color: isSelected
-                              ? Theme.of(context).colorScheme.primary
-                              : null,
-                        ),
-                        title: Text(
-                          flashcard.question,
-                          style: const TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                        subtitle: Text(
-                          flashcard.answer,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  context.l10n.explanationLabel,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(flashcard.explanation!),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    : ListTile(
-                        leading: Icon(
-                          isSelected
-                              ? Icons.check_box
-                              : Icons.check_box_outline_blank,
-                          color: isSelected
-                              ? Theme.of(context).colorScheme.primary
-                              : null,
-                        ),
-                        title: Text(
-                          flashcard.question,
-                          style: const TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                        subtitle: Text(
-                          flashcard.answer,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+              child: _GeneratedFlashcardTile(
+                key: ValueKey(index - 1),
+                hasExplanation: hasExplanation,
+                isSelected: isSelected,
+                flashcard: flashcard,
               ),
             ),
           );
         }, childCount: 1 + state.generatedFlashcards!.length),
       ),
+    );
+  }
+}
+
+class _GeneratedFlashcardTile extends StatelessWidget {
+  const _GeneratedFlashcardTile({
+    super.key,
+    required this.hasExplanation,
+    required this.isSelected,
+    required this.flashcard,
+  });
+
+  final bool hasExplanation;
+  final bool isSelected;
+  final FlashcardData flashcard;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: hasExplanation
+          ? ExpansionTile(
+              leading: Icon(
+                isSelected ? Icons.check_box : Icons.check_box_outline_blank,
+                color: isSelected
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+              ),
+              title: Text(
+                flashcard.question,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+              subtitle: Text(
+                flashcard.answer,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        context.l10n.explanationLabel,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(flashcard.explanation!),
+                    ],
+                  ),
+                ),
+              ],
+            )
+          : ListTile(
+              leading: Icon(
+                isSelected ? Icons.check_box : Icons.check_box_outline_blank,
+                color: isSelected
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+              ),
+              title: Text(
+                flashcard.question,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+              subtitle: Text(
+                flashcard.answer,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
     );
   }
 }
