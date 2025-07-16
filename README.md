@@ -9,6 +9,15 @@
   - Daily card limit - Control how many cards you review each day to maintain a sustainable learning pace.
   - New cards daily limit - Manage the introduction of new cards to prevent overwhelming your learning schedule.
   - Maximum review interval - Set the longest time between reviews to ensure consistent learning progress.
+- **Deck configuration and customization**:
+  - **Card generation guidelines** - Define how AI should generate cards for this specific deck:
+    - Front card description - Specify what should appear on the front of cards (e.g., "Show the English word", "Display the mathematical formula")
+    - Back card description - Define what should appear on the back of cards (e.g., "Show the Polish translation", "Display the solution steps")
+    - Explanation description - Configure what additional explanations should include (e.g., "Include usage examples", "Add pronunciation guide")
+  - **Collapsible interface** - Guidelines are hidden by default and can be expanded when needed, keeping the interface clean
+  - **Real-time updates** - Changes to guidelines are saved immediately and applied to all future card generation
+  - **Context-aware generation** - Guidelines are automatically passed to AI prompts when generating cards from text, reviewing provisionary cards, or creating new cards
+- **Multi-language support** - Deck descriptions in any language are automatically translated to English before being sent to AI, ensuring consistent and effective card generation regardless of the user's native language
 - Deck sharing and collaboration:
   - Share decks with other users - Distribute your learning materials with students, colleagues, or study groups.
   - Grant read-only access to decks - Allow others to use your decks while maintaining control over modifications.
@@ -18,6 +27,11 @@
 ### Card Creation
 - Create single-sided and double-sided cards - Choose between simple question-answer cards or bidirectional learning cards.
 - Generate cards from text input - Paste any text content and let the AI analyze it to create relevant flashcards, extracting key concepts and their explanations.
+- **Deck-specific card generation guidelines** - Define custom instructions for how cards should be generated for each deck:
+  - **Front of card description** - Specify what content should appear on the front of cards (e.g., "Show the English word", "Display the mathematical formula", "Present the historical event name")
+  - **Back of card description** - Define what should appear on the back of cards (e.g., "Show the Polish translation", "Display the solution steps", "Present the detailed explanation")
+  - **Answer explanation description** - Configure what additional explanations should include (e.g., "Include usage examples", "Add pronunciation guide", "Provide historical context")
+  - These guidelines are automatically applied when generating cards from text, reviewing provisionary cards, or creating new cards in the deck
 - Quick card creation mode for rapid entry - Capture new words or concepts on the go with a streamlined single-word/phrase input. These quick notes are stored in a dedicated inbox where you can later transform them into proper flashcards by adding the second side (definition, explanation, or translation). Perfect for reading sessions when you want to quickly note unfamiliar terms without interrupting your flow.
 - Edit existing cards - Modify card content, format, or settings at any time.
 - Move cards between decks - Reorganize your learning materials by transferring cards between different decks.
@@ -77,6 +91,10 @@
 
 ### LLM Integration
 - AI-powered card creation suggestions - Get intelligent recommendations for card content based on your learning goals.
+- **Deck-aware card generation** - AI automatically considers deck-specific guidelines when generating cards:
+  - Front/back card descriptions are passed to AI prompts to ensure consistent card structure
+  - Explanation descriptions guide AI to include relevant additional information
+  - Guidelines are applied across all generation methods (text input, provisionary cards, batch generation)
 - Automated deck generation from text - Transform any text material into a structured set of flashcards.
 - Answer evaluation and feedback - Receive AI-powered assessment of your answers and personalized improvement suggestions.
 

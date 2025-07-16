@@ -368,5 +368,20 @@
         "type": "int"
       }
     }
-  }
+  },
+  "addFrontCardDescription": "add front of the card description",
+  "addBackCardDescription": "add back of the card description",
+  "addExplanationDescription": "add answer explanation description",
+  "frontCardDescriptionLabel": "Front of card description",
+  "backCardDescriptionLabel": "Back of card description",
+  "explanationDescriptionLabel": "Answer explanation description",
+  "frontCardDescriptionHint": "Describe what should be on the front of cards in this deck",
+  "backCardDescriptionHint": "Describe what should be on the back of cards in this deck",
+  "explanationDescriptionHint": "Describe what explanations should include for answers in this deck",
+  "frontCardDescriptionSavedMessage": "Front card description saved",
+  "backCardDescriptionSavedMessage": "Back card description saved",
+  "explanationDescriptionSavedMessage": "Explanation description saved",
+  "frontCardDescriptionSaveErrorMessage": "Error saving front card description",
+  "backCardDescriptionSaveErrorMessage": "Error saving back card description",
+  "explanationDescriptionSaveErrorMessage": "Error saving explanation description"
 }

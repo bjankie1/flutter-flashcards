@@ -6,22 +6,25 @@ import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
+import 'package:logger/logger.dart';
 
 class ProvisionaryCardsReviewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryLoader(
-        fetcher: (repository) => repository.listProvisionaryCards(),
-        builder: (context, data, _) {
-          return BaseLayout(
-              title: Text(context.l10n.provisionaryCardsReviewHeadline),
-              child: data.isEmpty
-                  ? Text(
-                      context.l10n.noProvisionaryCardsHeadline,
-                      style: context.textTheme.titleLarge,
-                    )
-                  : ProvisionaryCardsReview(provisionaryCards: data.toList()));
-        });
+      fetcher: (repository) => repository.listProvisionaryCards(),
+      builder: (context, data, _) {
+        return BaseLayout(
+          title: Text(context.l10n.provisionaryCardsReviewHeadline),
+          child: data.isEmpty
+              ? Text(
+                  context.l10n.noProvisionaryCardsHeadline,
+                  style: context.textTheme.titleLarge,
+                )
+              : ProvisionaryCardsReview(provisionaryCards: data.toList()),
+        );
+      },
+    );
   }
 }
 
@@ -54,14 +57,16 @@ class _ProvisionaryCardsReviewState extends State<ProvisionaryCardsReview> {
             children: widget.provisionaryCards
                 .asMap()
                 .entries
-                .map((entry) => ProvisionaryCardChip(
-                      text: entry.value.text,
-                      finalized: finalizedCardsIndexes.contains(entry.key),
-                      discarded: discardedCardsIndexes.contains(entry.key),
-                      active: currentIndex == entry.key,
-                      onDelete: () async => await _discardProposal(
-                          context, entry.key, entry.value),
-                    ))
+                .map(
+                  (entry) => ProvisionaryCardChip(
+                    text: entry.value.text,
+                    finalized: finalizedCardsIndexes.contains(entry.key),
+                    discarded: discardedCardsIndexes.contains(entry.key),
+                    active: currentIndex == entry.key,
+                    onDelete: () async =>
+                        await _discardProposal(context, entry.key, entry.value),
+                  ),
+                )
                 .toList(),
           ),
         ),
@@ -72,27 +77,36 @@ class _ProvisionaryCardsReviewState extends State<ProvisionaryCardsReview> {
             provisionaryCard: widget.provisionaryCards[currentIndex],
             onFinalize: (deckId, question, answer, doubleSided) async =>
                 await _finalizeProposal(
-                    context,
-                    currentIndex,
-                    widget.provisionaryCards.toList()[currentIndex],
-                    deckId,
-                    question,
-                    answer,
-                    doubleSided),
-            onDiscard: () async => await _discardProposal(context, currentIndex,
-                widget.provisionaryCards.toList()[currentIndex]),
+                  context,
+                  currentIndex,
+                  widget.provisionaryCards.toList()[currentIndex],
+                  deckId,
+                  question,
+                  answer,
+                  doubleSided,
+                ),
+            onDiscard: () async => await _discardProposal(
+              context,
+              currentIndex,
+              widget.provisionaryCards.toList()[currentIndex],
+            ),
             onSnooze: () => setState(() {
               _progressIndex();
             }),
-          )
+          ),
       ],
     );
   }
 
-  Future<void> _discardProposal(BuildContext context, int index,
-      model.ProvisionaryCard provisionaryCard) async {
-    await context.cardRepository
-        .finalizeProvisionaryCard(provisionaryCard.id, null);
+  Future<void> _discardProposal(
+    BuildContext context,
+    int index,
+    model.ProvisionaryCard provisionaryCard,
+  ) async {
+    await context.cardRepository.finalizeProvisionaryCard(
+      provisionaryCard.id,
+      null,
+    );
     setState(() {
       discardedCardsIndexes.add(index);
       _progressIndex();
@@ -100,23 +114,27 @@ class _ProvisionaryCardsReviewState extends State<ProvisionaryCardsReview> {
   }
 
   Future<void> _finalizeProposal(
-      BuildContext context,
-      int index,
-      model.ProvisionaryCard provisionaryCard,
-      String deckId,
-      String question,
-      String answer,
-      bool doubleSided) async {
+    BuildContext context,
+    int index,
+    model.ProvisionaryCard provisionaryCard,
+    String deckId,
+    String question,
+    String answer,
+    bool doubleSided,
+  ) async {
     final cardId = context.cardRepository.nextCardId();
     final card = model.Card(
-        id: cardId,
-        deckId: deckId,
-        question: question,
-        answer: answer,
-        options: model.CardOptions(learnBothSides: doubleSided));
+      id: cardId,
+      deckId: deckId,
+      question: question,
+      answer: answer,
+      options: model.CardOptions(learnBothSides: doubleSided),
+    );
     await context.cardRepository.saveCard(card);
-    await context.cardRepository
-        .finalizeProvisionaryCard(provisionaryCard.id, cardId);
+    await context.cardRepository.finalizeProvisionaryCard(
+      provisionaryCard.id,
+      cardId,
+    );
     setState(() {
       this.doubleSided = doubleSided;
       lastDeckId = deckId;
@@ -163,8 +181,8 @@ class ProvisionaryCardChip extends StatelessWidget {
       labelStyle: active
           ? TextStyle(fontWeight: FontWeight.bold)
           : discarded
-              ? TextStyle(decoration: TextDecoration.lineThrough)
-              : null,
+          ? TextStyle(decoration: TextDecoration.lineThrough)
+          : null,
     );
   }
 }
@@ -174,19 +192,24 @@ class ProvisionaryCardFinalization extends StatefulWidget {
   final bool doubleSidedValue;
   final String? deckId;
   final Function(
-          String deckId, String question, String answer, bool doubleSided)
-      onFinalize;
+    String deckId,
+    String question,
+    String answer,
+    bool doubleSided,
+  )
+  onFinalize;
   final VoidCallback onDiscard;
   final VoidCallback onSnooze;
 
-  const ProvisionaryCardFinalization(
-      {super.key,
-      required this.doubleSidedValue,
-      this.deckId,
-      required this.provisionaryCard,
-      required this.onFinalize,
-      required this.onDiscard,
-      required this.onSnooze});
+  const ProvisionaryCardFinalization({
+    super.key,
+    required this.doubleSidedValue,
+    this.deckId,
+    required this.provisionaryCard,
+    required this.onFinalize,
+    required this.onDiscard,
+    required this.onSnooze,
+  });
 
   @override
   State<ProvisionaryCardFinalization> createState() =>
@@ -195,6 +218,8 @@ class ProvisionaryCardFinalization extends StatefulWidget {
 
 class _ProvisionaryCardFinalizationState
     extends State<ProvisionaryCardFinalization> {
+  final _log = Logger();
+
   bool doubleSided = true;
   String? deckId;
   bool isQuestion = true;
@@ -211,20 +236,16 @@ class _ProvisionaryCardFinalizationState
       deckId != null;
 
   static const WidgetStateProperty<Icon> doubleSidedIcon =
-      WidgetStateProperty<Icon>.fromMap(
-    <WidgetStatesConstraint, Icon>{
-      WidgetState.selected: Icon(Icons.swap_vert),
-      WidgetState.any: Icon(Icons.flip_to_front),
-    },
-  );
+      WidgetStateProperty<Icon>.fromMap(<WidgetStatesConstraint, Icon>{
+        WidgetState.selected: Icon(Icons.swap_vert),
+        WidgetState.any: Icon(Icons.flip_to_front),
+      });
 
   static const WidgetStateProperty<Icon> frontBackIcon =
-      WidgetStateProperty<Icon>.fromMap(
-    <WidgetStatesConstraint, Icon>{
-      WidgetState.selected: Icon(Icons.flip_to_front),
-      WidgetState.any: Icon(Icons.flip_to_back),
-    },
-  );
+      WidgetStateProperty<Icon>.fromMap(<WidgetStatesConstraint, Icon>{
+        WidgetState.selected: Icon(Icons.flip_to_front),
+        WidgetState.any: Icon(Icons.flip_to_back),
+      });
 
   @override
   void dispose() {
@@ -271,9 +292,12 @@ class _ProvisionaryCardFinalizationState
                 Row(
                   children: [
                     Expanded(
-                        child: Text(isQuestion
+                      child: Text(
+                        isQuestion
                             ? context.l10n.questionLabel
-                            : context.l10n.answerLabel)),
+                            : context.l10n.answerLabel,
+                      ),
+                    ),
                     FocusTraversalOrder(
                       order: NumericFocusOrder(1),
                       child: Switch(
@@ -282,10 +306,12 @@ class _ProvisionaryCardFinalizationState
                         onChanged: (value) {
                           setState(() {
                             isQuestion = value;
-                            questionController.text =
-                                isQuestion ? widget.provisionaryCard.text : '';
-                            answerController.text =
-                                isQuestion ? '' : widget.provisionaryCard.text;
+                            questionController.text = isQuestion
+                                ? widget.provisionaryCard.text
+                                : '';
+                            answerController.text = isQuestion
+                                ? ''
+                                : widget.provisionaryCard.text;
                           });
                           _geminiSuggestion();
                         },
@@ -308,9 +334,7 @@ class _ProvisionaryCardFinalizationState
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 FocusTraversalOrder(
                   order: NumericFocusOrder(2.5),
                   child: DeckSelection(
@@ -323,9 +347,7 @@ class _ProvisionaryCardFinalizationState
                     },
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 FocusTraversalOrder(
                   order: NumericFocusOrder(3),
                   child: TextFormField(
@@ -344,9 +366,7 @@ class _ProvisionaryCardFinalizationState
                     duration: Duration(milliseconds: 500),
                     child: LinearProgressIndicator(),
                   ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 FocusTraversalOrder(
                   order: NumericFocusOrder(4),
                   child: TextFormField(
@@ -365,9 +385,7 @@ class _ProvisionaryCardFinalizationState
                     duration: Duration(milliseconds: 500),
                     child: LinearProgressIndicator(),
                   ),
-                SizedBox(
-                  height: 40,
-                ),
+                SizedBox(height: 40),
                 FittedBox(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -385,22 +403,25 @@ class _ProvisionaryCardFinalizationState
                       FocusTraversalOrder(
                         order: NumericFocusOrder(5),
                         child: ListenableBuilder(
-                            listenable: Listenable.merge(
-                              [questionController, answerController],
-                            ),
-                            builder: (context, _) {
-                              return FilledButton.icon(
-                                onPressed: isComplete
-                                    ? () => widget.onFinalize(
-                                        deckId!,
-                                        questionController.text,
-                                        answerController.text,
-                                        doubleSided)
-                                    : null,
-                                icon: Icon(Icons.save),
-                                label: Text(context.l10n.saveAndNext),
-                              );
-                            }),
+                          listenable: Listenable.merge([
+                            questionController,
+                            answerController,
+                          ]),
+                          builder: (context, _) {
+                            return FilledButton.icon(
+                              onPressed: isComplete
+                                  ? () => widget.onFinalize(
+                                      deckId!,
+                                      questionController.text,
+                                      answerController.text,
+                                      doubleSided,
+                                    )
+                                  : null,
+                              icon: Icon(Icons.save),
+                              label: Text(context.l10n.saveAndNext),
+                            );
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -417,7 +438,10 @@ class _ProvisionaryCardFinalizationState
     if (deckId != null && (deck == null || deck!.id != deckId)) {
       deck = await context.cardRepository.loadDeck(deckId!);
     }
-    print('Fetching suggestion for deck $deck');
+    _log.d('Fetching suggestion for deck $deck');
+    _log.d(
+      'Deck descriptions: front=${deck?.frontCardDescription}, back=${deck?.backCardDescription}, explanation=${deck?.explanationDescription}',
+    );
 
     if (deck?.category != null) {
       setState(() {
@@ -425,10 +449,14 @@ class _ProvisionaryCardFinalizationState
       });
       try {
         final suggestion = await context.cloudFunctions.generateCardAnswer(
-            deck!.category!,
-            deck!.name,
-            deck?.description ?? '',
-            widget.provisionaryCard.text);
+          deck!.category!,
+          deck!.name,
+          deck?.description ?? '',
+          widget.provisionaryCard.text,
+          frontCardDescription: deck?.frontCardDescription,
+          backCardDescription: deck?.backCardDescription,
+          explanationDescription: deck?.explanationDescription,
+        );
         setState(() {
           if (isQuestion) {
             answerController.text = suggestion.answer;

@@ -49,7 +49,14 @@ class GeminiService {
     }
   }
 
-  Future<List<FlashcardData>> generateFlashcards(String documentContent) async {
+  Future<List<FlashcardData>> generateFlashcards(
+    String documentContent, {
+    String? deckName,
+    String? deckDescription,
+    String? frontCardDescription,
+    String? backCardDescription,
+    String? explanationDescription,
+  }) async {
     try {
       _log.i(
         'Generating flashcards from document content (length: ${documentContent.length})',
@@ -68,6 +75,11 @@ class GeminiService {
         'text': documentContent,
         'frontLanguage': 'English',
         'backLanguage': 'English',
+        'deckName': deckName,
+        'deckDescription': deckDescription,
+        'frontCardDescription': frontCardDescription,
+        'backCardDescription': backCardDescription,
+        'explanationDescription': explanationDescription,
       });
 
       final responseData = result.data as Map<String, dynamic>;
@@ -78,6 +90,7 @@ class GeminiService {
             (json) => FlashcardData(
               question: json['front'] as String,
               answer: json['back'] as String,
+              explanation: json['explanation'] as String?,
             ),
           )
           .toList();
@@ -93,8 +106,13 @@ class GeminiService {
   Future<List<FlashcardData>> generateFlashcardsFromBinary(
     Uint8List binaryData,
     String fileType,
-    String fileName,
-  ) async {
+    String fileName, {
+    String? deckName,
+    String? deckDescription,
+    String? frontCardDescription,
+    String? backCardDescription,
+    String? explanationDescription,
+  }) async {
     try {
       _log.i(
         'Generating flashcards from binary data (type: $fileType, name: $fileName, size: ${binaryData.length})',
@@ -115,6 +133,11 @@ class GeminiService {
         'fileName': fileName,
         'frontLanguage': 'English',
         'backLanguage': 'English',
+        'deckName': deckName,
+        'deckDescription': deckDescription,
+        'frontCardDescription': frontCardDescription,
+        'backCardDescription': backCardDescription,
+        'explanationDescription': explanationDescription,
       });
 
       final responseData = result.data as Map<String, dynamic>;
@@ -125,6 +148,7 @@ class GeminiService {
             (json) => FlashcardData(
               question: json['front'] as String,
               answer: json['back'] as String,
+              explanation: json['explanation'] as String?,
             ),
           )
           .toList();

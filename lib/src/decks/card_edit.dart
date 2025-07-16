@@ -12,6 +12,7 @@ import 'package:image_picker/image_picker.dart';
 //     if (dart.library.html) 'package:image_picker_for_web/image_picker_for_web.dart';
 
 import 'package:provider/provider.dart';
+import 'package:logger/logger.dart';
 
 import '../model/cards.dart' as model;
 import '../model/repository.dart';
@@ -405,6 +406,8 @@ class _GenerateAnswerButton extends StatefulWidget {
 }
 
 class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
+  final _log = Logger();
+
   String? _loadingType; // 'answer', 'answerHint', or null
 
   @override
@@ -454,6 +457,10 @@ class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
   }
 
   Future<GeneratedAnswer> loadAnswer() async {
+    _log.d(
+      'Deck descriptions in card_edit: front=${widget.deck.frontCardDescription}, back=${widget.deck.backCardDescription}, explanation=${widget.deck.explanationDescription}',
+    );
+
     final category =
         widget.deck.category ??
         await context.cloudFunctions.deckCategory(
@@ -471,6 +478,9 @@ class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
       widget.deck.name,
       widget.deck.description ?? '',
       widget.question,
+      frontCardDescription: widget.deck.frontCardDescription,
+      backCardDescription: widget.deck.backCardDescription,
+      explanationDescription: widget.deck.explanationDescription,
     );
   }
 

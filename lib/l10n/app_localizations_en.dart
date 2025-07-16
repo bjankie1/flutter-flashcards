@@ -792,4 +792,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String textContentLength(int length) {
     return 'Text content length: $length';
   }
+
+  @override
+  String get addFrontCardDescription => 'add front of the card description';
+
+  @override
+  String get addBackCardDescription => 'add back of the card description';
+
+  @override
+  String get addExplanationDescription => 'add answer explanation description';
+
+  @override
+  String get frontCardDescriptionLabel => 'Front of card description';
+
+  @override
+  String get backCardDescriptionLabel => 'Back of card description';
+
+  @override
+  String get explanationDescriptionLabel => 'Answer explanation description';
+
+  @override
+  String get frontCardDescriptionHint =>
+      'Describe what should be on the front of cards in this deck';
+
+  @override
+  String get backCardDescriptionHint =>
+      'Describe what should be on the back of cards in this deck';
+
+  @override
+  String get explanationDescriptionHint =>
+      'Describe what explanations should include for answers in this deck';
+
+  @override
+  String get frontCardDescriptionSavedMessage => 'Front card description saved';
+
+  @override
+  String get backCardDescriptionSavedMessage => 'Back card description saved';
+
+  @override
+  String get explanationDescriptionSavedMessage =>
+      'Explanation description saved';
+
+  @override
+  String get frontCardDescriptionSaveErrorMessage =>
+      'Error saving front card description';
+
+  @override
+  String get backCardDescriptionSaveErrorMessage =>
+      'Error saving back card description';
+
+  @override
+  String get explanationDescriptionSaveErrorMessage =>
+      'Error saving explanation description';
 }

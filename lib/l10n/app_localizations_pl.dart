@@ -802,4 +802,55 @@ class AppLocalizationsPl extends AppLocalizations {
   String textContentLength(int length) {
     return 'Długość tekstu: $length';
   }
+
+  @override
+  String get addFrontCardDescription => 'dodaj opis przodu karty';
+
+  @override
+  String get addBackCardDescription => 'dodaj opis tyłu karty';
+
+  @override
+  String get addExplanationDescription => 'dodaj opis wyjaśnienia odpowiedzi';
+
+  @override
+  String get frontCardDescriptionLabel => 'Opis przodu karty';
+
+  @override
+  String get backCardDescriptionLabel => 'Opis tyłu karty';
+
+  @override
+  String get explanationDescriptionLabel => 'Opis wyjaśnienia odpowiedzi';
+
+  @override
+  String get frontCardDescriptionHint =>
+      'Opisz co powinno być na przodzie kart w tym zestawie';
+
+  @override
+  String get backCardDescriptionHint =>
+      'Opisz co powinno być na tyle kart w tym zestawie';
+
+  @override
+  String get explanationDescriptionHint =>
+      'Opisz co powinny zawierać wyjaśnienia odpowiedzi w tym zestawie';
+
+  @override
+  String get frontCardDescriptionSavedMessage => 'Opis przodu karty zapisany';
+
+  @override
+  String get backCardDescriptionSavedMessage => 'Opis tyłu karty zapisany';
+
+  @override
+  String get explanationDescriptionSavedMessage => 'Opis wyjaśnienia zapisany';
+
+  @override
+  String get frontCardDescriptionSaveErrorMessage =>
+      'Błąd zapisywania opisu przodu karty';
+
+  @override
+  String get backCardDescriptionSaveErrorMessage =>
+      'Błąd zapisywania opisu tyłu karty';
+
+  @override
+  String get explanationDescriptionSaveErrorMessage =>
+      'Błąd zapisywania opisu wyjaśnienia';
 }

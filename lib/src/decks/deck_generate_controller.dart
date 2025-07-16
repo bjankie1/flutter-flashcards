@@ -250,7 +250,13 @@ class GenerateController extends StateNotifier<GenerateState> {
     );
   }
 
-  Future<void> generateFlashcards() async {
+  Future<void> generateFlashcards({
+    String? deckName,
+    String? deckDescription,
+    String? frontCardDescription,
+    String? backCardDescription,
+    String? explanationDescription,
+  }) async {
     final content = state.content;
     final binaryData = state.binaryData;
     final source = state.source;
@@ -275,7 +281,14 @@ class GenerateController extends StateNotifier<GenerateState> {
       List<FlashcardData> flashcards;
 
       if (source == InputSource.text || source == InputSource.googleDoc) {
-        flashcards = await _geminiService.generateFlashcards(content!);
+        flashcards = await _geminiService.generateFlashcards(
+          content!,
+          deckName: deckName,
+          deckDescription: deckDescription,
+          frontCardDescription: frontCardDescription,
+          backCardDescription: backCardDescription,
+          explanationDescription: explanationDescription,
+        );
       } else {
         // For PDF and image, we'll need to implement binary data processing
         // For now, we'll use a placeholder that will be implemented in GeminiService
@@ -283,6 +296,11 @@ class GenerateController extends StateNotifier<GenerateState> {
           binaryData!,
           source == InputSource.pdf ? 'pdf' : 'image',
           state.fileName ?? 'Unknown file',
+          deckName: deckName,
+          deckDescription: deckDescription,
+          frontCardDescription: frontCardDescription,
+          backCardDescription: backCardDescription,
+          explanationDescription: explanationDescription,
         );
       }
 

@@ -1525,6 +1525,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Text content length: {length}'**
   String textContentLength(int length);
+
+  /// No description provided for @addFrontCardDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'add front of the card description'**
+  String get addFrontCardDescription;
+
+  /// No description provided for @addBackCardDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'add back of the card description'**
+  String get addBackCardDescription;
+
+  /// No description provided for @addExplanationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'add answer explanation description'**
+  String get addExplanationDescription;
+
+  /// No description provided for @frontCardDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Front of card description'**
+  String get frontCardDescriptionLabel;
+
+  /// No description provided for @backCardDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Back of card description'**
+  String get backCardDescriptionLabel;
+
+  /// No description provided for @explanationDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer explanation description'**
+  String get explanationDescriptionLabel;
+
+  /// No description provided for @frontCardDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what should be on the front of cards in this deck'**
+  String get frontCardDescriptionHint;
+
+  /// No description provided for @backCardDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what should be on the back of cards in this deck'**
+  String get backCardDescriptionHint;
+
+  /// No description provided for @explanationDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what explanations should include for answers in this deck'**
+  String get explanationDescriptionHint;
+
+  /// No description provided for @frontCardDescriptionSavedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Front card description saved'**
+  String get frontCardDescriptionSavedMessage;
+
+  /// No description provided for @backCardDescriptionSavedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Back card description saved'**
+  String get backCardDescriptionSavedMessage;
+
+  /// No description provided for @explanationDescriptionSavedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Explanation description saved'**
+  String get explanationDescriptionSavedMessage;
+
+  /// No description provided for @frontCardDescriptionSaveErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving front card description'**
+  String get frontCardDescriptionSaveErrorMessage;
+
+  /// No description provided for @backCardDescriptionSaveErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving back card description'**
+  String get backCardDescriptionSaveErrorMessage;
+
+  /// No description provided for @explanationDescriptionSaveErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving explanation description'**
+  String get explanationDescriptionSaveErrorMessage;
 }
 
 class _AppLocalizationsDelegate

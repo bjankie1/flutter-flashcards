@@ -159,7 +159,35 @@ class _DeckGeneratePageState extends ConsumerState<DeckGeneratePage> {
 
     try {
       final controller = ref.read(generateControllerProvider.notifier);
-      await controller.generateFlashcards();
+
+      // Get deck information if deckId is provided
+      String? deckName;
+      String? deckDescription;
+      String? frontCardDescription;
+      String? backCardDescription;
+      String? explanationDescription;
+
+      if (widget.deckId != null) {
+        final deckAsync = ref.read(
+          deckDetailsControllerProvider(widget.deckId!),
+        );
+        final deck = deckAsync.value;
+        if (deck != null) {
+          deckName = deck.name;
+          deckDescription = deck.description;
+          frontCardDescription = deck.frontCardDescription;
+          backCardDescription = deck.backCardDescription;
+          explanationDescription = deck.explanationDescription;
+        }
+      }
+
+      await controller.generateFlashcards(
+        deckName: deckName,
+        deckDescription: deckDescription,
+        frontCardDescription: frontCardDescription,
+        backCardDescription: backCardDescription,
+        explanationDescription: explanationDescription,
+      );
 
       if (context.mounted) {
         context.showInfoSnackbar(

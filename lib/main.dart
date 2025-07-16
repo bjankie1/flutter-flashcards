@@ -119,5 +119,5 @@ Future<void> _connectFirebaseEmulator() async {
   FirebaseFirestore.instance.useFirestoreEmulator(localhost, 8080);
   await FirebaseAuth.instance.useAuthEmulator(localhost, 9099);
   await FirebaseStorage.instance.useStorageEmulator(localhost, 9199);
-  _log.d('Connected to Firestore emulator');
+  _log.d('Connected to Firebase emulators');
 }

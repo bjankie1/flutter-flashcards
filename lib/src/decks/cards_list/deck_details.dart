@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
+import 'package:flutter_flashcards/src/common/collapsible_description_field.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/common/category_image.dart';
@@ -137,10 +138,66 @@ final class DeckDetailsContent extends ConsumerWidget {
             }
           },
         ),
-        const SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: CardCountWidget(deckId: deck.id!),
+        const SizedBox(height: 20),
+        _CardDescriptionFields(
+          deck: currentDeck,
+          onFrontCardDescriptionChanged: (value) async {
+            try {
+              await ref
+                  .read(deckDetailsControllerProvider(deck.id!).notifier)
+                  .updateFrontCardDescription(value);
+              context.showInfoSnackbar(
+                context.l10n.frontCardDescriptionSavedMessage,
+              );
+            } catch (e, stackTrace) {
+              _log.e(
+                'Error saving front card description',
+                error: e,
+                stackTrace: stackTrace,
+              );
+              context.showErrorSnackbar(
+                context.l10n.frontCardDescriptionSaveErrorMessage,
+              );
+            }
+          },
+          onBackCardDescriptionChanged: (value) async {
+            try {
+              await ref
+                  .read(deckDetailsControllerProvider(deck.id!).notifier)
+                  .updateBackCardDescription(value);
+              context.showInfoSnackbar(
+                context.l10n.backCardDescriptionSavedMessage,
+              );
+            } catch (e, stackTrace) {
+              _log.e(
+                'Error saving back card description',
+                error: e,
+                stackTrace: stackTrace,
+              );
+              context.showErrorSnackbar(
+                context.l10n.backCardDescriptionSaveErrorMessage,
+              );
+            }
+          },
+          onExplanationDescriptionChanged: (value) async {
+            try {
+              await ref
+                  .read(deckDetailsControllerProvider(deck.id!).notifier)
+                  .updateExplanationDescription(value);
+              context.showInfoSnackbar(
+                context.l10n.explanationDescriptionSavedMessage,
+              );
+            } catch (e, stackTrace) {
+              _log.e(
+                'Error saving explanation description',
+                error: e,
+                stackTrace: stackTrace,
+              );
+              context.showErrorSnackbar(
+                context.l10n.explanationDescriptionSaveErrorMessage,
+              );
+            }
+          },
         ),
       ],
     );
@@ -149,7 +206,11 @@ final class DeckDetailsContent extends ConsumerWidget {
         ? Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: [categoryImage],
+            children: [
+              categoryImage,
+              const SizedBox(height: 16),
+              CardCountWidget(deckId: deck.id!),
+            ],
           )
         : const SizedBox.shrink();
 
@@ -331,6 +392,52 @@ final class GenerateFromGoogleDocButtonWidget extends ConsumerWidget {
         backgroundColor: Colors.blue[700],
         foregroundColor: Colors.white,
       ),
+    );
+  }
+}
+
+class _CardDescriptionFields extends StatelessWidget {
+  final model.Deck deck;
+  final ValueChanged<String> onFrontCardDescriptionChanged;
+  final ValueChanged<String> onBackCardDescriptionChanged;
+  final ValueChanged<String> onExplanationDescriptionChanged;
+
+  const _CardDescriptionFields({
+    required this.deck,
+    required this.onFrontCardDescriptionChanged,
+    required this.onBackCardDescriptionChanged,
+    required this.onExplanationDescriptionChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CollapsibleDescriptionField(
+          text: deck.frontCardDescription,
+          onTextChanged: onFrontCardDescriptionChanged,
+          addButtonText: context.l10n.addFrontCardDescription,
+          label: context.l10n.frontCardDescriptionLabel,
+          hint: context.l10n.frontCardDescriptionHint,
+        ),
+        const SizedBox(height: 12),
+        CollapsibleDescriptionField(
+          text: deck.backCardDescription,
+          onTextChanged: onBackCardDescriptionChanged,
+          addButtonText: context.l10n.addBackCardDescription,
+          label: context.l10n.backCardDescriptionLabel,
+          hint: context.l10n.backCardDescriptionHint,
+        ),
+        const SizedBox(height: 12),
+        CollapsibleDescriptionField(
+          text: deck.explanationDescription,
+          onTextChanged: onExplanationDescriptionChanged,
+          addButtonText: context.l10n.addExplanationDescription,
+          label: context.l10n.explanationDescriptionLabel,
+          hint: context.l10n.explanationDescriptionHint,
+        ),
+      ],
     );
   }
 }
