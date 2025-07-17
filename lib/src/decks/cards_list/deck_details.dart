@@ -14,6 +14,46 @@ import 'deck_details_controller.dart';
 import '../deck_list/deck_info_controller.dart';
 import '../deck_list/deck_cards_to_review_controller.dart';
 
+/// Mixin to handle common async operations with error handling and user feedback
+mixin AsyncOperationHandler {
+  final Logger _log = Logger();
+
+  /// Executes an async operation with standardized error handling and user feedback
+  Future<void> executeWithFeedback<T>({
+    required BuildContext context,
+    required Future<T> Function() operation,
+    required String successMessage,
+    required String errorMessage,
+    required String logErrorPrefix,
+  }) async {
+    try {
+      await operation();
+      if (context.mounted) {
+        context.showInfoSnackbar(successMessage);
+      }
+    } catch (e, stackTrace) {
+      _log.e(logErrorPrefix, error: e, stackTrace: stackTrace);
+      if (context.mounted) {
+        context.showErrorSnackbar(errorMessage);
+      }
+    }
+  }
+
+  /// Executes a navigation operation with simple error handling
+  void executeNavigation({
+    required BuildContext context,
+    required VoidCallback operation,
+    required String errorMessage,
+  }) {
+    try {
+      operation();
+    } on Exception {
+      if (!context.mounted) return;
+      context.showErrorSnackbar(errorMessage);
+    }
+  }
+}
+
 /// Shows Deck metadata information enabling user to edit those details.
 final class DeckDetails extends ConsumerWidget {
   final Logger _log = Logger();
@@ -25,10 +65,16 @@ final class DeckDetails extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final deckDetailsAsync = ref.watch(deckDetailsControllerProvider(deck.id!));
+    final controller = ref.read(
+      deckDetailsControllerProvider(deck.id!).notifier,
+    );
 
     return deckDetailsAsync.when(
-      data: (currentDeck) =>
-          DeckDetailsContent(deck: deck, currentDeck: currentDeck),
+      data: (currentDeck) => _DeckDetailsContent(
+        deck: deck,
+        currentDeck: currentDeck,
+        controller: controller,
+      ),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) {
         _log.e(
@@ -65,16 +111,16 @@ final class DeckDetails extends ConsumerWidget {
 }
 
 /// Content widget for displaying and editing deck details
-final class DeckDetailsContent extends ConsumerWidget {
-  final Logger _log = Logger();
-
+final class _DeckDetailsContent extends ConsumerWidget
+    with AsyncOperationHandler {
   final model.Deck deck;
   final model.Deck currentDeck;
+  final DeckDetailsController controller;
 
-  DeckDetailsContent({
-    super.key,
+  _DeckDetailsContent({
     required this.deck,
     required this.currentDeck,
+    required this.controller,
   });
 
   @override
@@ -93,23 +139,14 @@ final class DeckDetailsContent extends ConsumerWidget {
         custom.EditableText(
           text: currentDeck.name,
           style: context.theme.textTheme.headlineSmall,
-          onTextChanged: (value) async {
-            try {
-              await ref
-                  .read(deckDetailsControllerProvider(deck.id!).notifier)
-                  .updateDeckName(value, context.cloudFunctions);
-              context.showInfoSnackbar(context.l10n.deckNameSavedMessage);
-            } catch (e, stackTrace) {
-              _log.e(
-                'Error saving deck name',
-                error: e,
-                stackTrace: stackTrace,
-              );
-              context.showErrorSnackbar(
-                context.l10n.deckDescriptionSaveErrorMessage,
-              );
-            }
-          },
+          onTextChanged: (value) => executeWithFeedback(
+            context: context,
+            operation: () =>
+                controller.updateDeckName(value, context.cloudFunctions),
+            successMessage: context.l10n.deckNameSavedMessage,
+            errorMessage: context.l10n.deckDescriptionSaveErrorMessage,
+            logErrorPrefix: 'Error saving deck name',
+          ),
         ),
         custom.EditableText(
           text: currentDeck.description ?? '',
@@ -118,87 +155,17 @@ final class DeckDetailsContent extends ConsumerWidget {
             color: context.theme.colorScheme.onSurface,
           ),
           placeholder: 'Add description',
-          onTextChanged: (value) async {
-            try {
-              await ref
-                  .read(deckDetailsControllerProvider(deck.id!).notifier)
-                  .updateDeckDescription(value, context.cloudFunctions);
-              context.showInfoSnackbar(
-                context.l10n.deckDescriptionSavedMessage,
-              );
-            } catch (e, stackTrace) {
-              _log.e(
-                'Error saving deck description',
-                error: e,
-                stackTrace: stackTrace,
-              );
-              context.showErrorSnackbar(
-                context.l10n.deckDescriptionSaveErrorMessage,
-              );
-            }
-          },
+          onTextChanged: (value) => executeWithFeedback(
+            context: context,
+            operation: () =>
+                controller.updateDeckDescription(value, context.cloudFunctions),
+            successMessage: context.l10n.deckDescriptionSavedMessage,
+            errorMessage: context.l10n.deckDescriptionSaveErrorMessage,
+            logErrorPrefix: 'Error saving deck description',
+          ),
         ),
         const SizedBox(height: 20),
-        _CardDescriptionFields(
-          deck: currentDeck,
-          onFrontCardDescriptionChanged: (value) async {
-            try {
-              await ref
-                  .read(deckDetailsControllerProvider(deck.id!).notifier)
-                  .updateFrontCardDescription(value);
-              context.showInfoSnackbar(
-                context.l10n.frontCardDescriptionSavedMessage,
-              );
-            } catch (e, stackTrace) {
-              _log.e(
-                'Error saving front card description',
-                error: e,
-                stackTrace: stackTrace,
-              );
-              context.showErrorSnackbar(
-                context.l10n.frontCardDescriptionSaveErrorMessage,
-              );
-            }
-          },
-          onBackCardDescriptionChanged: (value) async {
-            try {
-              await ref
-                  .read(deckDetailsControllerProvider(deck.id!).notifier)
-                  .updateBackCardDescription(value);
-              context.showInfoSnackbar(
-                context.l10n.backCardDescriptionSavedMessage,
-              );
-            } catch (e, stackTrace) {
-              _log.e(
-                'Error saving back card description',
-                error: e,
-                stackTrace: stackTrace,
-              );
-              context.showErrorSnackbar(
-                context.l10n.backCardDescriptionSaveErrorMessage,
-              );
-            }
-          },
-          onExplanationDescriptionChanged: (value) async {
-            try {
-              await ref
-                  .read(deckDetailsControllerProvider(deck.id!).notifier)
-                  .updateExplanationDescription(value);
-              context.showInfoSnackbar(
-                context.l10n.explanationDescriptionSavedMessage,
-              );
-            } catch (e, stackTrace) {
-              _log.e(
-                'Error saving explanation description',
-                error: e,
-                stackTrace: stackTrace,
-              );
-              context.showErrorSnackbar(
-                context.l10n.explanationDescriptionSaveErrorMessage,
-              );
-            }
-          },
-        ),
+        _CardDescriptionFields(deck: currentDeck, controller: controller),
       ],
     );
 
@@ -277,10 +244,11 @@ final class CardCountWidget extends ConsumerWidget {
 }
 
 /// Widget for the learn button with review count badge
-final class LearnButtonWidget extends ConsumerWidget {
+final class LearnButtonWidget extends ConsumerWidget
+    with AsyncOperationHandler {
   final String deckId;
 
-  const LearnButtonWidget({super.key, required this.deckId});
+  LearnButtonWidget({super.key, required this.deckId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -302,12 +270,13 @@ final class LearnButtonWidget extends ConsumerWidget {
               label: Text(count.toString()),
               child: ElevatedButton.icon(
                 onPressed: () {
-                  try {
-                    AppNavigation.goToLearn(context, deckId);
-                  } on Exception {
-                    if (!context.mounted) return;
-                    context.showErrorSnackbar(context.l10n.errorLoadingCards);
-                  }
+                  executeNavigation(
+                    context: context,
+                    operation: () {
+                      AppNavigation.goToLearn(context, deckId);
+                    },
+                    errorMessage: context.l10n.errorLoadingCards,
+                  );
                 },
                 icon: const Icon(
                   Icons.play_circle_fill,
@@ -338,12 +307,13 @@ final class LearnButtonWidget extends ConsumerWidget {
           ),
           error: (error, stackTrace) => ElevatedButton.icon(
             onPressed: () {
-              try {
-                AppNavigation.goToLearn(context, deckId);
-              } on Exception {
-                if (!context.mounted) return;
-                context.showErrorSnackbar(context.l10n.errorLoadingCards);
-              }
+              executeNavigation(
+                context: context,
+                operation: () {
+                  AppNavigation.goToLearn(context, deckId);
+                },
+                errorMessage: context.l10n.errorLoadingCards,
+              );
             },
             icon: const Icon(Icons.play_circle_fill),
             label: Text(context.l10n.learn),
@@ -361,21 +331,23 @@ final class LearnButtonWidget extends ConsumerWidget {
 }
 
 /// Widget for the generate from Google Doc button
-final class GenerateFromGoogleDocButtonWidget extends ConsumerWidget {
+final class GenerateFromGoogleDocButtonWidget extends ConsumerWidget
+    with AsyncOperationHandler {
   final String deckId;
 
-  const GenerateFromGoogleDocButtonWidget({super.key, required this.deckId});
+  GenerateFromGoogleDocButtonWidget({super.key, required this.deckId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ElevatedButton.icon(
       onPressed: () {
-        try {
-          AppNavigation.goToGenerateFromGoogleDoc(context, deckId: deckId);
-        } on Exception {
-          if (!context.mounted) return;
-          context.showErrorSnackbar(context.l10n.errorLoadingCards);
-        }
+        executeNavigation(
+          context: context,
+          operation: () {
+            AppNavigation.goToGenerateFromGoogleDoc(context, deckId: deckId);
+          },
+          errorMessage: context.l10n.errorLoadingCards,
+        );
       },
       icon: const Icon(Icons.description, color: Colors.white, size: 24),
       label: Padding(
@@ -396,18 +368,12 @@ final class GenerateFromGoogleDocButtonWidget extends ConsumerWidget {
   }
 }
 
-class _CardDescriptionFields extends StatelessWidget {
+class _CardDescriptionFields extends StatelessWidget
+    with AsyncOperationHandler {
   final model.Deck deck;
-  final ValueChanged<String> onFrontCardDescriptionChanged;
-  final ValueChanged<String> onBackCardDescriptionChanged;
-  final ValueChanged<String> onExplanationDescriptionChanged;
+  final DeckDetailsController controller;
 
-  const _CardDescriptionFields({
-    required this.deck,
-    required this.onFrontCardDescriptionChanged,
-    required this.onBackCardDescriptionChanged,
-    required this.onExplanationDescriptionChanged,
-  });
+  _CardDescriptionFields({required this.deck, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -416,7 +382,13 @@ class _CardDescriptionFields extends StatelessWidget {
       children: [
         CollapsibleDescriptionField(
           text: deck.frontCardDescription,
-          onTextChanged: onFrontCardDescriptionChanged,
+          onTextChanged: (value) => executeWithFeedback(
+            context: context,
+            operation: () => controller.updateFrontCardDescription(value),
+            successMessage: context.l10n.frontCardDescriptionSavedMessage,
+            errorMessage: context.l10n.frontCardDescriptionSaveErrorMessage,
+            logErrorPrefix: 'Error saving front card description',
+          ),
           addButtonText: context.l10n.addFrontCardDescription,
           label: context.l10n.frontCardDescriptionLabel,
           hint: context.l10n.frontCardDescriptionHint,
@@ -424,7 +396,13 @@ class _CardDescriptionFields extends StatelessWidget {
         const SizedBox(height: 12),
         CollapsibleDescriptionField(
           text: deck.backCardDescription,
-          onTextChanged: onBackCardDescriptionChanged,
+          onTextChanged: (value) => executeWithFeedback(
+            context: context,
+            operation: () => controller.updateBackCardDescription(value),
+            successMessage: context.l10n.backCardDescriptionSavedMessage,
+            errorMessage: context.l10n.backCardDescriptionSaveErrorMessage,
+            logErrorPrefix: 'Error saving back card description',
+          ),
           addButtonText: context.l10n.addBackCardDescription,
           label: context.l10n.backCardDescriptionLabel,
           hint: context.l10n.backCardDescriptionHint,
@@ -432,7 +410,13 @@ class _CardDescriptionFields extends StatelessWidget {
         const SizedBox(height: 12),
         CollapsibleDescriptionField(
           text: deck.explanationDescription,
-          onTextChanged: onExplanationDescriptionChanged,
+          onTextChanged: (value) => executeWithFeedback(
+            context: context,
+            operation: () => controller.updateExplanationDescription(value),
+            successMessage: context.l10n.explanationDescriptionSavedMessage,
+            errorMessage: context.l10n.explanationDescriptionSaveErrorMessage,
+            logErrorPrefix: 'Error saving explanation description',
+          ),
           addButtonText: context.l10n.addExplanationDescription,
           label: context.l10n.explanationDescriptionLabel,
           hint: context.l10n.explanationDescriptionHint,
