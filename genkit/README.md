@@ -25,9 +25,11 @@
 
 ### Production Deployment
 
+More info: https://genkit.dev/docs/firebase/
+
 For production deployment, the API key should be stored as a Firebase Functions secret to prevent accidental exposure:
 
-1. Store your API key in Firebase Functions secrets:
+1. Store your API key in Firebase Functions secrets (do it once):
    ```bash
    firebase functions:secrets:set GEMINI_API_KEY
    ```
