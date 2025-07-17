@@ -354,6 +354,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get provisionaryCardText => 'Tekst do użycia w karcie';
 
   @override
+  String get cardProposalLabel => 'Propozycja karty';
+
+  @override
   String get provisionaryCardsReviewHeadline => 'Przegląd notatek';
 
   @override

@@ -177,6 +177,7 @@
   "deckNotSharedMessage": "Deck has yet been shared with anyone",
   "quickAddCard": "Quick add card",
   "provisionaryCardText": "Provisionary note",
+  "cardProposalLabel": "Card Proposal",
   "provisionaryCardsReviewHeadline": "Provisionary cards review",
   "provisionaryCardsReviewButton": "Review provisionary cards",
   "discard": "Discard",

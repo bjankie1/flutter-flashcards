@@ -740,6 +740,12 @@ abstract class AppLocalizations {
   /// **'Provisionary note'**
   String get provisionaryCardText;
 
+  /// No description provided for @cardProposalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Proposal'**
+  String get cardProposalLabel;
+
   /// No description provided for @provisionaryCardsReviewHeadline.
   ///
   /// In en, this message translates to:

@@ -54,7 +54,7 @@ class _ProvisionaryCardsReviewState extends State<ProvisionaryCardsReview> {
         ConstrainedBox(
           constraints: BoxConstraints(maxWidth: 600, maxHeight: 50),
           child: ListView(
-            padding: EdgeInsets.all(4),
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             scrollDirection: Axis.horizontal,
             children: widget.provisionaryCards
                 .asMap()
@@ -176,16 +176,69 @@ class ProvisionaryCardChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Chip(
-      label: Text(text),
-      deleteIcon: Icon(Icons.delete),
-      onDeleted: finalized || discarded ? null : onDelete,
-      labelStyle: active
-          ? TextStyle(fontWeight: FontWeight.bold)
-          : discarded
-          ? TextStyle(decoration: TextDecoration.lineThrough)
-          : null,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: Chip(
+        label: Text(
+          text,
+          style: TextStyle(
+            fontWeight: active ? FontWeight.w600 : FontWeight.normal,
+            color: _getTextColor(context),
+          ),
+        ),
+        deleteIcon: Icon(Icons.delete, color: _getTextColor(context), size: 18),
+        onDeleted: finalized || discarded ? null : onDelete,
+        backgroundColor: _getBackgroundColor(context),
+        side: BorderSide(
+          color: _getBorderColor(context),
+          width: active ? 2.0 : 1.0,
+        ),
+        elevation: active ? 4.0 : 1.0,
+        shadowColor: active
+            ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
+            : null,
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      ),
     );
+  }
+
+  Color _getBackgroundColor(BuildContext context) {
+    if (discarded) {
+      return Theme.of(context).colorScheme.errorContainer.withOpacity(0.3);
+    }
+    if (finalized) {
+      return Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3);
+    }
+    if (active) {
+      return Theme.of(context).colorScheme.primaryContainer;
+    }
+    return Theme.of(context).colorScheme.surfaceVariant;
+  }
+
+  Color _getTextColor(BuildContext context) {
+    if (discarded) {
+      return Theme.of(context).colorScheme.onErrorContainer;
+    }
+    if (finalized) {
+      return Theme.of(context).colorScheme.onPrimaryContainer;
+    }
+    if (active) {
+      return Theme.of(context).colorScheme.onPrimaryContainer;
+    }
+    return Theme.of(context).colorScheme.onSurfaceVariant;
+  }
+
+  Color _getBorderColor(BuildContext context) {
+    if (discarded) {
+      return Theme.of(context).colorScheme.error;
+    }
+    if (finalized) {
+      return Theme.of(context).colorScheme.primary;
+    }
+    if (active) {
+      return Theme.of(context).colorScheme.primary;
+    }
+    return Theme.of(context).colorScheme.outline;
   }
 }
 
@@ -290,7 +343,48 @@ class _ProvisionaryCardFinalizationState
             child: ListView(
               shrinkWrap: true,
               children: [
-                Text(widget.provisionaryCard.text),
+                // Prominent display of the provisionary card text
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                  margin: EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        context.l10n.cardProposalLabel,
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.w500,
+                            ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        widget.provisionaryCard.text,
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
                 Row(
                   children: [
                     Expanded(
@@ -438,8 +532,19 @@ class _ProvisionaryCardFinalizationState
 
   Future<void> _geminiSuggestion() async {
     if (deckId != null && (deck == null || deck!.id != deckId)) {
-      deck = await context.cardRepository.loadDeck(deckId!);
+      try {
+        deck = await context.cardRepository.loadDeck(deckId!);
+      } catch (e) {
+        _log.e('Error loading deck for suggestion', error: e);
+        return; // Exit early if deck loading fails
+      }
     }
+
+    if (deck == null) {
+      _log.d('No deck available for suggestion');
+      return;
+    }
+
     _log.d('Fetching suggestion for deck $deck');
     _log.d(
       'Deck descriptions: front=${deck?.frontCardDescription}, back=${deck?.backCardDescription}, explanation=${deck?.explanationDescription}',
@@ -450,9 +555,29 @@ class _ProvisionaryCardFinalizationState
         fetchingSuggestion = true;
       });
       try {
-        final controller = ProviderScope.containerOf(
-          context,
-        ).read(deckDetailsControllerProvider(deck!.id!).notifier);
+        // Use a more robust way to access the controller
+        final container = ProviderScope.containerOf(context);
+        final controller = container.read(
+          deckDetailsControllerProvider(deck!.id!).notifier,
+        );
+
+        // Ensure the deck is loaded in the controller
+        await controller.ensureDeckLoaded();
+
+        // Check if the controller is ready and has a valid deck loaded
+        if (!controller.isReady) {
+          _log.w('DeckDetailsController is not ready for deck: ${deck!.id}');
+          return;
+        }
+
+        final currentDeck = controller.getDeck();
+        if (currentDeck == null) {
+          _log.w(
+            'DeckDetailsController has no deck loaded, skipping suggestion',
+          );
+          return;
+        }
+
         final suggestion = await controller.generateCardAnswer(
           widget.provisionaryCard.text,
           context,
@@ -464,6 +589,59 @@ class _ProvisionaryCardFinalizationState
             questionController.text = suggestion.answer;
           }
         });
+      } catch (e) {
+        _log.e('Error generating card answer suggestion', error: e);
+
+        // Fallback: try to generate suggestion directly using cloud functions
+        try {
+          _log.d(
+            'Attempting fallback suggestion generation for deck: ${deck!.id}',
+          );
+
+          if (deck!.category == null) {
+            _log.w('Deck has no category, cannot generate suggestion');
+            return;
+          }
+
+          // Use translated descriptions if available, otherwise fall back to original
+          final effectiveFrontDescription =
+              deck!.frontCardDescriptionTranslated ??
+              deck!.frontCardDescription;
+          final effectiveBackDescription =
+              deck!.backCardDescriptionTranslated ?? deck!.backCardDescription;
+          final effectiveExplanationDescription =
+              deck!.explanationDescriptionTranslated ??
+              deck!.explanationDescription;
+
+          // Determine the category to use
+          model.DeckCategory categoryToUse = deck!.category!;
+
+          final suggestion = await context.cloudFunctions.generateCardAnswer(
+            categoryToUse,
+            deck!.name,
+            deck!.description ?? '',
+            widget.provisionaryCard.text,
+            frontCardDescription: effectiveFrontDescription,
+            backCardDescription: effectiveBackDescription,
+            explanationDescription: effectiveExplanationDescription,
+          );
+
+          setState(() {
+            if (isQuestion) {
+              answerController.text = suggestion.answer;
+            } else {
+              questionController.text = suggestion.answer;
+            }
+          });
+
+          _log.d('Fallback suggestion generation successful');
+        } catch (fallbackError) {
+          _log.e(
+            'Fallback suggestion generation also failed',
+            error: fallbackError,
+          );
+          // Don't show error to user for suggestions, just log it
+        }
       } finally {
         setState(() {
           fetchingSuggestion = false;

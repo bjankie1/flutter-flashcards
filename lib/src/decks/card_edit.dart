@@ -475,10 +475,55 @@ class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
         widget.deck.copyWith(category: category),
       );
     }
-    final controller = ProviderScope.containerOf(
-      context,
-    ).read(deckDetailsControllerProvider(widget.deck.id!).notifier);
-    return await controller.generateCardAnswer(widget.question, context);
+
+    try {
+      final controller = ProviderScope.containerOf(
+        context,
+      ).read(deckDetailsControllerProvider(widget.deck.id!).notifier);
+
+      // Ensure the deck is loaded in the controller
+      await controller.ensureDeckLoaded();
+
+      // Check if the controller is ready
+      if (!controller.isReady) {
+        throw Exception(
+          'DeckDetailsController is not ready for deck: ${widget.deck.id}',
+        );
+      }
+
+      return await controller.generateCardAnswer(widget.question, context);
+    } catch (e) {
+      _log.e(
+        'Error using controller for answer generation, trying fallback',
+        error: e,
+      );
+
+      // Fallback: use cloud functions directly
+      if (widget.deck.category == null) {
+        throw Exception('Deck has no category, cannot generate answer');
+      }
+
+      // Use translated descriptions if available, otherwise fall back to original
+      final effectiveFrontDescription =
+          widget.deck.frontCardDescriptionTranslated ??
+          widget.deck.frontCardDescription;
+      final effectiveBackDescription =
+          widget.deck.backCardDescriptionTranslated ??
+          widget.deck.backCardDescription;
+      final effectiveExplanationDescription =
+          widget.deck.explanationDescriptionTranslated ??
+          widget.deck.explanationDescription;
+
+      return await context.cloudFunctions.generateCardAnswer(
+        widget.deck.category!,
+        widget.deck.name,
+        widget.deck.description ?? '',
+        widget.question,
+        frontCardDescription: effectiveFrontDescription,
+        backCardDescription: effectiveBackDescription,
+        explanationDescription: effectiveExplanationDescription,
+      );
+    }
   }
 
   void processLoading({required bool includeHint}) async {

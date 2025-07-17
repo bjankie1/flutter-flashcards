@@ -242,7 +242,20 @@ class DeckDetailsController extends _$DeckDetailsController {
     await _loadDeck();
   }
 
-  /// Gets the current deck
+  /// Checks if the controller is ready and has a valid deck loaded
+  bool get isReady {
+    return state.hasValue && state.value != null;
+  }
+
+  /// Ensures the deck is loaded, refreshing if necessary
+  Future<void> ensureDeckLoaded() async {
+    if (!isReady) {
+      _log.d('Deck not ready, attempting to load deck: $_deckId');
+      await _loadDeck();
+    }
+  }
+
+  /// Gets the current deck with null safety check
   model.Deck? getDeck() {
     return state.value;
   }
@@ -259,11 +272,15 @@ class DeckDetailsController extends _$DeckDetailsController {
   ) async {
     final currentDeck = state.value;
     if (currentDeck == null) {
-      throw Exception('No deck loaded');
+      _log.e('No deck loaded in controller for deck ID: $_deckId');
+      throw Exception('No deck loaded for deck ID: $_deckId');
     }
 
     if (currentDeck.category == null) {
-      throw Exception('Deck category is not set');
+      _log.w(
+        'Deck category is not set for deck: ${currentDeck.name} (ID: $_deckId)',
+      );
+      throw Exception('Deck category is not set for deck: ${currentDeck.name}');
     }
 
     // Use translated descriptions if available, otherwise fall back to original
@@ -277,14 +294,23 @@ class DeckDetailsController extends _$DeckDetailsController {
         currentDeck.explanationDescriptionTranslated ??
         currentDeck.explanationDescription;
 
-    return await context.cloudFunctions.generateCardAnswer(
-      currentDeck.category!,
-      currentDeck.name,
-      currentDeck.description ?? '',
-      cardQuestion,
-      frontCardDescription: effectiveFrontDescription,
-      backCardDescription: effectiveBackDescription,
-      explanationDescription: effectiveExplanationDescription,
-    );
+    try {
+      return await context.cloudFunctions.generateCardAnswer(
+        currentDeck.category!,
+        currentDeck.name,
+        currentDeck.description ?? '',
+        cardQuestion,
+        frontCardDescription: effectiveFrontDescription,
+        backCardDescription: effectiveBackDescription,
+        explanationDescription: effectiveExplanationDescription,
+      );
+    } catch (e, stackTrace) {
+      _log.e(
+        'Error generating card answer for deck: $_deckId',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      rethrow;
+    }
   }
 }

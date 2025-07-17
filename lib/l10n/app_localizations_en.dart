@@ -351,6 +351,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get provisionaryCardText => 'Provisionary note';
 
   @override
+  String get cardProposalLabel => 'Card Proposal';
+
+  @override
   String get provisionaryCardsReviewHeadline => 'Provisionary cards review';
 
   @override
