@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import '../services/gemini_service.dart';
 import '../google/google_doc_reader.dart';
 import 'package:logger/logger.dart';
+import '../model/deck.dart' as model;
 
 enum InputSource { text, pdf, image, googleDoc }
 
@@ -18,6 +19,7 @@ class GenerateState {
   final Set<int> selectedFlashcardIndexes;
   final Uint8List? binaryData;
   final String? fileName;
+  final model.Deck? deck; // <-- Add deck to state
 
   static const Object _unset = Object();
 
@@ -32,6 +34,7 @@ class GenerateState {
     Set<int>? selectedFlashcardIndexes,
     this.binaryData,
     this.fileName,
+    this.deck, // <-- Add deck to constructor
   }) : selectedFlashcardIndexes = selectedFlashcardIndexes ?? const {};
 
   GenerateState copyWith({
@@ -45,6 +48,7 @@ class GenerateState {
     Set<int>? selectedFlashcardIndexes,
     Object? binaryData = _unset,
     Object? fileName = _unset,
+    model.Deck? deck,
   }) {
     return GenerateState(
       isLoading: isLoading ?? this.isLoading,
@@ -63,6 +67,7 @@ class GenerateState {
           ? this.binaryData
           : binaryData as Uint8List?,
       fileName: fileName == _unset ? this.fileName : fileName as String?,
+      deck: deck ?? this.deck,
     );
   }
 }
@@ -250,21 +255,20 @@ class GenerateController extends StateNotifier<GenerateState> {
     );
   }
 
-  Future<void> generateFlashcards({
-    String? deckName,
-    String? deckDescription,
-    String? frontCardDescription,
-    String? backCardDescription,
-    String? explanationDescription,
-  }) async {
+  // New: Set the deck in state
+  void setDeck(model.Deck? deck) {
+    state = state.copyWith(deck: deck);
+  }
+
+  // New: Generate flashcards using the current deck in state
+  Future<void> generateFlashcardsForCurrentDeck() async {
+    final deck = state.deck;
     final content = state.content;
     final binaryData = state.binaryData;
     final source = state.source;
 
-    if (source == null) {
-      throw Exception('No input source selected');
-    }
-
+    if (deck == null) throw Exception('No deck loaded');
+    if (source == null) throw Exception('No input source selected');
     if (source == InputSource.text || source == InputSource.googleDoc) {
       if (content == null || content.trim().isEmpty) {
         throw Exception('No content loaded');
@@ -279,6 +283,14 @@ class GenerateController extends StateNotifier<GenerateState> {
 
     try {
       List<FlashcardData> flashcards;
+      final deckName = deck.name;
+      final deckDescription = deck.description;
+      final frontCardDescription =
+          deck.frontCardDescriptionTranslated ?? deck.frontCardDescription;
+      final backCardDescription =
+          deck.backCardDescriptionTranslated ?? deck.backCardDescription;
+      final explanationDescription =
+          deck.explanationDescriptionTranslated ?? deck.explanationDescription;
 
       if (source == InputSource.text || source == InputSource.googleDoc) {
         flashcards = await _geminiService.generateFlashcards(
@@ -290,8 +302,6 @@ class GenerateController extends StateNotifier<GenerateState> {
           explanationDescription: explanationDescription,
         );
       } else {
-        // For PDF and image, we'll need to implement binary data processing
-        // For now, we'll use a placeholder that will be implemented in GeminiService
         flashcards = await _geminiService.generateFlashcardsFromBinary(
           binaryData!,
           source == InputSource.pdf ? 'pdf' : 'image',

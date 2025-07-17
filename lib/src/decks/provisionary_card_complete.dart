@@ -7,6 +7,8 @@ import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'cards_list/deck_details_controller.dart';
 
 class ProvisionaryCardsReviewPage extends StatelessWidget {
   @override
@@ -448,14 +450,12 @@ class _ProvisionaryCardFinalizationState
         fetchingSuggestion = true;
       });
       try {
-        final suggestion = await context.cloudFunctions.generateCardAnswer(
-          deck!.category!,
-          deck!.name,
-          deck?.description ?? '',
+        final controller = ProviderScope.containerOf(
+          context,
+        ).read(deckDetailsControllerProvider(deck!.id!).notifier);
+        final suggestion = await controller.generateCardAnswer(
           widget.provisionaryCard.text,
-          frontCardDescription: deck?.frontCardDescription,
-          backCardDescription: deck?.backCardDescription,
-          explanationDescription: deck?.explanationDescription,
+          context,
         );
         setState(() {
           if (isQuestion) {

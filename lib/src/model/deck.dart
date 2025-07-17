@@ -14,6 +14,9 @@ class Deck implements FirebaseSerializable {
   final String? frontCardDescription;
   final String? backCardDescription;
   final String? explanationDescription;
+  final String? frontCardDescriptionTranslated;
+  final String? backCardDescriptionTranslated;
+  final String? explanationDescriptionTranslated;
 
   const Deck({
     this.id,
@@ -25,6 +28,9 @@ class Deck implements FirebaseSerializable {
     this.frontCardDescription,
     this.backCardDescription,
     this.explanationDescription,
+    this.frontCardDescriptionTranslated,
+    this.backCardDescriptionTranslated,
+    this.explanationDescriptionTranslated,
   });
 
   Deck withId({required String id}) {
@@ -38,6 +44,9 @@ class Deck implements FirebaseSerializable {
       frontCardDescription: frontCardDescription,
       backCardDescription: backCardDescription,
       explanationDescription: explanationDescription,
+      frontCardDescriptionTranslated: frontCardDescriptionTranslated,
+      backCardDescriptionTranslated: backCardDescriptionTranslated,
+      explanationDescriptionTranslated: explanationDescriptionTranslated,
     );
   }
 
@@ -62,6 +71,9 @@ class Deck implements FirebaseSerializable {
     String? frontCardDescription,
     String? backCardDescription,
     String? explanationDescription,
+    String? frontCardDescriptionTranslated,
+    String? backCardDescriptionTranslated,
+    String? explanationDescriptionTranslated,
   }) {
     return Deck(
       id: id ?? this.id,
@@ -74,6 +86,13 @@ class Deck implements FirebaseSerializable {
       backCardDescription: backCardDescription ?? this.backCardDescription,
       explanationDescription:
           explanationDescription ?? this.explanationDescription,
+      frontCardDescriptionTranslated:
+          frontCardDescriptionTranslated ?? this.frontCardDescriptionTranslated,
+      backCardDescriptionTranslated:
+          backCardDescriptionTranslated ?? this.backCardDescriptionTranslated,
+      explanationDescriptionTranslated:
+          explanationDescriptionTranslated ??
+          this.explanationDescriptionTranslated,
     );
   }
 
@@ -91,6 +110,12 @@ class Deck implements FirebaseSerializable {
     frontCardDescription: json['frontCardDescription'] as String?,
     backCardDescription: json['backCardDescription'] as String?,
     explanationDescription: json['explanationDescription'] as String?,
+    frontCardDescriptionTranslated:
+        json['frontCardDescriptionTranslated'] as String?,
+    backCardDescriptionTranslated:
+        json['backCardDescriptionTranslated'] as String?,
+    explanationDescriptionTranslated:
+        json['explanationDescriptionTranslated'] as String?,
   );
 
   @override
@@ -106,6 +131,9 @@ class Deck implements FirebaseSerializable {
     'frontCardDescription': frontCardDescription,
     'backCardDescription': backCardDescription,
     'explanationDescription': explanationDescription,
+    'frontCardDescriptionTranslated': frontCardDescriptionTranslated,
+    'backCardDescriptionTranslated': backCardDescriptionTranslated,
+    'explanationDescriptionTranslated': explanationDescriptionTranslated,
   };
 
   static DeckOptions _deckOptionsFromJson(Map<String, dynamic> json) =>

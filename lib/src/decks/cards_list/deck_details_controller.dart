@@ -1,8 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../model/cards.dart' as model;
 import '../deck_list/decks_controller.dart';
 import '../../genkit/functions.dart';
+import '../../services/translation_service.dart';
+import '../../common/build_context_extensions.dart';
 
 part 'deck_details_controller.g.dart';
 
@@ -11,10 +14,12 @@ part 'deck_details_controller.g.dart';
 class DeckDetailsController extends _$DeckDetailsController {
   final Logger _log = Logger();
   late String _deckId;
+  late TranslationService _translationService;
 
   @override
   AsyncValue<model.Deck> build(String deckId) {
     _deckId = deckId;
+    _translationService = TranslationService();
     _loadDeck();
     return const AsyncValue.loading();
   }
@@ -44,7 +49,7 @@ class DeckDetailsController extends _$DeckDetailsController {
   /// Generic method to update deck fields
   Future<void> _updateDeckField({
     required String fieldName,
-    required model.Deck Function(model.Deck) updateFunction,
+    required dynamic Function(model.Deck) updateFunction,
     CloudFunctions? cloudFunctions,
     String? logMessage,
   }) async {
@@ -55,7 +60,7 @@ class DeckDetailsController extends _$DeckDetailsController {
         throw Exception('No deck loaded');
       }
 
-      var newDeck = updateFunction(currentDeck);
+      var newDeck = await updateFunction(currentDeck);
 
       // Get category from cloud functions if provided
       if (cloudFunctions != null) {
@@ -125,8 +130,14 @@ class DeckDetailsController extends _$DeckDetailsController {
   Future<void> updateFrontCardDescription(String frontCardDescription) async {
     await _updateDeckField(
       fieldName: 'front card description',
-      updateFunction: (deck) =>
-          deck.copyWith(frontCardDescription: frontCardDescription),
+      updateFunction: (deck) async {
+        final translatedDescription = await _translationService
+            .translateToEnglish(frontCardDescription);
+        return deck.copyWith(
+          frontCardDescription: frontCardDescription,
+          frontCardDescriptionTranslated: translatedDescription,
+        );
+      },
     );
   }
 
@@ -134,8 +145,14 @@ class DeckDetailsController extends _$DeckDetailsController {
   Future<void> updateBackCardDescription(String backCardDescription) async {
     await _updateDeckField(
       fieldName: 'back card description',
-      updateFunction: (deck) =>
-          deck.copyWith(backCardDescription: backCardDescription),
+      updateFunction: (deck) async {
+        final translatedDescription = await _translationService
+            .translateToEnglish(backCardDescription);
+        return deck.copyWith(
+          backCardDescription: backCardDescription,
+          backCardDescriptionTranslated: translatedDescription,
+        );
+      },
     );
   }
 
@@ -145,8 +162,14 @@ class DeckDetailsController extends _$DeckDetailsController {
   ) async {
     await _updateDeckField(
       fieldName: 'explanation description',
-      updateFunction: (deck) =>
-          deck.copyWith(explanationDescription: explanationDescription),
+      updateFunction: (deck) async {
+        final translatedDescription = await _translationService
+            .translateToEnglish(explanationDescription);
+        return deck.copyWith(
+          explanationDescription: explanationDescription,
+          explanationDescriptionTranslated: translatedDescription,
+        );
+      },
     );
   }
 
@@ -163,5 +186,41 @@ class DeckDetailsController extends _$DeckDetailsController {
   /// Gets the deck category
   model.DeckCategory? getCategory() {
     return state.value?.category;
+  }
+
+  /// Generates a card answer suggestion using AI with fallback logic for descriptions
+  Future<GeneratedAnswer> generateCardAnswer(
+    String cardQuestion,
+    BuildContext context,
+  ) async {
+    final currentDeck = state.value;
+    if (currentDeck == null) {
+      throw Exception('No deck loaded');
+    }
+
+    if (currentDeck.category == null) {
+      throw Exception('Deck category is not set');
+    }
+
+    // Use translated descriptions if available, otherwise fall back to original
+    final effectiveFrontDescription =
+        currentDeck.frontCardDescriptionTranslated ??
+        currentDeck.frontCardDescription;
+    final effectiveBackDescription =
+        currentDeck.backCardDescriptionTranslated ??
+        currentDeck.backCardDescription;
+    final effectiveExplanationDescription =
+        currentDeck.explanationDescriptionTranslated ??
+        currentDeck.explanationDescription;
+
+    return await context.cloudFunctions.generateCardAnswer(
+      currentDeck.category!,
+      currentDeck.name,
+      currentDeck.description ?? '',
+      cardQuestion,
+      frontCardDescription: effectiveFrontDescription,
+      backCardDescription: effectiveBackDescription,
+      explanationDescription: effectiveExplanationDescription,
+    );
   }
 }

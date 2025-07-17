@@ -2,7 +2,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // For authentication
 import 'package:logger/logger.dart';
 
-import '../model/cards.dart';
+import '../model/cards.dart' as model;
 
 class GeneratedAnswer {
   final String answer;
@@ -64,7 +64,7 @@ class CloudFunctions {
     return currentUser;
   }
 
-  Future<DeckCategory> deckCategory(
+  Future<model.DeckCategory> deckCategory(
     String deckName,
     String deckDescription,
   ) async {
@@ -88,7 +88,7 @@ class CloudFunctions {
 
       final categoryString = result.data as String;
       _log.d('Category result from model: $categoryString');
-      return DeckCategory.values.firstWhere(
+      return model.DeckCategory.values.firstWhere(
         (value) => value.name == categoryString.trim().toLowerCase(),
       );
     } on FirebaseFunctionsException catch (e) {
@@ -101,7 +101,7 @@ class CloudFunctions {
   }
 
   Future<GeneratedAnswer> generateCardAnswer(
-    DeckCategory category,
+    model.DeckCategory category,
     String deckName,
     String deckDescription,
     String cardQuestion, {

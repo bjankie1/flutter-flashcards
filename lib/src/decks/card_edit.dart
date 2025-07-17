@@ -13,10 +13,12 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:provider/provider.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../model/cards.dart' as model;
 import '../model/repository.dart';
 import '../genkit/functions.dart';
+import 'cards_list/deck_details_controller.dart';
 
 class CardEdit extends StatefulWidget {
   final model.Card? card;
@@ -473,15 +475,10 @@ class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
         widget.deck.copyWith(category: category),
       );
     }
-    return await context.cloudFunctions.generateCardAnswer(
-      category,
-      widget.deck.name,
-      widget.deck.description ?? '',
-      widget.question,
-      frontCardDescription: widget.deck.frontCardDescription,
-      backCardDescription: widget.deck.backCardDescription,
-      explanationDescription: widget.deck.explanationDescription,
-    );
+    final controller = ProviderScope.containerOf(
+      context,
+    ).read(deckDetailsControllerProvider(widget.deck.id!).notifier);
+    return await controller.generateCardAnswer(widget.question, context);
   }
 
   void processLoading({required bool includeHint}) async {

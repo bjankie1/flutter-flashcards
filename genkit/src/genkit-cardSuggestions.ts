@@ -17,6 +17,54 @@ const ai = genkit({
   }),
 });
 
+// Genkit flow to translate text to English
+const translateToEnglishFlow = ai.defineFlow(
+  {
+    name: "translateToEnglishFlow",
+    inputSchema: z.object({
+      text: z.string(),
+    }),
+    outputSchema: z.object({
+      translatedText: z.string(),
+    }),
+  },
+  async (subject: any) => {
+    try {
+      console.log('Starting translateToEnglishFlow with input:', JSON.stringify(subject, null, 2));
+      
+      // Call the AI model to translate the text
+      const result = await ai.generate({
+        system: `You are a translation assistant. Translate the given text to English.
+                 Provide only the translated text without any additional explanations or formatting.
+                 If the text is already in English, return it unchanged.
+                 Keep the translation concise and natural.`,
+        prompt: `Translate the following text to English:\n\n${subject.text}`,
+        config: {
+          temperature: 0.1, // Low temperature for consistent translations
+        },
+      });
+      
+      if (!result.text) {
+        throw new Error("AI model did not return a translation");
+      }
+      
+      const translatedText = result.text.trim();
+      console.log('Translation completed successfully:', { translatedText });
+      return { translatedText };
+      
+    } catch (error) {
+      console.error('Error in translateToEnglishFlow:', error);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      console.error('Input that caused error:', JSON.stringify(subject, null, 2));
+      
+      // Return the original text as fallback
+      return {
+        translatedText: subject.text,
+      };
+    }
+  }
+);
+
 // Genkit flow to determine the category of a flashcard deck
 const cardTypeFlow = ai.defineFlow(
   {
@@ -534,3 +582,8 @@ export const generateFlashCardsFromBinary = onCallGenkit({
     region: "europe-central2"
   },
   flashcardGeneratorFromBinaryFlow);
+export const translateToEnglish = onCallGenkit({
+    secrets: [googleAIapiKey],
+    region: "europe-central2"
+  },
+  translateToEnglishFlow);
