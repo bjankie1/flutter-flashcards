@@ -328,12 +328,21 @@ final class GenerateFromGoogleDocButtonWidget extends ConsumerWidget
   }
 }
 
-class _CardDescriptionFields extends StatelessWidget
-    with AsyncOperationHandler {
+class _CardDescriptionFields extends StatefulWidget with AsyncOperationHandler {
   final model.Deck deck;
   final DeckDetailsController controller;
 
   _CardDescriptionFields({required this.deck, required this.controller});
+
+  @override
+  State<_CardDescriptionFields> createState() => _CardDescriptionFieldsState();
+}
+
+class _CardDescriptionFieldsState extends State<_CardDescriptionFields>
+    with AsyncOperationHandler {
+  bool _isFrontLoading = false;
+  bool _isBackLoading = false;
+  bool _isExplanationLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -341,42 +350,91 @@ class _CardDescriptionFields extends StatelessWidget
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CollapsibleDescriptionField(
-          text: deck.frontCardDescription,
-          onTextChanged: (value) => executeWithFeedback(
-            context: context,
-            operation: () => controller.updateFrontCardDescription(value),
-            successMessage: context.l10n.frontCardDescriptionSavedMessage,
-            errorMessage: context.l10n.frontCardDescriptionSaveErrorMessage,
-            logErrorPrefix: 'Error saving front card description',
-          ),
+          text: widget.deck.frontCardDescription,
+          isLoading: _isFrontLoading,
+          onTextChanged: (value) async {
+            setState(() {
+              _isFrontLoading = true;
+            });
+
+            try {
+              await executeWithFeedback(
+                context: context,
+                operation: () =>
+                    widget.controller.updateFrontCardDescription(value),
+                successMessage: context.l10n.frontCardDescriptionSavedMessage,
+                errorMessage: context.l10n.frontCardDescriptionSaveErrorMessage,
+                logErrorPrefix: 'Error saving front card description',
+              );
+            } finally {
+              if (mounted) {
+                setState(() {
+                  _isFrontLoading = false;
+                });
+              }
+            }
+          },
           addButtonText: context.l10n.addFrontCardDescription,
           label: context.l10n.frontCardDescriptionLabel,
           hint: context.l10n.frontCardDescriptionHint,
         ),
         const SizedBox(height: 12),
         CollapsibleDescriptionField(
-          text: deck.backCardDescription,
-          onTextChanged: (value) => executeWithFeedback(
-            context: context,
-            operation: () => controller.updateBackCardDescription(value),
-            successMessage: context.l10n.backCardDescriptionSavedMessage,
-            errorMessage: context.l10n.backCardDescriptionSaveErrorMessage,
-            logErrorPrefix: 'Error saving back card description',
-          ),
+          text: widget.deck.backCardDescription,
+          isLoading: _isBackLoading,
+          onTextChanged: (value) async {
+            setState(() {
+              _isBackLoading = true;
+            });
+
+            try {
+              await executeWithFeedback(
+                context: context,
+                operation: () =>
+                    widget.controller.updateBackCardDescription(value),
+                successMessage: context.l10n.backCardDescriptionSavedMessage,
+                errorMessage: context.l10n.backCardDescriptionSaveErrorMessage,
+                logErrorPrefix: 'Error saving back card description',
+              );
+            } finally {
+              if (mounted) {
+                setState(() {
+                  _isBackLoading = false;
+                });
+              }
+            }
+          },
           addButtonText: context.l10n.addBackCardDescription,
           label: context.l10n.backCardDescriptionLabel,
           hint: context.l10n.backCardDescriptionHint,
         ),
         const SizedBox(height: 12),
         CollapsibleDescriptionField(
-          text: deck.explanationDescription,
-          onTextChanged: (value) => executeWithFeedback(
-            context: context,
-            operation: () => controller.updateExplanationDescription(value),
-            successMessage: context.l10n.explanationDescriptionSavedMessage,
-            errorMessage: context.l10n.explanationDescriptionSaveErrorMessage,
-            logErrorPrefix: 'Error saving explanation description',
-          ),
+          text: widget.deck.explanationDescription,
+          isLoading: _isExplanationLoading,
+          onTextChanged: (value) async {
+            setState(() {
+              _isExplanationLoading = true;
+            });
+
+            try {
+              await executeWithFeedback(
+                context: context,
+                operation: () =>
+                    widget.controller.updateExplanationDescription(value),
+                successMessage: context.l10n.explanationDescriptionSavedMessage,
+                errorMessage:
+                    context.l10n.explanationDescriptionSaveErrorMessage,
+                logErrorPrefix: 'Error saving explanation description',
+              );
+            } finally {
+              if (mounted) {
+                setState(() {
+                  _isExplanationLoading = false;
+                });
+              }
+            }
+          },
           addButtonText: context.l10n.addExplanationDescription,
           label: context.l10n.explanationDescriptionLabel,
           hint: context.l10n.explanationDescriptionHint,

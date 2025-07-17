@@ -1,5 +1,4 @@
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:logger/logger.dart';
 
 /// Service for translating text to English using AI
@@ -23,31 +22,40 @@ class TranslationService {
   /// Returns the original text if it's already in English or if translation fails
   Future<String> translateToEnglish(String text) async {
     if (text.trim().isEmpty) {
+      _log.d('Empty text provided, returning as-is');
       return text;
     }
 
     try {
       _log.d('Translating text to English (length: ${text.length})');
-
-      // Ensure user is authenticated
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        _log.w('User not authenticated, returning original text');
-        return text;
-      }
+      _log.d('Input text: "$text"');
 
       // Call the Cloud Function for translation
       final callable = _functions.httpsCallable('translateToEnglish');
+      _log.d('Calling translateToEnglish cloud function...');
 
       final result = await callable.call({'text': text});
+      _log.d('Cloud function call completed successfully');
 
       final responseData = result.data as Map<String, dynamic>;
-      final translatedText = responseData['translatedText'] as String? ?? text;
+      _log.d('Response data: $responseData');
 
-      _log.d('Successfully translated text to English');
+      final translatedText = responseData['translatedText'] as String? ?? text;
+      _log.d('Extracted translated text: "$translatedText"');
+      _log.d('Original vs translated: "$text" -> "$translatedText"');
+
+      if (translatedText == text) {
+        _log.w(
+          'Translation returned the same text - possible issue with translation service',
+        );
+      } else {
+        _log.d('Successfully translated text to English');
+      }
+
       return translatedText;
     } catch (e, st) {
       _log.e('Error translating text to English', error: e, stackTrace: st);
+      _log.e('Input text that caused error: "$text"');
       // Return original text on error to avoid breaking functionality
       return text;
     }

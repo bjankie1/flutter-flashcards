@@ -13,12 +13,14 @@ part 'deck_details_controller.g.dart';
 @riverpod
 class DeckDetailsController extends _$DeckDetailsController {
   final Logger _log = Logger();
-  late String _deckId;
+  bool _isUpdating = false;
   late TranslationService _translationService;
+
+  String get _deckId => deckId;
 
   @override
   AsyncValue<model.Deck> build(String deckId) {
-    _deckId = deckId;
+    _log.d('Loading deck details for deck: $deckId');
     _translationService = TranslationService();
     _loadDeck();
     return const AsyncValue.loading();
@@ -49,10 +51,19 @@ class DeckDetailsController extends _$DeckDetailsController {
   /// Generic method to update deck fields
   Future<void> _updateDeckField({
     required String fieldName,
-    required dynamic Function(model.Deck) updateFunction,
+    required Future<model.Deck> Function(model.Deck) updateFunction,
     CloudFunctions? cloudFunctions,
     String? logMessage,
   }) async {
+    // Prevent parallel updates
+    if (_isUpdating) {
+      _log.d(
+        'Update already in progress for deck: $_deckId, skipping duplicate call',
+      );
+      return;
+    }
+
+    _isUpdating = true;
     try {
       _log.d(logMessage ?? 'Updating $fieldName for deck: $_deckId');
       final currentDeck = state.value;
@@ -98,6 +109,8 @@ class DeckDetailsController extends _$DeckDetailsController {
         stackTrace: stackTrace,
       );
       rethrow;
+    } finally {
+      _isUpdating = false;
     }
   }
 
@@ -108,7 +121,7 @@ class DeckDetailsController extends _$DeckDetailsController {
   ) async {
     await _updateDeckField(
       fieldName: 'name',
-      updateFunction: (deck) => deck.copyWith(name: name),
+      updateFunction: (deck) async => deck.copyWith(name: name),
       cloudFunctions: cloudFunctions,
       logMessage: 'Updating deck name for deck: $_deckId to: $name',
     );
@@ -121,37 +134,71 @@ class DeckDetailsController extends _$DeckDetailsController {
   ) async {
     await _updateDeckField(
       fieldName: 'description',
-      updateFunction: (deck) => deck.copyWith(description: description),
+      updateFunction: (deck) async => deck.copyWith(description: description),
       cloudFunctions: cloudFunctions,
     );
   }
 
   /// Updates the front card description
   Future<void> updateFrontCardDescription(String frontCardDescription) async {
+    _log.d('Starting updateFrontCardDescription for deck: $_deckId');
+    _log.d('Original front card description: "$frontCardDescription"');
+
     await _updateDeckField(
       fieldName: 'front card description',
       updateFunction: (deck) async {
+        _log.d('Calling translation service for front card description');
         final translatedDescription = await _translationService
             .translateToEnglish(frontCardDescription);
-        return deck.copyWith(
+        _log.d('Translation result: "$translatedDescription"');
+        _log.d(
+          'Original vs translated: "${frontCardDescription}" -> "${translatedDescription}"',
+        );
+
+        final updatedDeck = deck.copyWith(
           frontCardDescription: frontCardDescription,
           frontCardDescriptionTranslated: translatedDescription,
         );
+        _log.d(
+          'Updated deck frontCardDescription: "${updatedDeck.frontCardDescription}"',
+        );
+        _log.d(
+          'Updated deck frontCardDescriptionTranslated: "${updatedDeck.frontCardDescriptionTranslated}"',
+        );
+
+        return updatedDeck;
       },
     );
   }
 
   /// Updates the back card description
   Future<void> updateBackCardDescription(String backCardDescription) async {
+    _log.d('Starting updateBackCardDescription for deck: $_deckId');
+    _log.d('Original back card description: "$backCardDescription"');
+
     await _updateDeckField(
       fieldName: 'back card description',
       updateFunction: (deck) async {
+        _log.d('Calling translation service for back card description');
         final translatedDescription = await _translationService
             .translateToEnglish(backCardDescription);
-        return deck.copyWith(
+        _log.d('Translation result: "$translatedDescription"');
+        _log.d(
+          'Original vs translated: "${backCardDescription}" -> "${translatedDescription}"',
+        );
+
+        final updatedDeck = deck.copyWith(
           backCardDescription: backCardDescription,
           backCardDescriptionTranslated: translatedDescription,
         );
+        _log.d(
+          'Updated deck backCardDescription: "${updatedDeck.backCardDescription}"',
+        );
+        _log.d(
+          'Updated deck backCardDescriptionTranslated: "${updatedDeck.backCardDescriptionTranslated}"',
+        );
+
+        return updatedDeck;
       },
     );
   }
@@ -160,15 +207,32 @@ class DeckDetailsController extends _$DeckDetailsController {
   Future<void> updateExplanationDescription(
     String explanationDescription,
   ) async {
+    _log.d('Starting updateExplanationDescription for deck: $_deckId');
+    _log.d('Original explanation description: "$explanationDescription"');
+
     await _updateDeckField(
       fieldName: 'explanation description',
       updateFunction: (deck) async {
+        _log.d('Calling translation service for explanation description');
         final translatedDescription = await _translationService
             .translateToEnglish(explanationDescription);
-        return deck.copyWith(
+        _log.d('Translation result: "$translatedDescription"');
+        _log.d(
+          'Original vs translated: "${explanationDescription}" -> "${translatedDescription}"',
+        );
+
+        final updatedDeck = deck.copyWith(
           explanationDescription: explanationDescription,
           explanationDescriptionTranslated: translatedDescription,
         );
+        _log.d(
+          'Updated deck explanationDescription: "${updatedDeck.explanationDescription}"',
+        );
+        _log.d(
+          'Updated deck explanationDescriptionTranslated: "${updatedDeck.explanationDescriptionTranslated}"',
+        );
+
+        return updatedDeck;
       },
     );
   }
