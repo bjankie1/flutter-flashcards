@@ -6,9 +6,9 @@ import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:logger/logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'cards_list/deck_details_controller.dart';
-import 'provisionary_cards/provisionary_cards_review_controller.dart';
-import 'deck_list/decks_controller.dart';
+import '../cards_list/deck_details_controller.dart';
+import './provisionary_cards_review_controller.dart';
+import '../deck_list/decks_controller.dart';
 
 class ProvisionaryCardsReviewPage extends ConsumerWidget {
   @override

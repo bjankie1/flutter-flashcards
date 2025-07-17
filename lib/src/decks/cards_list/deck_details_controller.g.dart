@@ -7,7 +7,7 @@ part of 'deck_details_controller.dart';
 // **************************************************************************
 
 String _$deckDetailsControllerHash() =>
-    r'25ee32ba230de40a65c98b8efc132100f1f9aa82';
+    r'98b9be147d0f34b48fe42912bf1edd5fee754e6e';
 
 /// Copied from Dart SDK
 class _SystemHash {

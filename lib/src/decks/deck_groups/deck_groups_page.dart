@@ -6,7 +6,7 @@ import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/decks/deck_groups/deck_groups_widget.dart';
 import 'package:flutter_flashcards/src/decks/deck_list/decks_controller.dart';
-import 'package:flutter_flashcards/src/decks/provisionary_cards_add.dart';
+import 'package:flutter_flashcards/src/decks/provisionary_cards/provisionary_cards_add.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../layout/base_layout.dart';

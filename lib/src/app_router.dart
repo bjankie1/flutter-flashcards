@@ -7,7 +7,7 @@ import 'package:flutter_flashcards/src/decks/cards_list/deck_details_page.dart';
 // Removed import for deck_generate_from_google_doc_page.dart - now using generic deck_generate_page.dart
 import 'package:flutter_flashcards/src/decks/deck_generate_page.dart';
 import 'package:flutter_flashcards/src/decks/deck_groups/deck_groups_page.dart';
-import 'package:flutter_flashcards/src/decks/provisionary_card_complete.dart';
+import 'package:flutter_flashcards/src/decks/provisionary_cards/provisionary_card_complete.dart';
 import 'package:flutter_flashcards/src/settings/settings_page.dart';
 import 'package:flutter_flashcards/src/statistics/statistics_page.dart';
 import 'package:flutter_flashcards/src/widgets.dart';
