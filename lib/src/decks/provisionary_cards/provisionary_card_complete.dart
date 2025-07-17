@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
-import 'package:flutter_flashcards/src/common/deck_selection.dart';
-import 'package:flutter_flashcards/src/common/themes.dart';
-import 'package:flutter_flashcards/src/layout/base_layout.dart';
-import 'package:flutter_flashcards/src/model/cards.dart' as model;
-import 'package:logger/logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../cards_list/deck_details_controller.dart';
-import './provisionary_cards_review_controller.dart';
-import '../deck_list/decks_controller.dart';
+
+import '../../common/build_context_extensions.dart';
+import '../../common/deck_selection.dart';
+import '../../common/editable_text_field.dart';
+import '../../layout/base_layout.dart';
+import 'provisionary_cards_review_controller.dart';
+import '../../model/cards.dart' as model;
 
 class ProvisionaryCardsReviewPage extends ConsumerWidget {
   @override
@@ -24,7 +22,7 @@ class ProvisionaryCardsReviewPage extends ConsumerWidget {
             title: Text(context.l10n.provisionaryCardsReviewHeadline),
             child: Text(
               context.l10n.noProvisionaryCardsHeadline,
-              style: context.textTheme.titleLarge,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           );
         }
@@ -52,6 +50,9 @@ class ProvisionaryCardsReview extends ConsumerWidget {
     final provisionaryCardsAsync = ref.watch(
       provisionaryCardsReviewControllerProvider,
     );
+    final controller = ref.read(
+      provisionaryCardsReviewControllerProvider.notifier,
+    );
 
     return provisionaryCardsAsync.when(
       data: (data) => Column(
@@ -71,12 +72,7 @@ class ProvisionaryCardsReview extends ConsumerWidget {
                       discarded: data.discardedCardsIndexes.contains(entry.key),
                       active: data.currentIndex == entry.key,
                       onDelete: () async {
-                        await ref
-                            .read(
-                              provisionaryCardsReviewControllerProvider
-                                  .notifier,
-                            )
-                            .discardCard(entry.key, entry.value);
+                        await controller.discardCard(entry.key, entry.value);
                       },
                     ),
                   )
@@ -84,33 +80,7 @@ class ProvisionaryCardsReview extends ConsumerWidget {
             ),
           ),
           if (data.currentIndex >= 0 && data.currentCard != null)
-            ProvisionaryCardFinalization(
-              doubleSidedValue: data.doubleSided,
-              deckId: data.lastDeckId,
-              provisionaryCard: data.currentCard!,
-              onFinalize: (deckId, question, answer, doubleSided) async {
-                await ref
-                    .read(provisionaryCardsReviewControllerProvider.notifier)
-                    .finalizeCard(
-                      data.currentIndex,
-                      data.currentCard!,
-                      deckId,
-                      question,
-                      answer,
-                      doubleSided,
-                    );
-              },
-              onDiscard: () async {
-                await ref
-                    .read(provisionaryCardsReviewControllerProvider.notifier)
-                    .discardCard(data.currentIndex, data.currentCard!);
-              },
-              onSnooze: () {
-                ref
-                    .read(provisionaryCardsReviewControllerProvider.notifier)
-                    .snoozeCard();
-              },
-            ),
+            ProvisionaryCardFinalization(),
         ],
       ),
       loading: () => Center(child: CircularProgressIndicator()),
@@ -203,53 +173,234 @@ class ProvisionaryCardChip extends StatelessWidget {
   }
 }
 
-class ProvisionaryCardFinalization extends ConsumerStatefulWidget {
-  final model.ProvisionaryCard provisionaryCard;
-  final bool doubleSidedValue;
-  final String? deckId;
-  final Function(
-    String deckId,
-    String question,
-    String answer,
-    bool doubleSided,
-  )
-  onFinalize;
-  final VoidCallback onDiscard;
-  final VoidCallback onSnooze;
-
-  const ProvisionaryCardFinalization({
-    super.key,
-    required this.doubleSidedValue,
-    this.deckId,
-    required this.provisionaryCard,
-    required this.onFinalize,
-    required this.onDiscard,
-    required this.onSnooze,
-  });
+/// Widget for finalizing a provisionary card, fully driven by controller state.
+class ProvisionaryCardFinalization extends ConsumerWidget {
+  const ProvisionaryCardFinalization({super.key});
 
   @override
-  ConsumerState<ProvisionaryCardFinalization> createState() =>
-      _ProvisionaryCardFinalizationState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final AsyncValue<ProvisionaryCardsReviewData> state = ref.watch(
+      provisionaryCardsReviewControllerProvider,
+    );
+    final ProvisionaryCardsReviewController controller = ref.read(
+      provisionaryCardsReviewControllerProvider.notifier,
+    );
 
-class _ProvisionaryCardFinalizationState
-    extends ConsumerState<ProvisionaryCardFinalization> {
-  final _log = Logger();
-
-  bool doubleSided = true;
-  String? deckId;
-  bool isQuestion = true;
-  model.Deck? deck;
-
-  final questionController = TextEditingController();
-  final answerController = TextEditingController();
-
-  bool fetchingSuggestion = false;
-
-  bool get isComplete =>
-      questionController.text.isNotEmpty &&
-      answerController.text.isNotEmpty &&
-      deckId != null;
+    return state.when(
+      data: (ProvisionaryCardsReviewData data) {
+        if (data.currentCard == null) {
+          return const SizedBox.shrink();
+        }
+        final model.ProvisionaryCard provisionaryCard = data.currentCard!;
+        // Remove the old controller logic since we'll use EditableTextField
+        return ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600, minHeight: 300),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: FocusTraversalGroup(
+                policy: OrderedTraversalPolicy(),
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 20,
+                      ),
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.l10n.cardProposalLabel,
+                            style: Theme.of(context).textTheme.labelMedium
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimaryContainer,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            provisionaryCard.text,
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimaryContainer,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            data.isQuestion
+                                ? context.l10n.questionLabel
+                                : context.l10n.answerLabel,
+                          ),
+                        ),
+                        FocusTraversalOrder(
+                          order: const NumericFocusOrder(1),
+                          child: Switch(
+                            value: data.isQuestion,
+                            thumbIcon: frontBackIcon,
+                            onChanged: (bool value) async {
+                              await controller.setIsQuestion(
+                                value,
+                                context.cloudFunctions,
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Expanded(child: Text('Double sided')),
+                        FocusTraversalOrder(
+                          order: const NumericFocusOrder(2),
+                          child: Switch(
+                            value: data.selectedDoubleSided,
+                            thumbIcon: doubleSidedIcon,
+                            onChanged: (bool value) =>
+                                controller.setSelectedDoubleSided(value),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(2.5),
+                      child: DeckSelection(
+                        initialDeckId: data.selectedDeckId,
+                        onDeckSelected: (String? deckId) async {
+                          await controller.setSelectedDeckId(
+                            deckId,
+                            context.cloudFunctions,
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(3),
+                      child: EditableTextField(
+                        initialValue: data.questionText,
+                        labelText: context.l10n.questionLabel,
+                        onSave: (String newValue) async {
+                          controller.setQuestionText(newValue);
+                          // Trigger generation if we're in question mode
+                          if (data.isQuestion) {
+                            await controller.triggerGeneration(
+                              context.cloudFunctions,
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                    if (!data.isQuestion)
+                      AnimatedOpacity(
+                        opacity: data.fetchingSuggestion ? 1 : 0,
+                        duration: const Duration(milliseconds: 500),
+                        child: const LinearProgressIndicator(),
+                      ),
+                    const SizedBox(height: 20),
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(4),
+                      child: EditableTextField(
+                        initialValue: data.answerText,
+                        labelText: context.l10n.answerLabel,
+                        onSave: (String newValue) async {
+                          controller.setAnswerText(newValue);
+                          // Trigger generation if we're in answer mode
+                          if (!data.isQuestion) {
+                            await controller.triggerGeneration(
+                              context.cloudFunctions,
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                    if (data.isQuestion)
+                      AnimatedOpacity(
+                        opacity: data.fetchingSuggestion ? 1 : 0,
+                        duration: const Duration(milliseconds: 500),
+                        child: const LinearProgressIndicator(),
+                      ),
+                    const SizedBox(height: 40),
+                    FittedBox(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton.icon(
+                            onPressed: () async {
+                              await controller.discardCard(
+                                data.currentIndex,
+                                provisionaryCard,
+                              );
+                            },
+                            icon: const Icon(Icons.cancel),
+                            label: Text(context.l10n.discard),
+                          ),
+                          TextButton.icon(
+                            onPressed: () {
+                              controller.snoozeCard();
+                            },
+                            icon: const Icon(Icons.snooze),
+                            label: Text(context.l10n.later),
+                          ),
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(5),
+                            child: FilledButton.icon(
+                              onPressed: controller.isCardFinalizationComplete
+                                  ? () async {
+                                      await controller.finalizeCard(
+                                        data.currentIndex,
+                                        provisionaryCard,
+                                        data.selectedDeckId!,
+                                        data.questionText,
+                                        data.answerText,
+                                        data.selectedDoubleSided,
+                                        cloudFunctions: context.cloudFunctions,
+                                      );
+                                    }
+                                  : null,
+                              icon: const Icon(Icons.save),
+                              label: Text(context.l10n.saveAndNext),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (Object error, StackTrace? stackTrace) =>
+          Center(child: Text('Error: $error')),
+    );
+  }
 
   static const WidgetStateProperty<Icon> doubleSidedIcon =
       WidgetStateProperty<Icon>.fromMap(<WidgetStatesConstraint, Icon>{
@@ -262,353 +413,4 @@ class _ProvisionaryCardFinalizationState
         WidgetState.selected: Icon(Icons.flip_to_front),
         WidgetState.any: Icon(Icons.flip_to_back),
       });
-
-  @override
-  void dispose() {
-    questionController.dispose();
-    answerController.dispose();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _reset();
-  }
-
-  void _reset() {
-    doubleSided = widget.doubleSidedValue;
-    deckId = widget.deckId;
-    questionController.text = isQuestion ? widget.provisionaryCard.text : '';
-    answerController.text = isQuestion ? '' : widget.provisionaryCard.text;
-  }
-
-  @override
-  @mustCallSuper
-  @protected
-  void didUpdateWidget(covariant ProvisionaryCardFinalization oldWidget) async {
-    super.didUpdateWidget(oldWidget);
-    _reset();
-    _geminiSuggestion();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 600, minHeight: 300),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: FocusTraversalGroup(
-            policy: OrderedTraversalPolicy(),
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                // Prominent display of the provisionary card text
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                  margin: EdgeInsets.only(bottom: 20),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.primary.withOpacity(0.2),
-                      width: 1,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.l10n.cardProposalLabel,
-                        style: Theme.of(context).textTheme.labelMedium
-                            ?.copyWith(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onPrimaryContainer,
-                              fontWeight: FontWeight.w500,
-                            ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        widget.provisionaryCard.text,
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onPrimaryContainer,
-                              fontWeight: FontWeight.w600,
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        isQuestion
-                            ? context.l10n.questionLabel
-                            : context.l10n.answerLabel,
-                      ),
-                    ),
-                    FocusTraversalOrder(
-                      order: NumericFocusOrder(1),
-                      child: Switch(
-                        value: isQuestion,
-                        thumbIcon: frontBackIcon,
-                        onChanged: (value) {
-                          setState(() {
-                            isQuestion = value;
-                            questionController.text = isQuestion
-                                ? widget.provisionaryCard.text
-                                : '';
-                            answerController.text = isQuestion
-                                ? ''
-                                : widget.provisionaryCard.text;
-                          });
-                          _geminiSuggestion();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(child: Text('Double sided')),
-                    FocusTraversalOrder(
-                      order: NumericFocusOrder(2),
-                      child: Switch(
-                        value: doubleSided,
-                        thumbIcon: doubleSidedIcon,
-                        onChanged: (value) => setState(() {
-                          doubleSided = value;
-                        }),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                FocusTraversalOrder(
-                  order: NumericFocusOrder(2.5),
-                  child: DeckSelection(
-                    initialDeckId: deckId,
-                    onDeckSelected: (deckId) async {
-                      setState(() {
-                        this.deckId = deckId;
-                      });
-                      await _geminiSuggestion();
-                    },
-                  ),
-                ),
-                SizedBox(height: 20),
-                FocusTraversalOrder(
-                  order: NumericFocusOrder(3),
-                  child: TextFormField(
-                    controller: questionController,
-                    minLines: 1,
-                    maxLines: 5,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.questionLabel,
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                if (!isQuestion)
-                  AnimatedOpacity(
-                    opacity: fetchingSuggestion ? 1 : 0,
-                    duration: Duration(milliseconds: 500),
-                    child: LinearProgressIndicator(),
-                  ),
-                SizedBox(height: 20),
-                FocusTraversalOrder(
-                  order: NumericFocusOrder(4),
-                  child: TextFormField(
-                    controller: answerController,
-                    minLines: 1,
-                    maxLines: 5,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.answerLabel,
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                if (isQuestion)
-                  AnimatedOpacity(
-                    opacity: fetchingSuggestion ? 1 : 0,
-                    duration: Duration(milliseconds: 500),
-                    child: LinearProgressIndicator(),
-                  ),
-                SizedBox(height: 40),
-                FittedBox(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton.icon(
-                        onPressed: widget.onDiscard,
-                        icon: Icon(Icons.cancel),
-                        label: Text(context.l10n.discard),
-                      ),
-                      TextButton.icon(
-                        onPressed: widget.onSnooze,
-                        icon: Icon(Icons.snooze),
-                        label: Text(context.l10n.later),
-                      ),
-                      FocusTraversalOrder(
-                        order: NumericFocusOrder(5),
-                        child: ListenableBuilder(
-                          listenable: Listenable.merge([
-                            questionController,
-                            answerController,
-                          ]),
-                          builder: (context, _) {
-                            return FilledButton.icon(
-                              onPressed: isComplete
-                                  ? () => widget.onFinalize(
-                                      deckId!,
-                                      questionController.text,
-                                      answerController.text,
-                                      doubleSided,
-                                    )
-                                  : null,
-                              icon: Icon(Icons.save),
-                              label: Text(context.l10n.saveAndNext),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _geminiSuggestion() async {
-    if (deckId != null && (deck == null || deck!.id != deckId)) {
-      try {
-        final repository = ref.read(cardsRepositoryProvider);
-        deck = await repository.loadDeck(deckId!);
-      } catch (e) {
-        _log.e('Error loading deck for suggestion', error: e);
-        return; // Exit early if deck loading fails
-      }
-    }
-
-    if (deck == null) {
-      _log.d('No deck available for suggestion');
-      return;
-    }
-
-    _log.d('Fetching suggestion for deck $deck');
-    _log.d(
-      'Deck descriptions: front=${deck?.frontCardDescription}, back=${deck?.backCardDescription}, explanation=${deck?.explanationDescription}',
-    );
-
-    if (deck?.category != null) {
-      setState(() {
-        fetchingSuggestion = true;
-      });
-      try {
-        // Use a more robust way to access the controller
-        final container = ProviderScope.containerOf(context);
-        final controller = container.read(
-          deckDetailsControllerProvider(deck!.id!).notifier,
-        );
-
-        // Ensure the deck is loaded in the controller
-        await controller.ensureDeckLoaded();
-
-        // Check if the controller is ready and has a valid deck loaded
-        if (!controller.isReady) {
-          _log.w('DeckDetailsController is not ready for deck: ${deck!.id}');
-          return;
-        }
-
-        final currentDeck = controller.getDeck();
-        if (currentDeck == null) {
-          _log.w(
-            'DeckDetailsController has no deck loaded, skipping suggestion',
-          );
-          return;
-        }
-
-        final suggestion = await controller.generateCardAnswer(
-          widget.provisionaryCard.text,
-          context,
-        );
-        setState(() {
-          if (isQuestion) {
-            answerController.text = suggestion.answer;
-          } else {
-            questionController.text = suggestion.answer;
-          }
-        });
-      } catch (e) {
-        _log.e('Error generating card answer suggestion', error: e);
-
-        // Fallback: try to generate suggestion directly using cloud functions
-        try {
-          _log.d(
-            'Attempting fallback suggestion generation for deck: ${deck!.id}',
-          );
-
-          if (deck!.category == null) {
-            _log.w('Deck has no category, cannot generate suggestion');
-            return;
-          }
-
-          // Use translated descriptions if available, otherwise fall back to original
-          final effectiveFrontDescription =
-              deck!.frontCardDescriptionTranslated ??
-              deck!.frontCardDescription;
-          final effectiveBackDescription =
-              deck!.backCardDescriptionTranslated ?? deck!.backCardDescription;
-          final effectiveExplanationDescription =
-              deck!.explanationDescriptionTranslated ??
-              deck!.explanationDescription;
-
-          // Determine the category to use
-          model.DeckCategory categoryToUse = deck!.category!;
-
-          final suggestion = await context.cloudFunctions.generateCardAnswer(
-            categoryToUse,
-            deck!.name,
-            deck!.description ?? '',
-            widget.provisionaryCard.text,
-            frontCardDescription: effectiveFrontDescription,
-            backCardDescription: effectiveBackDescription,
-            explanationDescription: effectiveExplanationDescription,
-          );
-
-          setState(() {
-            if (isQuestion) {
-              answerController.text = suggestion.answer;
-            } else {
-              questionController.text = suggestion.answer;
-            }
-          });
-
-          _log.d('Fallback suggestion generation successful');
-        } catch (fallbackError) {
-          _log.e(
-            'Fallback suggestion generation also failed',
-            error: fallbackError,
-          );
-          // Don't show error to user for suggestions, just log it
-        }
-      } finally {
-        setState(() {
-          fetchingSuggestion = false;
-        });
-      }
-    }
-  }
 }

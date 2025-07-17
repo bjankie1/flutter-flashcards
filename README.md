@@ -32,7 +32,58 @@
   - **Back of card description** - Define what should appear on the back of cards (e.g., "Show the Polish translation", "Display the solution steps", "Present the detailed explanation")
   - **Answer explanation description** - Configure what additional explanations should include (e.g., "Include usage examples", "Add pronunciation guide", "Provide historical context")
   - These guidelines are automatically applied when generating cards from text, reviewing provisionary cards, or creating new cards in the deck
-- Quick card creation mode for rapid entry - Capture new words or concepts on the go with a streamlined single-word/phrase input. These quick notes are stored in a dedicated inbox where you can later transform them into proper flashcards by adding the second side (definition, explanation, or translation). Perfect for reading sessions when you want to quickly note unfamiliar terms without interrupting your flow.
+  
+### Card Proposal Review System
+
+Quick card creation mode for rapid entry - Capture new words or concepts on the go with a streamlined single-word/phrase input. These quick notes are stored in a dedicated inbox where you can later transform them into proper flashcards by adding the second side (definition, explanation, or translation). Perfect for reading sessions when you want to quickly note unfamiliar terms without interrupting your flow.
+
+  The Card Proposal Review System provides an intuitive interface for transforming quick notes into properly structured flashcards with AI assistance.
+  
+  **UI Elements and Functionality**:
+  
+  **Card Proposal Display**:
+  - **Proposal Tags**: A horizontal row of deletable tags showing all available card proposals (e.g., "grasa", "celdo", "fiszka")
+  - **Active Proposal Highlight**: The currently selected proposal is highlighted in green
+  - **Card Proposal Area**: A prominent green rectangular area displaying the current proposal text in large, bold font
+  
+  **Mode Selection Controls**:
+  - **Answer Toggle**: A gray switch with a document icon that controls the card generation mode
+    - **ON (Question Mode)**: The proposal is treated as a question (front of the card)
+    - **OFF (Answer Mode)**: The proposal is treated as an answer (back of the card)
+  - **Double Sided Toggle**: A green switch with bidirectional arrows that enables double-sided card creation
+  
+  **Deck Selection**:
+  - **Deck Dropdown**: A text input field showing the selected deck name (e.g., "Hiszpański")
+  - **Deck Guidelines**: Automatically applies the selected deck's card generation guidelines to AI content generation
+  
+  **Content Input Fields**:
+  - **Question Field**: Large text input area for the front of the card content
+  - **Answer Field**: Large text input area for the back of the card content
+  - **Inline Editing**: Both fields support inline editing with save/cancel buttons that appear when text is modified
+  - **Auto-Generation**: Content is automatically generated based on the selected mode and deck guidelines
+  - **Smart Generation Triggers**: 
+    - When in "Question" mode: Saving changes to the question field triggers answer generation
+    - When in "Answer" mode: Saving changes to the answer field triggers question generation
+    - Generation only occurs when the appropriate field is edited and saved, not on other text changes
+  
+  **Action Buttons**:
+  - **Discard**: Red circular button with 'X' icon to permanently remove the current proposal
+  - **Later**: Green circular button with 'Z' icon to snooze the proposal for later review
+  - **Save and Add Next**: Gray button with save icon to finalize the card and proceed to the next proposal (enabled when all required fields are filled)
+  
+  **Generation Logic**:
+  - **Question Mode** (switch on): 
+    - Proposal text → "Question" field
+    - AI generates answer → "Answer" field using deck's back card description guidelines
+  - **Answer Mode** (switch off): 
+    - Proposal text → "Answer" field
+    - AI generates question → "Question" field using deck's front card description guidelines (with descriptions flipped)
+  
+  **Smart Features**:
+  - **Context-Aware Generation**: AI considers deck category, name, description, and custom guidelines
+  - **Real-Time Updates**: Content generation happens automatically when switching modes or selecting decks
+  - **Validation**: Save button is only enabled when all required fields (question, answer, deck) are completed
+  - **Progress Tracking**: Visual indicators show generation status and completion state
 - Edit existing cards - Modify card content, format, or settings at any time.
 - Move cards between decks - Reorganize your learning materials by transferring cards between different decks.
 - Delete cards - Remove unnecessary or outdated cards from your collection.
