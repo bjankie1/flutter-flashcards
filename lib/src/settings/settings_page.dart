@@ -194,7 +194,7 @@ class _AvatarSliverDelegate extends SliverPersistentHeaderDelegate {
     final progress = shrinkOffset / (maxHeight - minHeight);
     final avatarSize = maxHeight - (progress * (maxHeight - minHeight));
 
-    return Container(
+    return SizedBox(
       height: avatarSize,
       width: double.infinity,
       child: Center(
