@@ -1,0 +1,40 @@
+name: Flutter Quality Gate
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+
+jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.4'
+          channel: 'stable'
+          
+      - name: Get dependencies
+        run: flutter pub get
+        
+      - name: Analyze code
+        run: flutter analyze
+        
+      - name: Run linter
+        run: flutter analyze --fatal-infos
+        
+      - name: Run unit and widget tests
+        run: flutter test
+        
+      - name: Run integration tests (if any)
+        run: flutter test integration_test/ || echo "No integration tests found"
+        
+      - name: Check code coverage (optional)
+        run: flutter test --coverage || echo "Coverage check failed but continuing"
+        

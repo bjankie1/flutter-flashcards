@@ -1,0 +1,32 @@
+name: Version Alignment Check
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  check_version_alignment:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install yq for YAML parsing
+        run: |
+          sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Install jq for JSON parsing
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Check version alignment
+        run: |
+          chmod +x scripts/check_version_alignment.sh
+          ./scripts/check_version_alignment.sh 
