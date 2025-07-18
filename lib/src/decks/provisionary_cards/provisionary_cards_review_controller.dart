@@ -22,6 +22,7 @@ class ProvisionaryCardsReviewData {
   final bool isQuestion;
   final String questionText;
   final String answerText;
+  final String explanationText;
   final bool fetchingSuggestion;
   final String? selectedDeckId;
   final bool selectedDoubleSided;
@@ -38,6 +39,7 @@ class ProvisionaryCardsReviewData {
     this.isQuestion = true,
     this.questionText = '',
     this.answerText = '',
+    this.explanationText = '',
     this.fetchingSuggestion = false,
     this.selectedDeckId,
     this.selectedDoubleSided = true,
@@ -55,6 +57,7 @@ class ProvisionaryCardsReviewData {
     bool? isQuestion,
     String? questionText,
     String? answerText,
+    String? explanationText,
     bool? fetchingSuggestion,
     String? selectedDeckId,
     bool? selectedDoubleSided,
@@ -73,6 +76,7 @@ class ProvisionaryCardsReviewData {
       isQuestion: isQuestion ?? this.isQuestion,
       questionText: questionText ?? this.questionText,
       answerText: answerText ?? this.answerText,
+      explanationText: explanationText ?? this.explanationText,
       fetchingSuggestion: fetchingSuggestion ?? this.fetchingSuggestion,
       selectedDeckId: selectedDeckId ?? this.selectedDeckId,
       selectedDoubleSided: selectedDoubleSided ?? this.selectedDoubleSided,
@@ -236,6 +240,7 @@ class ProvisionaryCardsReviewController
     String deckId,
     String question,
     String answer,
+    String explanation,
     bool doubleSided, {
     CloudFunctions? cloudFunctions,
   }) async {
@@ -253,6 +258,7 @@ class ProvisionaryCardsReviewController
         deckId: deckId,
         question: question,
         answer: answer,
+        explanation: explanation.isNotEmpty ? explanation : null,
         options: model.CardOptions(learnBothSides: doubleSided),
       );
 
@@ -286,6 +292,7 @@ class ProvisionaryCardsReviewController
         final resetState = newState.copyWith(
           questionText: newState.isQuestion ? newCard.text : '',
           answerText: newState.isQuestion ? '' : newCard.text,
+          explanationText: '',
           selectedDeckId: newState.lastDeckId,
           selectedDoubleSided: newState.doubleSided,
           fetchingSuggestion: false,
@@ -356,6 +363,7 @@ class ProvisionaryCardsReviewController
       final resetState = newState.copyWith(
         questionText: newState.isQuestion ? newCard.text : '',
         answerText: newState.isQuestion ? '' : newCard.text,
+        explanationText: '',
         selectedDeckId: newState.lastDeckId,
         selectedDoubleSided: newState.doubleSided,
         fetchingSuggestion: false,
@@ -429,6 +437,7 @@ class ProvisionaryCardsReviewController
           isQuestion: isQuestion,
           questionText: newQuestionText,
           answerText: newAnswerText,
+          explanationText: '',
         ),
       );
 
@@ -468,6 +477,16 @@ class ProvisionaryCardsReviewController
     final currentData = state.value;
     if (currentData != null) {
       state = AsyncValue.data(currentData.copyWith(answerText: answerText));
+    }
+  }
+
+  /// Sets the explanation text
+  void setExplanationText(String explanationText) {
+    final currentData = state.value;
+    if (currentData != null) {
+      state = AsyncValue.data(
+        currentData.copyWith(explanationText: explanationText),
+      );
     }
   }
 
@@ -569,6 +588,7 @@ class ProvisionaryCardsReviewController
           isQuestion: isQuestion,
           questionText: isQuestion ? provisionaryCard.text : '',
           answerText: isQuestion ? '' : provisionaryCard.text,
+          explanationText: '',
           selectedDeckId: currentData.lastDeckId,
           selectedDoubleSided: currentData.doubleSided,
           fetchingSuggestion: false,
@@ -657,6 +677,7 @@ class ProvisionaryCardsReviewController
         answerText: flipDescriptions
             ? currentData.answerText
             : generatedAnswer.answer,
+        explanationText: generatedAnswer.explanation,
         fetchingSuggestion: false,
       );
 

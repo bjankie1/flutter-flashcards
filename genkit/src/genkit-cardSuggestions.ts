@@ -12,8 +12,8 @@ const ai = genkit({
     // Load the Google AI plugin with Firebase Functions secret for production
     googleAI(),
   ],
-  model: googleAI.model('gemini-2.5-flash', {
-    temperature: 0.8
+  model: googleAI.model('gemini-2.5-flash-lite-preview-06-17', {
+    temperature: 0.7
   }),
 });
 

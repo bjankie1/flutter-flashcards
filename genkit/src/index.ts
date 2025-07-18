@@ -11,7 +11,6 @@ import { genkit } from "genkit";
 import { googleAI } from "@genkit-ai/googleai";
 import axios from "axios";
 import { z } from "@genkit-ai/core";
-import { onRequest } from "firebase-functions/v2/https";
 
 const ai = genkit({
   plugins: [
@@ -59,7 +58,3 @@ export const getGoogleDocContent = ai.defineFlow(
     }
   }
 );
-
-export const helloWorld = onRequest((req: any, res: any) => {
-  res.send("Hello from Firebase!");
-});

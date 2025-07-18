@@ -847,4 +847,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get explanationDescriptionSaveErrorMessage =>
       'Error saving explanation description';
+
+  @override
+  String get noProvisionaryCardsMessage => 'No card proposals to review';
+
+  @override
+  String get noProvisionaryCardsDescription =>
+      'You don\'t have any quick notes waiting to be turned into flashcards. Add some by using the quick card creation feature.';
+
+  @override
+  String get allProvisionaryCardsReviewedMessage =>
+      'All card proposals reviewed!';
+
+  @override
+  String get allProvisionaryCardsReviewedDescription =>
+      'Great job! You\'ve processed all your quick notes. They\'ve been converted into proper flashcards and are ready for learning.';
+
+  @override
+  String get goBack => 'Go back';
+
+  @override
+  String get openDeck => 'Open deck';
 }

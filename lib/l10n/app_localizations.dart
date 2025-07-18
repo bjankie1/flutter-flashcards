@@ -1621,6 +1621,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error saving explanation description'**
   String get explanationDescriptionSaveErrorMessage;
+
+  /// No description provided for @noProvisionaryCardsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No card proposals to review'**
+  String get noProvisionaryCardsMessage;
+
+  /// No description provided for @noProvisionaryCardsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have any quick notes waiting to be turned into flashcards. Add some by using the quick card creation feature.'**
+  String get noProvisionaryCardsDescription;
+
+  /// No description provided for @allProvisionaryCardsReviewedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'All card proposals reviewed!'**
+  String get allProvisionaryCardsReviewedMessage;
+
+  /// No description provided for @allProvisionaryCardsReviewedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Great job! You\'ve processed all your quick notes. They\'ve been converted into proper flashcards and are ready for learning.'**
+  String get allProvisionaryCardsReviewedDescription;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go back'**
+  String get goBack;
+
+  /// No description provided for @openDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Open deck'**
+  String get openDeck;
 }
 
 class _AppLocalizationsDelegate

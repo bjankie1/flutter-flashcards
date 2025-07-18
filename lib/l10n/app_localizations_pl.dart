@@ -856,4 +856,26 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get explanationDescriptionSaveErrorMessage =>
       'Błąd zapisywania opisu wyjaśnienia';
+
+  @override
+  String get noProvisionaryCardsMessage =>
+      'Brak propozycji kart do przejrzenia';
+
+  @override
+  String get noProvisionaryCardsDescription =>
+      'Nie masz żadnych szybkich notatek oczekujących na przekształcenie w fiszki. Dodaj je używając funkcji szybkiego dodawania kart.';
+
+  @override
+  String get allProvisionaryCardsReviewedMessage =>
+      'Wszystkie propozycje kart przejrzane!';
+
+  @override
+  String get allProvisionaryCardsReviewedDescription =>
+      'Świetna robota! Przetworzyłeś wszystkie swoje szybkie notatki. Zostały przekształcone w odpowiednie fiszki i są gotowe do nauki.';
+
+  @override
+  String get goBack => 'Wróć';
+
+  @override
+  String get openDeck => 'Otwórz zestaw';
 }

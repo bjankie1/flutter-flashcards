@@ -59,17 +59,22 @@ Quick card creation mode for rapid entry - Capture new words or concepts on the 
   **Content Input Fields**:
   - **Question Field**: Large text input area for the front of the card content
   - **Answer Field**: Large text input area for the back of the card content
-  - **Inline Editing**: Both fields support inline editing with save/cancel buttons that appear when text is modified
+  - **Explanation Field**: Large text input area for additional explanatory content (optional)
+  - **Inline Editing**: All fields support inline editing with save/cancel buttons that appear when text is modified
   - **Auto-Generation**: Content is automatically generated based on the selected mode and deck guidelines
   - **Smart Generation Triggers**: 
-    - When in "Question" mode: Saving changes to the question field triggers answer generation
-    - When in "Answer" mode: Saving changes to the answer field triggers question generation
-    - Generation only occurs when the appropriate field is edited and saved, not on other text changes
+    - When in "Question" mode: Saving changes to the question field triggers answer and explanation generation
+    - When in "Answer" mode: Saving changes to the answer field triggers question and explanation generation
+    - Generation includes answer/question text and explanation text based on deck's explanation description
   
   **Action Buttons**:
   - **Discard**: Red circular button with 'X' icon to permanently remove the current proposal
   - **Later**: Green circular button with 'Z' icon to snooze the proposal for later review
   - **Save and Add Next**: Gray button with save icon to finalize the card and proceed to the next proposal (enabled when all required fields are filled)
+  
+  **Empty State Messages**:
+  - **No Cards Available**: When there are no provisionary cards to review, displays a meaningful message with an inbox icon explaining that no quick notes are waiting to be turned into flashcards
+  - **All Cards Reviewed**: When all provisionary cards have been processed (finalized or discarded), displays a success message with a checkmark icon congratulating the user and explaining that the cards are ready for learning
   
   **Generation Logic**:
   - **Question Mode** (switch on): 

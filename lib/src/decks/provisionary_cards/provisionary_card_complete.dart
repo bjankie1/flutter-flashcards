@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../common/build_context_extensions.dart';
 import '../../common/deck_selection.dart';
@@ -17,16 +18,6 @@ class ProvisionaryCardsReviewPage extends ConsumerWidget {
 
     return provisionaryCardsAsync.when(
       data: (data) {
-        if (data.provisionaryCards.isEmpty) {
-          return BaseLayout(
-            title: Text(context.l10n.provisionaryCardsReviewHeadline),
-            child: Text(
-              context.l10n.noProvisionaryCardsHeadline,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          );
-        }
-
         return BaseLayout(
           title: Text(context.l10n.provisionaryCardsReviewHeadline),
           child: ProvisionaryCardsReview(),
@@ -80,11 +71,91 @@ class ProvisionaryCardsReview extends ConsumerWidget {
             ),
           ),
           if (data.currentIndex >= 0 && data.currentCard != null)
-            ProvisionaryCardFinalization(),
+            ProvisionaryCardFinalization()
+          else
+            _NoProvisionaryCardsMessage(),
         ],
       ),
       loading: () => Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) => Center(child: Text('Error: $error')),
+    );
+  }
+}
+
+/// Widget for displaying empty state messages in the provisionary cards review
+class _NoProvisionaryCardsMessage extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final data = ref.watch(provisionaryCardsReviewControllerProvider).value;
+    if (data == null) return const SizedBox.shrink();
+
+    final isEmpty = data.provisionaryCards.isEmpty;
+
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 600, minHeight: 300),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(40.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                isEmpty ? Icons.inbox_outlined : Icons.check_circle_outline,
+                size: 64,
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                isEmpty
+                    ? context.l10n.noProvisionaryCardsMessage
+                    : context.l10n.allProvisionaryCardsReviewedMessage,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                isEmpty
+                    ? context.l10n.noProvisionaryCardsDescription
+                    : context.l10n.allProvisionaryCardsReviewedDescription,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop();
+                      } else {
+                        context.go('/');
+                      }
+                    },
+                    icon: const Icon(Icons.arrow_back),
+                    label: Text(context.l10n.goBack),
+                  ),
+                  if (!isEmpty && data.selectedDeckId != null) ...[
+                    const SizedBox(width: 16),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        context.go('/decks/${data.selectedDeckId}');
+                      },
+                      icon: const Icon(Icons.deck),
+                      label: Text(context.l10n.openDeck),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -344,6 +415,17 @@ class ProvisionaryCardFinalization extends ConsumerWidget {
                         duration: const Duration(milliseconds: 500),
                         child: const LinearProgressIndicator(),
                       ),
+                    const SizedBox(height: 20),
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(5),
+                      child: EditableTextField(
+                        initialValue: data.explanationText,
+                        labelText: context.l10n.explanationLabel,
+                        onSave: (String newValue) {
+                          controller.setExplanationText(newValue);
+                        },
+                      ),
+                    ),
                     const SizedBox(height: 40),
                     FittedBox(
                       child: Row(
@@ -367,7 +449,7 @@ class ProvisionaryCardFinalization extends ConsumerWidget {
                             label: Text(context.l10n.later),
                           ),
                           FocusTraversalOrder(
-                            order: const NumericFocusOrder(5),
+                            order: const NumericFocusOrder(6),
                             child: FilledButton.icon(
                               onPressed: controller.isCardFinalizationComplete
                                   ? () async {
@@ -377,6 +459,7 @@ class ProvisionaryCardFinalization extends ConsumerWidget {
                                         data.selectedDeckId!,
                                         data.questionText,
                                         data.answerText,
+                                        data.explanationText,
                                         data.selectedDoubleSided,
                                         cloudFunctions: context.cloudFunctions,
                                       );

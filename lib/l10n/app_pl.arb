@@ -248,5 +248,11 @@
   "cancel": "Anuluj",
   "confirm": "Potwierdź",
   "pasteTextHint": "Wklej swój tekst tutaj...",
-  "textContentLength": "Długość tekstu: {length}"
+  "textContentLength": "Długość tekstu: {length}",
+  "noProvisionaryCardsMessage": "Brak propozycji kart do przejrzenia",
+  "noProvisionaryCardsDescription": "Nie masz żadnych szybkich notatek oczekujących na przekształcenie w fiszki. Dodaj je używając funkcji szybkiego dodawania kart.",
+  "allProvisionaryCardsReviewedMessage": "Wszystkie propozycje kart przejrzane!",
+  "allProvisionaryCardsReviewedDescription": "Świetna robota! Przetworzyłeś wszystkie swoje szybkie notatki. Zostały przekształcone w odpowiednie fiszki i są gotowe do nauki.",
+  "goBack": "Wróć",
+  "openDeck": "Otwórz zestaw"
 }

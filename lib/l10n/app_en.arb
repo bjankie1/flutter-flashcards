@@ -384,5 +384,11 @@
   "explanationDescriptionSavedMessage": "Explanation description saved",
   "frontCardDescriptionSaveErrorMessage": "Error saving front card description",
   "backCardDescriptionSaveErrorMessage": "Error saving back card description",
-  "explanationDescriptionSaveErrorMessage": "Error saving explanation description"
+  "explanationDescriptionSaveErrorMessage": "Error saving explanation description",
+  "noProvisionaryCardsMessage": "No card proposals to review",
+  "noProvisionaryCardsDescription": "You don't have any quick notes waiting to be turned into flashcards. Add some by using the quick card creation feature.",
+  "allProvisionaryCardsReviewedMessage": "All card proposals reviewed!",
+  "allProvisionaryCardsReviewedDescription": "Great job! You've processed all your quick notes. They've been converted into proper flashcards and are ready for learning.",
+  "goBack": "Go back",
+  "openDeck": "Open deck"
 }
