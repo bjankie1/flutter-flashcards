@@ -245,11 +245,42 @@ class ProvisionaryCardChip extends StatelessWidget {
 }
 
 /// Widget for finalizing a provisionary card, fully driven by controller state.
-class ProvisionaryCardFinalization extends ConsumerWidget {
+class ProvisionaryCardFinalization extends ConsumerStatefulWidget {
   const ProvisionaryCardFinalization({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProvisionaryCardFinalization> createState() =>
+      _ProvisionaryCardFinalizationState();
+}
+
+class _ProvisionaryCardFinalizationState
+    extends ConsumerState<ProvisionaryCardFinalization> {
+  bool _isQuestionEditing = false;
+  bool _isAnswerEditing = false;
+  bool _isExplanationEditing = false;
+  bool _isFinalizing = false;
+
+  bool get _anyEditing =>
+      _isQuestionEditing || _isAnswerEditing || _isExplanationEditing;
+
+  Future<void> _showEditingWarning(BuildContext context) async {
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.warningTitle),
+        content: Text(context.l10n.finalizeEditingWarning),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(context.l10n.ok),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final AsyncValue<ProvisionaryCardsReviewData> state = ref.watch(
       provisionaryCardsReviewControllerProvider,
     );
@@ -263,7 +294,6 @@ class ProvisionaryCardFinalization extends ConsumerWidget {
           return const SizedBox.shrink();
         }
         final model.ProvisionaryCard provisionaryCard = data.currentCard!;
-        // Remove the old controller logic since we'll use EditableTextField
         return ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 600, minHeight: 300),
           child: Card(
@@ -377,12 +407,14 @@ class ProvisionaryCardFinalization extends ConsumerWidget {
                         labelText: context.l10n.questionLabel,
                         onSave: (String newValue) async {
                           controller.setQuestionText(newValue);
-                          // Trigger generation if we're in question mode
                           if (data.isQuestion) {
                             await controller.triggerGeneration(
                               context.cloudFunctions,
                             );
                           }
+                        },
+                        onEditingStateChanged: (editing) {
+                          setState(() => _isQuestionEditing = editing);
                         },
                       ),
                     ),
@@ -400,12 +432,14 @@ class ProvisionaryCardFinalization extends ConsumerWidget {
                         labelText: context.l10n.answerLabel,
                         onSave: (String newValue) async {
                           controller.setAnswerText(newValue);
-                          // Trigger generation if we're in answer mode
                           if (!data.isQuestion) {
                             await controller.triggerGeneration(
                               context.cloudFunctions,
                             );
                           }
+                        },
+                        onEditingStateChanged: (editing) {
+                          setState(() => _isAnswerEditing = editing);
                         },
                       ),
                     ),
@@ -423,6 +457,9 @@ class ProvisionaryCardFinalization extends ConsumerWidget {
                         labelText: context.l10n.explanationLabel,
                         onSave: (String newValue) {
                           controller.setExplanationText(newValue);
+                        },
+                        onEditingStateChanged: (editing) {
+                          setState(() => _isExplanationEditing = editing);
                         },
                       ),
                     ),
@@ -451,22 +488,48 @@ class ProvisionaryCardFinalization extends ConsumerWidget {
                           FocusTraversalOrder(
                             order: const NumericFocusOrder(6),
                             child: FilledButton.icon(
-                              onPressed: controller.isCardFinalizationComplete
+                              onPressed:
+                                  (controller.isCardFinalizationComplete &&
+                                      !_isFinalizing)
                                   ? () async {
-                                      await controller.finalizeCard(
-                                        data.currentIndex,
-                                        provisionaryCard,
-                                        data.selectedDeckId!,
-                                        data.questionText,
-                                        data.answerText,
-                                        data.explanationText,
-                                        data.selectedDoubleSided,
-                                        cloudFunctions: context.cloudFunctions,
-                                      );
+                                      if (_anyEditing) {
+                                        await _showEditingWarning(context);
+                                        return;
+                                      }
+                                      setState(() => _isFinalizing = true);
+                                      try {
+                                        await controller.finalizeCard(
+                                          data.currentIndex,
+                                          provisionaryCard,
+                                          data.selectedDeckId!,
+                                          data.questionText,
+                                          data.answerText,
+                                          data.explanationText,
+                                          data.selectedDoubleSided,
+                                          cloudFunctions:
+                                              context.cloudFunctions,
+                                        );
+                                      } finally {
+                                        setState(() => _isFinalizing = false);
+                                      }
                                     }
                                   : null,
-                              icon: const Icon(Icons.save),
-                              label: Text(context.l10n.saveAndNext),
+                              icon: _isFinalizing
+                                  ? const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              Colors.white,
+                                            ),
+                                      ),
+                                    )
+                                  : const Icon(Icons.save),
+                              label: _isFinalizing
+                                  ? Text(context.l10n.saving)
+                                  : Text(context.l10n.saveAndNext),
                             ),
                           ),
                         ],

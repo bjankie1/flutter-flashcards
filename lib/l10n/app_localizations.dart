@@ -218,6 +218,12 @@ abstract class AppLocalizations {
   /// **'Save and add next'**
   String get saveAndNext;
 
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get saving;
+
   /// No description provided for @deleteDeck.
   ///
   /// In en, this message translates to:
@@ -1657,6 +1663,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open deck'**
   String get openDeck;
+
+  /// No description provided for @warningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get warningTitle;
+
+  /// No description provided for @finalizeEditingWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Please save or cancel your edits in all fields before saving the card.'**
+  String get finalizeEditingWarning;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
 }
 
 class _AppLocalizationsDelegate

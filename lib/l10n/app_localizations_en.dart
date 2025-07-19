@@ -73,6 +73,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveAndNext => 'Save and add next';
 
   @override
+  String get saving => 'Saving...';
+
+  @override
   String deleteDeck(String deck) {
     return 'Delete $deck';
   }
@@ -868,4 +871,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openDeck => 'Open deck';
+
+  @override
+  String get warningTitle => 'Warning';
+
+  @override
+  String get finalizeEditingWarning =>
+      'Please save or cancel your edits in all fields before saving the card.';
+
+  @override
+  String get ok => 'OK';
 }

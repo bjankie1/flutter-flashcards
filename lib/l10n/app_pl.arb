@@ -60,6 +60,7 @@
   "rateGoodLabel": "Dobrze",
   "rateHardLabel": "Trudne",
   "saveAndNext": "Zapisz i dodaj kolejną",
+  "saving": "Zapisywanie...",
   "sendInvitationButtonTooltip": "Wyślij zaproszenie",
   "sentInvitationsHeader": "Wysłane zaproszenia",
   "settings": "Ustawienia",
@@ -254,5 +255,8 @@
   "allProvisionaryCardsReviewedMessage": "Wszystkie propozycje kart przejrzane!",
   "allProvisionaryCardsReviewedDescription": "Świetna robota! Przetworzyłeś wszystkie swoje szybkie notatki. Zostały przekształcone w odpowiednie fiszki i są gotowe do nauki.",
   "goBack": "Wróć",
-  "openDeck": "Otwórz zestaw"
+  "openDeck": "Otwórz zestaw",
+  "warningTitle": "Ostrzeżenie",
+  "finalizeEditingWarning": "Zapisz lub anuluj edycję wszystkich pól przed zapisaniem karty.",
+  "ok": "OK"
 }

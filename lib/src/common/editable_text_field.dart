@@ -6,6 +6,7 @@ class EditableTextField extends StatefulWidget {
   final String labelText;
   final Function(String) onSave;
   final bool showSaveCancelButtons;
+  final Function(bool)? onEditingStateChanged;
 
   const EditableTextField({
     super.key,
@@ -13,6 +14,7 @@ class EditableTextField extends StatefulWidget {
     required this.labelText,
     required this.onSave,
     this.showSaveCancelButtons = true,
+    this.onEditingStateChanged,
   });
 
   @override
@@ -50,10 +52,16 @@ class _EditableTextFieldState extends State<EditableTextField> {
       setState(() {
         _hasChanges = hasChanges;
       });
+      // Only notify about editing state if we're actually in editing mode
+      if (_isEditing) {
+        widget.onEditingStateChanged?.call(_hasChanges);
+      }
     }
   }
 
   void _onSave() {
+    // Notify that editing is finished immediately
+    widget.onEditingStateChanged?.call(false);
     widget.onSave(_controller.text);
     setState(() {
       _originalValue = _controller.text;
@@ -63,6 +71,8 @@ class _EditableTextFieldState extends State<EditableTextField> {
   }
 
   void _onCancel() {
+    // Notify that editing is finished immediately
+    widget.onEditingStateChanged?.call(false);
     _controller.text = _originalValue;
     setState(() {
       _hasChanges = false;
@@ -90,6 +100,7 @@ class _EditableTextFieldState extends State<EditableTextField> {
               setState(() {
                 _isEditing = true;
               });
+              widget.onEditingStateChanged?.call(true);
             }
           },
           decoration: InputDecoration(

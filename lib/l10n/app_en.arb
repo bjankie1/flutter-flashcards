@@ -34,6 +34,7 @@
     }
   },
   "saveAndNext": "Save and add next",
+  "saving": "Saving...",
   "deleteDeck": "Delete {deck}",
   "@deleteDeck": {
     "placeholders": {
@@ -390,5 +391,8 @@
   "allProvisionaryCardsReviewedMessage": "All card proposals reviewed!",
   "allProvisionaryCardsReviewedDescription": "Great job! You've processed all your quick notes. They've been converted into proper flashcards and are ready for learning.",
   "goBack": "Go back",
-  "openDeck": "Open deck"
+  "openDeck": "Open deck",
+  "warningTitle": "Warning",
+  "finalizeEditingWarning": "Please save or cancel your edits in all fields before saving the card.",
+  "ok": "OK"
 }

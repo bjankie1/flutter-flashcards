@@ -73,6 +73,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get saveAndNext => 'Zapisz i dodaj kolejną';
 
   @override
+  String get saving => 'Zapisywanie...';
+
+  @override
   String deleteDeck(String deck) {
     return 'Usuń zestaw kart \'$deck\'?';
   }
@@ -878,4 +881,14 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get openDeck => 'Otwórz zestaw';
+
+  @override
+  String get warningTitle => 'Ostrzeżenie';
+
+  @override
+  String get finalizeEditingWarning =>
+      'Zapisz lub anuluj edycję wszystkich pól przed zapisaniem karty.';
+
+  @override
+  String get ok => 'OK';
 }
