@@ -635,14 +635,6 @@ class ProvisionaryCardsReviewController
         return;
       }
 
-      if (deck.category == null) {
-        _log.w('Deck has no category: ${deck.name}');
-        state = AsyncValue.data(
-          currentData.copyWith(fetchingSuggestion: false),
-        );
-        return;
-      }
-
       // Use translated descriptions if available, otherwise fall back to original
       final effectiveFrontDescription =
           deck.frontCardDescriptionTranslated ?? deck.frontCardDescription;
@@ -653,27 +645,35 @@ class ProvisionaryCardsReviewController
       final effectiveReverseFrontDescription = deck.reverseFrontDescription;
 
       // Use appropriate descriptions based on the generation direction
-      String finalFrontDescription;
-      String finalBackDescription;
+      String? finalFrontDescription;
+      String? finalBackDescription;
 
       if (flipDescriptions) {
         // Generating question from answer: use reverse description for front
         finalFrontDescription =
-            effectiveReverseFrontDescription ?? effectiveBackDescription ?? '';
-        finalBackDescription = effectiveFrontDescription ?? '';
+            effectiveReverseFrontDescription ?? effectiveBackDescription;
+        finalBackDescription = effectiveFrontDescription;
       } else {
         // Generating answer from question: use normal descriptions
-        finalFrontDescription = effectiveFrontDescription ?? '';
-        finalBackDescription = effectiveBackDescription ?? '';
+        finalFrontDescription = effectiveFrontDescription;
+        finalBackDescription = effectiveBackDescription;
+      }
+
+      // Check if required descriptions are available
+      if (finalFrontDescription == null || finalBackDescription == null) {
+        _log.w('Deck missing required descriptions: ${deck.name}');
+        state = AsyncValue.data(
+          currentData.copyWith(fetchingSuggestion: false),
+        );
+        return;
       }
 
       final generatedAnswer = await cloudFunctions.generateCardAnswer(
-        deck.category!,
         deck.name,
         deck.description ?? '',
         question,
-        frontCardDescription: finalFrontDescription,
-        backCardDescription: finalBackDescription,
+        finalFrontDescription,
+        finalBackDescription,
         explanationDescription: effectiveExplanationDescription,
       );
 

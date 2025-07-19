@@ -499,11 +499,7 @@ class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
       );
 
       // Fallback: use cloud functions directly
-      if (widget.deck.category == null) {
-        throw Exception('Deck has no category, cannot generate answer');
-      }
-
-      // Use translated descriptions if available, otherwise fall back to original
+      // Check if required descriptions are available
       final effectiveFrontDescription =
           widget.deck.frontCardDescriptionTranslated ??
           widget.deck.frontCardDescription;
@@ -514,13 +510,19 @@ class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
           widget.deck.explanationDescriptionTranslated ??
           widget.deck.explanationDescription;
 
+      if (effectiveFrontDescription == null ||
+          effectiveBackDescription == null) {
+        throw Exception(
+          'Deck must have front and back card descriptions to generate answers',
+        );
+      }
+
       return await context.cloudFunctions.generateCardAnswer(
-        widget.deck.category!,
         widget.deck.name,
         widget.deck.description ?? '',
         widget.question,
-        frontCardDescription: effectiveFrontDescription,
-        backCardDescription: effectiveBackDescription,
+        effectiveFrontDescription,
+        effectiveBackDescription,
         explanationDescription: effectiveExplanationDescription,
       );
     }

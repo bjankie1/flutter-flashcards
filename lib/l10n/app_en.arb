@@ -394,5 +394,14 @@
   "openDeck": "Open deck",
   "warningTitle": "Warning",
   "finalizeEditingWarning": "Please save or cancel your edits in all fields before saving the card.",
-  "ok": "OK"
+  "ok": "OK",
+  "generateCardDescriptions": "Generate Card Descriptions",
+  "cardDescriptionsGeneratedMessage": "Card descriptions generated successfully",
+  "cardDescriptionsGenerationErrorMessage": "Error generating card descriptions",
+  "generatedCardDescriptions": "Generated Card Descriptions",
+  "confidenceLevel": "Confidence Level",
+  "analysis": "Analysis",
+  "apply": "Apply",
+  "cardDescriptionsAppliedMessage": "Card descriptions applied successfully",
+  "cardDescriptionsApplyErrorMessage": "Error applying card descriptions"
 }

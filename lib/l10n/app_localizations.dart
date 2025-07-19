@@ -1681,6 +1681,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'OK'**
   String get ok;
+
+  /// No description provided for @generateCardDescriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Card Descriptions'**
+  String get generateCardDescriptions;
+
+  /// No description provided for @cardDescriptionsGeneratedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Card descriptions generated successfully'**
+  String get cardDescriptionsGeneratedMessage;
+
+  /// No description provided for @cardDescriptionsGenerationErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error generating card descriptions'**
+  String get cardDescriptionsGenerationErrorMessage;
+
+  /// No description provided for @generatedCardDescriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated Card Descriptions'**
+  String get generatedCardDescriptions;
+
+  /// No description provided for @confidenceLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confidence Level'**
+  String get confidenceLevel;
+
+  /// No description provided for @analysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis'**
+  String get analysis;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// No description provided for @cardDescriptionsAppliedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Card descriptions applied successfully'**
+  String get cardDescriptionsAppliedMessage;
+
+  /// No description provided for @cardDescriptionsApplyErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error applying card descriptions'**
+  String get cardDescriptionsApplyErrorMessage;
 }
 
 class _AppLocalizationsDelegate

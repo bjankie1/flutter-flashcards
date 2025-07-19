@@ -11,6 +11,22 @@ class GeneratedAnswer {
   const GeneratedAnswer(this.answer, this.explanation);
 }
 
+class CardDescriptionResult {
+  final String? frontCardDescription;
+  final String? backCardDescription;
+  final String? explanationDescription;
+  final double confidence;
+  final String analysis;
+
+  const CardDescriptionResult({
+    this.frontCardDescription,
+    this.backCardDescription,
+    this.explanationDescription,
+    required this.confidence,
+    required this.analysis,
+  });
+}
+
 class FrontBack {
   final String front;
   final String back;
@@ -101,20 +117,17 @@ class CloudFunctions {
   }
 
   Future<GeneratedAnswer> generateCardAnswer(
-    model.DeckCategory category,
     String deckName,
     String deckDescription,
-    String cardQuestion, {
-    String? frontCardDescription,
-    String? backCardDescription,
+    String cardQuestion,
+    String frontCardDescription,
+    String backCardDescription, {
     String? explanationDescription,
   }) async {
     if (cardQuestion.trim().isEmpty) {
       throw 'Card question is empty';
     }
-    _log.d(
-      'Fetching LLM answer for category: $category question: $cardQuestion',
-    );
+    _log.d('Fetching LLM answer for question: $cardQuestion');
     _log.d('User: ${user?.email}, UID: ${user?.uid}');
     _log.d('Region: $region, useEmulator: $useEmulator');
 
@@ -136,7 +149,6 @@ class CloudFunctions {
       'deckName': deckName,
       'deckDescription': deckDescription,
       'cardQuestion': cardQuestion,
-      'category': category.name,
       'frontCardDescription': frontCardDescription,
       'backCardDescription': backCardDescription,
       'explanationDescription': explanationDescription,
@@ -167,16 +179,13 @@ class CloudFunctions {
   }
 
   Future<String> generateReverseDescription(
-    model.DeckCategory category,
     String deckName,
-    String deckDescription, {
-    String? frontCardDescription,
-    String? backCardDescription,
+    String deckDescription,
+    String frontCardDescription,
+    String backCardDescription, {
     String? explanationDescription,
   }) async {
-    _log.d(
-      'Generating reverse description for category: $category deck: $deckName',
-    );
+    _log.d('Generating reverse description for deck: $deckName');
     _log.d('User: ${user?.email}, UID: ${user?.uid}');
 
     // 1. Ensure the user is authenticated:
@@ -190,7 +199,6 @@ class CloudFunctions {
     final requestData = {
       'deckName': deckName,
       'deckDescription': deckDescription,
-      'category': category.name,
       'frontCardDescription': frontCardDescription,
       'backCardDescription': backCardDescription,
       'explanationDescription': explanationDescription,
@@ -261,6 +269,89 @@ class CloudFunctions {
       ); // Better error handling here for your users
       // Handle the error appropriately (e.g., show an error message, retry, etc.).
       rethrow; // Re-throw the exception so the caller can also handle it.
+    }
+  }
+
+  Future<CardDescriptionResult> generateCardDescriptions({
+    required String deckName,
+    String? deckDescription,
+    required List<model.Card> cards,
+    int minCardsRequired = 3,
+  }) async {
+    if (cards.isEmpty) {
+      throw 'No cards provided for analysis';
+    }
+
+    _log.d(
+      'Generating card descriptions for deck: $deckName with ${cards.length} cards',
+    );
+    _log.d('User: ${user?.email}, UID: ${user?.uid}');
+
+    // 1. Ensure the user is authenticated:
+    if (user == null) {
+      throw Exception("User must be logged in to call the function.");
+    }
+
+    // 2. Call the Cloud Function using the HttpsCallable class.
+    final callable = functions.httpsCallable('generateCardDescriptions');
+
+    // Convert cards to the format expected by the Genkit function
+    final cardsData = cards
+        .map(
+          (card) => {
+            'question': card.question,
+            'answer': card.answer,
+            'explanation': card.explanation,
+          },
+        )
+        .toList();
+
+    final requestData = {
+      'deckName': deckName,
+      'deckDescription': deckDescription,
+      'cards': cardsData,
+      'minCardsRequired': minCardsRequired,
+    };
+
+    _log.d('Calling generateCardDescriptions with data: $requestData');
+
+    try {
+      // 3. Invoke the callable function with the required data.
+      final result = await callable.call(requestData);
+      _log.d('Card descriptions result from model: ${result.data}');
+
+      // 4. Extract the result data.
+      final data = result.data as Map<String, dynamic>;
+
+      // Handle nullable values properly - convert "null" strings to actual null
+      String? parseNullableString(dynamic value) {
+        if (value == null || value == "null") {
+          return null;
+        }
+        return value as String;
+      }
+
+      return CardDescriptionResult(
+        frontCardDescription: parseNullableString(data['frontCardDescription']),
+        backCardDescription: parseNullableString(data['backCardDescription']),
+        explanationDescription: parseNullableString(
+          data['explanationDescription'],
+        ),
+
+        confidence: (data['confidence'] as num).toDouble(),
+        analysis: data['analysis'] as String,
+      );
+    } on FirebaseFunctionsException catch (e) {
+      _log.e(
+        'FirebaseFunctionsException: ${e.code}, ${e.message}, ${e.details}',
+      );
+      _log.e('Exception type: ${e.runtimeType}');
+      _log.e('Stack trace: ${e.stackTrace}');
+      rethrow;
+    } catch (e, stackTrace) {
+      _log.e('Unexpected error: $e');
+      _log.e('Stack trace: $stackTrace');
+      rethrow;
     }
   }
 }

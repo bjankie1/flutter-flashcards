@@ -891,4 +891,35 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get generateCardDescriptions => 'Generuj opisy kart';
+
+  @override
+  String get cardDescriptionsGeneratedMessage =>
+      'Opisy kart zostały wygenerowane pomyślnie';
+
+  @override
+  String get cardDescriptionsGenerationErrorMessage =>
+      'Błąd podczas generowania opisów kart';
+
+  @override
+  String get generatedCardDescriptions => 'Wygenerowane opisy kart';
+
+  @override
+  String get confidenceLevel => 'Poziom pewności';
+
+  @override
+  String get analysis => 'Analiza';
+
+  @override
+  String get apply => 'Zastosuj';
+
+  @override
+  String get cardDescriptionsAppliedMessage =>
+      'Opisy kart zostały zastosowane pomyślnie';
+
+  @override
+  String get cardDescriptionsApplyErrorMessage =>
+      'Błąd podczas stosowania opisów kart';
 }

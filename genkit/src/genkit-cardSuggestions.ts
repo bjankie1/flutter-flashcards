@@ -303,9 +303,8 @@ const CardDetailsSchema = z.object({
   deckName: z.string(),
   deckDescription: z.string().optional(),
   cardQuestion: z.string(),
-  category: z.enum(["language", "history", "science", "other"]).optional(),
-  frontCardDescription: z.string().optional(),
-  backCardDescription: z.string().optional(),
+  frontCardDescription: z.string(),
+  backCardDescription: z.string(),
   explanationDescription: z.string().optional(),
 });
 
@@ -317,8 +316,8 @@ const AnswerAndExplanation = z.object({
 const ReverseDescriptionSchema = z.object({
   deckName: z.string(),
   deckDescription: z.string().optional(),
-  frontCardDescription: z.string().optional(),
-  backCardDescription: z.string().optional(),
+  frontCardDescription: z.string(),
+  backCardDescription: z.string(),
   explanationDescription: z.string().optional(),
 });
 
@@ -326,240 +325,7 @@ const ReverseDescriptionOutput = z.object({
   reverseFrontDescription: z.string(),
 });
 
-// Define an enum for categories
-enum Category {
-  language,
-  history,
-  science,
-  biology,
-  geography,
-  math,
-  other,
-}
 
-/**
- * Converts a string category name to the Category enum.
- * Comparison is case-insensitive and ignores non-letter characters.
- * @param {string} value - Category name string.
- * @return {Category} The corresponding enum value, defaults to Category.other.
- */
-function stringToCategory(value: string): Category {
-  switch (value.replace(/[^a-zA-Z]/g, "").toLowerCase()) {
-    case "language":
-      return Category.language;
-    case "history":
-      return Category.history;
-    case "science":
-      return Category.science;
-    case "biology":
-      return Category.biology;
-    case "geography":
-      return Category.geography;
-    case "math":
-      return Category.math;
-    default:
-      return Category.other;
-  }
-}
-
-/**
- * Generates a system prompt based on the flashcard category.
- * @param {Category} category - The category of the deck.
- * @return {string} The generated system prompt.
- */
-function systemPrompt(category: Category): string {
-  switch (category) {
-    case Category.language:
-      return `You are a flashcard creation assistant. Given a question or term related to languages,
-               provide a concise and informative answer suitable for a flashcard.
-               Answers should be accurate and easy to understand for studying.
-               There are two languages involved in such flashcards. One is the native language of
-               the person learning the cards and the second is the language being learnt. It can
-               be assumed that the language of deck name and deck description is the native
-               language of the student. The answer should be provided in language different
-               than the language of the question.
-               When providing an optional explanation you can use markdown
-               formatting. Explanation should be brief - it may include dictionary definition
-               of a word. In case of sentences no explanation is required unless there are some
-               nuances to explain.
-               
-               OUTPUT STRUCTURE:
-               - "answer": The main response to the question (should follow back card description if provided)
-               - "explanation": Additional context or details (should follow explanation description if provided)`;
-    case Category.history:
-      return `You are a flashcard creation assistant. Given a question or term related to history,
-               provide a concise and informative answer suitable for a flashcard.
-               Answers should be accurate and easy to understand for studying.
-               Both answer and explanation should be provided in the same language as question and
-               deck description.
-               Explanation can be slightly longer to provide more context about the answer so that
-               the reader can find the rationale. Use markdown formatting in necessary to highlight
-               important part of sequence or headers.
-               
-               OUTPUT STRUCTURE:
-               - "answer": The main response to the question (should follow back card description if provided)
-               - "explanation": Additional context or details (should follow explanation description if provided)`;
-    case Category.science:
-      return `You are a flashcard creation assistant. Generate concise, accurate, and informative
-       answers suitable for flashcards. Answers should be easy to understand for studying. Use
-       Markdown to format both answer and explanation.
-       Both answer and explanation should be provided in the same language as question and
-       deck description.
-       For answers involving mathematical, chemical, or physical concepts
-       or calculations, express formulas using LaTeX inline math mode (e.g., $E=mc^2$). If a
-       question requires calculations to arrive at the answer, include a clear, step-by-step
-       explanation of the calculation process.
-       
-       OUTPUT STRUCTURE:
-       - "answer": The main response to the question (should follow back card description if provided)
-       - "explanation": Additional context or details (should follow explanation description if provided)`;
-    case Category.biology:
-      return `You are a flashcard creation assistant. Given a question or term related to biology,
-               provide a concise and informative answer suitable for a flashcard.
-               Answers should be accurate and easy to understand for studying.
-               Both answer and explanation should be provided in the same language as question and
-               deck description.
-               For biological concepts, include relevant scientific terminology and explanations
-               that help with understanding. Use markdown formatting when necessary to highlight
-               important terms or concepts.
-               
-               OUTPUT STRUCTURE:
-               - "answer": The main response to the question (should follow back card description if provided)
-               - "explanation": Additional context or details (should follow explanation description if provided)`;
-    case Category.geography:
-      return `You are a flashcard creation assistant. Given a question or term related to geography,
-               provide a concise and informative answer suitable for a flashcard.
-               Answers should be accurate and easy to understand for studying.
-               Both answer and explanation should be provided in the same language as question and
-               deck description.
-               For geographical concepts, include relevant location details, climate information,
-               or cultural context as appropriate. Use markdown formatting when necessary to
-               highlight important geographical features or terms.
-               
-               OUTPUT STRUCTURE:
-               - "answer": The main response to the question (should follow back card description if provided)
-               - "explanation": Additional context or details (should follow explanation description if provided)`;
-    case Category.math:
-      return `You are a flashcard creation assistant. Given a question or term related to mathematics,
-               provide a concise and informative answer suitable for a flashcard.
-               Answers should be accurate and easy to understand for studying.
-               Both answer and explanation should be provided in the same language as question and
-               deck description.
-               For mathematical concepts, express formulas using LaTeX inline math mode (e.g., $E=mc^2$).
-               If a question requires calculations, include a clear, step-by-step explanation
-               of the calculation process. Use markdown formatting to structure mathematical
-               expressions and explanations clearly.
-               
-               OUTPUT STRUCTURE:
-               - "answer": The main response to the question (should follow back card description if provided)
-               - "explanation": Additional context or details (should follow explanation description if provided)`;
-    default: // Category.other
-      return `You are a flashcard creation assistant. Given a question or term,
-               provide a concise and informative answer suitable for a flashcard.
-               Both answer and explanation should be provided in the same language as question and
-               deck description.
-               Answers should be accurate and easy to understand for studying.
-               When providing an optional explanation you can use markdown
-               formatting.
-               
-               OUTPUT STRUCTURE:
-               - "answer": The main response to the question (should follow back card description if provided)
-               - "explanation": Additional context or details (should follow explanation description if provided)`;
-  }
-}
-
-/**
- * Generates a user prompt based on the flashcard category and details.
- * @param {Category} category - Category of the deck.
- * @param {string} deckName - Name of the deck.
- * @param {string} deckDescription - Description of the deck.
- * @param {string} cardQuestion - Question for the flashcard.
- * @param {string} frontCardDescription - Optional description for front of cards.
- * @param {string} backCardDescription - Optional description for back of cards.
- * @param {string} explanationDescription - Optional description for explanations.
- * @return {string} The generated user prompt.
- */
-function userPrompt(
-  category: Category,
-  deckName: string,
-  deckDescription: string,
-  cardQuestion: string,
-  frontCardDescription?: string,
-  backCardDescription?: string,
-  explanationDescription?: string
-): string {
-  let prompt = `Question: ${cardQuestion}
-Deck name: ${deckName}
-Deck description: ${deckDescription}`;
-
-  if (frontCardDescription) {
-    prompt += `\nFront card description: ${frontCardDescription}`;
-  }
-  if (backCardDescription) {
-    prompt += `\nBack card description: ${backCardDescription}`;
-  }
-  if (explanationDescription) {
-    prompt += `\nExplanation description: ${explanationDescription}`;
-  }
-
-  // Add clear instructions for using the deck descriptions
-  prompt += `\n\nIMPORTANT INSTRUCTIONS:
-- Generate an "answer" that follows the back card description (if provided)
-- Generate an "explanation" that follows the explanation description (if provided)
-- If no specific descriptions are provided, create appropriate answer and explanation based on the category and question
-- The answer should be the main response to the question
-- The explanation should provide additional context, details, or clarification`;
-
-  return prompt;
-}
-
-/**
- * Generates a reverse front description for language learning scenarios.
- * This is used when users enter the back of a card and need the front generated.
- * @param {Category} category - Category of the deck.
- * @param {string} deckName - Name of the deck.
- * @param {string} deckDescription - Description of the deck.
- * @param {string} frontCardDescription - Description for front of cards.
- * @param {string} backCardDescription - Description for back of cards.
- * @param {string} explanationDescription - Description for explanations.
- * @return {string} The generated reverse front description.
- */
-function reverseDescriptionPrompt(
-  category: Category,
-  deckName: string,
-  deckDescription: string,
-  frontCardDescription?: string,
-  backCardDescription?: string,
-  explanationDescription?: string
-): string {
-  let prompt = `Deck name: ${deckName}
-Deck description: ${deckDescription}`;
-
-  if (frontCardDescription) {
-    prompt += `\nFront card description: ${frontCardDescription}`;
-  }
-  if (backCardDescription) {
-    prompt += `\nBack card description: ${backCardDescription}`;
-  }
-  if (explanationDescription) {
-    prompt += `\nExplanation description: ${explanationDescription}`;
-  }
-
-  prompt += `\n\nSCENARIO: In this language learning deck, users can enter either the front or back of a card. When they enter the back of a card (e.g., a Spanish word like "gitano"), the system needs to generate the corresponding front (e.g., "cygan" - the Polish translation).
-
-TASK: Generate a detailed "reverse front description" that will be used as the front card description when the user enters the back of a card. This description should be specific enough to generate direct translations that match the back card content.
-
-REQUIREMENTS:
-- The description MUST be generated in English for consistency with AI prompts
-- It should be specific and actionable for AI generation
-- It should complement the existing front and back descriptions
-- For language learning, it should focus on generating direct translations (not questions)
-- The description should instruct the AI to provide the native language equivalent of the target language word
-- Make it clear that the output should be a direct translation, not a question
-- The description should be clear and concise for optimal AI performance`;
-
-  return prompt;
-}
 
 // Genkit flow to suggest an answer and explanation for a flashcard
 const cardAnswerSuggestionFlow = ai.defineFlow(
@@ -572,23 +338,29 @@ const cardAnswerSuggestionFlow = ai.defineFlow(
     try {
       console.log('Starting cardAnswerSuggestionFlow with input:', JSON.stringify(subject, null, 2));
 
-      // Determine the category: use provided category or default to 'other'
-      const categoryString = subject.category ?? 'other';
-
-      const category = stringToCategory(categoryString);
-
       // Generate the answer and explanation using the AI model with structured output
       const { output } = await ai.generate({
-        system: systemPrompt(category), // Get system prompt based on category
-        prompt: userPrompt(
-          category,
-          subject.deckName,
-          subject.deckDescription || "",
-          subject.cardQuestion,
-          subject.frontCardDescription,
-          subject.backCardDescription,
-          subject.explanationDescription
-        ), // Get user prompt with deck descriptions
+        system: `You are a flashcard creation assistant. Given a question and specific descriptions for the front and back of cards, provide a concise and informative answer suitable for a flashcard.
+
+The descriptions provided will guide you on what content should appear on the front and back of cards. Follow these descriptions precisely to ensure consistency with the deck.
+
+When providing an optional explanation, you can use markdown formatting. The explanation should be brief and relevant to the answer.
+
+OUTPUT STRUCTURE:
+- "answer": The main response to the question (should follow the back card description)
+- "explanation": Additional context or details (should follow the explanation description if provided)`,
+        prompt: `Question: ${subject.cardQuestion}
+Deck name: ${subject.deckName}
+Deck description: ${subject.deckDescription || ''}
+Front card description: ${subject.frontCardDescription}
+Back card description: ${subject.backCardDescription}
+${subject.explanationDescription ? `Explanation description: ${subject.explanationDescription}` : ''}
+
+IMPORTANT INSTRUCTIONS:
+- Generate an "answer" that follows the back card description
+- Generate an "explanation" that follows the explanation description (if provided)
+- The answer should be the main response to the question
+- The explanation should provide additional context, details, or clarification`,
         config: {
           temperature: 0.7, // Moderate temperature for creative but consistent responses
         },
@@ -632,10 +404,6 @@ const reverseDescriptionFlow = ai.defineFlow(
     try {
       console.log('Starting reverseDescriptionFlow with input:', JSON.stringify(subject, null, 2));
 
-      // Determine the category: use provided category or default to 'other'
-      const categoryString = subject.category ?? 'other';
-      const category = stringToCategory(categoryString);
-
       // Generate the reverse description using the AI model
       const { output } = await ai.generate({
         system: `You are a flashcard description assistant. Your task is to generate a "reverse front description" for language learning decks.
@@ -645,14 +413,24 @@ This description will be used when users enter the back of a card (e.g., a word 
 Generate a clear, specific description that will help the AI create direct translations. The description MUST be in English for consistency with AI prompts and should be actionable for AI generation.
 
 For language learning scenarios, focus on generating direct translations that provide the native language equivalent of the target language word or phrase.`,
-        prompt: reverseDescriptionPrompt(
-          category,
-          subject.deckName,
-          subject.deckDescription || "",
-          subject.frontCardDescription,
-          subject.backCardDescription,
-          subject.explanationDescription
-        ),
+        prompt: `Deck name: ${subject.deckName}
+Deck description: ${subject.deckDescription || ''}
+Front card description: ${subject.frontCardDescription}
+Back card description: ${subject.backCardDescription}
+${subject.explanationDescription ? `Explanation description: ${subject.explanationDescription}` : ''}
+
+SCENARIO: In this language learning deck, users can enter either the front or back of a card. When they enter the back of a card (e.g., a Spanish word like "gitano"), the system needs to generate the corresponding front (e.g., "cygan" - the Polish translation).
+
+TASK: Generate a detailed "reverse front description" that will be used as the front card description when the user enters the back of a card. This description should be specific enough to generate direct translations that match the back card content.
+
+REQUIREMENTS:
+- The description MUST be generated in English for consistency with AI prompts
+- It should be specific and actionable for AI generation
+- It should complement the existing front and back descriptions
+- For language learning, it should focus on generating direct translations (not questions)
+- The description should instruct the AI to provide the native language equivalent of the target language word
+- Make it clear that the output should be a direct translation, not a question
+- The description should be clear and concise for optimal AI performance`,
         config: {
           temperature: 0.7,
         },
@@ -677,6 +455,145 @@ For language learning scenarios, focus on generating direct translations that pr
       // Return a fallback response instead of throwing
       return {
         reverseFrontDescription: "Generate a question that asks for the target language word or phrase based on the provided context.",
+      };
+    }
+  }
+);
+
+// Define Zod schemas for card description generation
+const CardDescriptionGenerationInputSchema = z.object({
+  deckName: z.string(),
+  deckDescription: z.string().optional(),
+  cards: z.array(z.object({
+    question: z.string(),
+    answer: z.string(),
+    explanation: z.string().optional(),
+  })).describe("Array of existing cards to analyze"),
+  minCardsRequired: z.number().optional().describe("Minimum number of cards required for meaningful analysis (default: 3)"),
+});
+
+const CardDescriptionGenerationOutputSchema = z.object({
+  frontCardDescription: z.string().nullable().describe("Description for what should appear on the front of cards, or null if not confident enough"),
+  backCardDescription: z.string().nullable().describe("Description for what should appear on the back of cards, or null if not confident enough"),
+  explanationDescription: z.string().nullable().optional().describe("Description for what should appear in explanations, or null if not confident enough"),
+  confidence: z.number().describe("Confidence level of the generated descriptions (0-1)"),
+  analysis: z.string().describe("Brief analysis of the card patterns found"),
+});
+
+// Genkit flow to generate card descriptions based on existing cards
+const cardDescriptionGenerationFlow = ai.defineFlow(
+  {
+    name: "cardDescriptionGenerationFlow",
+    inputSchema: CardDescriptionGenerationInputSchema,
+    outputSchema: CardDescriptionGenerationOutputSchema,
+  },
+  async (subject: any) => {
+    try {
+      console.log('Starting cardDescriptionGenerationFlow with input:', JSON.stringify(subject, null, 2));
+
+      const minCardsRequired = subject.minCardsRequired || 3;
+      
+      if (subject.cards.length < minCardsRequired) {
+        return {
+          frontCardDescription: null,
+          backCardDescription: null,
+          explanationDescription: null,
+          confidence: 0,
+          analysis: `Insufficient cards (${subject.cards.length}/${minCardsRequired}) for meaningful analysis.`,
+        };
+      }
+
+      // Create a sample of cards for analysis (limit to avoid token limits)
+      const sampleCards = subject.cards.slice(0, Math.min(10, subject.cards.length));
+      
+      // Generate descriptions using the AI model
+      const { output } = await ai.generate({
+        system: `You are a flashcard deck analysis assistant. Your task is to analyze existing cards in a deck and generate meaningful, precise descriptions for:
+1. Front card description - what content should appear on the front of cards
+2. Back card description - what content should appear on the back of cards  
+3. Explanation description - what additional explanations should include
+
+CONTEXT:
+- This is for a flashcard learning system where users create decks
+- Users have started creating their deck with the provided sample cards
+- You need to generalize patterns from these cards to create descriptions that will guide future card generation
+- The descriptions should be specific enough to ensure consistency but general enough to apply to new cards
+- Descriptions should be in the same language as the deck name and description
+
+ANALYSIS GUIDELINES:
+- Look for patterns in question structure, answer format, and explanation style
+- Consider the subject matter and difficulty level
+- Identify the language(s) used if it's a language learning deck
+- Determine if explanations are needed and what they typically contain
+- Consider the educational level and complexity of the content
+
+OUTPUT REQUIREMENTS:
+- Front card description: Clear, specific instruction for what goes on the front. Return null if you cannot identify a clear pattern.
+- Back card description: Clear, specific instruction for what goes on the back. Return null if you cannot identify a clear pattern.
+- Explanation description: Only if explanations are consistently present and meaningful. Return null if explanations are inconsistent, rare, not meaningful, or if you cannot identify a clear pattern for explanations.
+- Confidence: Rate your confidence in the analysis (0-1)
+- Analysis: Brief explanation of the patterns you identified
+
+IMPORTANT: Each field should be evaluated independently. If you're not confident about a specific field, return null for that field rather than providing a generic or unclear description. Only provide descriptions that are actionable and specific.
+
+CRITICAL: For the explanation description, if explanations are not consistently present or meaningful in the sample cards, return null. Do not provide explanatory text about why explanations aren't needed - just return null.`,
+        prompt: `Analyze the following flashcard deck and generate descriptions:
+
+DECK INFORMATION:
+- Name: ${subject.deckName}
+- Description: ${subject.deckDescription || 'No description provided'}
+- Number of cards analyzed: ${sampleCards.length} (out of ${subject.cards.length} total)
+
+SAMPLE CARDS:
+${sampleCards.map((card: any, index: number) => `
+Card ${index + 1}:
+- Front: "${card.question}"
+- Back: "${card.answer}"
+${card.explanation ? `- Explanation: "${card.explanation}"` : ''}`).join('\n')}
+
+Please analyze these cards and generate:
+1. A front card description that captures the pattern of what appears on the front
+2. A back card description that captures the pattern of what appears on the back  
+3. An explanation description (if explanations are consistently present and meaningful)
+4. Your confidence level in this analysis
+5. A brief analysis of the patterns you identified
+
+Focus on creating descriptions that will help generate consistent, high-quality cards for this deck.`,
+        config: {
+          temperature: 0.3, // Lower temperature for more consistent analysis
+        },
+        output: {
+          schema: CardDescriptionGenerationOutputSchema,
+        },
+      });
+
+      if (!output) {
+        throw new Error("AI model did not return a response");
+      }
+
+      const result = output as {
+        frontCardDescription: string | null;
+        backCardDescription: string | null;
+        explanationDescription?: string | null;
+        confidence: number;
+        analysis: string;
+      };
+
+      console.log('Card description generation completed successfully:', result);
+      return result;
+
+    } catch (error) {
+      console.error('Error in cardDescriptionGenerationFlow:', error);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      console.error('Input that caused error:', JSON.stringify(subject, null, 2));
+
+      // Return a fallback response instead of throwing
+      return {
+        frontCardDescription: null,
+        backCardDescription: null,
+        explanationDescription: null,
+        confidence: 0,
+        analysis: "An error occurred during analysis. Please try again with a different set of cards.",
       };
     }
   }
@@ -714,3 +631,9 @@ export const generateReverseDescription = onCallGenkit({
   region: "europe-central2"
 },
   reverseDescriptionFlow);
+
+export const generateCardDescriptions = onCallGenkit({
+  secrets: [googleAIapiKey],
+  region: "europe-central2"
+},
+  cardDescriptionGenerationFlow);

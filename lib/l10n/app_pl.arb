@@ -258,5 +258,14 @@
   "openDeck": "Otwórz zestaw",
   "warningTitle": "Ostrzeżenie",
   "finalizeEditingWarning": "Zapisz lub anuluj edycję wszystkich pól przed zapisaniem karty.",
-  "ok": "OK"
+  "ok": "OK",
+  "generateCardDescriptions": "Generuj opisy kart",
+  "cardDescriptionsGeneratedMessage": "Opisy kart zostały wygenerowane pomyślnie",
+  "cardDescriptionsGenerationErrorMessage": "Błąd podczas generowania opisów kart",
+  "generatedCardDescriptions": "Wygenerowane opisy kart",
+  "confidenceLevel": "Poziom pewności",
+  "analysis": "Analiza",
+  "apply": "Zastosuj",
+  "cardDescriptionsAppliedMessage": "Opisy kart zostały zastosowane pomyślnie",
+  "cardDescriptionsApplyErrorMessage": "Błąd podczas stosowania opisów kart"
 }

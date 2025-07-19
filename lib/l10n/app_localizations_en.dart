@@ -881,4 +881,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get generateCardDescriptions => 'Generate Card Descriptions';
+
+  @override
+  String get cardDescriptionsGeneratedMessage =>
+      'Card descriptions generated successfully';
+
+  @override
+  String get cardDescriptionsGenerationErrorMessage =>
+      'Error generating card descriptions';
+
+  @override
+  String get generatedCardDescriptions => 'Generated Card Descriptions';
+
+  @override
+  String get confidenceLevel => 'Confidence Level';
+
+  @override
+  String get analysis => 'Analysis';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get cardDescriptionsAppliedMessage =>
+      'Card descriptions applied successfully';
+
+  @override
+  String get cardDescriptionsApplyErrorMessage =>
+      'Error applying card descriptions';
 }

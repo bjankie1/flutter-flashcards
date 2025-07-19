@@ -10,6 +10,7 @@ import 'package:logger/logger.dart';
 import '../../model/cards.dart' as model;
 import '../../common/editable_text.dart' as custom;
 import '../../app_router.dart';
+import '../../genkit/functions.dart';
 import 'deck_details_controller.dart';
 import '../deck_list/deck_info_controller.dart';
 import '../deck_list/deck_cards_to_review_controller.dart';
@@ -343,12 +344,34 @@ class _CardDescriptionFieldsState extends State<_CardDescriptionFields>
   bool _isFrontLoading = false;
   bool _isBackLoading = false;
   bool _isExplanationLoading = false;
+  bool _isGeneratingDescriptions = false;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Generate descriptions button
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: ElevatedButton.icon(
+            onPressed: _isGeneratingDescriptions
+                ? null
+                : _generateCardDescriptions,
+            icon: _isGeneratingDescriptions
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.auto_awesome),
+            label: Text(context.l10n.generateCardDescriptions),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange[700],
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ),
         CollapsibleDescriptionField(
           text: widget.deck.frontCardDescription,
           isLoading: _isFrontLoading,
@@ -444,6 +467,130 @@ class _CardDescriptionFieldsState extends State<_CardDescriptionFields>
           hint: context.l10n.explanationDescriptionHint,
         ),
       ],
+    );
+  }
+
+  Future<void> _generateCardDescriptions() async {
+    setState(() {
+      _isGeneratingDescriptions = true;
+    });
+
+    try {
+      final result = await widget.controller.generateCardDescriptions(context);
+
+      // Show a dialog with the generated descriptions and analysis
+      if (mounted) {
+        _showGeneratedDescriptionsDialog(result);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isGeneratingDescriptions = false;
+        });
+      }
+    }
+  }
+
+  void _showGeneratedDescriptionsDialog(CardDescriptionResult result) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(context.l10n.generatedCardDescriptions),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  context.l10n.confidenceLevel,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                Text('${(result.confidence * 100).toStringAsFixed(1)}%'),
+                const SizedBox(height: 16),
+                Text(
+                  context.l10n.analysis,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                Text(result.analysis),
+                const SizedBox(height: 16),
+                if (result.frontCardDescription != null) ...[
+                  Text(
+                    context.l10n.frontCardDescriptionLabel,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  Text(result.frontCardDescription!),
+                  const SizedBox(height: 16),
+                ],
+                if (result.backCardDescription != null) ...[
+                  Text(
+                    context.l10n.backCardDescriptionLabel,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  Text(result.backCardDescription!),
+                  const SizedBox(height: 16),
+                ],
+                if (result.explanationDescription != null) ...[
+                  Text(
+                    context.l10n.explanationDescriptionLabel,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  Text(result.explanationDescription!),
+                ],
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(context.l10n.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _applyGeneratedDescriptions(result);
+              },
+              child: Text(context.l10n.apply),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _applyGeneratedDescriptions(CardDescriptionResult result) async {
+    // Apply the generated descriptions to the deck
+    await executeWithFeedback(
+      context: context,
+      operation: () async {
+        if (result.frontCardDescription != null) {
+          await widget.controller.updateFrontCardDescription(
+            result.frontCardDescription!,
+            context.cloudFunctions,
+          );
+        }
+        if (result.backCardDescription != null) {
+          await widget.controller.updateBackCardDescription(
+            result.backCardDescription!,
+            context.cloudFunctions,
+          );
+        }
+        if (result.explanationDescription != null) {
+          await widget.controller.updateExplanationDescription(
+            result.explanationDescription!,
+          );
+        }
+
+        // Generate reverse description if we have both front and back descriptions
+        if (result.frontCardDescription != null &&
+            result.backCardDescription != null &&
+            widget.deck.reverseFrontDescription == null) {
+          await widget.controller.generateReverseDescription(context);
+        }
+      },
+      successMessage: context.l10n.cardDescriptionsAppliedMessage,
+      errorMessage: context.l10n.cardDescriptionsApplyErrorMessage,
+      logErrorPrefix: 'Error applying generated card descriptions',
     );
   }
 }
