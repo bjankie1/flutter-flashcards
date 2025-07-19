@@ -26,6 +26,7 @@ export {
   translateToEnglish,
   generateReverseDescription,
   generateCardDescriptions,
+  generateFrontFromBack,
 } from "./genkit-cardSuggestions.js";
 
 export const getGoogleDocContent = ai.defineFlow(

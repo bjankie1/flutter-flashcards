@@ -642,25 +642,10 @@ class ProvisionaryCardsReviewController
           deck.backCardDescriptionTranslated ?? deck.backCardDescription;
       final effectiveExplanationDescription =
           deck.explanationDescriptionTranslated ?? deck.explanationDescription;
-      final effectiveReverseFrontDescription = deck.reverseFrontDescription;
-
-      // Use appropriate descriptions based on the generation direction
-      String? finalFrontDescription;
-      String? finalBackDescription;
-
-      if (flipDescriptions) {
-        // Generating question from answer: use reverse description for front
-        finalFrontDescription =
-            effectiveReverseFrontDescription ?? effectiveBackDescription;
-        finalBackDescription = effectiveFrontDescription;
-      } else {
-        // Generating answer from question: use normal descriptions
-        finalFrontDescription = effectiveFrontDescription;
-        finalBackDescription = effectiveBackDescription;
-      }
 
       // Check if required descriptions are available
-      if (finalFrontDescription == null || finalBackDescription == null) {
+      if (effectiveFrontDescription == null ||
+          effectiveBackDescription == null) {
         _log.w('Deck missing required descriptions: ${deck.name}');
         state = AsyncValue.data(
           currentData.copyWith(fetchingSuggestion: false),
@@ -668,14 +653,29 @@ class ProvisionaryCardsReviewController
         return;
       }
 
-      final generatedAnswer = await cloudFunctions.generateCardAnswer(
-        deck.name,
-        deck.description ?? '',
-        question,
-        finalFrontDescription,
-        finalBackDescription,
-        explanationDescription: effectiveExplanationDescription,
-      );
+      GeneratedAnswer generatedAnswer;
+
+      if (flipDescriptions) {
+        // Generating front from back: use the dedicated function
+        generatedAnswer = await cloudFunctions.generateFrontFromBack(
+          deck.name,
+          deck.description ?? '',
+          question, // This is actually the back content
+          effectiveFrontDescription,
+          effectiveBackDescription,
+          explanationDescription: effectiveExplanationDescription,
+        );
+      } else {
+        // Generating back from front: use the normal function
+        generatedAnswer = await cloudFunctions.generateCardAnswer(
+          deck.name,
+          deck.description ?? '',
+          question,
+          effectiveFrontDescription,
+          effectiveBackDescription,
+          explanationDescription: effectiveExplanationDescription,
+        );
+      }
 
       // Update state with generated content
       final updatedData = currentData.copyWith(

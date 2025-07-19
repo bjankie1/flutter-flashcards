@@ -178,6 +178,69 @@ class CloudFunctions {
     }
   }
 
+  /// Generates the front of a card when the back is provided
+  Future<GeneratedAnswer> generateFrontFromBack(
+    String deckName,
+    String deckDescription,
+    String cardBack,
+    String frontCardDescription,
+    String backCardDescription, {
+    String? explanationDescription,
+  }) async {
+    if (cardBack.trim().isEmpty) {
+      throw 'Card back is empty';
+    }
+    _log.d('Generating front from back: $cardBack');
+    _log.d('User: ${user?.email}, UID: ${user?.uid}');
+    _log.d('Region: $region, useEmulator: $useEmulator');
+
+    // 1. Ensure the user is authenticated:
+    if (user == null) {
+      throw Exception("User must be logged in to call the function.");
+    }
+
+    // 2. Log the function configuration
+    _log.d('Function project ID: ${functions.app.options.projectId}');
+    _log.d('Function name: generateFrontFromBack');
+
+    // 3. Call the Cloud Function using the HttpsCallable class.
+    final callable = functions.httpsCallable(
+      'generateFrontFromBack',
+    ); // Function name as deployed
+
+    final requestData = {
+      'deckName': deckName,
+      'deckDescription': deckDescription,
+      'cardBack': cardBack,
+      'frontCardDescription': frontCardDescription,
+      'backCardDescription': backCardDescription,
+      'explanationDescription': explanationDescription,
+    };
+
+    _log.d('Calling function with data: $requestData');
+
+    try {
+      // 4. Invoke the callable function with the required data.
+      final result = await callable.call(requestData);
+      _log.d('Front generation result from model: ${result.data}');
+
+      // 5. Extract the data from the result.
+      return GeneratedAnswer(result.data['front'], result.data['explanation']);
+    } on FirebaseFunctionsException catch (e) {
+      _log.e(
+        'FirebaseFunctionsException: ${e.code}, ${e.message}, ${e.details}',
+      );
+      _log.e('Exception type: ${e.runtimeType}');
+      _log.e('Stack trace: ${e.stackTrace}');
+      // Handle the error appropriately (e.g., show an error message, retry, etc.).
+      rethrow; // Re-throw the exception so the caller can also handle it.
+    } catch (e, stackTrace) {
+      _log.e('Unexpected error: $e');
+      _log.e('Stack trace: $stackTrace');
+      rethrow;
+    }
+  }
+
   Future<String> generateReverseDescription(
     String deckName,
     String deckDescription,

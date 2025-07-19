@@ -480,6 +480,90 @@ const CardDescriptionGenerationOutputSchema = z.object({
   analysis: z.string().describe("Brief analysis of the card patterns found"),
 });
 
+// Define Zod schemas for generating front from back
+const GenerateFrontFromBackInputSchema = z.object({
+  deckName: z.string(),
+  deckDescription: z.string().optional(),
+  cardBack: z.string(),
+  frontCardDescription: z.string(),
+  backCardDescription: z.string(),
+  explanationDescription: z.string().optional(),
+});
+
+const GenerateFrontFromBackOutputSchema = z.object({
+  front: z.string(),
+  explanation: z.string(),
+});
+
+// Genkit flow to generate the front of a card when the back is provided
+const generateFrontFromBackFlow = ai.defineFlow(
+  {
+    name: "generateFrontFromBackFlow",
+    inputSchema: GenerateFrontFromBackInputSchema,
+    outputSchema: GenerateFrontFromBackOutputSchema,
+  },
+  async (subject: any) => {
+    try {
+      console.log('Starting generateFrontFromBackFlow with input:', JSON.stringify(subject, null, 2));
+
+      // Generate the front using the AI model with structured output
+      const { output } = await ai.generate({
+        system: `You are a flashcard creation assistant. When a user provides the back of a card (e.g., a word in the target language), your task is to generate the corresponding front (e.g., the native language translation or question).
+
+IMPORTANT CONTEXT:
+- The user has provided the BACK of a card and wants you to generate the FRONT
+- This is commonly used in language learning where users enter a target language word and need the native language equivalent
+- Follow the front card description precisely to ensure consistency with the deck
+- The output should be a direct translation or appropriate question, not a question asking for the back content
+
+OUTPUT STRUCTURE:
+- "front": The front of the card (should follow the front card description)
+- "explanation": Additional context or details (should follow the explanation description if provided)`,
+        prompt: `Card Back: ${subject.cardBack}
+Deck name: ${subject.deckName}
+Deck description: ${subject.deckDescription || ''}
+Front card description: ${subject.frontCardDescription}
+Back card description: ${subject.backCardDescription}
+${subject.explanationDescription ? `Explanation description: ${subject.explanationDescription}` : ''}
+
+TASK: Generate the front of this card based on the provided back content.
+
+INSTRUCTIONS:
+- Generate a "front" that follows the front card description
+- For language learning, this is typically a direct translation from the target language to the native language
+- Generate an "explanation" that follows the explanation description (if provided)
+- The front should be the main content that corresponds to the back
+- The explanation should provide additional context, details, or clarification`,
+        config: {
+          temperature: 0.7,
+        },
+        output: {
+          schema: GenerateFrontFromBackOutputSchema,
+        },
+      });
+
+      if (!output) {
+        throw new Error("AI model did not return a response");
+      }
+
+      const result = output as { front: string; explanation: string };
+      console.log('Generate front from back flow completed successfully:', result);
+      return result;
+
+    } catch (error) {
+      console.error('Error in generateFrontFromBackFlow:', error);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      console.error('Input that caused error:', JSON.stringify(subject, null, 2));
+
+      // Return a fallback response instead of throwing
+      return {
+        front: "Error generating front. Please try again.",
+        explanation: "The AI service encountered an error while processing your request.",
+      };
+    }
+  }
+);
+
 // Genkit flow to generate card descriptions based on existing cards
 const cardDescriptionGenerationFlow = ai.defineFlow(
   {
@@ -637,3 +721,9 @@ export const generateCardDescriptions = onCallGenkit({
   region: "europe-central2"
 },
   cardDescriptionGenerationFlow);
+
+export const generateFrontFromBack = onCallGenkit({
+  secrets: [googleAIapiKey],
+  region: "europe-central2"
+},
+  generateFrontFromBackFlow);

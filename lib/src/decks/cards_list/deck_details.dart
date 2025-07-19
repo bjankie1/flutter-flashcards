@@ -581,12 +581,8 @@ class _CardDescriptionFieldsState extends State<_CardDescriptionFields>
           );
         }
 
-        // Generate reverse description if we have both front and back descriptions
-        if (result.frontCardDescription != null &&
-            result.backCardDescription != null &&
-            widget.deck.reverseFrontDescription == null) {
-          await widget.controller.generateReverseDescription(context);
-        }
+        // Note: Reverse descriptions are now handled by the dedicated generateFrontFromBack function
+        // No need to generate reverse descriptions separately
       },
       successMessage: context.l10n.cardDescriptionsAppliedMessage,
       errorMessage: context.l10n.cardDescriptionsApplyErrorMessage,

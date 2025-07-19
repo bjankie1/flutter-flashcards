@@ -17,7 +17,6 @@ class Deck implements FirebaseSerializable {
   final String? frontCardDescriptionTranslated;
   final String? backCardDescriptionTranslated;
   final String? explanationDescriptionTranslated;
-  final String? reverseFrontDescription;
 
   const Deck({
     this.id,
@@ -32,7 +31,6 @@ class Deck implements FirebaseSerializable {
     this.frontCardDescriptionTranslated,
     this.backCardDescriptionTranslated,
     this.explanationDescriptionTranslated,
-    this.reverseFrontDescription,
   });
 
   Deck withId({required String id}) {
@@ -49,7 +47,6 @@ class Deck implements FirebaseSerializable {
       frontCardDescriptionTranslated: frontCardDescriptionTranslated,
       backCardDescriptionTranslated: backCardDescriptionTranslated,
       explanationDescriptionTranslated: explanationDescriptionTranslated,
-      reverseFrontDescription: reverseFrontDescription,
     );
   }
 
@@ -76,7 +73,6 @@ class Deck implements FirebaseSerializable {
     String? frontCardDescriptionTranslated,
     String? backCardDescriptionTranslated,
     String? explanationDescriptionTranslated,
-    String? reverseFrontDescription,
   }) {
     return Deck(
       id: id,
@@ -96,8 +92,6 @@ class Deck implements FirebaseSerializable {
       explanationDescriptionTranslated:
           explanationDescriptionTranslated ??
           this.explanationDescriptionTranslated,
-      reverseFrontDescription:
-          reverseFrontDescription ?? this.reverseFrontDescription,
     );
   }
 
@@ -121,7 +115,6 @@ class Deck implements FirebaseSerializable {
         json['backCardDescriptionTranslated'] as String?,
     explanationDescriptionTranslated:
         json['explanationDescriptionTranslated'] as String?,
-    reverseFrontDescription: json['reverseFrontDescription'] as String?,
   );
 
   @override
@@ -140,7 +133,6 @@ class Deck implements FirebaseSerializable {
     'frontCardDescriptionTranslated': frontCardDescriptionTranslated,
     'backCardDescriptionTranslated': backCardDescriptionTranslated,
     'explanationDescriptionTranslated': explanationDescriptionTranslated,
-    'reverseFrontDescription': reverseFrontDescription,
   };
 
   static DeckOptions _deckOptionsFromJson(Map<String, dynamic> json) =>
