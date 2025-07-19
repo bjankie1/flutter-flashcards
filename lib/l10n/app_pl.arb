@@ -267,5 +267,8 @@
   "analysis": "Analiza",
   "apply": "Zastosuj",
   "cardDescriptionsAppliedMessage": "Opisy kart zostały zastosowane pomyślnie",
-  "cardDescriptionsApplyErrorMessage": "Błąd podczas stosowania opisów kart"
+  "cardDescriptionsApplyErrorMessage": "Błąd podczas stosowania opisów kart",
+  "cardDescriptionsConfigured": "Opisy kart skonfigurowane",
+  "regenerateCardDescriptions": "Wygeneruj opisy ponownie",
+  "cardDescriptions": "Opisy kart"
 }

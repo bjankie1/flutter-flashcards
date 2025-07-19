@@ -912,4 +912,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cardDescriptionsApplyErrorMessage =>
       'Error applying card descriptions';
+
+  @override
+  String get cardDescriptionsConfigured => 'Card descriptions configured';
+
+  @override
+  String get regenerateCardDescriptions => 'Regenerate descriptions';
+
+  @override
+  String get cardDescriptions => 'Card Descriptions';
 }

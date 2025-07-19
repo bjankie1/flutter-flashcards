@@ -922,4 +922,13 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get cardDescriptionsApplyErrorMessage =>
       'Błąd podczas stosowania opisów kart';
+
+  @override
+  String get cardDescriptionsConfigured => 'Opisy kart skonfigurowane';
+
+  @override
+  String get regenerateCardDescriptions => 'Wygeneruj opisy ponownie';
+
+  @override
+  String get cardDescriptions => 'Opisy kart';
 }

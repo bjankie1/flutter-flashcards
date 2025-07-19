@@ -340,21 +340,131 @@ class _CardDescriptionFields extends StatefulWidget with AsyncOperationHandler {
 }
 
 class _CardDescriptionFieldsState extends State<_CardDescriptionFields>
-    with AsyncOperationHandler {
+    with AsyncOperationHandler, TickerProviderStateMixin {
   bool _isFrontLoading = false;
   bool _isBackLoading = false;
   bool _isExplanationLoading = false;
   bool _isGeneratingDescriptions = false;
+  bool _isExpanded = false;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+
+    // Always start collapsed by default
+    _isExpanded = false;
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _toggleExpanded() {
+    setState(() {
+      _isExpanded = !_isExpanded;
+      if (_isExpanded) {
+        _animationController.forward();
+      } else {
+        _animationController.reverse();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final hasAnyDescription =
+        widget.deck.frontCardDescription?.isNotEmpty == true ||
+        widget.deck.backCardDescription?.isNotEmpty == true ||
+        widget.deck.explanationDescription?.isNotEmpty == true;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Generate descriptions button
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: ElevatedButton.icon(
+        // Header with expand/collapse only
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                context.l10n.cardDescriptions,
+                style: context.theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: context.theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+            IconButton(
+              onPressed: _toggleExpanded,
+              icon: AnimatedRotation(
+                turns: _isExpanded ? 0.5 : 0.0,
+                duration: const Duration(milliseconds: 300),
+                child: const Icon(Icons.expand_more),
+              ),
+              tooltip: _isExpanded ? 'Collapse' : 'Expand',
+            ),
+          ],
+        ),
+
+        // Collapsible content
+        AnimatedBuilder(
+          animation: _animation,
+          builder: (context, child) {
+            return SizeTransition(
+              sizeFactor: _animation,
+              child: _isExpanded ? _buildDescriptionFields() : null,
+            );
+          },
+        ),
+
+        // Show a small indicator if descriptions exist but are collapsed
+        if (!_isExpanded && hasAnyDescription)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  context.l10n.cardDescriptionsConfigured,
+                  style: context.theme.textTheme.bodySmall?.copyWith(
+                    color: context.theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildDescriptionFields() {
+    final hasAnyDescription =
+        widget.deck.frontCardDescription?.isNotEmpty == true ||
+        widget.deck.backCardDescription?.isNotEmpty == true ||
+        widget.deck.explanationDescription?.isNotEmpty == true;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Generate button inside the collapsible container
+          ElevatedButton.icon(
             onPressed: _isGeneratingDescriptions
                 ? null
                 : _generateCardDescriptions,
@@ -365,108 +475,116 @@ class _CardDescriptionFieldsState extends State<_CardDescriptionFields>
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.auto_awesome),
-            label: Text(context.l10n.generateCardDescriptions),
+            label: Text(
+              hasAnyDescription
+                  ? context.l10n.regenerateCardDescriptions
+                  : context.l10n.generateCardDescriptions,
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange[700],
               foregroundColor: Colors.white,
             ),
           ),
-        ),
-        CollapsibleDescriptionField(
-          text: widget.deck.frontCardDescription,
-          isLoading: _isFrontLoading,
-          onTextChanged: (value) async {
-            setState(() {
-              _isFrontLoading = true;
-            });
+          const SizedBox(height: 16),
+          CollapsibleDescriptionField(
+            text: widget.deck.frontCardDescription,
+            isLoading: _isFrontLoading,
+            onTextChanged: (value) async {
+              setState(() {
+                _isFrontLoading = true;
+              });
 
-            try {
-              await executeWithFeedback(
-                context: context,
-                operation: () => widget.controller.updateFrontCardDescription(
-                  value,
-                  context.cloudFunctions,
-                ),
-                successMessage: context.l10n.frontCardDescriptionSavedMessage,
-                errorMessage: context.l10n.frontCardDescriptionSaveErrorMessage,
-                logErrorPrefix: 'Error saving front card description',
-              );
-            } finally {
-              if (mounted) {
-                setState(() {
-                  _isFrontLoading = false;
-                });
+              try {
+                await executeWithFeedback(
+                  context: context,
+                  operation: () => widget.controller.updateFrontCardDescription(
+                    value,
+                    context.cloudFunctions,
+                  ),
+                  successMessage: context.l10n.frontCardDescriptionSavedMessage,
+                  errorMessage:
+                      context.l10n.frontCardDescriptionSaveErrorMessage,
+                  logErrorPrefix: 'Error saving front card description',
+                );
+              } finally {
+                if (mounted) {
+                  setState(() {
+                    _isFrontLoading = false;
+                  });
+                }
               }
-            }
-          },
-          addButtonText: context.l10n.addFrontCardDescription,
-          label: context.l10n.frontCardDescriptionLabel,
-          hint: context.l10n.frontCardDescriptionHint,
-        ),
-        const SizedBox(height: 12),
-        CollapsibleDescriptionField(
-          text: widget.deck.backCardDescription,
-          isLoading: _isBackLoading,
-          onTextChanged: (value) async {
-            setState(() {
-              _isBackLoading = true;
-            });
+            },
+            addButtonText: context.l10n.addFrontCardDescription,
+            label: context.l10n.frontCardDescriptionLabel,
+            hint: context.l10n.frontCardDescriptionHint,
+          ),
+          const SizedBox(height: 12),
+          CollapsibleDescriptionField(
+            text: widget.deck.backCardDescription,
+            isLoading: _isBackLoading,
+            onTextChanged: (value) async {
+              setState(() {
+                _isBackLoading = true;
+              });
 
-            try {
-              await executeWithFeedback(
-                context: context,
-                operation: () => widget.controller.updateBackCardDescription(
-                  value,
-                  context.cloudFunctions,
-                ),
-                successMessage: context.l10n.backCardDescriptionSavedMessage,
-                errorMessage: context.l10n.backCardDescriptionSaveErrorMessage,
-                logErrorPrefix: 'Error saving back card description',
-              );
-            } finally {
-              if (mounted) {
-                setState(() {
-                  _isBackLoading = false;
-                });
+              try {
+                await executeWithFeedback(
+                  context: context,
+                  operation: () => widget.controller.updateBackCardDescription(
+                    value,
+                    context.cloudFunctions,
+                  ),
+                  successMessage: context.l10n.backCardDescriptionSavedMessage,
+                  errorMessage:
+                      context.l10n.backCardDescriptionSaveErrorMessage,
+                  logErrorPrefix: 'Error saving back card description',
+                );
+              } finally {
+                if (mounted) {
+                  setState(() {
+                    _isBackLoading = false;
+                  });
+                }
               }
-            }
-          },
-          addButtonText: context.l10n.addBackCardDescription,
-          label: context.l10n.backCardDescriptionLabel,
-          hint: context.l10n.backCardDescriptionHint,
-        ),
-        const SizedBox(height: 12),
-        CollapsibleDescriptionField(
-          text: widget.deck.explanationDescription,
-          isLoading: _isExplanationLoading,
-          onTextChanged: (value) async {
-            setState(() {
-              _isExplanationLoading = true;
-            });
+            },
+            addButtonText: context.l10n.addBackCardDescription,
+            label: context.l10n.backCardDescriptionLabel,
+            hint: context.l10n.backCardDescriptionHint,
+          ),
+          const SizedBox(height: 12),
+          CollapsibleDescriptionField(
+            text: widget.deck.explanationDescription,
+            isLoading: _isExplanationLoading,
+            onTextChanged: (value) async {
+              setState(() {
+                _isExplanationLoading = true;
+              });
 
-            try {
-              await executeWithFeedback(
-                context: context,
-                operation: () =>
-                    widget.controller.updateExplanationDescription(value),
-                successMessage: context.l10n.explanationDescriptionSavedMessage,
-                errorMessage:
-                    context.l10n.explanationDescriptionSaveErrorMessage,
-                logErrorPrefix: 'Error saving explanation description',
-              );
-            } finally {
-              if (mounted) {
-                setState(() {
-                  _isExplanationLoading = false;
-                });
+              try {
+                await executeWithFeedback(
+                  context: context,
+                  operation: () =>
+                      widget.controller.updateExplanationDescription(value),
+                  successMessage:
+                      context.l10n.explanationDescriptionSavedMessage,
+                  errorMessage:
+                      context.l10n.explanationDescriptionSaveErrorMessage,
+                  logErrorPrefix: 'Error saving explanation description',
+                );
+              } finally {
+                if (mounted) {
+                  setState(() {
+                    _isExplanationLoading = false;
+                  });
+                }
               }
-            }
-          },
-          addButtonText: context.l10n.addExplanationDescription,
-          label: context.l10n.explanationDescriptionLabel,
-          hint: context.l10n.explanationDescriptionHint,
-        ),
-      ],
+            },
+            addButtonText: context.l10n.addExplanationDescription,
+            label: context.l10n.explanationDescriptionLabel,
+            hint: context.l10n.explanationDescriptionHint,
+          ),
+        ],
+      ),
     );
   }
 

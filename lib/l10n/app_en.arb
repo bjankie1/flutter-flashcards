@@ -403,5 +403,8 @@
   "analysis": "Analysis",
   "apply": "Apply",
   "cardDescriptionsAppliedMessage": "Card descriptions applied successfully",
-  "cardDescriptionsApplyErrorMessage": "Error applying card descriptions"
+  "cardDescriptionsApplyErrorMessage": "Error applying card descriptions",
+  "cardDescriptionsConfigured": "Card descriptions configured",
+  "regenerateCardDescriptions": "Regenerate descriptions",
+  "cardDescriptions": "Card Descriptions"
 }

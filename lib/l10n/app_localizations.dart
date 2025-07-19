@@ -1735,6 +1735,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error applying card descriptions'**
   String get cardDescriptionsApplyErrorMessage;
+
+  /// No description provided for @cardDescriptionsConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Card descriptions configured'**
+  String get cardDescriptionsConfigured;
+
+  /// No description provided for @regenerateCardDescriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate descriptions'**
+  String get regenerateCardDescriptions;
+
+  /// No description provided for @cardDescriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Descriptions'**
+  String get cardDescriptions;
 }
 
 class _AppLocalizationsDelegate
