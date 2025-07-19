@@ -274,7 +274,7 @@ class FirebaseCardsRepository extends CardsRepository {
   Future<Deck> saveDeck(Deck deck) async {
     if (deck.name.trim().isEmpty) throw 'Deck name cannot be empty';
     final docRef = _decksCollection.doc(deck.id);
-    final savedDeck = deck.id == null ? deck.copyWith(id: docRef.id) : deck;
+    final savedDeck = deck.id == null ? deck.withId(id: docRef.id) : deck;
     await docRef
         .set(savedDeck, SetOptions(merge: true))
         .then(

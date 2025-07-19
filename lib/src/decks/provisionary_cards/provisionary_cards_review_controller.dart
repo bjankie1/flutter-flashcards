@@ -650,14 +650,22 @@ class ProvisionaryCardsReviewController
           deck.backCardDescriptionTranslated ?? deck.backCardDescription;
       final effectiveExplanationDescription =
           deck.explanationDescriptionTranslated ?? deck.explanationDescription;
+      final effectiveReverseFrontDescription = deck.reverseFrontDescription;
 
-      // Flip descriptions if needed (when generating question from answer)
-      final finalFrontDescription = flipDescriptions
-          ? effectiveBackDescription
-          : effectiveFrontDescription;
-      final finalBackDescription = flipDescriptions
-          ? effectiveFrontDescription
-          : effectiveBackDescription;
+      // Use appropriate descriptions based on the generation direction
+      String finalFrontDescription;
+      String finalBackDescription;
+
+      if (flipDescriptions) {
+        // Generating question from answer: use reverse description for front
+        finalFrontDescription =
+            effectiveReverseFrontDescription ?? effectiveBackDescription ?? '';
+        finalBackDescription = effectiveFrontDescription ?? '';
+      } else {
+        // Generating answer from question: use normal descriptions
+        finalFrontDescription = effectiveFrontDescription ?? '';
+        finalBackDescription = effectiveBackDescription ?? '';
+      }
 
       final generatedAnswer = await cloudFunctions.generateCardAnswer(
         deck.category!,

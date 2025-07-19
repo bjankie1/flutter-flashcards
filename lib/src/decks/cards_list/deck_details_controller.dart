@@ -140,7 +140,10 @@ class DeckDetailsController extends _$DeckDetailsController {
   }
 
   /// Updates the front card description
-  Future<void> updateFrontCardDescription(String frontCardDescription) async {
+  Future<void> updateFrontCardDescription(
+    String frontCardDescription,
+    CloudFunctions cloudFunctions,
+  ) async {
     _log.d('Starting updateFrontCardDescription for deck: $_deckId');
     _log.d('Original front card description: "$frontCardDescription"');
 
@@ -169,10 +172,16 @@ class DeckDetailsController extends _$DeckDetailsController {
         return updatedDeck;
       },
     );
+
+    // Generate reverse description if we have both front and back descriptions
+    await _generateReverseDescriptionIfNeeded(cloudFunctions);
   }
 
   /// Updates the back card description
-  Future<void> updateBackCardDescription(String backCardDescription) async {
+  Future<void> updateBackCardDescription(
+    String backCardDescription,
+    CloudFunctions cloudFunctions,
+  ) async {
     _log.d('Starting updateBackCardDescription for deck: $_deckId');
     _log.d('Original back card description: "$backCardDescription"');
 
@@ -201,6 +210,66 @@ class DeckDetailsController extends _$DeckDetailsController {
         return updatedDeck;
       },
     );
+
+    // Generate reverse description if we have both front and back descriptions
+    await _generateReverseDescriptionIfNeeded(cloudFunctions);
+  }
+
+  /// Generates reverse description if both front and back descriptions are available
+  Future<void> _generateReverseDescriptionIfNeeded(
+    CloudFunctions cloudFunctions,
+  ) async {
+    final currentDeck = state.value;
+    if (currentDeck == null) return;
+
+    // Only generate if we have both front and back descriptions and no reverse description yet
+    if (currentDeck.frontCardDescription != null &&
+        currentDeck.backCardDescription != null &&
+        currentDeck.reverseFrontDescription == null &&
+        currentDeck.category != null) {
+      _log.d('Generating reverse description for deck: $_deckId');
+
+      try {
+        final reverseDescription = await cloudFunctions
+            .generateReverseDescription(
+              currentDeck.category!,
+              currentDeck.name,
+              currentDeck.description ?? '',
+              frontCardDescription:
+                  currentDeck.frontCardDescriptionTranslated ??
+                  currentDeck.frontCardDescription,
+              backCardDescription:
+                  currentDeck.backCardDescriptionTranslated ??
+                  currentDeck.backCardDescription,
+              explanationDescription:
+                  currentDeck.explanationDescriptionTranslated ??
+                  currentDeck.explanationDescription,
+            );
+
+        _log.d('Generated reverse description: "$reverseDescription"');
+
+        // Save the reverse description (already in English)
+        await _updateDeckField(
+          fieldName: 'reverse front description',
+          updateFunction: (deck) async {
+            _log.d(
+              'Reverse description (already in English): "$reverseDescription"',
+            );
+
+            return deck.copyWith(reverseFrontDescription: reverseDescription);
+          },
+        );
+
+        _log.d('Successfully saved reverse description for deck: $_deckId');
+      } catch (e, stackTrace) {
+        _log.e(
+          'Error generating reverse description for deck: $_deckId',
+          error: e,
+          stackTrace: stackTrace,
+        );
+        // Don't throw here - this is a nice-to-have feature
+      }
+    }
   }
 
   /// Updates the explanation description

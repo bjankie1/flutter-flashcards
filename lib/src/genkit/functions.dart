@@ -166,6 +166,59 @@ class CloudFunctions {
     }
   }
 
+  Future<String> generateReverseDescription(
+    model.DeckCategory category,
+    String deckName,
+    String deckDescription, {
+    String? frontCardDescription,
+    String? backCardDescription,
+    String? explanationDescription,
+  }) async {
+    _log.d(
+      'Generating reverse description for category: $category deck: $deckName',
+    );
+    _log.d('User: ${user?.email}, UID: ${user?.uid}');
+
+    // 1. Ensure the user is authenticated:
+    if (user == null) {
+      throw Exception("User must be logged in to call the function.");
+    }
+
+    // 2. Call the Cloud Function using the HttpsCallable class.
+    final callable = functions.httpsCallable('generateReverseDescription');
+
+    final requestData = {
+      'deckName': deckName,
+      'deckDescription': deckDescription,
+      'category': category.name,
+      'frontCardDescription': frontCardDescription,
+      'backCardDescription': backCardDescription,
+      'explanationDescription': explanationDescription,
+    };
+
+    _log.d('Calling generateReverseDescription with data: $requestData');
+
+    try {
+      // 3. Invoke the callable function with the required data.
+      final result = await callable.call(requestData);
+      _log.d('Reverse description result from model: ${result.data}');
+
+      // 4. Extract the reverse description from the result.
+      return result.data['reverseFrontDescription'] as String;
+    } on FirebaseFunctionsException catch (e) {
+      _log.e(
+        'FirebaseFunctionsException: ${e.code}, ${e.message}, ${e.details}',
+      );
+      _log.e('Exception type: ${e.runtimeType}');
+      _log.e('Stack trace: ${e.stackTrace}');
+      rethrow;
+    } catch (e, stackTrace) {
+      _log.e('Unexpected error: $e');
+      _log.e('Stack trace: $stackTrace');
+      rethrow;
+    }
+  }
+
   Future<Iterable<FrontBack>> generateCardsForText(
     String frontLanguage,
     String backLanguage,

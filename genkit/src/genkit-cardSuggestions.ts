@@ -31,7 +31,7 @@ const translateToEnglishFlow = ai.defineFlow(
   async (subject: any) => {
     try {
       console.log('Starting translateToEnglishFlow with input:', JSON.stringify(subject, null, 2));
-      
+
       // Call the AI model to translate the text
       const result = await ai.generate({
         system: `You are a translation assistant. Translate the given text to English.
@@ -43,20 +43,20 @@ const translateToEnglishFlow = ai.defineFlow(
           temperature: 0.1, // Low temperature for consistent translations
         },
       });
-      
+
       if (!result.text) {
         throw new Error("AI model did not return a translation");
       }
-      
+
       const translatedText = result.text.trim();
       console.log('Translation completed successfully:', { translatedText });
       return { translatedText };
-      
+
     } catch (error) {
       console.error('Error in translateToEnglishFlow:', error);
       console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
       console.error('Input that caused error:', JSON.stringify(subject, null, 2));
-      
+
       // Return the original text as fallback
       return {
         translatedText: subject.text,
@@ -82,7 +82,7 @@ const cardTypeFlow = ai.defineFlow(
   async (subject: any) => {
     try {
       console.log('Starting cardTypeFlow with input:', JSON.stringify(subject, null, 2));
-      
+
       // Call the AI model to classify the deck
       const result = await ai.generate({
         system: `Classify flashcard based on provided information such as deckName,\ndeckDescription and the question. Pick one of provided categories: language, history, science, biology, geography, math, other.\nNEVER add additional characters to the output such as extra quotes.\nDo not respond with null, always pick the best fitting category, if you are unsure select 'other'.`,
@@ -91,20 +91,20 @@ const cardTypeFlow = ai.defineFlow(
           temperature: 0.0,
         },
       });
-      
+
       if (!result.text) {
         throw new Error("AI model did not return a category");
       }
-      
+
       const category = result.text.trim();
       console.log('Flow completed successfully:', { category, confidence: 1 });
       return { category, confidence: 1 };
-      
+
     } catch (error) {
       console.error('Error in cardTypeFlow:', error);
       console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
       console.error('Input that caused error:', JSON.stringify(subject, null, 2));
-      
+
       // Return a fallback response instead of throwing
       return {
         category: "other",
@@ -314,6 +314,18 @@ const AnswerAndExplanation = z.object({
   explanation: z.string(),
 });
 
+const ReverseDescriptionSchema = z.object({
+  deckName: z.string(),
+  deckDescription: z.string().optional(),
+  frontCardDescription: z.string().optional(),
+  backCardDescription: z.string().optional(),
+  explanationDescription: z.string().optional(),
+});
+
+const ReverseDescriptionOutput = z.object({
+  reverseFrontDescription: z.string(),
+});
+
 // Define an enum for categories
 enum Category {
   language,
@@ -501,6 +513,54 @@ Deck description: ${deckDescription}`;
   return prompt;
 }
 
+/**
+ * Generates a reverse front description for language learning scenarios.
+ * This is used when users enter the back of a card and need the front generated.
+ * @param {Category} category - Category of the deck.
+ * @param {string} deckName - Name of the deck.
+ * @param {string} deckDescription - Description of the deck.
+ * @param {string} frontCardDescription - Description for front of cards.
+ * @param {string} backCardDescription - Description for back of cards.
+ * @param {string} explanationDescription - Description for explanations.
+ * @return {string} The generated reverse front description.
+ */
+function reverseDescriptionPrompt(
+  category: Category,
+  deckName: string,
+  deckDescription: string,
+  frontCardDescription?: string,
+  backCardDescription?: string,
+  explanationDescription?: string
+): string {
+  let prompt = `Deck name: ${deckName}
+Deck description: ${deckDescription}`;
+
+  if (frontCardDescription) {
+    prompt += `\nFront card description: ${frontCardDescription}`;
+  }
+  if (backCardDescription) {
+    prompt += `\nBack card description: ${backCardDescription}`;
+  }
+  if (explanationDescription) {
+    prompt += `\nExplanation description: ${explanationDescription}`;
+  }
+
+  prompt += `\n\nSCENARIO: In this language learning deck, users can enter either the front or back of a card. When they enter the back of a card (e.g., a Spanish word like "gitano"), the system needs to generate the corresponding front (e.g., "cygan" - the Polish translation).
+
+TASK: Generate a detailed "reverse front description" that will be used as the front card description when the user enters the back of a card. This description should be specific enough to generate direct translations that match the back card content.
+
+REQUIREMENTS:
+- The description MUST be generated in English for consistency with AI prompts
+- It should be specific and actionable for AI generation
+- It should complement the existing front and back descriptions
+- For language learning, it should focus on generating direct translations (not questions)
+- The description should instruct the AI to provide the native language equivalent of the target language word
+- Make it clear that the output should be a direct translation, not a question
+- The description should be clear and concise for optimal AI performance`;
+
+  return prompt;
+}
+
 // Genkit flow to suggest an answer and explanation for a flashcard
 const cardAnswerSuggestionFlow = ai.defineFlow(
   {
@@ -561,29 +621,96 @@ const cardAnswerSuggestionFlow = ai.defineFlow(
   }
 );
 
+// Genkit flow to generate reverse front description
+const reverseDescriptionFlow = ai.defineFlow(
+  {
+    name: "reverseDescriptionFlow",
+    inputSchema: ReverseDescriptionSchema,
+    outputSchema: ReverseDescriptionOutput,
+  },
+  async (subject: any) => {
+    try {
+      console.log('Starting reverseDescriptionFlow with input:', JSON.stringify(subject, null, 2));
+
+      // Determine the category: use provided category or default to 'other'
+      const categoryString = subject.category ?? 'other';
+      const category = stringToCategory(categoryString);
+
+      // Generate the reverse description using the AI model
+      const { output } = await ai.generate({
+        system: `You are a flashcard description assistant. Your task is to generate a "reverse front description" for language learning decks.
+
+This description will be used when users enter the back of a card (e.g., a word in the target language) and the system needs to generate the corresponding front (e.g., the native language translation).
+
+Generate a clear, specific description that will help the AI create direct translations. The description MUST be in English for consistency with AI prompts and should be actionable for AI generation.
+
+For language learning scenarios, focus on generating direct translations that provide the native language equivalent of the target language word or phrase.`,
+        prompt: reverseDescriptionPrompt(
+          category,
+          subject.deckName,
+          subject.deckDescription || "",
+          subject.frontCardDescription,
+          subject.backCardDescription,
+          subject.explanationDescription
+        ),
+        config: {
+          temperature: 0.7,
+        },
+        output: {
+          schema: ReverseDescriptionOutput,
+        },
+      });
+
+      if (!output) {
+        throw new Error("AI model did not return a response");
+      }
+
+      const result = output as { reverseFrontDescription: string };
+      console.log('Reverse description flow completed successfully:', result);
+      return result;
+
+    } catch (error) {
+      console.error('Error in reverseDescriptionFlow:', error);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      console.error('Input that caused error:', JSON.stringify(subject, null, 2));
+
+      // Return a fallback response instead of throwing
+      return {
+        reverseFrontDescription: "Generate a question that asks for the target language word or phrase based on the provided context.",
+      };
+    }
+  }
+);
+
 // Export the functions
 export const cardAnswer = onCallGenkit({
-    secrets: [googleAIapiKey],
-    region: "europe-central2"
-  },
+  secrets: [googleAIapiKey],
+  region: "europe-central2"
+},
   cardAnswerSuggestionFlow);
 export const deckCategory = onCallGenkit({
-    secrets: [googleAIapiKey],
-    region: "europe-central2"
-  },
+  secrets: [googleAIapiKey],
+  region: "europe-central2"
+},
   cardTypeFlow);
 export const generateFlashCardsFromText = onCallGenkit({
-    secrets: [googleAIapiKey],
-    region: "europe-central2"
-  },
+  secrets: [googleAIapiKey],
+  region: "europe-central2"
+},
   flashcardGeneratorFlow);
 export const generateFlashCardsFromBinary = onCallGenkit({
-    secrets: [googleAIapiKey],
-    region: "europe-central2"
-  },
+  secrets: [googleAIapiKey],
+  region: "europe-central2"
+},
   flashcardGeneratorFromBinaryFlow);
 export const translateToEnglish = onCallGenkit({
-    secrets: [googleAIapiKey],
-    region: "europe-central2"
-  },
+  secrets: [googleAIapiKey],
+  region: "europe-central2"
+},
   translateToEnglishFlow);
+
+export const generateReverseDescription = onCallGenkit({
+  secrets: [googleAIapiKey],
+  region: "europe-central2"
+},
+  reverseDescriptionFlow);

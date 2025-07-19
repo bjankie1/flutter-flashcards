@@ -360,8 +360,10 @@ class _CardDescriptionFieldsState extends State<_CardDescriptionFields>
             try {
               await executeWithFeedback(
                 context: context,
-                operation: () =>
-                    widget.controller.updateFrontCardDescription(value),
+                operation: () => widget.controller.updateFrontCardDescription(
+                  value,
+                  context.cloudFunctions,
+                ),
                 successMessage: context.l10n.frontCardDescriptionSavedMessage,
                 errorMessage: context.l10n.frontCardDescriptionSaveErrorMessage,
                 logErrorPrefix: 'Error saving front card description',
@@ -390,8 +392,10 @@ class _CardDescriptionFieldsState extends State<_CardDescriptionFields>
             try {
               await executeWithFeedback(
                 context: context,
-                operation: () =>
-                    widget.controller.updateBackCardDescription(value),
+                operation: () => widget.controller.updateBackCardDescription(
+                  value,
+                  context.cloudFunctions,
+                ),
                 successMessage: context.l10n.backCardDescriptionSavedMessage,
                 errorMessage: context.l10n.backCardDescriptionSaveErrorMessage,
                 logErrorPrefix: 'Error saving back card description',
