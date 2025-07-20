@@ -9,11 +9,12 @@ import 'package:flutter_flashcards/src/layout/layout_constraints.dart';
 import 'package:flutter_flashcards/src/layout/navigation.dart';
 import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
+import 'package:flutter_flashcards/src/layout/action_buttons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
-enum PageIndex { cards, statistics, collaboration, settings }
+enum PageIndex { cards, statistics, collaboration, learn, settings }
 
 extension PageIndexNavigation on PageIndex {
   void navigate(BuildContext context) {
@@ -24,6 +25,8 @@ extension PageIndexNavigation on PageIndex {
         context.goNamed('statistics');
       case PageIndex.collaboration:
         context.goNamed('collaboration');
+      case PageIndex.learn:
+        context.goNamed('learn');
       case PageIndex.settings:
         context.goNamed('settings');
     }
@@ -89,7 +92,15 @@ class BaseLayout extends StatelessWidget {
                         return Row(
                           children: [
                             Expanded(child: title),
-                            if (!isMobile) Spacer(),
+                            if (!isMobile) ...[
+                              const ActionButtons(),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
+                                child: LocaleSelection(),
+                              ),
+                            ],
                             if (!isMobile)
                               ValueListenableBuilder<UserProfile?>(
                                 valueListenable: context.appState.userProfile,
@@ -122,14 +133,7 @@ class BaseLayout extends StatelessWidget {
                                   );
                                 },
                               ),
-                            if (!isMobile)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0,
-                                ),
-                                child: LocaleSelection(),
-                              ),
-                            if (isMobile)
+                            if (isMobile) ...[
                               ValueListenableBuilder<UserProfile?>(
                                 valueListenable: context.appState.userProfile,
                                 builder: (context, userProfile, _) =>
@@ -147,13 +151,14 @@ class BaseLayout extends StatelessWidget {
                                       },
                                     ),
                               ),
-                            if (!isMobile)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8.0,
-                                ),
-                                child: UserMenu(child: Avatar(size: 30)),
+                              const ActionButtons(),
+                            ],
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
                               ),
+                              child: UserMenu(child: Avatar(size: 30)),
+                            ),
                             Visibility(
                               visible: false,
                               child: Padding(

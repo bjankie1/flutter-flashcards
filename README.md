@@ -143,6 +143,82 @@ Quick card creation mode for rapid entry - Capture new words or concepts on the 
 - Dark/light theme support - Choose your preferred visual style for comfortable learning.
 - Mobile-first approach - Optimized experience for learning on the go.
 
+#### Action Buttons Widget
+The ActionButtons widget provides quick access to card creation and review functionality through a segmented control interface in the app bar.
+
+**Placement and Layout**:
+- **Desktop Layout**: Positioned in the app bar between the title and locale selection, before the theme toggle
+- **Mobile Layout**: Positioned in the app bar after the theme toggle, before the user menu
+- **Responsive Behavior**: Automatically adapts to screen size constraints using LayoutBuilder
+
+**Visual Design and Styling**:
+- **Container Specifications**:
+  - Height: 36 pixels (optimized to align with other app bar segmented buttons)
+  - Border radius: 18 pixels (proportional to container height)
+  - Background: Theme surface color with subtle outline border (20% opacity)
+  - Shape: Rounded rectangle with consistent border styling
+
+- **Button Layout**:
+  - Horizontal row layout with mainAxisSize.min for compact sizing
+  - Two distinct button sections separated by a vertical divider
+  - Left button: Quick add card (larger with text label)
+  - Right button: Review provisionary cards (icon-only with badge)
+
+**Quick Add Card Button (Left Section)**:
+- **Content**: Icon (add_box, 20px) + text label ("Quick add card")
+- **Styling**: 
+  - Height: 36px (matching container)
+  - Padding: 16px horizontal
+  - Border radius: 18px (top-left and bottom-left corners only)
+  - Material ink effects for touch feedback
+- **Functionality**: Opens modal bottom sheet with ProvisionaryCardAdd widget
+- **Accessibility**: Full touch target with clear visual feedback
+
+**Review Provisionary Cards Button (Right Section)**:
+- **Content**: Checklist icon (20px) with optional badge count
+- **Styling**:
+  - Fixed width: 48px for consistent icon-only appearance
+  - Height: 36px (matching container)
+  - Padding: 10px all sides
+  - Border radius: 18px (top-right and bottom-right corners only)
+  - Icon color: Theme onSurface color (dimmed to 50% opacity when no cards available)
+- **Badge System**:
+  - Position: Top-right corner (6px from edges)
+  - Background: Theme error color
+  - Border radius: 8px
+  - Minimum size: 16x16px
+  - Text: Provisionary cards count in white, 10px font, bold weight
+  - Only displays when provisionary cards count > 0
+- **Functionality**: 
+  - Enabled: Navigates to quick cards review page when cards are available
+  - Disabled: No action when no provisionary cards exist
+- **Visual States**: Icon opacity changes based on card availability
+
+**Divider Element**:
+- **Position**: Between the two button sections
+- **Styling**: 1px width, 24px height, theme outline color with 20% opacity
+- **Purpose**: Visual separation between distinct actions
+
+**Loading and Error States**:
+- **Loading State**: 120px width, 40px height container with centered CircularProgressIndicator (2px stroke)
+- **Error State**: 120px width, 40px height container with error_outline icon
+- **Async Handling**: Properly handles provisionary cards data loading states
+
+**Theme Integration**:
+- **Dynamic Colors**: All colors adapt to current theme (light/dark mode)
+- **Consistent Styling**: Matches Material Design segmented button patterns
+- **Accessibility**: Proper contrast ratios and touch target sizes
+
+**Testing Requirements**:
+- **Widget Testing**: Comprehensive test coverage for rendering, interaction, and styling
+- **Mock Implementation**: Uses mock widgets to avoid web-specific import issues in test environment
+- **Test Coverage**: 
+  - Widget rendering and structure verification
+  - Icon and text presence validation
+  - Layout and styling property checks
+  - Touch interaction testing
+  - Badge display logic testing
+
 ## Future Features
 
 ### LLM Integration
