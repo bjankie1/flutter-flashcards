@@ -13,3 +13,8 @@
   date: 2025-07-17
   changes:
     - Improved cards generation based on deck definition
+
+- version: 1.0.5
+  date: 2025-07-20
+  changes:
+    - Improved top navigation bar layout
