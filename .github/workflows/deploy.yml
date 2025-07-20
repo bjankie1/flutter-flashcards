@@ -27,6 +27,9 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Generate code
+        run: dart run build_runner build --delete-conflicting-outputs
+
       - name: Run tests
         run: flutter test
 
@@ -52,83 +55,35 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Bump version
-        run: ./scripts/bump_version.sh
+      - name: Generate code
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Install yq for YAML parsing
+        run: |
+          sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Align versions from changelog
+        run: |
+          chmod +x scripts/update_versions.sh
+          ./scripts/update_versions.sh
 
       - name: Build web app
-        run: flutter build web --source-maps
+        run: flutter build web --release
 
-      - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v2'
-        with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLASHCARDS }}'
-
-      - name: Set up Cloud SDK
-        uses: 'google-github-actions/setup-gcloud@v2'
-        with:
-          project_id: ${{ env.FIREBASE_PROJECT_ID }}
-        
-      - name: Deploy to Firebase Hosting
-        run: npx firebase-tools@latest deploy --only hosting --project ${{ env.FIREBASE_PROJECT_ID }}
-
-      - name: Create Remote Config JSON
+      - name: Deploy Firebase Remote Config and Hosting
         run: |
-          cat > remote_config.json << EOF
-          {
-            "conditions": [
-              {
-                "name": "Default",
-                "expression": "true",
-                "tagColor": "BLUE"
-              }
-            ],
-            "parameters": {
-              "app_version": {
-                "defaultValue": {
-                  "value": "$VERSION_NUMBER"
-                },
-                "description": "Current app version (semantic versioning)",
-                "valueType": "STRING"
-              },
-              "app_build_number": {
-                "defaultValue": {
-                  "value": "$BUILD_NUMBER"
-                },
-                "description": "Current app build number",
-                "valueType": "STRING"
-              },
-              "update_message": {
-                "defaultValue": {
-                  "value": "New version available with latest features and improvements!"
-                },
-                "description": "Custom message shown to users when update is available",
-                "valueType": "STRING"
-              },
-              "update_required": {
-                "defaultValue": {
-                  "value": "false"
-                },
-                "description": "Whether the update is required (true) or optional (false)",
-                "valueType": "STRING"
-              }
-            }
-          }
-          EOF
-          
-          echo "Created Remote Config JSON for version $VERSION_NUMBER+$BUILD_NUMBER"
-
-      - name: Update Firebase Remote Config
-        run: |
-          curl -X PUT \
-            -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-            -H "Content-Type: application/json" \
-            -d @remote_config.json \
-            "https://firebaseremoteconfig.googleapis.com/v1/projects/${{ env.FIREBASE_PROJECT_ID }}/remoteConfig"
-          
-          echo "Updated Firebase Remote Config successfully"
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLASHCARDS }}' > /tmp/firebase-service-account.json
+          npx firebase-tools@latest deploy --only remoteconfig,hosting --project ${{ env.FIREBASE_PROJECT_ID }}
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/firebase-service-account.json
 
       - name: Create deployment summary
         run: |
+          # Extract version and build number from pubspec.yaml
+          VERSION_NUMBER=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+          BUILD_NUMBER=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f2)
+          
           echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Version**: $VERSION_NUMBER" >> $GITHUB_STEP_SUMMARY
@@ -145,6 +100,8 @@ jobs:
       - name: Notify deployment
         if: success()
         run: |
+          VERSION_NUMBER=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+          BUILD_NUMBER=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f2)
           echo "✅ Deployment completed successfully!"
           echo "🌐 Live site: https://${{ env.FIREBASE_PROJECT_ID }}.web.app"
           echo "📱 Version $VERSION_NUMBER+$BUILD_NUMBER is now live" 

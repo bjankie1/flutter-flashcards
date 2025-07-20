@@ -11,6 +11,12 @@ class Deck implements FirebaseSerializable {
   final String? parentDeckId;
   final DeckOptions? deckOptions;
   final DeckCategory? category;
+  final String? frontCardDescription;
+  final String? backCardDescription;
+  final String? explanationDescription;
+  final String? frontCardDescriptionTranslated;
+  final String? backCardDescriptionTranslated;
+  final String? explanationDescriptionTranslated;
 
   const Deck({
     this.id,
@@ -19,15 +25,28 @@ class Deck implements FirebaseSerializable {
     this.parentDeckId,
     this.deckOptions,
     this.category = DeckCategory.other,
+    this.frontCardDescription,
+    this.backCardDescription,
+    this.explanationDescription,
+    this.frontCardDescriptionTranslated,
+    this.backCardDescriptionTranslated,
+    this.explanationDescriptionTranslated,
   });
 
-  withId({required String id}) {
+  Deck withId({required String id}) {
     return Deck(
       id: id,
       name: name,
       description: description,
       parentDeckId: parentDeckId,
       deckOptions: deckOptions,
+      category: category,
+      frontCardDescription: frontCardDescription,
+      backCardDescription: backCardDescription,
+      explanationDescription: explanationDescription,
+      frontCardDescriptionTranslated: frontCardDescriptionTranslated,
+      backCardDescriptionTranslated: backCardDescriptionTranslated,
+      explanationDescriptionTranslated: explanationDescriptionTranslated,
     );
   }
 
@@ -43,20 +62,36 @@ class Deck implements FirebaseSerializable {
           id == other.id;
 
   Deck copyWith({
-    String? id,
     String? name,
     String? description,
     String? parentDeckId,
     DeckOptions? deckOptions,
     DeckCategory? category,
+    String? frontCardDescription,
+    String? backCardDescription,
+    String? explanationDescription,
+    String? frontCardDescriptionTranslated,
+    String? backCardDescriptionTranslated,
+    String? explanationDescriptionTranslated,
   }) {
     return Deck(
-      id: id ?? this.id,
+      id: id,
       name: name ?? this.name,
       description: description ?? this.description,
       parentDeckId: parentDeckId ?? this.parentDeckId,
       deckOptions: deckOptions ?? this.deckOptions,
       category: category ?? this.category,
+      frontCardDescription: frontCardDescription ?? this.frontCardDescription,
+      backCardDescription: backCardDescription ?? this.backCardDescription,
+      explanationDescription:
+          explanationDescription ?? this.explanationDescription,
+      frontCardDescriptionTranslated:
+          frontCardDescriptionTranslated ?? this.frontCardDescriptionTranslated,
+      backCardDescriptionTranslated:
+          backCardDescriptionTranslated ?? this.backCardDescriptionTranslated,
+      explanationDescriptionTranslated:
+          explanationDescriptionTranslated ??
+          this.explanationDescriptionTranslated,
     );
   }
 
@@ -71,6 +106,15 @@ class Deck implements FirebaseSerializable {
     category: json['category'] != null
         ? DeckCategory.fromName(json['category'])
         : null,
+    frontCardDescription: json['frontCardDescription'] as String?,
+    backCardDescription: json['backCardDescription'] as String?,
+    explanationDescription: json['explanationDescription'] as String?,
+    frontCardDescriptionTranslated:
+        json['frontCardDescriptionTranslated'] as String?,
+    backCardDescriptionTranslated:
+        json['backCardDescriptionTranslated'] as String?,
+    explanationDescriptionTranslated:
+        json['explanationDescriptionTranslated'] as String?,
   );
 
   @override
@@ -83,6 +127,12 @@ class Deck implements FirebaseSerializable {
         ? _deckOptionsToJson(deckOptions!)
         : null,
     'category': category?.name,
+    'frontCardDescription': frontCardDescription,
+    'backCardDescription': backCardDescription,
+    'explanationDescription': explanationDescription,
+    'frontCardDescriptionTranslated': frontCardDescriptionTranslated,
+    'backCardDescriptionTranslated': backCardDescriptionTranslated,
+    'explanationDescriptionTranslated': explanationDescriptionTranslated,
   };
 
   static DeckOptions _deckOptionsFromJson(Map<String, dynamic> json) =>

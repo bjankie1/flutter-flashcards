@@ -1,169 +1,109 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
 import 'package:flutter_flashcards/src/layout/base_layout.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:flutter_flashcards/src/statistics/select_person_focus.dart';
 import 'package:flutter_flashcards/src/statistics/statistics_charts.dart';
+import 'package:flutter_flashcards/src/statistics/statistics_page_controller.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
-import 'package:provider/provider.dart';
 
-class StudyStatisticsPage extends StatefulWidget {
+class StudyStatisticsPage extends ConsumerWidget {
   @override
-  State<StudyStatisticsPage> createState() => _StudyStatisticsPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final statisticsData = ref.watch(statisticsPageControllerProvider);
 
-class _StudyStatisticsPageState extends State<StudyStatisticsPage> {
-  final _log = Logger();
-
-  String? selectedUser;
-
-  @override
-  Widget build(BuildContext context) {
     return BaseLayout(
-        title: Text(context.l10n.statistics),
-        currentPage: PageIndex.statistics,
-        child: ChangeNotifierProvider(
-          create: (context) => FiltersModel(),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  StatisticsFilter(),
-                  Spacer(),
-                  SelectPersonFocus(
-                    userId: selectedUser,
-                    onUserChange: (uid) {
-                      setState(() {
-                        _log.d('Changed focus to user $uid');
-                        selectedUser = uid;
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                ],
-              ),
-              Expanded(
-                child: StatisticsCharts(selectedUser),
-              )
-            ],
+      title: Text(context.l10n.statistics),
+      currentPage: PageIndex.statistics,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                StatisticsFilter(),
+                const SizedBox(width: 16),
+                SelectPersonFocus(
+                  userId: statisticsData.selectedUserId,
+                  onUserChange: (uid) {
+                    ref
+                        .read(statisticsPageControllerProvider.notifier)
+                        .updateSelectedUser(uid);
+                  },
+                ),
+              ],
+            ),
           ),
-        ));
+          Expanded(child: StatisticsCharts(statisticsData.selectedUserId)),
+        ],
+      ),
+    );
   }
-}
-
-enum PartOfDay {
-  morning(8),
-  afternoon(12),
-  evening(18),
-  night(24);
-
-  final int lastHour;
-
-  const PartOfDay(this.lastHour);
-
-  static fromHour(int hour) =>
-      PartOfDay.values.firstWhere((p) => p.lastHour >= hour);
 }
 
 /// Date filtering
 
-enum DateFilter {
-  lastWeek,
-  lastMonth,
-  custom;
-
-  DateTimeRange range() {
-    switch (this) {
-      case lastWeek:
-        return DateTimeRange(
-            start: currentClockDateTime.subtract(Duration(days: 7)),
-            end: currentClockDateTime);
-      case DateFilter.lastMonth:
-        return DateTimeRange(
-            start: currentClockDateTime.subtract(Duration(days: 30)),
-            end: currentClockDateTime);
-      case DateFilter.custom:
-        throw UnimplementedError();
-    }
-  }
-}
-
-class FiltersModel extends ChangeNotifier {
-  DateTimeRange _selectedDates = DateFilter.lastWeek.range();
-
-  DateFilter _dateFilter = DateFilter.lastWeek;
-
-  DateTimeRange get selectedDates => _selectedDates;
-
-  DateFilter get dateFilter => _dateFilter;
-
-  set dateFilter(DateFilter value) {
-    _dateFilter = value;
-    if (value != DateFilter.custom) _selectedDates = value.range();
-    notifyListeners();
-  }
-
-  set selectedDates(DateTimeRange value) {
-    _selectedDates = value;
-    _dateFilter = DateFilter.custom;
-    notifyListeners();
-  }
-}
-
-class StatisticsFilter extends StatelessWidget {
+class StatisticsFilter extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ValueListenableBuilder<UserProfile?>(
-        // Add this ValueListenableBuilder
-        valueListenable: context.appState.userProfile,
-        builder: (context, userProfile, _) {
-          final locale = userProfile?.locale;
-          final dateFormat = DateFormat.yMEd(locale?.toLanguageTag());
+      valueListenable: context.appState.userProfile,
+      builder: (context, userProfile, _) {
+        final locale = userProfile?.locale;
+        final dateFormat = DateFormat.yMEd(locale?.toLanguageTag());
+        final statisticsData = ref.watch(statisticsPageControllerProvider);
 
-          return Consumer<FiltersModel>(builder: (context, model, child) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SegmentedButton(
-                emptySelectionAllowed: true,
-                onSelectionChanged: (value) {
-                  model.dateFilter = value.first;
-                },
-                segments: [
-                  ButtonSegment(
-                      value: DateFilter.lastWeek,
-                      label: Text(context.l10n.weekDurationFilterLabel)),
-                  ButtonSegment(
-                      value: DateFilter.lastMonth,
-                      label: Text(context.l10n.monthDurationFilterLabel)),
-                  ButtonSegment(
-                      value: DateFilter.custom,
-                      label: Row(
-                        children: [
-                          Text(
-                              '${dateFormat.format(model.selectedDates.start)} - ${dateFormat.format(model.selectedDates.end)}'),
-                          IconButton(
-                            onPressed: () async {
-                              DateTimeRange? range = await showDateRangePicker(
-                                  context: context,
-                                  firstDate: DateTime(2024),
-                                  lastDate: currentClockDateTime);
-                              if (range != null) {
-                                model.selectedDates = range;
-                              }
-                            },
-                            icon: Icon(Icons.calendar_month),
-                          )
-                        ],
-                      ))
-                ],
-                selected: {model._dateFilter},
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SegmentedButton(
+            emptySelectionAllowed: true,
+            onSelectionChanged: (value) {
+              ref
+                  .read(statisticsPageControllerProvider.notifier)
+                  .updateDateFilter(value.first);
+            },
+            segments: [
+              ButtonSegment(
+                value: DateFilter.lastWeek,
+                label: Text(context.l10n.weekDurationFilterLabel),
               ),
-            );
-          });
-        });
+              ButtonSegment(
+                value: DateFilter.lastMonth,
+                label: Text(context.l10n.monthDurationFilterLabel),
+              ),
+              ButtonSegment(
+                value: DateFilter.custom,
+                label: Row(
+                  children: [
+                    Text(
+                      '${dateFormat.format(statisticsData.selectedDateRange.start)} - ${dateFormat.format(statisticsData.selectedDateRange.end)}',
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        DateTimeRange? range = await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(2024),
+                          lastDate: currentClockDateTime,
+                        );
+                        if (range != null) {
+                          ref
+                              .read(statisticsPageControllerProvider.notifier)
+                              .updateCustomDateRange(range);
+                        }
+                      },
+                      icon: Icon(Icons.calendar_month),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            selected: {statisticsData.dateFilter},
+          ),
+        );
+      },
+    );
   }
 }

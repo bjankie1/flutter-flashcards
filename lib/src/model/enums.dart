@@ -29,6 +29,9 @@ enum DeckCategory {
   language,
   history,
   science,
+  biology,
+  geography,
+  math,
   other;
 
   factory DeckCategory.fromName(String name) =>
@@ -49,4 +52,4 @@ enum CardReviewVariant {
         return CardReviewVariant.front;
     }
   }
-} 
+}

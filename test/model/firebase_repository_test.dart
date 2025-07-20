@@ -13,7 +13,7 @@ import 'package:flutter_flashcards/src/model/firebase/firebase_repository.dart';
 import 'package:flutter_flashcards/src/model/study_session.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
+import '../mocks/mock_google_sign_in.dart';
 
 const loggedInUserId = 'logged_in_user_id';
 const loggedInUserEmail = 'bob@somedomain.com';

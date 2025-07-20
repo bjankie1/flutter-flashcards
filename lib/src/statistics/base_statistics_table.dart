@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/dates.dart';
+import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
 
 class ReportLabel extends StatelessWidget {
@@ -21,11 +22,12 @@ class ReportLabel extends StatelessWidget {
       child: Container(
         alignment: alignRight ? Alignment.centerRight : Alignment.centerLeft,
         padding: const EdgeInsets.all(8),
-        child: Text(label,
-            style: Theme.of(context)
-                .textTheme
-                .headlineSmall
-                ?.copyWith(fontWeight: bold ? FontWeight.bold : null)),
+        child: Text(
+          label,
+          style: context.textTheme.headlineSmall?.copyWith(
+            fontWeight: bold ? FontWeight.bold : null,
+          ),
+        ),
       ),
     );
   }
@@ -42,12 +44,22 @@ class BaseStatistic extends StatelessWidget {
 
   Duration get totalTime {
     return answers.fold<Duration>(
-        Duration.zero, (agg, next) => agg + next.timeSpent);
+      Duration.zero,
+      (agg, next) => agg + next.timeSpent,
+    );
   }
 
   Duration get averageTime {
-    final days =
-        answers.map((answer) => answer.reviewStart.dayStart).toSet().length;
+    final days = answers
+        .map((answer) => answer.reviewStart.dayStart)
+        .toSet()
+        .length;
+
+    // Prevent division by zero when there's no data
+    if (days == 0 || answers.isEmpty) {
+      return Duration.zero;
+    }
+
     return Duration(seconds: (totalTime.inSeconds / days).toInt());
   }
 
@@ -62,10 +74,12 @@ class BaseStatistic extends StatelessWidget {
       result = context.l10n.printHours(hours);
     }
     if (remainingMinutes > 0) {
-      result += (result.isNotEmpty ? ' ' : '') +
+      result +=
+          (result.isNotEmpty ? ' ' : '') +
           context.l10n.printMinutes(remainingMinutes);
     }
-    result += (result.isNotEmpty ? ' ' : '') +
+    result +=
+        (result.isNotEmpty ? ' ' : '') +
         context.l10n.printSeconds(remainingSeconds);
     return result;
   }
@@ -74,32 +88,38 @@ class BaseStatistic extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (type) {
       case StatisticType.totalCount:
-        return Row(children: [
-          ReportLabel(
-            'Answers:',
-            alignRight: true,
-            bold: true,
-          ),
-          ReportLabel(answers.length.toString())
-        ]);
+        return Row(
+          children: [
+            ReportLabel(
+              context.l10n.answersLabel,
+              alignRight: true,
+              bold: true,
+            ),
+            ReportLabel(answers.length.toString()),
+          ],
+        );
       case StatisticType.totalTime:
-        return Row(children: [
-          ReportLabel(
-            'Total time:',
-            alignRight: true,
-            bold: true,
-          ),
-          ReportLabel(printDuration(context, totalTime))
-        ]);
+        return Row(
+          children: [
+            ReportLabel(
+              context.l10n.totalTimeLabel,
+              alignRight: true,
+              bold: true,
+            ),
+            ReportLabel(printDuration(context, totalTime)),
+          ],
+        );
       case StatisticType.avgTime:
-        return Row(children: [
-          ReportLabel(
-            'Average (s):',
-            alignRight: true,
-            bold: true,
-          ),
-          ReportLabel(printDuration(context, averageTime))
-        ]);
+        return Row(
+          children: [
+            ReportLabel(
+              context.l10n.averageTimeLabel,
+              alignRight: true,
+              bold: true,
+            ),
+            ReportLabel(printDuration(context, averageTime)),
+          ],
+        );
     }
   }
 }

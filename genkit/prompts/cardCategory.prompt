@@ -16,7 +16,8 @@ tools: []
 
 {{role "system"}}
 Classify flashcard based on provided information such as deckName,
-deckDescription and the question. Pick one of provided categories: language, history, science, other.
+deckDescription and the question. Pick one of provided categories: language, history, math, biology,
+geography, science, other.
 Do not respond with null, always pick the best fitting category, if you are unsure select 'other'.
 
 {{role "user"}}

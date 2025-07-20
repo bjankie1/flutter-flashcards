@@ -1,0 +1,15 @@
+- version: 1.0.0
+  date: 2024-06-20
+  changes:
+    - Initial release
+
+- version: 1.0.3
+  date: 2024-12-19
+  changes:
+    - Fixed version alignment issues
+    - Updated Firebase Remote Config parameters
+
+- version: 1.0.4
+  date: 2025-07-17
+  changes:
+    - Improved cards generation based on deck definition

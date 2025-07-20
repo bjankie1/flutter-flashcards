@@ -182,7 +182,7 @@ abstract class AppLocalizations {
   /// **'Add deck'**
   String get addDeck;
 
-  /// No description provided for @addCard.
+  /// Label for add card button
   ///
   /// In en, this message translates to:
   /// **'Add card'**
@@ -217,6 +217,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save and add next'**
   String get saveAndNext;
+
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get saving;
 
   /// No description provided for @deleteDeck.
   ///
@@ -617,7 +623,7 @@ abstract class AppLocalizations {
   /// No description provided for @explanationLabel.
   ///
   /// In en, this message translates to:
-  /// **'Explanation'**
+  /// **'Explanation:'**
   String get explanationLabel;
 
   /// No description provided for @cardReviewDaily.
@@ -680,6 +686,12 @@ abstract class AppLocalizations {
   /// **'Generate cards'**
   String get generateCards;
 
+  /// No description provided for @generateFlashcards.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate flashcards'**
+  String get generateFlashcards;
+
   /// No description provided for @inputText.
   ///
   /// In en, this message translates to:
@@ -733,6 +745,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Provisionary note'**
   String get provisionaryCardText;
+
+  /// No description provided for @cardProposalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Proposal'**
+  String get cardProposalLabel;
 
   /// No description provided for @provisionaryCardsReviewHeadline.
   ///
@@ -1069,6 +1087,672 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Don\'t forget to update! A new version is available.'**
   String get updateReminder;
+
+  /// Title for the deck details page
+  ///
+  /// In en, this message translates to:
+  /// **'Deck Details'**
+  String get deckDetails;
+
+  /// No description provided for @generateFromGoogleDoc.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate from Google Doc'**
+  String get generateFromGoogleDoc;
+
+  /// No description provided for @personalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal info'**
+  String get personalInfo;
+
+  /// No description provided for @myName.
+  ///
+  /// In en, this message translates to:
+  /// **'My name'**
+  String get myName;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @yourName.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get yourName;
+
+  /// No description provided for @imageRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Image recorded'**
+  String get imageRecorded;
+
+  /// No description provided for @errorUploadingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error uploading image'**
+  String get errorUploadingImage;
+
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'App Version'**
+  String get appVersion;
+
+  /// No description provided for @currentVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Version'**
+  String get currentVersion;
+
+  /// No description provided for @latestAvailableVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Available Version'**
+  String get latestAvailableVersion;
+
+  /// No description provided for @minimumRequiredVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum Required Version'**
+  String get minimumRequiredVersion;
+
+  /// No description provided for @checkForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for Updates'**
+  String get checkForUpdates;
+
+  /// No description provided for @updateSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Settings'**
+  String get updateSettings;
+
+  /// No description provided for @automaticUpdateChecks.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic update checks every 10 minutes'**
+  String get automaticUpdateChecks;
+
+  /// No description provided for @versionCheckingWebOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Version checking is only available on web platform'**
+  String get versionCheckingWebOnly;
+
+  /// No description provided for @googleDocLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Doc Link'**
+  String get googleDocLink;
+
+  /// No description provided for @googleDocHelperText.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the link to your Google Doc to generate cards from it.'**
+  String get googleDocHelperText;
+
+  /// No description provided for @selectGoogleDoc.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Google Doc'**
+  String get selectGoogleDoc;
+
+  /// No description provided for @docContentLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Doc content length: {length}'**
+  String docContentLength(int length);
+
+  /// No description provided for @errorPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {message}'**
+  String errorPrefix(String message);
+
+  /// No description provided for @enterGoogleDocUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Google Doc URL:'**
+  String get enterGoogleDocUrl;
+
+  /// No description provided for @googleDocUrlHint.
+  ///
+  /// In en, this message translates to:
+  /// **'https://docs.google.com/document/d/...'**
+  String get googleDocUrlHint;
+
+  /// No description provided for @googleDocUrlExample.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit'**
+  String get googleDocUrlExample;
+
+  /// No description provided for @pleaseEnterGoogleDocUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a Google Doc URL'**
+  String get pleaseEnterGoogleDocUrl;
+
+  /// No description provided for @invalidGoogleDocUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Google Doc URL. Please check the URL and try again.'**
+  String get invalidGoogleDocUrl;
+
+  /// No description provided for @loadButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Load'**
+  String get loadButton;
+
+  /// No description provided for @cancelButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelButtonLabel;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @answersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Answers:'**
+  String get answersLabel;
+
+  /// No description provided for @totalTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total time:'**
+  String get totalTimeLabel;
+
+  /// No description provided for @averageTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Average (s):'**
+  String get averageTimeLabel;
+
+  /// Error message shown when collaborators list fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading collaborators: {error}'**
+  String errorLoadingCollaborators(String error);
+
+  /// Shown when there are no collaborators in the list.
+  ///
+  /// In en, this message translates to:
+  /// **'No collaborators yet'**
+  String get noCollaboratorsYet;
+
+  /// Hint shown when there are no collaborators.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite someone to collaborate on your flashcards'**
+  String get inviteCollaboratorHint;
+
+  /// No description provided for @answersLabelTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Total number of answers (cards reviewed) in the selected period.'**
+  String get answersLabelTooltip;
+
+  /// No description provided for @totalTimeLabelTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Total time spent reviewing cards in the selected period.'**
+  String get totalTimeLabelTooltip;
+
+  /// No description provided for @averageTimeLabelTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Average time spent reviewing cards per day in the selected period.'**
+  String get averageTimeLabelTooltip;
+
+  /// No description provided for @cardReviewedPerHourTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Distribution of card reviews by time of day. Helps you see when you study most.'**
+  String get cardReviewedPerHourTooltip;
+
+  /// No description provided for @cardReviewDailyTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of cards reviewed each day in the selected period.'**
+  String get cardReviewDailyTooltip;
+
+  /// No description provided for @countCardsPerDeckChartTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows how many cards you studied from each deck.'**
+  String get countCardsPerDeckChartTooltip;
+
+  /// No description provided for @timePerDeckChartTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows how much time you spent studying each deck.'**
+  String get timePerDeckChartTooltip;
+
+  /// No description provided for @signInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signInTitle;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordLabel;
+
+  /// No description provided for @signInButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signInButton;
+
+  /// No description provided for @orLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get orLabel;
+
+  /// No description provided for @signInWithGoogleButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get signInWithGoogleButton;
+
+  /// No description provided for @signUpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get signUpTitle;
+
+  /// No description provided for @signUpButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signUpButton;
+
+  /// No description provided for @signUpWithGoogleButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up with Google'**
+  String get signUpWithGoogleButton;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @dontHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get dontHaveAccount;
+
+  /// No description provided for @signUpLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get signUpLink;
+
+  /// No description provided for @signInLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get signInLink;
+
+  /// No description provided for @selectCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Select card'**
+  String get selectCard;
+
+  /// No description provided for @deselectCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect card'**
+  String get deselectCard;
+
+  /// No description provided for @uploadNewFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload new file'**
+  String get uploadNewFile;
+
+  /// No description provided for @regenerateFlashcards.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate flashcards'**
+  String get regenerateFlashcards;
+
+  /// No description provided for @generatedFlashcards.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated Flashcards ({count})'**
+  String generatedFlashcards(Object count);
+
+  /// No description provided for @editCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Cards'**
+  String get editCards;
+
+  /// No description provided for @saveToDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Save to Deck'**
+  String get saveToDeck;
+
+  /// No description provided for @showContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Show content'**
+  String get showContent;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @docLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Doc length: {length}'**
+  String docLength(int length);
+
+  /// No description provided for @fileSize.
+  ///
+  /// In en, this message translates to:
+  /// **'File size: {size} bytes'**
+  String fileSize(int size);
+
+  /// No description provided for @selectInputSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Select input source'**
+  String get selectInputSource;
+
+  /// No description provided for @pasteText.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste text'**
+  String get pasteText;
+
+  /// No description provided for @uploadPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload PDF'**
+  String get uploadPdf;
+
+  /// No description provided for @uploadImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload image'**
+  String get uploadImage;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @pasteTextHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste your text here...'**
+  String get pasteTextHint;
+
+  /// No description provided for @textContentLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Text content length: {length}'**
+  String textContentLength(int length);
+
+  /// No description provided for @addFrontCardDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'add front of the card description'**
+  String get addFrontCardDescription;
+
+  /// No description provided for @addBackCardDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'add back of the card description'**
+  String get addBackCardDescription;
+
+  /// No description provided for @addExplanationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'add answer explanation description'**
+  String get addExplanationDescription;
+
+  /// No description provided for @frontCardDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Front of card description'**
+  String get frontCardDescriptionLabel;
+
+  /// No description provided for @backCardDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Back of card description'**
+  String get backCardDescriptionLabel;
+
+  /// No description provided for @explanationDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer explanation description'**
+  String get explanationDescriptionLabel;
+
+  /// No description provided for @frontCardDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what should be on the front of cards in this deck'**
+  String get frontCardDescriptionHint;
+
+  /// No description provided for @backCardDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what should be on the back of cards in this deck'**
+  String get backCardDescriptionHint;
+
+  /// No description provided for @explanationDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what explanations should include for answers in this deck'**
+  String get explanationDescriptionHint;
+
+  /// No description provided for @frontCardDescriptionSavedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Front card description saved'**
+  String get frontCardDescriptionSavedMessage;
+
+  /// No description provided for @backCardDescriptionSavedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Back card description saved'**
+  String get backCardDescriptionSavedMessage;
+
+  /// No description provided for @explanationDescriptionSavedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Explanation description saved'**
+  String get explanationDescriptionSavedMessage;
+
+  /// No description provided for @frontCardDescriptionSaveErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving front card description'**
+  String get frontCardDescriptionSaveErrorMessage;
+
+  /// No description provided for @backCardDescriptionSaveErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving back card description'**
+  String get backCardDescriptionSaveErrorMessage;
+
+  /// No description provided for @explanationDescriptionSaveErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving explanation description'**
+  String get explanationDescriptionSaveErrorMessage;
+
+  /// No description provided for @noProvisionaryCardsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No card proposals to review'**
+  String get noProvisionaryCardsMessage;
+
+  /// No description provided for @noProvisionaryCardsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have any quick notes waiting to be turned into flashcards. Add some by using the quick card creation feature.'**
+  String get noProvisionaryCardsDescription;
+
+  /// No description provided for @allProvisionaryCardsReviewedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'All card proposals reviewed!'**
+  String get allProvisionaryCardsReviewedMessage;
+
+  /// No description provided for @allProvisionaryCardsReviewedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Great job! You\'ve processed all your quick notes. They\'ve been converted into proper flashcards and are ready for learning.'**
+  String get allProvisionaryCardsReviewedDescription;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go back'**
+  String get goBack;
+
+  /// No description provided for @openDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Open deck'**
+  String get openDeck;
+
+  /// No description provided for @warningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get warningTitle;
+
+  /// No description provided for @finalizeEditingWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Please save or cancel your edits in all fields before saving the card.'**
+  String get finalizeEditingWarning;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// No description provided for @generateCardDescriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Card Descriptions'**
+  String get generateCardDescriptions;
+
+  /// No description provided for @cardDescriptionsGeneratedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Card descriptions generated successfully'**
+  String get cardDescriptionsGeneratedMessage;
+
+  /// No description provided for @cardDescriptionsGenerationErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error generating card descriptions'**
+  String get cardDescriptionsGenerationErrorMessage;
+
+  /// No description provided for @generatedCardDescriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated Card Descriptions'**
+  String get generatedCardDescriptions;
+
+  /// No description provided for @confidenceLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confidence Level'**
+  String get confidenceLevel;
+
+  /// No description provided for @analysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis'**
+  String get analysis;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// No description provided for @cardDescriptionsAppliedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Card descriptions applied successfully'**
+  String get cardDescriptionsAppliedMessage;
+
+  /// No description provided for @cardDescriptionsApplyErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error applying card descriptions'**
+  String get cardDescriptionsApplyErrorMessage;
+
+  /// No description provided for @cardDescriptionsConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Card descriptions configured'**
+  String get cardDescriptionsConfigured;
+
+  /// No description provided for @regenerateCardDescriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate descriptions'**
+  String get regenerateCardDescriptions;
+
+  /// No description provided for @cardDescriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Descriptions'**
+  String get cardDescriptions;
 }
 
 class _AppLocalizationsDelegate

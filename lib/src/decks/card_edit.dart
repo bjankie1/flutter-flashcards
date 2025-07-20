@@ -12,9 +12,13 @@ import 'package:image_picker/image_picker.dart';
 //     if (dart.library.html) 'package:image_picker_for_web/image_picker_for_web.dart';
 
 import 'package:provider/provider.dart';
+import 'package:logger/logger.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../model/cards.dart' as model;
 import '../model/repository.dart';
+import '../genkit/functions.dart';
+import 'cards_list/deck_details_controller.dart';
 
 class CardEdit extends StatefulWidget {
   final model.Card? card;
@@ -404,6 +408,8 @@ class _GenerateAnswerButton extends StatefulWidget {
 }
 
 class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
+  final _log = Logger();
+
   String? _loadingType; // 'answer', 'answerHint', or null
 
   @override
@@ -452,7 +458,11 @@ class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
     );
   }
 
-  loadAnswer() async {
+  Future<GeneratedAnswer> loadAnswer() async {
+    _log.d(
+      'Deck descriptions in card_edit: front=${widget.deck.frontCardDescription}, back=${widget.deck.backCardDescription}, explanation=${widget.deck.explanationDescription}',
+    );
+
     final category =
         widget.deck.category ??
         await context.cloudFunctions.deckCategory(
@@ -465,12 +475,57 @@ class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
         widget.deck.copyWith(category: category),
       );
     }
-    return await context.cloudFunctions.generateCardAnswer(
-      category,
-      widget.deck.name,
-      widget.deck.description ?? '',
-      widget.question,
-    );
+
+    try {
+      final controller = ProviderScope.containerOf(
+        context,
+      ).read(deckDetailsControllerProvider(widget.deck.id!).notifier);
+
+      // Ensure the deck is loaded in the controller
+      await controller.ensureDeckLoaded();
+
+      // Check if the controller is ready
+      if (!controller.isReady) {
+        throw Exception(
+          'DeckDetailsController is not ready for deck: ${widget.deck.id}',
+        );
+      }
+
+      return await controller.generateCardAnswer(widget.question, context);
+    } catch (e) {
+      _log.e(
+        'Error using controller for answer generation, trying fallback',
+        error: e,
+      );
+
+      // Fallback: use cloud functions directly
+      // Check if required descriptions are available
+      final effectiveFrontDescription =
+          widget.deck.frontCardDescriptionTranslated ??
+          widget.deck.frontCardDescription;
+      final effectiveBackDescription =
+          widget.deck.backCardDescriptionTranslated ??
+          widget.deck.backCardDescription;
+      final effectiveExplanationDescription =
+          widget.deck.explanationDescriptionTranslated ??
+          widget.deck.explanationDescription;
+
+      if (effectiveFrontDescription == null ||
+          effectiveBackDescription == null) {
+        throw Exception(
+          'Deck must have front and back card descriptions to generate answers',
+        );
+      }
+
+      return await context.cloudFunctions.generateCardAnswer(
+        widget.deck.name,
+        widget.deck.description ?? '',
+        widget.question,
+        effectiveFrontDescription,
+        effectiveBackDescription,
+        explanationDescription: effectiveExplanationDescription,
+      );
+    }
   }
 
   void processLoading({required bool includeHint}) async {

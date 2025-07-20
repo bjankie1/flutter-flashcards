@@ -1,12 +1,10 @@
 import 'package:clock/clock.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_flashcards/src/model/cards.dart' as model;
-import 'package:flutter_flashcards/src/model/repository.dart';
 import 'package:flutter_flashcards/src/model/study_session.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-
-class MockCardsRepository extends Mock implements CardsRepository {}
+import '../mocks/mock_cards_repository.dart';
 
 class MockCard extends Mock implements model.Card {
   MockCard();

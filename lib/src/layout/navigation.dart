@@ -26,6 +26,11 @@ class Destinations {
       label: context.l10n.collaboration,
     ),
     NavigationDestination(
+      icon: Icon(Icons.school),
+      selectedIcon: Icon(Icons.school),
+      label: context.l10n.learnEverything,
+    ),
+    NavigationDestination(
       icon: Icon(Icons.settings_outlined),
       selectedIcon: Icon(Icons.settings),
       label: context.l10n.settings,
@@ -51,6 +56,8 @@ class Destinations {
       case 2:
         context.goNamed('collaboration');
       case 3:
+        context.goNamed('learn');
+      case 4:
         context.goNamed('settings');
     }
   }

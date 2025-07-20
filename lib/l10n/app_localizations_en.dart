@@ -73,6 +73,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveAndNext => 'Save and add next';
 
   @override
+  String get saving => 'Saving...';
+
+  @override
   String deleteDeck(String deck) {
     return 'Delete $deck';
   }
@@ -288,7 +291,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newDeckGroupAddedMessage => 'New deck group added';
 
   @override
-  String get explanationLabel => 'Explanation';
+  String get explanationLabel => 'Explanation:';
 
   @override
   String get cardReviewDaily => 'Cards reviews per day';
@@ -321,6 +324,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get generateCards => 'Generate cards';
 
   @override
+  String get generateFlashcards => 'Generate flashcards';
+
+  @override
   String get inputText => 'Text';
 
   @override
@@ -346,6 +352,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get provisionaryCardText => 'Provisionary note';
+
+  @override
+  String get cardProposalLabel => 'Card Proposal';
 
   @override
   String get provisionaryCardsReviewHeadline => 'Provisionary cards review';
@@ -537,4 +546,379 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get updateReminder =>
       'Don\'t forget to update! A new version is available.';
+
+  @override
+  String get deckDetails => 'Deck Details';
+
+  @override
+  String get generateFromGoogleDoc => 'Generate from Google Doc';
+
+  @override
+  String get personalInfo => 'Personal info';
+
+  @override
+  String get myName => 'My name';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get yourName => 'Your name';
+
+  @override
+  String get imageRecorded => 'Image recorded';
+
+  @override
+  String get errorUploadingImage => 'Error uploading image';
+
+  @override
+  String get appVersion => 'App Version';
+
+  @override
+  String get currentVersion => 'Current Version';
+
+  @override
+  String get latestAvailableVersion => 'Latest Available Version';
+
+  @override
+  String get minimumRequiredVersion => 'Minimum Required Version';
+
+  @override
+  String get checkForUpdates => 'Check for Updates';
+
+  @override
+  String get updateSettings => 'Update Settings';
+
+  @override
+  String get automaticUpdateChecks =>
+      'Automatic update checks every 10 minutes';
+
+  @override
+  String get versionCheckingWebOnly =>
+      'Version checking is only available on web platform';
+
+  @override
+  String get googleDocLink => 'Google Doc Link';
+
+  @override
+  String get googleDocHelperText =>
+      'Paste the link to your Google Doc to generate cards from it.';
+
+  @override
+  String get selectGoogleDoc => 'Select Google Doc';
+
+  @override
+  String docContentLength(int length) {
+    return 'Doc content length: $length';
+  }
+
+  @override
+  String errorPrefix(String message) {
+    return 'Error: $message';
+  }
+
+  @override
+  String get enterGoogleDocUrl => 'Enter Google Doc URL:';
+
+  @override
+  String get googleDocUrlHint => 'https://docs.google.com/document/d/...';
+
+  @override
+  String get googleDocUrlExample =>
+      'Example: https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit';
+
+  @override
+  String get pleaseEnterGoogleDocUrl => 'Please enter a Google Doc URL';
+
+  @override
+  String get invalidGoogleDocUrl =>
+      'Invalid Google Doc URL. Please check the URL and try again.';
+
+  @override
+  String get loadButton => 'Load';
+
+  @override
+  String get cancelButtonLabel => 'Cancel';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get answersLabel => 'Answers:';
+
+  @override
+  String get totalTimeLabel => 'Total time:';
+
+  @override
+  String get averageTimeLabel => 'Average (s):';
+
+  @override
+  String errorLoadingCollaborators(String error) {
+    return 'Error loading collaborators: $error';
+  }
+
+  @override
+  String get noCollaboratorsYet => 'No collaborators yet';
+
+  @override
+  String get inviteCollaboratorHint =>
+      'Invite someone to collaborate on your flashcards';
+
+  @override
+  String get answersLabelTooltip =>
+      'Total number of answers (cards reviewed) in the selected period.';
+
+  @override
+  String get totalTimeLabelTooltip =>
+      'Total time spent reviewing cards in the selected period.';
+
+  @override
+  String get averageTimeLabelTooltip =>
+      'Average time spent reviewing cards per day in the selected period.';
+
+  @override
+  String get cardReviewedPerHourTooltip =>
+      'Distribution of card reviews by time of day. Helps you see when you study most.';
+
+  @override
+  String get cardReviewDailyTooltip =>
+      'Number of cards reviewed each day in the selected period.';
+
+  @override
+  String get countCardsPerDeckChartTooltip =>
+      'Shows how many cards you studied from each deck.';
+
+  @override
+  String get timePerDeckChartTooltip =>
+      'Shows how much time you spent studying each deck.';
+
+  @override
+  String get signInTitle => 'Sign In';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get passwordLabel => 'Password';
+
+  @override
+  String get signInButton => 'Sign In';
+
+  @override
+  String get orLabel => 'or';
+
+  @override
+  String get signInWithGoogleButton => 'Sign in with Google';
+
+  @override
+  String get signUpTitle => 'Create Account';
+
+  @override
+  String get signUpButton => 'Sign Up';
+
+  @override
+  String get signUpWithGoogleButton => 'Sign up with Google';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm Password';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account?';
+
+  @override
+  String get signUpLink => 'Sign up';
+
+  @override
+  String get signInLink => 'Sign in';
+
+  @override
+  String get selectCard => 'Select card';
+
+  @override
+  String get deselectCard => 'Deselect card';
+
+  @override
+  String get uploadNewFile => 'Upload new file';
+
+  @override
+  String get regenerateFlashcards => 'Regenerate flashcards';
+
+  @override
+  String generatedFlashcards(Object count) {
+    return 'Generated Flashcards ($count)';
+  }
+
+  @override
+  String get editCards => 'Edit Cards';
+
+  @override
+  String get saveToDeck => 'Save to Deck';
+
+  @override
+  String get showContent => 'Show content';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String docLength(int length) {
+    return 'Doc length: $length';
+  }
+
+  @override
+  String fileSize(int size) {
+    return 'File size: $size bytes';
+  }
+
+  @override
+  String get selectInputSource => 'Select input source';
+
+  @override
+  String get pasteText => 'Paste text';
+
+  @override
+  String get uploadPdf => 'Upload PDF';
+
+  @override
+  String get uploadImage => 'Upload image';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get pasteTextHint => 'Paste your text here...';
+
+  @override
+  String textContentLength(int length) {
+    return 'Text content length: $length';
+  }
+
+  @override
+  String get addFrontCardDescription => 'add front of the card description';
+
+  @override
+  String get addBackCardDescription => 'add back of the card description';
+
+  @override
+  String get addExplanationDescription => 'add answer explanation description';
+
+  @override
+  String get frontCardDescriptionLabel => 'Front of card description';
+
+  @override
+  String get backCardDescriptionLabel => 'Back of card description';
+
+  @override
+  String get explanationDescriptionLabel => 'Answer explanation description';
+
+  @override
+  String get frontCardDescriptionHint =>
+      'Describe what should be on the front of cards in this deck';
+
+  @override
+  String get backCardDescriptionHint =>
+      'Describe what should be on the back of cards in this deck';
+
+  @override
+  String get explanationDescriptionHint =>
+      'Describe what explanations should include for answers in this deck';
+
+  @override
+  String get frontCardDescriptionSavedMessage => 'Front card description saved';
+
+  @override
+  String get backCardDescriptionSavedMessage => 'Back card description saved';
+
+  @override
+  String get explanationDescriptionSavedMessage =>
+      'Explanation description saved';
+
+  @override
+  String get frontCardDescriptionSaveErrorMessage =>
+      'Error saving front card description';
+
+  @override
+  String get backCardDescriptionSaveErrorMessage =>
+      'Error saving back card description';
+
+  @override
+  String get explanationDescriptionSaveErrorMessage =>
+      'Error saving explanation description';
+
+  @override
+  String get noProvisionaryCardsMessage => 'No card proposals to review';
+
+  @override
+  String get noProvisionaryCardsDescription =>
+      'You don\'t have any quick notes waiting to be turned into flashcards. Add some by using the quick card creation feature.';
+
+  @override
+  String get allProvisionaryCardsReviewedMessage =>
+      'All card proposals reviewed!';
+
+  @override
+  String get allProvisionaryCardsReviewedDescription =>
+      'Great job! You\'ve processed all your quick notes. They\'ve been converted into proper flashcards and are ready for learning.';
+
+  @override
+  String get goBack => 'Go back';
+
+  @override
+  String get openDeck => 'Open deck';
+
+  @override
+  String get warningTitle => 'Warning';
+
+  @override
+  String get finalizeEditingWarning =>
+      'Please save or cancel your edits in all fields before saving the card.';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get generateCardDescriptions => 'Generate Card Descriptions';
+
+  @override
+  String get cardDescriptionsGeneratedMessage =>
+      'Card descriptions generated successfully';
+
+  @override
+  String get cardDescriptionsGenerationErrorMessage =>
+      'Error generating card descriptions';
+
+  @override
+  String get generatedCardDescriptions => 'Generated Card Descriptions';
+
+  @override
+  String get confidenceLevel => 'Confidence Level';
+
+  @override
+  String get analysis => 'Analysis';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get cardDescriptionsAppliedMessage =>
+      'Card descriptions applied successfully';
+
+  @override
+  String get cardDescriptionsApplyErrorMessage =>
+      'Error applying card descriptions';
+
+  @override
+  String get cardDescriptionsConfigured => 'Card descriptions configured';
+
+  @override
+  String get regenerateCardDescriptions => 'Regenerate descriptions';
+
+  @override
+  String get cardDescriptions => 'Card Descriptions';
 }

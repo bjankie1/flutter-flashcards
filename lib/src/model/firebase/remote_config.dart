@@ -1,6 +1,6 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_flashcards/src/app_config.dart';
 
 class RemoteConfigProvider {
   final remoteConfig = FirebaseRemoteConfig.instance;
@@ -30,6 +30,17 @@ class RemoteConfigProvider {
   String get update_required => remoteConfig.getString('update_required');
 
   bool get isUpdateRequired => update_required.toLowerCase() == 'true';
+
+  /// Get minimum version (supports both naming conventions)
+  String get minimum_version {
+    final minVersion = remoteConfig.getString('minimum_version');
+    if (minVersion.isNotEmpty) return minVersion;
+    return remoteConfig.getString('min_version');
+  }
+
+  /// Get minimum build number
+  String get minimum_build_number =>
+      remoteConfig.getString('minimum_build_number');
 
   /// Check if there's a newer version available
   /// Returns true if current version is older than remote version
@@ -103,7 +114,7 @@ class RemoteConfigProvider {
     if (message.isNotEmpty) {
       return message;
     }
-    return kDebugMode
+    return AppConfig.useFirebaseEmulator
         ? 'Debug: Update available'
         : 'A new version is available';
   }

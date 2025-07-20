@@ -22,7 +22,8 @@ class StudySession with ChangeNotifier {
 
   StudySession({required this.repository, this.deckId, this.deckGroupId});
 
-  List<(model.CardReviewVariant, model.Card)> _cards = [];
+  List<(model.CardReviewVariant, model.Card)> _cards =
+      <(model.CardReviewVariant, model.Card)>[];
   int _currentIndex = 0;
   DateTime _reviewStart = currentClockDateTime;
   int _reviewsSinceLastShuffle = 0;
@@ -60,7 +61,7 @@ class StudySession with ChangeNotifier {
     notifyListeners();
   }
 
-  rateAnswer(model.Rating rating) async {
+  Future<void> rateAnswer(model.Rating rating) async {
     if (_cards.isEmpty) {
       throw 'No cards to review';
     }
@@ -81,7 +82,7 @@ class StudySession with ChangeNotifier {
 
   /// Rating only one card as `again` leaves this card in the list otherwise
   /// card is removed from the list which impacts pointer modification.
-  _progressToNextCard(model.Rating rating) {
+  void _progressToNextCard(model.Rating rating) {
     // Remove cards that have been learnt
     if (rating != model.Rating.again) {
       _cards.removeAt(_currentIndex);
