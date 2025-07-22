@@ -16,6 +16,19 @@ class DeckGroupsWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final deckGroupsAsync = ref.watch(deckGroupsControllerProvider);
 
+    // Diagnostic log
+    print('DeckGroupsWidget rebuilt: ${deckGroupsAsync.toString()}');
+    if (deckGroupsAsync.hasValue) {
+      print(
+        'DeckGroupsWidget data: ${deckGroupsAsync.value?.length ?? 0} groups',
+      );
+      deckGroupsAsync.value?.forEach((group) {
+        print(
+          '  Group: ${group.$1?.name ?? 'null'}, Decks: ${group.$2.length}',
+        );
+      });
+    }
+
     return deckGroupsAsync.when(
       data: (groups) => Center(
         child: ConstrainedBox(

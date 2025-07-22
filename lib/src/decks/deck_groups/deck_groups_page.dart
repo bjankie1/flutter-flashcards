@@ -5,10 +5,10 @@ import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/decks/deck_groups/deck_groups_widget.dart';
 import 'package:flutter_flashcards/src/decks/deck_list/decks_controller.dart';
+import 'package:flutter_flashcards/src/model/cards.dart' as model;
 import 'package:go_router/go_router.dart';
 
 import '../../layout/base_layout.dart';
-import '../../model/cards.dart' as model;
 
 class DeckGroupsPage extends ConsumerWidget {
   const DeckGroupsPage({super.key});
@@ -59,6 +59,21 @@ class DeckGroupsPage extends ConsumerWidget {
                     return context.l10n.deckNamePrompt;
                   }
                   return null;
+                },
+                textInputAction: TextInputAction.done,
+                onFieldSubmitted: (value) async {
+                  final trimmed = value.trim();
+                  if (trimmed.isNotEmpty) {
+                    try {
+                      await ref
+                          .read(decksControllerProvider.notifier)
+                          .saveDeck(model.Deck(name: trimmed));
+                      context.showInfoSnackbar(context.l10n.deckSaved);
+                      context.pop();
+                    } catch (error) {
+                      context.showErrorSnackbar('Error saving deck: $error');
+                    }
+                  }
                 },
               ),
               Row(
