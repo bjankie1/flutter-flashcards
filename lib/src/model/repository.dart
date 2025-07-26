@@ -41,6 +41,9 @@ abstract class CardsRepository extends ChangeNotifier {
 
   Future<void> deleteDeck(String deckId);
 
+  /// Executes multiple operations in a single transaction
+  Future<void> runTransaction(Future<void> Function() operations);
+
   Future<Iterable<model.Card>> loadCards(String deckId);
 
   Future<Iterable<model.Card>> loadCardsByIds(Iterable<String> cardIds);
