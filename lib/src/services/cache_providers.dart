@@ -26,8 +26,10 @@ final currentUserIdProvider = Provider<String?>((ref) {
   return userAsync.value?.uid;
 });
 
-/// Provider for CardStatsCacheService
-final cardStatsCacheServiceProvider = Provider<CardStatsCacheService?>((ref) {
+/// Provider for initialized CardStatsCacheService
+final cardStatsCacheServiceProvider = FutureProvider<CardStatsCacheService?>((
+  ref,
+) async {
   final firestore = ref.watch(firestoreProvider);
   final userId = ref.watch(currentUserIdProvider);
 
@@ -36,24 +38,15 @@ final cardStatsCacheServiceProvider = Provider<CardStatsCacheService?>((ref) {
     return null;
   }
 
-  _log.d('Creating CardStatsCacheService for user: $userId');
-  return CardStatsCacheService(firestore, userId);
+  _log.d('Creating and initializing CardStatsCacheService for user: $userId');
+  final service = CardStatsCacheService(firestore, userId);
+  await service.initialize();
+  _log.d('CardStatsCacheService initialized successfully');
+  return service;
 });
 
-/// Provider for CardStatsCacheService initialization
-final cardStatsCacheInitializerProvider =
-    FutureProvider<CardStatsCacheService?>((ref) async {
-      final service = ref.watch(cardStatsCacheServiceProvider);
-      if (service == null) return null;
-
-      _log.d('Initializing CardStatsCacheService...');
-      await service.initialize();
-      _log.d('CardStatsCacheService initialized successfully');
-      return service;
-    });
-
-/// Provider for DeckCacheService
-final deckCacheServiceProvider = Provider<DeckCacheService?>((ref) {
+/// Provider for initialized DeckCacheService
+final deckCacheServiceProvider = FutureProvider<DeckCacheService?>((ref) async {
   final firestore = ref.watch(firestoreProvider);
   final userId = ref.watch(currentUserIdProvider);
 
@@ -62,25 +55,17 @@ final deckCacheServiceProvider = Provider<DeckCacheService?>((ref) {
     return null;
   }
 
-  _log.d('Creating DeckCacheService for user: $userId');
-  return DeckCacheService(firestore, userId);
-});
-
-/// Provider for DeckCacheService initialization
-final deckCacheInitializerProvider = FutureProvider<DeckCacheService?>((
-  ref,
-) async {
-  final service = ref.watch(deckCacheServiceProvider);
-  if (service == null) return null;
-
-  _log.d('Initializing DeckCacheService...');
+  _log.d('Creating and initializing DeckCacheService for user: $userId');
+  final service = DeckCacheService(firestore, userId);
   await service.initialize();
   _log.d('DeckCacheService initialized successfully');
   return service;
 });
 
-/// Provider for DeckGroupCacheService
-final deckGroupCacheServiceProvider = Provider<DeckGroupCacheService?>((ref) {
+/// Provider for initialized DeckGroupCacheService
+final deckGroupCacheServiceProvider = FutureProvider<DeckGroupCacheService?>((
+  ref,
+) async {
   final firestore = ref.watch(firestoreProvider);
   final userId = ref.watch(currentUserIdProvider);
 
@@ -89,29 +74,20 @@ final deckGroupCacheServiceProvider = Provider<DeckGroupCacheService?>((ref) {
     return null;
   }
 
-  _log.d('Creating DeckGroupCacheService for user: $userId');
-  return DeckGroupCacheService(firestore, userId);
+  _log.d('Creating and initializing DeckGroupCacheService for user: $userId');
+  final service = DeckGroupCacheService(firestore, userId);
+  await service.initialize();
+  _log.d('DeckGroupCacheService initialized successfully');
+  return service;
 });
 
-/// Provider for DeckGroupCacheService initialization
-final deckGroupCacheInitializerProvider =
-    FutureProvider<DeckGroupCacheService?>((ref) async {
-      final service = ref.watch(deckGroupCacheServiceProvider);
-      if (service == null) return null;
-
-      _log.d('Initializing DeckGroupCacheService...');
-      await service.initialize();
-      _log.d('DeckGroupCacheService initialized successfully');
-      return service;
-    });
-
 /// Provider for DecksService that uses all cache services
-final decksServiceProvider = Provider<DecksService?>((ref) {
+final decksServiceProvider = FutureProvider<DecksService?>((ref) async {
   final firestore = ref.watch(firestoreProvider);
   final userId = ref.watch(currentUserIdProvider);
-  final cardStatsCache = ref.watch(readyCardStatsCacheServiceProvider);
-  final deckCache = ref.watch(readyDeckCacheServiceProvider);
-  final deckGroupCache = ref.watch(readyDeckGroupCacheServiceProvider);
+  final cardStatsCache = await ref.watch(cardStatsCacheServiceProvider.future);
+  final deckCache = await ref.watch(deckCacheServiceProvider.future);
+  final deckGroupCache = await ref.watch(deckGroupCacheServiceProvider.future);
 
   if (userId == null ||
       cardStatsCache == null ||
@@ -133,9 +109,9 @@ final decksServiceProvider = Provider<DecksService?>((ref) {
 
 /// Provider that watches cache initialization status
 final cacheServicesReadyProvider = Provider<bool>((ref) {
-  final cardStatsInit = ref.watch(cardStatsCacheInitializerProvider);
-  final deckInit = ref.watch(deckCacheInitializerProvider);
-  final deckGroupInit = ref.watch(deckGroupCacheInitializerProvider);
+  final cardStatsInit = ref.watch(cardStatsCacheServiceProvider);
+  final deckInit = ref.watch(deckCacheServiceProvider);
+  final deckGroupInit = ref.watch(deckGroupCacheServiceProvider);
 
   final cardStatsReady = cardStatsInit.hasValue && !cardStatsInit.hasError;
   final deckReady = deckInit.hasValue && !deckInit.hasError;
@@ -150,34 +126,4 @@ final cacheServicesReadyProvider = Provider<bool>((ref) {
   _log.d('All cache services ready: $allReady');
 
   return allReady;
-});
-
-/// Provider for initialized CardStatsCacheService (only available when ready)
-final readyCardStatsCacheServiceProvider = Provider<CardStatsCacheService?>((
-  ref,
-) {
-  final initAsync = ref.watch(cardStatsCacheInitializerProvider);
-  return initAsync.value;
-});
-
-/// Provider for initialized DeckCacheService (only available when ready)
-final readyDeckCacheServiceProvider = Provider<DeckCacheService?>((ref) {
-  final initAsync = ref.watch(deckCacheInitializerProvider);
-  return initAsync.value;
-});
-
-/// Provider for initialized DeckGroupCacheService (only available when ready)
-final readyDeckGroupCacheServiceProvider = Provider<DeckGroupCacheService?>((
-  ref,
-) {
-  final initAsync = ref.watch(deckGroupCacheInitializerProvider);
-  return initAsync.value;
-});
-
-/// Provider for initialized DecksService (only available when ready)
-final readyDecksServiceProvider = Provider<DecksService?>((ref) {
-  final isReady = ref.watch(cacheServicesReadyProvider);
-  if (!isReady) return null;
-
-  return ref.watch(decksServiceProvider);
 });

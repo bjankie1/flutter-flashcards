@@ -25,9 +25,13 @@ class DeckGroupsController extends _$DeckGroupsController {
       return [];
     }
 
-    final deckGroupCache = ref.watch(readyDeckGroupCacheServiceProvider);
-    _log.d('DeckGroupCache available: ${deckGroupCache != null}');
+    final deckGroupCacheAsync = ref.watch(deckGroupCacheServiceProvider);
+    if (!deckGroupCacheAsync.hasValue) {
+      _log.d('DeckGroupCacheService not ready yet');
+      return [];
+    }
 
+    final deckGroupCache = deckGroupCacheAsync.value;
     if (deckGroupCache == null) {
       _log.w('DeckGroupCacheService not available');
       return [];
@@ -44,10 +48,11 @@ class DeckGroupsController extends _$DeckGroupsController {
     }
 
     // Get deck cache to cross-reference deck IDs
-    final deckCache = ref.watch(readyDeckCacheServiceProvider);
+    final deckCacheAsync = ref.watch(deckCacheServiceProvider);
     List<model.DeckGroup> nonEmptyGroups;
 
-    if (deckCache != null) {
+    if (deckCacheAsync.hasValue && deckCacheAsync.value != null) {
+      final deckCache = deckCacheAsync.value!;
       final validDeckIds = deckCache
           .getAllDecks()
           .map((deck) => deck.id!)
@@ -159,9 +164,9 @@ class DeckGroupsController extends _$DeckGroupsController {
       await repository.addDeckToGroup(deckId, groupId);
 
       // Update cache immediately for faster UI updates
-      final deckGroupCache = ref.read(readyDeckGroupCacheServiceProvider);
-      if (deckGroupCache != null) {
-        deckGroupCache.updateDeckInGroup(deckId, groupId, true);
+      final deckGroupCacheAsync = ref.read(deckGroupCacheServiceProvider);
+      if (deckGroupCacheAsync.hasValue && deckGroupCacheAsync.value != null) {
+        deckGroupCacheAsync.value!.updateDeckInGroup(deckId, groupId, true);
         _log.d('Updated cache: added deck $deckId to group $groupId');
       }
 
@@ -187,9 +192,9 @@ class DeckGroupsController extends _$DeckGroupsController {
       await repository.removeDeckFromGroup(deckId, groupId);
 
       // Update cache immediately for faster UI updates
-      final deckGroupCache = ref.read(readyDeckGroupCacheServiceProvider);
-      if (deckGroupCache != null) {
-        deckGroupCache.updateDeckInGroup(deckId, groupId, false);
+      final deckGroupCacheAsync = ref.read(deckGroupCacheServiceProvider);
+      if (deckGroupCacheAsync.hasValue && deckGroupCacheAsync.value != null) {
+        deckGroupCacheAsync.value!.updateDeckInGroup(deckId, groupId, false);
         _log.d('Updated cache: removed deck $deckId from group $groupId');
       }
 
@@ -226,13 +231,19 @@ class DeckGroupsController extends _$DeckGroupsController {
     try {
       _log.d('Manually triggering orphaned reference cleanup');
 
-      final deckGroupCache = ref.read(readyDeckGroupCacheServiceProvider);
-      final deckCache = ref.read(readyDeckCacheServiceProvider);
+      final deckGroupCacheAsync = ref.read(deckGroupCacheServiceProvider);
+      final deckCacheAsync = ref.read(deckCacheServiceProvider);
 
-      if (deckGroupCache == null || deckCache == null) {
+      if (!deckGroupCacheAsync.hasValue ||
+          !deckCacheAsync.hasValue ||
+          deckGroupCacheAsync.value == null ||
+          deckCacheAsync.value == null) {
         _log.w('Cache services not available for cleanup');
         return;
       }
+
+      final deckGroupCache = deckGroupCacheAsync.value!;
+      final deckCache = deckCacheAsync.value!;
 
       final validDeckIds = deckCache
           .getAllDecks()
@@ -279,10 +290,12 @@ final cardsToReviewCountByGroupProvider = FutureProvider.autoDispose
         return {};
       }
 
-      final decksService = ref.watch(readyDecksServiceProvider);
-      if (decksService == null) {
+      final decksServiceAsync = ref.watch(decksServiceProvider);
+      if (!decksServiceAsync.hasValue || decksServiceAsync.value == null) {
         return {};
       }
+
+      final decksService = decksServiceAsync.value!;
 
       final count = decksService.getCardsToReviewCountForDeckGroup(
         deckGroupId ?? '',
@@ -305,12 +318,18 @@ final unassignedDecksProvider = FutureProvider.autoDispose<List<model.DeckId>>((
     return [];
   }
 
-  final deckCache = ref.watch(readyDeckCacheServiceProvider);
-  final deckGroupCache = ref.watch(readyDeckGroupCacheServiceProvider);
+  final deckCacheAsync = ref.watch(deckCacheServiceProvider);
+  final deckGroupCacheAsync = ref.watch(deckGroupCacheServiceProvider);
 
-  if (deckCache == null || deckGroupCache == null) {
+  if (!deckCacheAsync.hasValue ||
+      !deckGroupCacheAsync.hasValue ||
+      deckCacheAsync.value == null ||
+      deckGroupCacheAsync.value == null) {
     return [];
   }
+
+  final deckCache = deckCacheAsync.value!;
+  final deckGroupCache = deckGroupCacheAsync.value!;
 
   final allDecks = deckCache.getAllDecks();
   final groups = deckGroupCache.getAllGroups();
