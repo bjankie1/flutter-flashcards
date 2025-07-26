@@ -3,6 +3,7 @@ import 'package:logger/logger.dart';
 
 import '../../model/cards.dart' as model;
 import '../deck_list/decks_controller.dart';
+import '../../services/cache_providers.dart';
 
 part 'deck_groups_controller.g.dart';
 
@@ -14,16 +15,41 @@ class DeckGroupsController extends _$DeckGroupsController {
   @override
   Future<List<model.DeckGroup>> build() async {
     _log.d('DeckGroupsController build() called');
-    final repository = ref.watch(cardsRepositoryProvider);
-    final groups = await repository.loadDeckGroups();
+
+    // Wait for cache services to be ready
+    final cacheReady = ref.watch(cacheServicesReadyProvider);
+    _log.d('Cache services ready: $cacheReady');
+
+    if (!cacheReady) {
+      _log.d('Cache services not ready yet, returning empty list');
+      return [];
+    }
+
+    final deckGroupCache = ref.watch(readyDeckGroupCacheServiceProvider);
+    _log.d('DeckGroupCache available: ${deckGroupCache != null}');
+
+    if (deckGroupCache == null) {
+      _log.w('DeckGroupCacheService not available');
+      return [];
+    }
+
+    // Get all groups from cache
+    final allGroups = deckGroupCache.getAllGroups().toList();
+    _log.d('Total groups in cache: ${allGroups.length}');
+
+    for (final group in allGroups) {
+      _log.d(
+        'Group: ${group.name} (id: ${group.id}), decks: ${group.decks?.length ?? 0}',
+      );
+    }
 
     // Filter out groups that have no decks using the decks property
-    final nonEmptyGroups = groups
+    final nonEmptyGroups = allGroups
         .where((group) => group.decks?.isNotEmpty ?? false)
         .toList();
 
     _log.d(
-      'Successfully loaded ${nonEmptyGroups.length} non-empty deck groups out of ${groups.length} total',
+      'Successfully loaded ${nonEmptyGroups.length} non-empty deck groups out of ${allGroups.length} total from cache',
     );
     return nonEmptyGroups;
   }
@@ -38,6 +64,8 @@ class DeckGroupsController extends _$DeckGroupsController {
       _log.d('Updating deck group: ${group.name}');
       final repository = ref.read(cardsRepositoryProvider);
       await repository.updateDeckGroup(group);
+
+      // Cache will be updated automatically via real-time listener
       ref.invalidateSelf();
       _log.d('Successfully updated deck group: ${group.name}');
     } catch (error, stackTrace) {
@@ -80,6 +108,14 @@ class DeckGroupsController extends _$DeckGroupsController {
       _log.d('Adding deck $deckId to group $groupId');
       final repository = ref.read(cardsRepositoryProvider);
       await repository.addDeckToGroup(deckId, groupId);
+
+      // Update cache immediately for faster UI updates
+      final deckGroupCache = ref.read(readyDeckGroupCacheServiceProvider);
+      if (deckGroupCache != null) {
+        deckGroupCache.updateDeckInGroup(deckId, groupId, true);
+        _log.d('Updated cache: added deck $deckId to group $groupId');
+      }
+
       ref.invalidateSelf();
       _log.d('Successfully added deck $deckId to group $groupId');
     } catch (error, stackTrace) {
@@ -100,6 +136,14 @@ class DeckGroupsController extends _$DeckGroupsController {
       _log.d('Removing deck $deckId from group $groupId');
       final repository = ref.read(cardsRepositoryProvider);
       await repository.removeDeckFromGroup(deckId, groupId);
+
+      // Update cache immediately for faster UI updates
+      final deckGroupCache = ref.read(readyDeckGroupCacheServiceProvider);
+      if (deckGroupCache != null) {
+        deckGroupCache.updateDeckInGroup(deckId, groupId, false);
+        _log.d('Updated cache: removed deck $deckId from group $groupId');
+      }
+
       ref.invalidateSelf();
       _log.d('Successfully removed deck $deckId from group $groupId');
     } catch (error, stackTrace) {
@@ -138,8 +182,23 @@ final sharedDecksProvider =
 
 final cardsToReviewCountByGroupProvider = FutureProvider.autoDispose
     .family<Map<dynamic, int>, String?>((ref, deckGroupId) async {
-      final repository = ref.watch(cardsRepositoryProvider);
-      return await repository.cardsToReviewCount(deckGroupId: deckGroupId);
+      // Wait for cache services to be ready
+      final cacheReady = ref.watch(cacheServicesReadyProvider);
+      if (!cacheReady) {
+        return {};
+      }
+
+      final decksService = ref.watch(readyDecksServiceProvider);
+      if (decksService == null) {
+        return {};
+      }
+
+      final count = decksService.getCardsToReviewCountForDeckGroup(
+        deckGroupId ?? '',
+      );
+
+      // Return in the same format as the repository method
+      return {'total': count};
     });
 
 /// Provider for unassigned decks that depends on the main controller
@@ -149,9 +208,21 @@ final unassignedDecksProvider = FutureProvider.autoDispose<List<model.DeckId>>((
   // Watch the main controller to ensure this refreshes when it does
   await ref.watch(deckGroupsControllerProvider.future);
 
-  final repository = ref.watch(cardsRepositoryProvider);
-  final allDecks = await repository.loadDecks();
-  final groups = await repository.loadDeckGroups();
+  // Wait for cache services to be ready
+  final cacheReady = ref.watch(cacheServicesReadyProvider);
+  if (!cacheReady) {
+    return [];
+  }
+
+  final deckCache = ref.watch(readyDeckCacheServiceProvider);
+  final deckGroupCache = ref.watch(readyDeckGroupCacheServiceProvider);
+
+  if (deckCache == null || deckGroupCache == null) {
+    return [];
+  }
+
+  final allDecks = deckCache.getAllDecks();
+  final groups = deckGroupCache.getAllGroups();
 
   // Get all deck IDs that are assigned to groups
   final assignedDeckIds = groups
