@@ -7,7 +7,7 @@ part of 'deck_groups_controller.dart';
 // **************************************************************************
 
 String _$deckGroupsControllerHash() =>
-    r'7dc4eaf862b8d51aa204f3c2151e7f29cf538520';
+    r'e16911d1bc9d0979ee20204379f4a158223da270';
 
 /// Controller for managing deck groups
 ///

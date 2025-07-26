@@ -18,3 +18,8 @@
   date: 2025-07-20
   changes:
     - Improved top navigation bar layout
+
+- version: 1.0.6
+  date: 2025-07-26
+  changes:
+    - Refresh deck groups on change

@@ -44,7 +44,7 @@ final sortedDecksProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SortedDecksRef = AutoDisposeProviderRef<AsyncValue<List<model.Deck>>>;
-String _$decksControllerHash() => r'ab3ecf329bd19d2318c703d484545f304cb2e063';
+String _$decksControllerHash() => r'ecbdd41b36ad411e0bd8372d95cf6b497761622d';
 
 /// Controller for managing deck-related operations
 ///
