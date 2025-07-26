@@ -1205,4 +1205,13 @@ Mature: ${breakdown[CardMastery.mature]}''');
     }
     return allStats;
   }
+
+  @override
+  Future<void> runTransaction(Future<void> Function() operations) async {
+    _log.d('Starting transaction');
+    await _firestore.runTransaction((transaction) async {
+      await operations();
+    });
+    _log.d('Transaction completed successfully');
+  }
 }
