@@ -242,6 +242,64 @@ class DeckGroupCacheService {
   /// Returns whether the service is initialized
   bool get isInitialized => _isInitialized;
 
+  /// Cleans up orphaned deck references by removing deck IDs that no longer exist
+  /// in the deck cache. This prevents displaying groups with dead references.
+  /// Returns the list of groups that were updated during cleanup.
+  List<DeckGroup> cleanupOrphanedDeckReferences(Iterable<String> validDeckIds) {
+    if (!_isInitialized) {
+      _log.w(
+        'DeckGroupCacheService not initialized. Cannot cleanup orphaned references.',
+      );
+      return [];
+    }
+
+    _log.d(
+      'Cleaning up orphaned deck references. Valid deck IDs: ${validDeckIds.length}',
+    );
+
+    final validDeckIdsSet = validDeckIds.toSet();
+    final groupsToUpdate = <DeckGroup>[];
+
+    for (final group in _groupsById.values) {
+      final originalDeckCount = group.decks?.length ?? 0;
+      final validDecks =
+          group.decks
+              ?.where((deckId) => validDeckIdsSet.contains(deckId))
+              .toSet() ??
+          {};
+      final removedCount = originalDeckCount - validDecks.length;
+
+      if (removedCount > 0) {
+        _log.d(
+          'Group "${group.name}" (${group.id}) has $removedCount orphaned deck references. '
+          'Original: ${group.decks?.toList()}, Valid: ${validDecks.toList()}',
+        );
+
+        final updatedGroup = group.copyWith(decks: validDecks);
+        groupsToUpdate.add(updatedGroup);
+      }
+    }
+
+    // Update the cache with cleaned groups
+    for (final updatedGroup in groupsToUpdate) {
+      _addGroupToCache(updatedGroup);
+      _log.d(
+        'Updated group "${updatedGroup.name}" (${updatedGroup.id}) - removed orphaned references. '
+        'Decks: ${updatedGroup.decks?.length ?? 0}',
+      );
+    }
+
+    if (groupsToUpdate.isNotEmpty) {
+      _log.d(
+        'Cleaned up ${groupsToUpdate.length} groups with orphaned deck references',
+      );
+    } else {
+      _log.d('No orphaned deck references found');
+    }
+
+    return groupsToUpdate;
+  }
+
   /// Disposes the service and cancels all subscriptions
   void dispose() {
     _log.d('Disposing DeckGroupCacheService');

@@ -43,10 +43,59 @@ class DeckGroupsController extends _$DeckGroupsController {
       );
     }
 
-    // Filter out groups that have no decks using the decks property
-    final nonEmptyGroups = allGroups
-        .where((group) => group.decks?.isNotEmpty ?? false)
-        .toList();
+    // Get deck cache to cross-reference deck IDs
+    final deckCache = ref.watch(readyDeckCacheServiceProvider);
+    List<model.DeckGroup> nonEmptyGroups;
+
+    if (deckCache != null) {
+      final validDeckIds = deckCache
+          .getAllDecks()
+          .map((deck) => deck.id!)
+          .toList();
+      _log.d('Valid deck IDs from cache: ${validDeckIds.length}');
+
+      // Clean up orphaned deck references
+      final cleanedGroups = deckGroupCache.cleanupOrphanedDeckReferences(
+        validDeckIds,
+      );
+
+      // Persist cleaned groups to Firebase if any were updated
+      if (cleanedGroups.isNotEmpty) {
+        _log.d('Persisting ${cleanedGroups.length} cleaned groups to Firebase');
+        try {
+          final repository = ref.read(cardsRepositoryProvider);
+          for (final group in cleanedGroups) {
+            await repository.updateDeckGroup(group);
+            _log.d('Persisted cleaned group: ${group.name} (${group.id})');
+          }
+        } catch (error, stackTrace) {
+          _log.e(
+            'Error persisting cleaned groups',
+            error: error,
+            stackTrace: stackTrace,
+          );
+          // Continue with the operation even if persistence fails
+        }
+      }
+
+      // Get updated groups after cleanup
+      final updatedGroups = deckGroupCache.getAllGroups().toList();
+      _log.d('Groups after cleanup: ${updatedGroups.length}');
+
+      // Filter out groups that have no decks using the decks property
+      nonEmptyGroups = updatedGroups
+          .where((group) => group.decks?.isNotEmpty ?? false)
+          .toList();
+    } else {
+      _log.w(
+        'DeckCacheService not available, skipping orphaned reference cleanup',
+      );
+
+      // Filter out groups that have no decks using the decks property
+      nonEmptyGroups = allGroups
+          .where((group) => group.decks?.isNotEmpty ?? false)
+          .toList();
+    }
 
     _log.d(
       'Successfully loaded ${nonEmptyGroups.length} non-empty deck groups out of ${allGroups.length} total from cache',
@@ -165,6 +214,48 @@ class DeckGroupsController extends _$DeckGroupsController {
     } catch (error, stackTrace) {
       _log.e(
         'Error refreshing controller',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      rethrow;
+    }
+  }
+
+  /// Manually trigger cleanup of orphaned deck references
+  Future<void> cleanupOrphanedReferences() async {
+    try {
+      _log.d('Manually triggering orphaned reference cleanup');
+
+      final deckGroupCache = ref.read(readyDeckGroupCacheServiceProvider);
+      final deckCache = ref.read(readyDeckCacheServiceProvider);
+
+      if (deckGroupCache == null || deckCache == null) {
+        _log.w('Cache services not available for cleanup');
+        return;
+      }
+
+      final validDeckIds = deckCache
+          .getAllDecks()
+          .map((deck) => deck.id!)
+          .toList();
+      final cleanedGroups = deckGroupCache.cleanupOrphanedDeckReferences(
+        validDeckIds,
+      );
+
+      if (cleanedGroups.isNotEmpty) {
+        _log.d('Persisting ${cleanedGroups.length} cleaned groups to Firebase');
+        final repository = ref.read(cardsRepositoryProvider);
+        for (final group in cleanedGroups) {
+          await repository.updateDeckGroup(group);
+          _log.d('Persisted cleaned group: ${group.name} (${group.id})');
+        }
+      }
+
+      ref.invalidateSelf();
+      _log.d('Successfully completed orphaned reference cleanup');
+    } catch (error, stackTrace) {
+      _log.e(
+        'Error during orphaned reference cleanup',
         error: error,
         stackTrace: stackTrace,
       );
