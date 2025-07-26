@@ -2,7 +2,7 @@ import 'package:logger/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../model/card_mastery.dart';
-import 'decks_controller.dart';
+import '../../services/cache_providers.dart';
 
 part 'deck_mastery_controller.g.dart';
 
@@ -10,37 +10,62 @@ part 'deck_mastery_controller.g.dart';
 @riverpod
 class DeckMasteryController extends _$DeckMasteryController {
   final Logger _log = Logger();
-  late String _deckId;
 
   @override
   AsyncValue<Map<CardMastery, int>> build(String deckId) {
-    _deckId = deckId;
-    _loadMasteryData();
-    return const AsyncValue.loading();
-  }
+    _log.d('Building DeckMasteryController for deck: $deckId');
 
-  /// Loads mastery breakdown for a specific deck
-  Future<void> _loadMasteryData() async {
-    try {
-      _log.d('Loading mastery data for deck: $_deckId');
-      state = const AsyncValue.loading();
-      final repository = ref.read(cardsRepositoryProvider);
-      final masteryData = await repository.getMasteryBreakdown(deckId: _deckId);
-      state = AsyncValue.data(masteryData);
-      _log.d('Successfully loaded mastery data for deck: $_deckId');
-    } catch (error, stackTrace) {
-      _log.e(
-        'Error loading mastery data for deck: $_deckId',
-        error: error,
-        stackTrace: stackTrace,
-      );
-      state = AsyncValue.error(error, stackTrace);
+    // Watch cache readiness - this will automatically rebuild when cache becomes ready
+    final cacheReady = ref.watch(cacheServicesReadyProvider);
+
+    if (!cacheReady) {
+      _log.d('Cache services not ready yet');
+      return const AsyncValue.loading();
     }
+
+    // Watch the decks service - this will automatically rebuild when service becomes available
+    final decksServiceAsync = ref.watch(decksServiceProvider);
+
+    return decksServiceAsync.when(
+      data: (decksService) {
+        if (decksService == null) {
+          _log.w('DecksService not available');
+          return AsyncValue.error(
+            'DecksService not available',
+            StackTrace.current,
+          );
+        }
+
+        try {
+          _log.d('Loading mastery data for deck: $deckId');
+          final masteryData = decksService.getMasteryBreakdown(deckId: deckId);
+          _log.d('Successfully loaded mastery data for deck: $deckId');
+          return AsyncValue.data(masteryData);
+        } catch (error, stackTrace) {
+          _log.e(
+            'Error loading mastery data for deck: $deckId',
+            error: error,
+            stackTrace: stackTrace,
+          );
+          return AsyncValue.error(error, stackTrace);
+        }
+      },
+      loading: () => const AsyncValue.loading(),
+      error: (error, stackTrace) {
+        _log.e(
+          'Error with DecksService for deck: $deckId',
+          error: error,
+          stackTrace: stackTrace,
+        );
+        return AsyncValue.error(error, stackTrace);
+      },
+    );
   }
 
   /// Refreshes the mastery data for the deck
   Future<void> refresh() async {
-    await _loadMasteryData();
+    _log.d('Refreshing mastery data');
+    ref.invalidateSelf();
   }
 
   /// Gets the mastery progress percentage
