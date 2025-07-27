@@ -1,10 +1,12 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/async_operation_handler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
-import 'package:flutter_flashcards/src/common/collapsible_description_field.dart';
+
 import 'package:flutter_flashcards/src/common/themes.dart';
 import 'package:flutter_flashcards/src/common/category_image.dart';
+import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:logger/logger.dart';
 
 import '../../model/cards.dart' as model;
@@ -43,30 +45,41 @@ final class DeckDetails extends ConsumerWidget {
           error: error,
           stackTrace: stackTrace,
         );
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 48,
-                color: context.theme.colorScheme.error,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Error loading deck details',
-                style: context.theme.textTheme.titleMedium,
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () =>
-                    ref.refresh(deckDetailsControllerProvider(deck.id!)),
-                child: const Text('Retry'),
-              ),
-            ],
-          ),
-        );
+        return _ErrorDisplayWidget(deck: deck);
       },
+    );
+  }
+}
+
+class _ErrorDisplayWidget extends ConsumerWidget {
+  const _ErrorDisplayWidget({required this.deck});
+
+  final model.Deck deck;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 48,
+            color: context.theme.colorScheme.error,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Error loading deck details',
+            style: context.theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          ElevatedButton(
+            onPressed: () =>
+                ref.refresh(deckDetailsControllerProvider(deck.id!)),
+            child: const Text('Retry'),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -86,14 +99,6 @@ final class _DeckDetailsContent extends ConsumerWidget
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final categoryImage = currentDeck.category != null
-        ? CategoryImage(
-            category: currentDeck.category!,
-            size: 120,
-            borderRadius: BorderRadius.circular(24),
-          )
-        : null;
-
     final leftColumn = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -113,7 +118,9 @@ final class _DeckDetailsContent extends ConsumerWidget
           text: currentDeck.description ?? '',
           style: context.theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w500,
-            color: context.theme.colorScheme.onSurface,
+            color: context.isDarkTheme
+                ? context.theme.colorScheme.onSurface.darken(30)
+                : context.theme.colorScheme.onSurface.lighten(30),
           ),
           placeholder: 'Add description',
           onTextChanged: (value) => executeWithFeedback(
@@ -125,43 +132,25 @@ final class _DeckDetailsContent extends ConsumerWidget
             logErrorPrefix: 'Error saving deck description',
           ),
         ),
-        const SizedBox(height: 20),
-        _CardDescriptionFields(deck: currentDeck, controller: controller),
+
+        _CardDescriptionFields(deck: currentDeck),
       ],
     );
 
-    final rightColumn = categoryImage != null
-        ? Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              categoryImage,
-              const SizedBox(height: 16),
-              CardCountWidget(deckId: deck.id!),
-            ],
-          )
-        : const SizedBox.shrink();
-
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(child: leftColumn),
-            const SizedBox(width: 32),
-            rightColumn,
-          ],
-        ),
+        leftColumn,
         const SizedBox(height: 20),
         Align(
           alignment: Alignment.center,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              LearnButtonWidget(deckId: deck.id!),
+              _LearnButtonWidget(deckId: deck.id!),
               const SizedBox(width: 16),
-              GenerateFromGoogleDocButtonWidget(deckId: deck.id!),
+              _GenerateFromGoogleDocButtonWidget(deckId: deck.id!),
             ],
           ),
         ),
@@ -171,10 +160,10 @@ final class _DeckDetailsContent extends ConsumerWidget
 }
 
 /// Widget for displaying the card count
-final class CardCountWidget extends ConsumerWidget {
+final class _CardCountWidget extends ConsumerWidget {
   final String deckId;
 
-  const CardCountWidget({super.key, required this.deckId});
+  const _CardCountWidget({required this.deckId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -205,11 +194,11 @@ final class CardCountWidget extends ConsumerWidget {
 }
 
 /// Widget for the learn button with review count badge
-final class LearnButtonWidget extends ConsumerWidget
+final class _LearnButtonWidget extends ConsumerWidget
     with AsyncOperationHandler {
   final String deckId;
 
-  LearnButtonWidget({super.key, required this.deckId});
+  _LearnButtonWidget({required this.deckId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -292,11 +281,11 @@ final class LearnButtonWidget extends ConsumerWidget
 }
 
 /// Widget for the generate from Google Doc button
-final class GenerateFromGoogleDocButtonWidget extends ConsumerWidget
+final class _GenerateFromGoogleDocButtonWidget extends ConsumerWidget
     with AsyncOperationHandler {
   final String deckId;
 
-  GenerateFromGoogleDocButtonWidget({super.key, required this.deckId});
+  _GenerateFromGoogleDocButtonWidget({required this.deckId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -329,189 +318,102 @@ final class GenerateFromGoogleDocButtonWidget extends ConsumerWidget
   }
 }
 
-class _CardDescriptionFields extends StatefulWidget with AsyncOperationHandler {
+class _CardDescriptionFields extends ConsumerWidget with AsyncOperationHandler {
   final model.Deck deck;
-  final DeckDetailsController controller;
 
-  _CardDescriptionFields({required this.deck, required this.controller});
-
+  _CardDescriptionFields({required this.deck});
   @override
-  State<_CardDescriptionFields> createState() => _CardDescriptionFieldsState();
-}
-
-class _CardDescriptionFieldsState extends State<_CardDescriptionFields>
-    with AsyncOperationHandler, TickerProviderStateMixin {
-  bool _isFrontLoading = false;
-  bool _isBackLoading = false;
-  bool _isExplanationLoading = false;
-  bool _isGeneratingDescriptions = false;
-  bool _isExpanded = false;
-  late AnimationController _animationController;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controllerNotifier = ref.read(
+      deckDetailsControllerProvider(deck.id!).notifier,
     );
-    _animation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    );
-
-    // Always start collapsed by default
-    _isExpanded = false;
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  void _toggleExpanded() {
-    setState(() {
-      _isExpanded = !_isExpanded;
-      if (_isExpanded) {
-        _animationController.forward();
-      } else {
-        _animationController.reverse();
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     final hasAnyDescription =
-        widget.deck.frontCardDescription?.isNotEmpty == true ||
-        widget.deck.backCardDescription?.isNotEmpty == true ||
-        widget.deck.explanationDescription?.isNotEmpty == true;
+        deck.frontCardDescription?.isNotEmpty == true ||
+        deck.backCardDescription?.isNotEmpty == true ||
+        deck.explanationDescription?.isNotEmpty == true;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Header with expand/collapse only
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                context.l10n.cardDescriptions,
-                style: context.theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: context.theme.colorScheme.onSurface,
-                ),
-              ),
-            ),
-            IconButton(
-              onPressed: _toggleExpanded,
-              icon: AnimatedRotation(
-                turns: _isExpanded ? 0.5 : 0.0,
-                duration: const Duration(milliseconds: 300),
-                child: const Icon(Icons.expand_more),
-              ),
-              tooltip: _isExpanded ? 'Collapse' : 'Expand',
-            ),
-          ],
-        ),
-
-        // Collapsible content
-        AnimatedBuilder(
-          animation: _animation,
-          builder: (context, child) {
-            return SizeTransition(
-              sizeFactor: _animation,
-              child: _isExpanded ? _buildDescriptionFields() : null,
-            );
-          },
-        ),
-
-        // Show a small indicator if descriptions exist but are collapsed
-        if (!_isExpanded && hasAnyDescription)
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Row(
+        Material(
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.info_outline,
-                  size: 16,
-                  color: context.theme.colorScheme.onSurfaceVariant,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      context.l10n.cardDescriptions,
+                      style: context.theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: context.theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    // Generate button inside the collapsible container
+                    TextButton.icon(
+                      onPressed: controllerNotifier.isGeneratingDescriptions
+                          ? null
+                          : () => _generateCardDescriptions(
+                              context,
+                              controllerNotifier,
+                            ),
+                      icon: controllerNotifier.isGeneratingDescriptions
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.auto_awesome),
+                      label: Text(
+                        hasAnyDescription
+                            ? context.l10n.regenerateCardDescriptions
+                            : context.l10n.generateCardDescriptions,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.orange[700],
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 4),
-                Text(
-                  context.l10n.cardDescriptionsConfigured,
-                  style: context.theme.textTheme.bodySmall?.copyWith(
-                    color: context.theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
+                _buildDescriptionFields(context, controllerNotifier),
               ],
             ),
           ),
+        ),
       ],
     );
   }
 
-  Widget _buildDescriptionFields() {
-    final hasAnyDescription =
-        widget.deck.frontCardDescription?.isNotEmpty == true ||
-        widget.deck.backCardDescription?.isNotEmpty == true ||
-        widget.deck.explanationDescription?.isNotEmpty == true;
-
+  Widget _buildDescriptionFields(
+    BuildContext context,
+    DeckDetailsController controllerNotifier,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(top: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Generate button inside the collapsible container
-          ElevatedButton.icon(
-            onPressed: _isGeneratingDescriptions
-                ? null
-                : _generateCardDescriptions,
-            icon: _isGeneratingDescriptions
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.auto_awesome),
-            label: Text(
-              hasAnyDescription
-                  ? context.l10n.regenerateCardDescriptions
-                  : context.l10n.generateCardDescriptions,
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange[700],
-              foregroundColor: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 16),
-          CollapsibleDescriptionField(
-            text: widget.deck.frontCardDescription,
-            isLoading: _isFrontLoading,
+          _DescriptionField(
+            text: deck.frontCardDescription,
             onTextChanged: (value) async {
-              setState(() {
-                _isFrontLoading = true;
-              });
-
               try {
                 await executeWithFeedback(
                   context: context,
-                  operation: () => widget.controller.updateFrontCardDescription(
-                    value,
-                    context.cloudFunctions,
-                  ),
+                  operation: () =>
+                      controllerNotifier.updateFrontCardDescription(
+                        value,
+                        context.cloudFunctions,
+                      ),
                   successMessage: context.l10n.frontCardDescriptionSavedMessage,
                   errorMessage:
                       context.l10n.frontCardDescriptionSaveErrorMessage,
                   logErrorPrefix: 'Error saving front card description',
                 );
-              } finally {
-                if (mounted) {
-                  setState(() {
-                    _isFrontLoading = false;
-                  });
-                }
+              } catch (e) {
+                // Error handling is done in executeWithFeedback
               }
             },
             addButtonText: context.l10n.addFrontCardDescription,
@@ -519,18 +421,13 @@ class _CardDescriptionFieldsState extends State<_CardDescriptionFields>
             hint: context.l10n.frontCardDescriptionHint,
           ),
           const SizedBox(height: 12),
-          CollapsibleDescriptionField(
-            text: widget.deck.backCardDescription,
-            isLoading: _isBackLoading,
+          _DescriptionField(
+            text: deck.backCardDescription,
             onTextChanged: (value) async {
-              setState(() {
-                _isBackLoading = true;
-              });
-
               try {
                 await executeWithFeedback(
                   context: context,
-                  operation: () => widget.controller.updateBackCardDescription(
+                  operation: () => controllerNotifier.updateBackCardDescription(
                     value,
                     context.cloudFunctions,
                   ),
@@ -539,12 +436,8 @@ class _CardDescriptionFieldsState extends State<_CardDescriptionFields>
                       context.l10n.backCardDescriptionSaveErrorMessage,
                   logErrorPrefix: 'Error saving back card description',
                 );
-              } finally {
-                if (mounted) {
-                  setState(() {
-                    _isBackLoading = false;
-                  });
-                }
+              } catch (e) {
+                // Error handling is done in executeWithFeedback
               }
             },
             addButtonText: context.l10n.addBackCardDescription,
@@ -552,31 +445,22 @@ class _CardDescriptionFieldsState extends State<_CardDescriptionFields>
             hint: context.l10n.backCardDescriptionHint,
           ),
           const SizedBox(height: 12),
-          CollapsibleDescriptionField(
-            text: widget.deck.explanationDescription,
-            isLoading: _isExplanationLoading,
+          _DescriptionField(
+            text: deck.explanationDescription,
             onTextChanged: (value) async {
-              setState(() {
-                _isExplanationLoading = true;
-              });
-
               try {
                 await executeWithFeedback(
                   context: context,
                   operation: () =>
-                      widget.controller.updateExplanationDescription(value),
+                      controllerNotifier.updateExplanationDescription(value),
                   successMessage:
                       context.l10n.explanationDescriptionSavedMessage,
                   errorMessage:
                       context.l10n.explanationDescriptionSaveErrorMessage,
                   logErrorPrefix: 'Error saving explanation description',
                 );
-              } finally {
-                if (mounted) {
-                  setState(() {
-                    _isExplanationLoading = false;
-                  });
-                }
+              } catch (e) {
+                // Error handling is done in executeWithFeedback
               }
             },
             addButtonText: context.l10n.addExplanationDescription,
@@ -588,123 +472,293 @@ class _CardDescriptionFieldsState extends State<_CardDescriptionFields>
     );
   }
 
-  Future<void> _generateCardDescriptions() async {
-    setState(() {
-      _isGeneratingDescriptions = true;
-    });
-
+  Future<void> _generateCardDescriptions(
+    BuildContext context,
+    DeckDetailsController controllerNotifier,
+  ) async {
     try {
-      final result = await widget.controller.generateCardDescriptions(context);
+      final result = await controllerNotifier.generateCardDescriptions(context);
 
       // Show a dialog with the generated descriptions and analysis
-      if (mounted) {
-        _showGeneratedDescriptionsDialog(result);
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isGeneratingDescriptions = false;
-        });
-      }
+      _showGeneratedDescriptionsDialog(context, result, controllerNotifier);
+    } catch (e) {
+      // Error handling is done in the controller
+      context.showErrorSnackbar('Error generating descriptions: $e');
     }
   }
 
-  void _showGeneratedDescriptionsDialog(CardDescriptionResult result) {
+  void _showGeneratedDescriptionsDialog(
+    BuildContext context,
+    CardDescriptionResult result,
+    DeckDetailsController controllerNotifier,
+  ) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(context.l10n.generatedCardDescriptions),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.generatedCardDescriptions),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                context.l10n.confidenceLevel,
+                style: context.theme.textTheme.titleSmall,
+              ),
+              Text('${(result.confidence * 100).toStringAsFixed(1)}%'),
+              const SizedBox(height: 16),
+              Text(
+                context.l10n.analysis,
+                style: context.theme.textTheme.titleSmall,
+              ),
+              Text(result.analysis),
+              const SizedBox(height: 16),
+              if (result.frontCardDescription != null) ...[
                 Text(
-                  context.l10n.confidenceLevel,
-                  style: Theme.of(context).textTheme.titleSmall,
+                  context.l10n.frontCardDescriptionLabel,
+                  style: context.theme.textTheme.titleSmall,
                 ),
-                Text('${(result.confidence * 100).toStringAsFixed(1)}%'),
+                Text(result.frontCardDescription!),
                 const SizedBox(height: 16),
-                Text(
-                  context.l10n.analysis,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                Text(result.analysis),
-                const SizedBox(height: 16),
-                if (result.frontCardDescription != null) ...[
-                  Text(
-                    context.l10n.frontCardDescriptionLabel,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  Text(result.frontCardDescription!),
-                  const SizedBox(height: 16),
-                ],
-                if (result.backCardDescription != null) ...[
-                  Text(
-                    context.l10n.backCardDescriptionLabel,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  Text(result.backCardDescription!),
-                  const SizedBox(height: 16),
-                ],
-                if (result.explanationDescription != null) ...[
-                  Text(
-                    context.l10n.explanationDescriptionLabel,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  Text(result.explanationDescription!),
-                ],
               ],
-            ),
+              if (result.backCardDescription != null) ...[
+                Text(
+                  context.l10n.backCardDescriptionLabel,
+                  style: context.theme.textTheme.titleSmall,
+                ),
+                Text(result.backCardDescription!),
+                const SizedBox(height: 16),
+              ],
+              if (result.explanationDescription != null) ...[
+                Text(
+                  context.l10n.explanationDescriptionLabel,
+                  style: context.theme.textTheme.titleSmall,
+                ),
+                Text(result.explanationDescription!),
+              ],
+            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(context.l10n.cancel),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _applyGeneratedDescriptions(result);
-              },
-              child: Text(context.l10n.apply),
-            ),
-          ],
-        );
-      },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(context.l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _applyGeneratedDescriptions(context, result, controllerNotifier);
+            },
+            child: Text(context.l10n.apply),
+          ),
+        ],
+      ),
     );
   }
 
-  Future<void> _applyGeneratedDescriptions(CardDescriptionResult result) async {
-    // Apply the generated descriptions to the deck
-    await executeWithFeedback(
-      context: context,
-      operation: () async {
-        if (result.frontCardDescription != null) {
-          await widget.controller.updateFrontCardDescription(
-            result.frontCardDescription!,
-            context.cloudFunctions,
-          );
-        }
-        if (result.backCardDescription != null) {
-          await widget.controller.updateBackCardDescription(
-            result.backCardDescription!,
-            context.cloudFunctions,
-          );
-        }
-        if (result.explanationDescription != null) {
-          await widget.controller.updateExplanationDescription(
-            result.explanationDescription!,
-          );
-        }
+  Future<void> _applyGeneratedDescriptions(
+    BuildContext context,
+    CardDescriptionResult result,
+    DeckDetailsController controllerNotifier,
+  ) async {
+    try {
+      if (result.frontCardDescription != null) {
+        await controllerNotifier.updateFrontCardDescription(
+          result.frontCardDescription!,
+          context.cloudFunctions,
+        );
+      }
+      if (result.backCardDescription != null) {
+        await controllerNotifier.updateBackCardDescription(
+          result.backCardDescription!,
+          context.cloudFunctions,
+        );
+      }
+      if (result.explanationDescription != null) {
+        await controllerNotifier.updateExplanationDescription(
+          result.explanationDescription!,
+        );
+      }
 
-        // Note: Reverse descriptions are now handled by the dedicated generateFrontFromBack function
-        // No need to generate reverse descriptions separately
-      },
-      successMessage: context.l10n.cardDescriptionsAppliedMessage,
-      errorMessage: context.l10n.cardDescriptionsApplyErrorMessage,
-      logErrorPrefix: 'Error applying generated card descriptions',
+      context.showInfoSnackbar(context.l10n.cardDescriptionsAppliedMessage);
+    } catch (e) {
+      context.showErrorSnackbar(context.l10n.cardDescriptionsApplyErrorMessage);
+    }
+  }
+}
+
+/// Internal widget for collapsible description field
+class _DescriptionField extends StatefulWidget {
+  final String? text;
+  final Function(String) onTextChanged;
+  final String addButtonText;
+  final String label;
+  final String hint;
+
+  const _DescriptionField({
+    this.text,
+    required this.onTextChanged,
+    required this.addButtonText,
+    required this.label,
+    required this.hint,
+  });
+
+  @override
+  State<_DescriptionField> createState() => _DescriptionFieldState();
+}
+
+class _DescriptionFieldState extends State<_DescriptionField> {
+  late TextEditingController controller;
+  late FocusNode focusNode;
+  bool isEditing = false;
+  String? _originalText;
+
+  @override
+  void initState() {
+    super.initState();
+    _originalText = widget.text;
+    controller = TextEditingController(text: widget.text ?? '');
+    focusNode = FocusNode();
+    focusNode.addListener(_handleFocusChange);
+  }
+
+  @override
+  void didUpdateWidget(_DescriptionField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.text != widget.text) {
+      _originalText = widget.text;
+      controller.text = widget.text ?? '';
+      isEditing = false;
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  void _handleFocusChange() {
+    if (!focusNode.hasFocus && isEditing) {
+      setState(() {
+        isEditing = false;
+      });
+    }
+  }
+
+  bool get _hasUnsavedChanges {
+    final currentText = controller.text.trim();
+    final originalText = _originalText ?? '';
+    return currentText != originalText;
+  }
+
+  void _expandField() {
+    setState(() {
+      isEditing = true;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      focusNode.requestFocus();
+    });
+  }
+
+  void _save() {
+    final text = controller.text.trim();
+    widget.onTextChanged(text);
+    setState(() {
+      _originalText = text;
+      isEditing = false;
+    });
+  }
+
+  void _cancel() {
+    setState(() {
+      isEditing = false;
+      controller.text = _originalText ?? '';
+    });
+    focusNode.unfocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final outline = theme.colorScheme.outline;
+    final hasText = widget.text != null && widget.text!.isNotEmpty;
+
+    if (!hasText && !isEditing) {
+      return OutlinedButton.icon(
+        onPressed: _expandField,
+        icon: const Icon(Icons.add, size: 16),
+        label: Text(widget.addButtonText),
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(
+            color: outline.withOpacity(0.3),
+            style: BorderStyle.solid,
+            width: 1,
+          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextFormField(
+          controller: controller,
+          focusNode: focusNode,
+          style: theme.textTheme.bodyMedium,
+          minLines: 1,
+          maxLines: 5,
+          decoration: InputDecoration(
+            labelText: widget.label,
+            hintText: widget.hint,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: outline.withOpacity(0.3)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: theme.colorScheme.primary,
+                width: 2,
+              ),
+            ),
+            contentPadding: const EdgeInsets.all(12),
+            suffixIcon: _hasUnsavedChanges
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: _cancel,
+                        icon: const Icon(Icons.close, size: 20),
+                        tooltip: 'Cancel',
+                        style: IconButton.styleFrom(
+                          foregroundColor: theme.colorScheme.error,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: _save,
+                        icon: const Icon(Icons.check, size: 20),
+                        tooltip: 'Save',
+                        style: IconButton.styleFrom(
+                          foregroundColor: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  )
+                : null,
+          ),
+          onFieldSubmitted: (value) => _save(),
+          onChanged: (value) {
+            setState(() {
+              // Trigger rebuild to show/hide save/cancel buttons
+            });
+          },
+        ),
+      ],
     );
   }
 }

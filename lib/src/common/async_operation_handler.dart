@@ -2,7 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:logger/logger.dart';
 
-/// Mixin to handle common async operations with error handling and user feedback
+/// Mixin to handle common async operations with error handling and user feedback.
+///
+/// This mixin is used to handle common async operations with error handling and user feedback.
+/// It is used to execute an async operation with standardized error handling and user feedback.
+/// It is used to execute a navigation operation with simple error handling.
+///
+/// Example:
+/// ```dart
+/// await executeWithFeedback(
+///   context: context,
+///   operation: () async {
+///     // Your async operation here
+///   },
+///   successMessage: 'Operation successful',
+///   errorMessage: 'Operation failed',
+///   logErrorPrefix: 'Error prefix',
+/// );
+/// ```
 mixin AsyncOperationHandler {
   final Logger _log = Logger();
 
