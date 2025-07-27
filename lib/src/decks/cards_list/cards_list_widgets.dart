@@ -215,7 +215,7 @@ class CardTile extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 8.0),
                   child: _buildDifficultyIndicator(
                     context,
-                    cardStats[0].difficulty,
+                    cardStats.first.difficulty,
                   ),
                 ),
             ],

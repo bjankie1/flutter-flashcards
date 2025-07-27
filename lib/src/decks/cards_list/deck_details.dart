@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 
 import 'package:flutter_flashcards/src/common/themes.dart';
-import 'package:flutter_flashcards/src/common/category_image.dart';
 import 'package:flutter_flashcards/src/common/snackbar_messaging.dart';
 import 'package:logger/logger.dart';
 
@@ -99,7 +98,8 @@ final class _DeckDetailsContent extends ConsumerWidget
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final leftColumn = Column(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         custom.EditableText(
@@ -132,63 +132,7 @@ final class _DeckDetailsContent extends ConsumerWidget
             logErrorPrefix: 'Error saving deck description',
           ),
         ),
-
-        _CardDescriptionFields(deck: currentDeck),
       ],
-    );
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        leftColumn,
-        const SizedBox(height: 20),
-        Align(
-          alignment: Alignment.center,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _LearnButtonWidget(deckId: deck.id!),
-              const SizedBox(width: 16),
-              _GenerateFromGoogleDocButtonWidget(deckId: deck.id!),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// Widget for displaying the card count
-final class _CardCountWidget extends ConsumerWidget {
-  final String deckId;
-
-  const _CardCountWidget({required this.deckId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final cardCountAsync = ref.watch(deckInfoControllerProvider(deckId));
-
-    return cardCountAsync.when(
-      data: (totalCards) => Text(
-        "${context.l10n.cards}: $totalCards",
-        style: context.theme.textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w500,
-          color: context.theme.colorScheme.onSurface,
-        ),
-      ),
-      loading: () => const SizedBox(
-        width: 16,
-        height: 16,
-        child: CircularProgressIndicator(strokeWidth: 2),
-      ),
-      error: (error, stackTrace) => Text(
-        "${context.l10n.cards}: 0",
-        style: context.theme.textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w500,
-          color: context.theme.colorScheme.onSurface,
-        ),
-      ),
     );
   }
 }
@@ -318,29 +262,39 @@ final class _GenerateFromGoogleDocButtonWidget extends ConsumerWidget
   }
 }
 
-class _CardDescriptionFields extends ConsumerWidget with AsyncOperationHandler {
+/// Sliver widget for card description fields that hides when scrolling
+class SliverCardDescriptionFields extends ConsumerStatefulWidget {
   final model.Deck deck;
 
-  _CardDescriptionFields({required this.deck});
+  const SliverCardDescriptionFields({required this.deck});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SliverCardDescriptionFields> createState() =>
+      _SliverCardDescriptionFieldsState();
+}
+
+class _SliverCardDescriptionFieldsState
+    extends ConsumerState<SliverCardDescriptionFields>
+    with AsyncOperationHandler {
+  @override
+  Widget build(BuildContext context) {
     final controllerNotifier = ref.read(
-      deckDetailsControllerProvider(deck.id!).notifier,
+      deckDetailsControllerProvider(widget.deck.id!).notifier,
     );
     final hasAnyDescription =
-        deck.frontCardDescription?.isNotEmpty == true ||
-        deck.backCardDescription?.isNotEmpty == true ||
-        deck.explanationDescription?.isNotEmpty == true;
+        widget.deck.frontCardDescription?.isNotEmpty == true ||
+        widget.deck.backCardDescription?.isNotEmpty == true ||
+        widget.deck.explanationDescription?.isNotEmpty == true;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Header with expand/collapse only
-        Material(
+    return SliverPersistentHeader(
+      pinned: false,
+      delegate: _CardDescriptionFieldsDelegate(
+        child: Material(
           child: Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(8.0), // Reduced from 12.0
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min, // Added to make it more compact
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -383,7 +337,7 @@ class _CardDescriptionFields extends ConsumerWidget with AsyncOperationHandler {
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -392,12 +346,13 @@ class _CardDescriptionFields extends ConsumerWidget with AsyncOperationHandler {
     DeckDetailsController controllerNotifier,
   ) {
     return Padding(
-      padding: const EdgeInsets.only(top: 16.0),
+      padding: const EdgeInsets.only(top: 8.0), // Reduced from 16.0
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min, // Added to make it more compact
         children: [
           _DescriptionField(
-            text: deck.frontCardDescription,
+            text: widget.deck.frontCardDescription,
             onTextChanged: (value) async {
               try {
                 await executeWithFeedback(
@@ -420,9 +375,9 @@ class _CardDescriptionFields extends ConsumerWidget with AsyncOperationHandler {
             label: context.l10n.frontCardDescriptionLabel,
             hint: context.l10n.frontCardDescriptionHint,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8), // Reduced from 12
           _DescriptionField(
-            text: deck.backCardDescription,
+            text: widget.deck.backCardDescription,
             onTextChanged: (value) async {
               try {
                 await executeWithFeedback(
@@ -444,9 +399,9 @@ class _CardDescriptionFields extends ConsumerWidget with AsyncOperationHandler {
             label: context.l10n.backCardDescriptionLabel,
             hint: context.l10n.backCardDescriptionHint,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8), // Reduced from 12
           _DescriptionField(
-            text: deck.explanationDescription,
+            text: widget.deck.explanationDescription,
             onTextChanged: (value) async {
               try {
                 await executeWithFeedback(
@@ -584,6 +539,37 @@ class _CardDescriptionFields extends ConsumerWidget with AsyncOperationHandler {
     } catch (e) {
       context.showErrorSnackbar(context.l10n.cardDescriptionsApplyErrorMessage);
     }
+  }
+}
+
+/// Delegate for the card description fields sliver
+class _CardDescriptionFieldsDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _CardDescriptionFieldsDelegate({required this.child});
+
+  @override
+  double get minExtent => 0.0;
+
+  @override
+  double get maxExtent => 240.0; // Further reduced to prevent overflow
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    // Calculate opacity based on shrink offset
+    final progress = (shrinkOffset / maxExtent).clamp(0.0, 1.0);
+    final opacity = (1.0 - progress).clamp(0.0, 1.0);
+
+    return Opacity(opacity: opacity, child: child);
+  }
+
+  @override
+  bool shouldRebuild(covariant _CardDescriptionFieldsDelegate oldDelegate) {
+    return oldDelegate.child != child;
   }
 }
 
@@ -728,26 +714,33 @@ class _DescriptionFieldState extends State<_DescriptionField> {
             ),
             contentPadding: const EdgeInsets.all(12),
             suffixIcon: _hasUnsavedChanges
-                ? Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed: _cancel,
-                        icon: const Icon(Icons.close, size: 20),
-                        tooltip: 'Cancel',
-                        style: IconButton.styleFrom(
-                          foregroundColor: theme.colorScheme.error,
+                ? ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 80),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed: _cancel,
+                          icon: const Icon(Icons.close, size: 20),
+                          tooltip: 'Cancel',
+                          style: IconButton.styleFrom(
+                            foregroundColor: theme.colorScheme.error,
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(32, 32),
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        onPressed: _save,
-                        icon: const Icon(Icons.check, size: 20),
-                        tooltip: 'Save',
-                        style: IconButton.styleFrom(
-                          foregroundColor: theme.colorScheme.primary,
+                        IconButton(
+                          onPressed: _save,
+                          icon: const Icon(Icons.check, size: 20),
+                          tooltip: 'Save',
+                          style: IconButton.styleFrom(
+                            foregroundColor: theme.colorScheme.primary,
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(32, 32),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   )
                 : null,
           ),
