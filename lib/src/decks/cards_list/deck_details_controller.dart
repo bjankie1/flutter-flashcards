@@ -14,9 +14,13 @@ part 'deck_details_controller.g.dart';
 class DeckDetailsController extends _$DeckDetailsController {
   final Logger _log = Logger();
   bool _isUpdating = false;
+  bool _isGeneratingDescriptions = false;
   late TranslationService _translationService;
 
   String get _deckId => deckId;
+
+  /// Getter for the generating descriptions state
+  bool get isGeneratingDescriptions => _isGeneratingDescriptions;
 
   @override
   AsyncValue<model.Deck> build(String deckId) {
@@ -338,6 +342,10 @@ class DeckDetailsController extends _$DeckDetailsController {
       throw Exception('No deck loaded for deck ID: $_deckId');
     }
 
+    // Set generating state
+    _isGeneratingDescriptions = true;
+    ref.notifyListeners();
+
     try {
       // Load cards for the deck
       final repository = ref.read(cardsRepositoryProvider);
@@ -364,6 +372,10 @@ class DeckDetailsController extends _$DeckDetailsController {
         stackTrace: stackTrace,
       );
       rethrow;
+    } finally {
+      // Reset generating state
+      _isGeneratingDescriptions = false;
+      ref.notifyListeners();
     }
   }
 }
