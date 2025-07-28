@@ -305,7 +305,7 @@ const CardDetailsSchema = z.object({
   cardQuestion: z.string(),
   frontCardDescription: z.string(),
   backCardDescription: z.string(),
-  explanationDescription: z.string().optional(),
+  explanationDescription: z.string().nullable().optional(),
 });
 
 const AnswerAndExplanation = z.object({
@@ -318,7 +318,7 @@ const ReverseDescriptionSchema = z.object({
   deckDescription: z.string().optional(),
   frontCardDescription: z.string(),
   backCardDescription: z.string(),
-  explanationDescription: z.string().optional(),
+  explanationDescription: z.string().nullable().optional(),
 });
 
 const ReverseDescriptionOutput = z.object({
@@ -344,17 +344,17 @@ const cardAnswerSuggestionFlow = ai.defineFlow(
 
 The descriptions provided will guide you on what content should appear on the front and back of cards. Follow these descriptions precisely to ensure consistency with the deck.
 
-When providing an optional explanation, you can use markdown formatting. The explanation should be brief and relevant to the answer.
+When providing an explanation, you can use markdown formatting. The explanation should be brief and relevant to the answer. If no specific explanation description is provided, provide a brief, helpful explanation that adds value to the learning experience.
 
 OUTPUT STRUCTURE:
 - "answer": The main response to the question (should follow the back card description)
-- "explanation": Additional context or details (should follow the explanation description if provided)`,
+- "explanation": Additional context or details (should follow the explanation description if provided, or provide a brief helpful explanation if none specified)`,
         prompt: `Question: ${subject.cardQuestion}
 Deck name: ${subject.deckName}
 Deck description: ${subject.deckDescription || ''}
 Front card description: ${subject.frontCardDescription}
 Back card description: ${subject.backCardDescription}
-${subject.explanationDescription ? `Explanation description: ${subject.explanationDescription}` : ''}
+${subject.explanationDescription ? `Explanation description: ${subject.explanationDescription}` : 'Explanation description: Explanations are not required for these cards. Provide a brief, helpful explanation if it adds value to the learning experience.'}
 
 IMPORTANT INSTRUCTIONS:
 - Generate an "answer" that follows the back card description
@@ -417,7 +417,7 @@ For language learning scenarios, focus on generating direct translations that pr
 Deck description: ${subject.deckDescription || ''}
 Front card description: ${subject.frontCardDescription}
 Back card description: ${subject.backCardDescription}
-${subject.explanationDescription ? `Explanation description: ${subject.explanationDescription}` : ''}
+${subject.explanationDescription ? `Explanation description: ${subject.explanationDescription}` : 'Explanation description: Explanations are not required for these cards.'}
 
 SCENARIO: In this language learning deck, users can enter either the front or back of a card. When they enter the back of a card (e.g., a Spanish word like "gitano"), the system needs to generate the corresponding front (e.g., "cygan" - the Polish translation).
 
@@ -487,7 +487,7 @@ const GenerateFrontFromBackInputSchema = z.object({
   cardBack: z.string(),
   frontCardDescription: z.string(),
   backCardDescription: z.string(),
-  explanationDescription: z.string().optional(),
+  explanationDescription: z.string().nullable().optional(),
 });
 
 const GenerateFrontFromBackOutputSchema = z.object({
@@ -518,13 +518,13 @@ IMPORTANT CONTEXT:
 
 OUTPUT STRUCTURE:
 - "front": The front of the card (should follow the front card description)
-- "explanation": Additional context or details (should follow the explanation description if provided)`,
+- "explanation": Additional context or details (should follow the explanation description if provided, or provide a brief helpful explanation if none specified)`,
         prompt: `Card Back: ${subject.cardBack}
 Deck name: ${subject.deckName}
 Deck description: ${subject.deckDescription || ''}
 Front card description: ${subject.frontCardDescription}
 Back card description: ${subject.backCardDescription}
-${subject.explanationDescription ? `Explanation description: ${subject.explanationDescription}` : ''}
+${subject.explanationDescription ? `Explanation description: ${subject.explanationDescription}` : 'Explanation description: Explanations are not required for these cards. Provide a brief, helpful explanation if it adds value to the learning experience.'}
 
 TASK: Generate the front of this card based on the provided back content.
 

@@ -278,64 +278,89 @@ class _SliverCardDescriptionFieldsState
     with AsyncOperationHandler {
   @override
   Widget build(BuildContext context) {
+    final deckDetailsAsync = ref.watch(
+      deckDetailsControllerProvider(widget.deck.id!),
+    );
     final controllerNotifier = ref.read(
       deckDetailsControllerProvider(widget.deck.id!).notifier,
     );
-    final hasAnyDescription =
-        widget.deck.frontCardDescription?.isNotEmpty == true ||
-        widget.deck.backCardDescription?.isNotEmpty == true ||
-        widget.deck.explanationDescription?.isNotEmpty == true;
 
-    return SliverPersistentHeader(
-      pinned: false,
-      delegate: _CardDescriptionFieldsDelegate(
-        child: Material(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0), // Reduced from 12.0
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min, // Added to make it more compact
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return deckDetailsAsync.when(
+      data: (currentDeck) {
+        final hasAnyDescription =
+            currentDeck.frontCardDescription?.isNotEmpty == true ||
+            currentDeck.backCardDescription?.isNotEmpty == true ||
+            currentDeck.explanationDescription?.isNotEmpty == true;
+
+        return SliverPersistentHeader(
+          pinned: false,
+          delegate: _CardDescriptionFieldsDelegate(
+            child: Material(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      context.l10n.cardDescriptions,
-                      style: context.theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: context.theme.colorScheme.onSurface,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          context.l10n.cardDescriptions,
+                          style: context.theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: context.theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: controllerNotifier.isGeneratingDescriptions
+                              ? null
+                              : () => _generateCardDescriptions(
+                                  context,
+                                  controllerNotifier,
+                                ),
+                          icon: controllerNotifier.isGeneratingDescriptions
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.auto_awesome),
+                          label: Text(
+                            hasAnyDescription
+                                ? context.l10n.regenerateCardDescriptions
+                                : context.l10n.generateCardDescriptions,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.orange[700],
+                          ),
+                        ),
+                      ],
                     ),
-                    // Generate button inside the collapsible container
-                    TextButton.icon(
-                      onPressed: controllerNotifier.isGeneratingDescriptions
-                          ? null
-                          : () => _generateCardDescriptions(
-                              context,
-                              controllerNotifier,
-                            ),
-                      icon: controllerNotifier.isGeneratingDescriptions
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.auto_awesome),
-                      label: Text(
-                        hasAnyDescription
-                            ? context.l10n.regenerateCardDescriptions
-                            : context.l10n.generateCardDescriptions,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.orange[700],
-                      ),
+                    _buildDescriptionFields(
+                      context,
+                      controllerNotifier,
+                      currentDeck,
                     ),
                   ],
                 ),
-                _buildDescriptionFields(context, controllerNotifier),
-              ],
+              ),
             ),
           ),
+        );
+      },
+      loading: () => SliverPersistentHeader(
+        pinned: false,
+        delegate: _CardDescriptionFieldsDelegate(
+          child: const Center(child: CircularProgressIndicator()),
+        ),
+      ),
+      error: (error, stackTrace) => SliverPersistentHeader(
+        pinned: false,
+        delegate: _CardDescriptionFieldsDelegate(
+          child: Center(child: Text('Error loading deck details: $error')),
         ),
       ),
     );
@@ -344,6 +369,7 @@ class _SliverCardDescriptionFieldsState
   Widget _buildDescriptionFields(
     BuildContext context,
     DeckDetailsController controllerNotifier,
+    model.Deck currentDeck,
   ) {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0), // Reduced from 16.0
@@ -352,7 +378,7 @@ class _SliverCardDescriptionFieldsState
         mainAxisSize: MainAxisSize.min, // Added to make it more compact
         children: [
           _DescriptionField(
-            text: widget.deck.frontCardDescription,
+            text: currentDeck.frontCardDescription,
             onTextChanged: (value) async {
               try {
                 await executeWithFeedback(
@@ -377,7 +403,7 @@ class _SliverCardDescriptionFieldsState
           ),
           const SizedBox(height: 8), // Reduced from 12
           _DescriptionField(
-            text: widget.deck.backCardDescription,
+            text: currentDeck.backCardDescription,
             onTextChanged: (value) async {
               try {
                 await executeWithFeedback(
@@ -401,7 +427,7 @@ class _SliverCardDescriptionFieldsState
           ),
           const SizedBox(height: 8), // Reduced from 12
           _DescriptionField(
-            text: widget.deck.explanationDescription,
+            text: currentDeck.explanationDescription,
             onTextChanged: (value) async {
               try {
                 await executeWithFeedback(
