@@ -1,8 +1,8 @@
 // Service Worker for Flutter Flashcards App
 // This service worker handles caching and version management
 
-const CACHE_NAME = 'flutter-flashcards-v1.0.6+2';
-const STATIC_CACHE_NAME = 'flutter-flashcards-static-v1.0.6+2';
+const CACHE_NAME = 'flutter-flashcards-v1.0.7+2';
+const STATIC_CACHE_NAME = 'flutter-flashcards-static-v1.0.7+2';
 
 // Files to cache
 const STATIC_FILES = [

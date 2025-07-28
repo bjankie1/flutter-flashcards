@@ -23,3 +23,8 @@
   date: 2025-07-26
   changes:
     - Refresh deck groups on change
+
+- version: 1.0.7
+  date: 2025-07-27
+  changes:
+    - Improved card details view

@@ -307,97 +307,111 @@ class _CardDescriptionFieldsCompact extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final deckDetailsAsync = ref.watch(deckDetailsControllerProvider(deck.id!));
     final controllerNotifier = ref.read(
       deckDetailsControllerProvider(deck.id!).notifier,
     );
-    final hasAnyDescription =
-        deck.frontCardDescription?.isNotEmpty == true ||
-        deck.backCardDescription?.isNotEmpty == true ||
-        deck.explanationDescription?.isNotEmpty == true;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18.0),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        border: Border(
-          top: BorderSide(color: Theme.of(context).colorScheme.outline),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return deckDetailsAsync.when(
+      data: (currentDeck) {
+        final hasAnyDescription =
+            currentDeck.frontCardDescription?.isNotEmpty == true ||
+            currentDeck.backCardDescription?.isNotEmpty == true ||
+            currentDeck.explanationDescription?.isNotEmpty == true;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 18.0),
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            border: Border(
+              top: BorderSide(color: Theme.of(context).colorScheme.outline),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                context.l10n.cardDescriptions,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              TextButton.icon(
-                onPressed: controllerNotifier.isGeneratingDescriptions
-                    ? null
-                    : () => _generateCardDescriptions(
-                        context,
-                        controllerNotifier,
-                      ),
-                icon: controllerNotifier.isGeneratingDescriptions
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.auto_awesome, size: 16),
-                label: Text(
-                  hasAnyDescription
-                      ? context.l10n.regenerateCardDescriptions
-                      : context.l10n.generateCardDescriptions,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.orange[700],
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    context.l10n.cardDescriptions,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
-                ),
+                  TextButton.icon(
+                    onPressed: controllerNotifier.isGeneratingDescriptions
+                        ? null
+                        : () => _generateCardDescriptions(
+                            context,
+                            controllerNotifier,
+                          ),
+                    icon: controllerNotifier.isGeneratingDescriptions
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.auto_awesome, size: 16),
+                    label: Text(
+                      hasAnyDescription
+                          ? context.l10n.regenerateCardDescriptions
+                          : context.l10n.generateCardDescriptions,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.orange[700],
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              _buildCompactDescriptionFields(
+                context,
+                controllerNotifier,
+                currentDeck,
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          _buildCompactDescriptionFields(context, controllerNotifier),
-        ],
-      ),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) =>
+          Center(child: Text('Error loading deck details: $error')),
     );
   }
 
   Widget _buildCompactDescriptionFields(
     BuildContext context,
     dynamic controllerNotifier,
+    model.Deck currentDeck,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         _CompactDescriptionField(
-          text: deck.frontCardDescription,
+          text: currentDeck.frontCardDescription,
           label: context.l10n.frontCardDescriptionLabel,
           onTextChanged: (value) => controllerNotifier
               .updateFrontCardDescription(value, context.cloudFunctions),
         ),
         const SizedBox(height: 4),
         _CompactDescriptionField(
-          text: deck.backCardDescription,
+          text: currentDeck.backCardDescription,
           label: context.l10n.backCardDescriptionLabel,
           onTextChanged: (value) => controllerNotifier
               .updateBackCardDescription(value, context.cloudFunctions),
         ),
         const SizedBox(height: 4),
         _CompactDescriptionField(
-          text: deck.explanationDescription,
+          text: currentDeck.explanationDescription,
           label: context.l10n.explanationDescriptionLabel,
           onTextChanged: (value) =>
               controllerNotifier.updateExplanationDescription(value),
