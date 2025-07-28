@@ -499,12 +499,10 @@ Mature: ${breakdown[CardMastery.mature]}''');
     if ((cardIds ?? {}).isEmpty && (deckIds ?? {}).isEmpty) {
       throw "Either deckIds or cardIds must be provided";
     }
-    final collectionGroup = _firestore
-        .collectionGroup(userPrefix(cardsCollectionName))
-        .withCardsConverter;
+    final collection = _cardsCollection;
     final result = deckIds != null && deckIds.isNotEmpty
-        ? _batchQuery(query: collectionGroup, field: 'deckId', ids: deckIds)
-        : _batchQuery(query: collectionGroup, field: 'cardId', ids: cardIds!);
+        ? _batchQuery(query: collection, field: 'deckId', ids: deckIds)
+        : _batchQuery(query: collection, field: 'cardId', ids: cardIds!);
     final cards = await result.logError('Error loading cards to review');
     _log.d(
       'Loaded ${cards.length} cards based on filter decks: $deckIds, cards: $cardIds',
@@ -518,12 +516,10 @@ Mature: ${breakdown[CardMastery.mature]}''');
       return Iterable.empty();
     }
     final deckIds = deckGroup.decks ?? {};
-    final collectionGroup = _firestore
-        .collectionGroup(userPrefix(cardsCollectionName))
-        .withCardsConverter;
+    final collection = _cardsCollection;
     if (deckIds.isEmpty) return Iterable.empty();
     final result = _batchQuery(
-      query: collectionGroup,
+      query: collection,
       field: 'deckId',
       ids: deckIds,
     );
@@ -1145,6 +1141,7 @@ Mature: ${breakdown[CardMastery.mature]}''');
         .userCollection(provisionaryCardsCollectionName, userId)
         .withProvisionaryCardsConverter;
     await collection.doc(provisionaryCard.id).set(provisionaryCard);
+    notifyProvisionaryCardChanged();
   }
 
   @override
@@ -1164,6 +1161,7 @@ Mature: ${breakdown[CardMastery.mature]}''');
       'finalizedDate': DateTime.now(),
       'resultingCardId': resultingCardId,
     });
+    notifyProvisionaryCardChanged();
   }
 
   @override

@@ -10,8 +10,6 @@ part 'provisionary_cards_review_controller.g.dart';
 /// Data class representing the provisionary cards review state
 class ProvisionaryCardsReviewData {
   final List<model.ProvisionaryCard> provisionaryCards;
-  final Set<int> finalizedCardsIndexes;
-  final Set<int> discardedCardsIndexes;
   final int currentIndex;
   final String? lastDeckId;
   final bool doubleSided;
@@ -27,10 +25,12 @@ class ProvisionaryCardsReviewData {
   final String? selectedDeckId;
   final bool selectedDoubleSided;
 
+  // Track completed cards to keep them visible
+  final Set<String> completedCardIds;
+  final Set<String> discardedCardIds;
+
   const ProvisionaryCardsReviewData({
     required this.provisionaryCards,
-    required this.finalizedCardsIndexes,
-    required this.discardedCardsIndexes,
     required this.currentIndex,
     this.lastDeckId,
     this.doubleSided = true,
@@ -43,12 +43,12 @@ class ProvisionaryCardsReviewData {
     this.fetchingSuggestion = false,
     this.selectedDeckId,
     this.selectedDoubleSided = true,
+    this.completedCardIds = const {},
+    this.discardedCardIds = const {},
   });
 
   ProvisionaryCardsReviewData copyWith({
     List<model.ProvisionaryCard>? provisionaryCards,
-    Set<int>? finalizedCardsIndexes,
-    Set<int>? discardedCardsIndexes,
     int? currentIndex,
     String? lastDeckId,
     bool? doubleSided,
@@ -61,13 +61,11 @@ class ProvisionaryCardsReviewData {
     bool? fetchingSuggestion,
     String? selectedDeckId,
     bool? selectedDoubleSided,
+    Set<String>? completedCardIds,
+    Set<String>? discardedCardIds,
   }) {
     return ProvisionaryCardsReviewData(
       provisionaryCards: provisionaryCards ?? this.provisionaryCards,
-      finalizedCardsIndexes:
-          finalizedCardsIndexes ?? this.finalizedCardsIndexes,
-      discardedCardsIndexes:
-          discardedCardsIndexes ?? this.discardedCardsIndexes,
       currentIndex: currentIndex ?? this.currentIndex,
       lastDeckId: lastDeckId ?? this.lastDeckId,
       doubleSided: doubleSided ?? this.doubleSided,
@@ -80,6 +78,8 @@ class ProvisionaryCardsReviewData {
       fetchingSuggestion: fetchingSuggestion ?? this.fetchingSuggestion,
       selectedDeckId: selectedDeckId ?? this.selectedDeckId,
       selectedDoubleSided: selectedDoubleSided ?? this.selectedDoubleSided,
+      completedCardIds: completedCardIds ?? this.completedCardIds,
+      discardedCardIds: discardedCardIds ?? this.discardedCardIds,
     );
   }
 
@@ -93,15 +93,40 @@ class ProvisionaryCardsReviewData {
 
   /// Checks if all cards have been processed
   bool get isComplete {
-    return finalizedCardsIndexes.length + discardedCardsIndexes.length ==
-        provisionaryCards.length;
+    return provisionaryCards.isEmpty; // No more cards in the list
   }
 
   /// Gets the progress percentage
   double get progressPercentage {
     if (provisionaryCards.isEmpty) return 0.0;
-    return (finalizedCardsIndexes.length + discardedCardsIndexes.length) /
-        provisionaryCards.length;
+    return (provisionaryCards.length - currentIndex) / provisionaryCards.length;
+  }
+
+  /// Gets the count of unprocessed provisionary cards (for badge display)
+  int get unprocessedCardsCount {
+    return provisionaryCards
+        .where(
+          (card) =>
+              !completedCardIds.contains(card.id) &&
+              !discardedCardIds.contains(card.id),
+        )
+        .length;
+  }
+
+  /// Checks if a card has been completed
+  bool isCardCompleted(String cardId) {
+    return completedCardIds.contains(cardId);
+  }
+
+  /// Checks if a card has been discarded
+  bool isCardDiscarded(String cardId) {
+    return discardedCardIds.contains(cardId);
+  }
+
+  /// Checks if a card is still pending (not completed or discarded)
+  bool isCardPending(String cardId) {
+    return !completedCardIds.contains(cardId) &&
+        !discardedCardIds.contains(cardId);
   }
 }
 
@@ -113,36 +138,63 @@ class ProvisionaryCardsReviewController
 
   @override
   AsyncValue<ProvisionaryCardsReviewData> build() {
-    _loadProvisionaryCards();
-    return const AsyncValue.loading();
+    // Return initial empty state, then load data
+    _initializeData();
+    return AsyncValue.data(
+      ProvisionaryCardsReviewData(provisionaryCards: [], currentIndex: -1),
+    );
+  }
+
+  /// Initialize data loading after build
+  void _initializeData() {
+    // Use Future.microtask to avoid calling async methods directly from build
+    Future.microtask(() => _loadProvisionaryCards());
   }
 
   /// Loads provisionary cards from the repository
   Future<void> _loadProvisionaryCards() async {
     try {
       _log.d('Loading provisionary cards');
+
+      // Preserve current context before loading, but handle uninitialized state
+      final currentData = state.valueOrNull;
+      final lastDeckId = currentData?.lastDeckId;
+      final doubleSided = currentData?.doubleSided ?? true;
+
+      _log.d('Current state: lastDeckId=$lastDeckId, doubleSided=$doubleSided');
+
       state = const AsyncValue.loading();
+      _log.d('Set state to loading');
+
       final repository = ref.read(cardsRepositoryProvider);
+      _log.d('Got repository, calling listProvisionaryCards');
+
       final provisionaryCards = await repository.listProvisionaryCards();
       final cardsList = provisionaryCards.toList();
 
+      _log.d('Repository returned ${cardsList.length} provisionary cards');
+
       if (cardsList.isEmpty) {
+        _log.d('No provisionary cards found, setting empty state');
         state = AsyncValue.data(
           ProvisionaryCardsReviewData(
             provisionaryCards: cardsList,
-            finalizedCardsIndexes: {},
-            discardedCardsIndexes: {},
             currentIndex: -1,
+            lastDeckId: lastDeckId,
+            doubleSided: doubleSided,
           ),
         );
       } else {
+        _log.d(
+          'Found ${cardsList.length} provisionary cards, setting first card as current',
+        );
         final firstCard = cardsList[0];
         state = AsyncValue.data(
           ProvisionaryCardsReviewData(
             provisionaryCards: cardsList,
-            finalizedCardsIndexes: {},
-            discardedCardsIndexes: {},
             currentIndex: 0,
+            lastDeckId: lastDeckId,
+            doubleSided: doubleSided,
             questionText: firstCard.text,
             answerText: '',
           ),
@@ -156,7 +208,26 @@ class ProvisionaryCardsReviewController
         error: error,
         stackTrace: stackTrace,
       );
-      state = AsyncValue.error(error, stackTrace);
+
+      // If the error is due to user not being authenticated, set empty state
+      if (error.toString().contains('User not logged in') ||
+          error.toString().contains('not logged')) {
+        _log.d('User is not authenticated, setting empty state');
+        final currentData = state.valueOrNull;
+        final lastDeckId = currentData?.lastDeckId;
+        final doubleSided = currentData?.doubleSided ?? true;
+
+        state = AsyncValue.data(
+          ProvisionaryCardsReviewData(
+            provisionaryCards: [],
+            currentIndex: -1,
+            lastDeckId: lastDeckId,
+            doubleSided: doubleSided,
+          ),
+        );
+      } else {
+        state = AsyncValue.error(error, stackTrace);
+      }
     }
   }
 
@@ -180,39 +251,24 @@ class ProvisionaryCardsReviewController
       final repository = ref.read(cardsRepositoryProvider);
       await repository.finalizeProvisionaryCard(provisionaryCard.id, null);
 
-      final newDiscardedIndexes = Set<int>.from(
-        currentData.discardedCardsIndexes,
-      );
-      newDiscardedIndexes.add(index);
+      // Mark the card as discarded locally instead of refreshing
+      final newDiscardedIds = Set<String>.from(currentData.discardedCardIds)
+        ..add(provisionaryCard.id);
 
-      final newCurrentIndex = _calculateNextIndex(
-        currentData.provisionaryCards.length,
-        currentData.finalizedCardsIndexes,
-        newDiscardedIndexes,
-        currentData.currentIndex,
-      );
-
-      final newState = currentData.copyWith(
-        discardedCardsIndexes: newDiscardedIndexes,
-        currentIndex: newCurrentIndex,
-        isLoading: false,
+      // Move to the next pending card
+      final nextIndex = _findNextPendingCardIndex(
+        currentData.provisionaryCards,
+        newDiscardedIds,
+        currentData.completedCardIds,
       );
 
-      // Reset card finalization state for the new card
-      if (newCurrentIndex >= 0 &&
-          newCurrentIndex < currentData.provisionaryCards.length) {
-        final newCard = currentData.provisionaryCards[newCurrentIndex];
-        final resetState = newState.copyWith(
-          questionText: newState.isQuestion ? newCard.text : '',
-          answerText: newState.isQuestion ? '' : newCard.text,
-          selectedDeckId: newState.lastDeckId,
-          selectedDoubleSided: newState.doubleSided,
-          fetchingSuggestion: false,
-        );
-        state = AsyncValue.data(resetState);
-      } else {
-        state = AsyncValue.data(newState);
-      }
+      state = AsyncValue.data(
+        currentData.copyWith(
+          isLoading: false,
+          discardedCardIds: newDiscardedIds,
+          currentIndex: nextIndex,
+        ),
+      );
 
       _log.d('Successfully discarded provisionary card at index: $index');
     } catch (error, stackTrace) {
@@ -265,63 +321,24 @@ class ProvisionaryCardsReviewController
       await repository.saveCard(card);
       await repository.finalizeProvisionaryCard(provisionaryCard.id, cardId);
 
-      final newFinalizedIndexes = Set<int>.from(
-        currentData.finalizedCardsIndexes,
-      );
-      newFinalizedIndexes.add(index);
+      // Mark the card as completed locally instead of refreshing
+      final newCompletedIds = Set<String>.from(currentData.completedCardIds)
+        ..add(provisionaryCard.id);
 
-      final newCurrentIndex = _calculateNextIndex(
-        currentData.provisionaryCards.length,
-        newFinalizedIndexes,
-        currentData.discardedCardsIndexes,
-        currentData.currentIndex,
-      );
-
-      final newState = currentData.copyWith(
-        finalizedCardsIndexes: newFinalizedIndexes,
-        currentIndex: newCurrentIndex,
-        lastDeckId: deckId,
-        doubleSided: doubleSided,
-        isLoading: false,
+      // Move to the next pending card
+      final nextIndex = _findNextPendingCardIndex(
+        currentData.provisionaryCards,
+        currentData.discardedCardIds,
+        newCompletedIds,
       );
 
-      // Reset card finalization state for the new card
-      if (newCurrentIndex >= 0 &&
-          newCurrentIndex < currentData.provisionaryCards.length) {
-        final newCard = currentData.provisionaryCards[newCurrentIndex];
-        final resetState = newState.copyWith(
-          questionText: newState.isQuestion ? newCard.text : '',
-          answerText: newState.isQuestion ? '' : newCard.text,
-          explanationText: '',
-          selectedDeckId: newState.lastDeckId,
-          selectedDoubleSided: newState.doubleSided,
-          fetchingSuggestion: false,
-        );
-        state = AsyncValue.data(resetState);
-
-        // Trigger generation for the next card based on current settings
-        if (newState.lastDeckId != null && cloudFunctions != null) {
-          if (newState.isQuestion) {
-            // Question mode: generate answer for the card text
-            await _generateAnswer(
-              newState.lastDeckId!,
-              newCard.text,
-              cloudFunctions,
-              flipDescriptions: false,
-            );
-          } else {
-            // Answer mode: generate question for the card text
-            await _generateAnswer(
-              newState.lastDeckId!,
-              newCard.text,
-              cloudFunctions,
-              flipDescriptions: true,
-            );
-          }
-        }
-      } else {
-        state = AsyncValue.data(newState);
-      }
+      state = AsyncValue.data(
+        currentData.copyWith(
+          isLoading: false,
+          completedCardIds: newCompletedIds,
+          currentIndex: nextIndex,
+        ),
+      );
 
       _log.d('Successfully finalized provisionary card at index: $index');
     } catch (error, stackTrace) {
@@ -349,8 +366,6 @@ class ProvisionaryCardsReviewController
 
     final newCurrentIndex = _calculateNextIndex(
       currentData.provisionaryCards.length,
-      currentData.finalizedCardsIndexes,
-      currentData.discardedCardsIndexes,
       currentData.currentIndex,
     );
 
@@ -375,23 +390,37 @@ class ProvisionaryCardsReviewController
   }
 
   /// Calculates the next index to review
-  int _calculateNextIndex(
-    int totalCards,
-    Set<int> finalizedIndexes,
-    Set<int> discardedIndexes,
-    int currentIndex,
-  ) {
-    if (finalizedIndexes.length + discardedIndexes.length == totalCards) {
+  int _calculateNextIndex(int totalCards, int currentIndex) {
+    if (totalCards == 0) {
       return -1; // All cards processed
     }
 
     int nextIndex = currentIndex;
     do {
       nextIndex = (nextIndex + 1) % totalCards;
-    } while (finalizedIndexes.contains(nextIndex) ||
-        discardedIndexes.contains(nextIndex));
+    } while (nextIndex == currentIndex &&
+        totalCards > 1); // Avoid infinite loop
 
     return nextIndex;
+  }
+
+  /// Finds the next pending card index (not completed or discarded)
+  int _findNextPendingCardIndex(
+    List<model.ProvisionaryCard> cards,
+    Set<String> discardedIds,
+    Set<String> completedIds,
+  ) {
+    if (cards.isEmpty) return -1;
+
+    // Start from the current index and look for the next pending card
+    for (int i = 0; i < cards.length; i++) {
+      final card = cards[i];
+      if (!discardedIds.contains(card.id) && !completedIds.contains(card.id)) {
+        return i;
+      }
+    }
+
+    return -1; // No pending cards found
   }
 
   /// Clears any error message

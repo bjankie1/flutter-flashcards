@@ -27,6 +27,13 @@ abstract class CardsRepository extends ChangeNotifier {
 
   ValueListenable<bool> get decksGroupUpdated => _decksGroupUpdated;
 
+  final ValueNotifier<bool> _provisionaryCardsUpdated = ValueNotifier<bool>(
+    false,
+  );
+
+  ValueListenable<bool> get provisionaryCardsUpdated =>
+      _provisionaryCardsUpdated;
+
   Future<model.Card?> loadCard(String cardId);
 
   String nextCardId();
@@ -108,6 +115,12 @@ abstract class CardsRepository extends ChangeNotifier {
   @protected
   void notifyDeckGroupChanged() {
     _decksGroupUpdated.value = !_decksGroupUpdated.value;
+    notifyListeners();
+  }
+
+  @protected
+  void notifyProvisionaryCardChanged() {
+    _provisionaryCardsUpdated.value = !_provisionaryCardsUpdated.value;
     notifyListeners();
   }
 
