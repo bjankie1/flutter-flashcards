@@ -5,6 +5,7 @@ import 'package:flutter_flashcards/src/decks/provisionary_cards/provisionary_car
 import 'package:flutter_flashcards/src/decks/provisionary_cards/provisionary_cards_review_controller.dart';
 import 'package:flutter_flashcards/src/app_router.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 
 /// Widget containing the action buttons for quick add and review provisionary cards
 class ActionButtons extends ConsumerWidget {
@@ -18,7 +19,7 @@ class ActionButtons extends ConsumerWidget {
 
     return provisionaryCardsAsync.when(
       data: (data) {
-        final provisionaryCardsCount = data.provisionaryCards.length;
+        final provisionaryCardsCount = data.unprocessedCardsCount;
         final hasCardsToReview = provisionaryCardsCount > 0;
 
         return Container(
