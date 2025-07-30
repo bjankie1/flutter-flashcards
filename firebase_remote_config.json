@@ -14,7 +14,7 @@
   "parameters": {
     "app_version": {
       "defaultValue": {
-        "value": "1.0.7"
+        "value": "1.0.8"
       },
       "description": "Current app version (semantic versioning)",
       "valueType": "STRING"
@@ -35,7 +35,7 @@
     },
     "minimum_version": {
       "defaultValue": {
-        "value": "1.0.7"
+        "value": "1.0.8"
       },
       "description": "Minimum supported version (alias for min_version)",
       "valueType": "STRING"

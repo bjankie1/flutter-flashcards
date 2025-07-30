@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flashcards/src/decks/cards_list/deck_action_buttons.dart';
 import 'package:flutter_flashcards/src/decks/cards_list/deck_details.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
@@ -9,9 +10,6 @@ import 'package:flutter_flashcards/src/decks/cards_list/cards_list_controller.da
 import 'package:flutter_flashcards/src/decks/cards_list/deck_details_controller.dart';
 import 'package:flutter_flashcards/src/decks/cards_list/deck_details_page_controller.dart';
 import 'package:flutter_flashcards/src/layout/base_layout.dart';
-import 'package:flutter_flashcards/src/app_router.dart';
-import 'package:flutter_flashcards/src/decks/deck_list/deck_info_controller.dart';
-import 'package:flutter_flashcards/src/decks/deck_list/deck_cards_to_review_controller.dart';
 
 import '../../model/cards.dart' as model;
 
@@ -40,124 +38,11 @@ class DeckDetailsPage extends ConsumerWidget {
             child: Column(
               children: [
                 DeckDetails(deck: deck),
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   children: [
-                //     _LearnButtonWidget(deckId: deck.id!),
-                //     const SizedBox(width: 16),
-                //     _GenerateFromGoogleDocButtonWidget(deckId: deck.id!),
-                //   ],
-                // ),
                 Expanded(child: _DeckDetailsSliverView(deck: deck)),
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// Widget for the learn button with review count badge
-class _LearnButtonWidget extends ConsumerWidget {
-  final String deckId;
-
-  const _LearnButtonWidget({required this.deckId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final cardCountAsync = ref.watch(deckInfoControllerProvider(deckId));
-
-    return cardCountAsync.when(
-      data: (totalCards) {
-        if (totalCards == 0) return const SizedBox.shrink();
-
-        final cardsToReviewAsync = ref.watch(
-          deckCardsToReviewControllerProvider(deckId),
-        );
-
-        return cardsToReviewAsync.when(
-          data: (countStat) {
-            final count = countStat.values.fold(0, (p, c) => p + c);
-            return Badge(
-              isLabelVisible: count > 0,
-              label: Text(count.toString()),
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  AppNavigation.goToLearn(context, deckId);
-                },
-                icon: const Icon(
-                  Icons.play_circle_fill,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                label: Text(
-                  context.l10n.learn,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[700],
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                ),
-              ),
-            );
-          },
-          loading: () => const SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-          error: (error, stackTrace) => ElevatedButton.icon(
-            onPressed: () {
-              AppNavigation.goToLearn(context, deckId);
-            },
-            icon: const Icon(Icons.play_circle_fill, size: 20),
-            label: Text(context.l10n.learn),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[700],
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            ),
-          ),
-        );
-      },
-      loading: () => const SizedBox.shrink(),
-      error: (error, stackTrace) => const SizedBox.shrink(),
-    );
-  }
-}
-
-/// Widget for the generate from Google Doc button
-class _GenerateFromGoogleDocButtonWidget extends ConsumerWidget {
-  final String deckId;
-
-  const _GenerateFromGoogleDocButtonWidget({required this.deckId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ElevatedButton.icon(
-      onPressed: () {
-        AppNavigation.goToGenerateFromGoogleDoc(context, deckId: deckId);
-      },
-      icon: const Icon(Icons.description, color: Colors.white, size: 20),
-      label: Text(
-        context.l10n.generateFromGoogleDoc,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w500,
-          color: Colors.white,
-        ),
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.blue[700],
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
     );
   }
@@ -186,6 +71,10 @@ class _DeckDetailsSliverView extends ConsumerWidget {
             background: _CardDescriptionFieldsCompact(deck: deck),
           ),
         ),
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: DeckActionButtons(deckId: deck.id!),
+        ),
 
         // Search field as persistent header
         controllerState.when(
@@ -194,7 +83,7 @@ class _DeckDetailsSliverView extends ConsumerWidget {
             onSearchChanged: controller.updateSearchQuery,
           ),
           loading: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
-          error: (_, __) => const SliverToBoxAdapter(child: SizedBox.shrink()),
+          error: (_, _) => const SliverToBoxAdapter(child: SizedBox.shrink()),
         ),
 
         // Cards list section

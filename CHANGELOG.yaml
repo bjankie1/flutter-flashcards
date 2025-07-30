@@ -28,3 +28,8 @@
   date: 2025-07-27
   changes:
     - Improved card details view
+
+- version: 1.0.8
+  date: 2025-07-28
+  changes:
+    - Fixed provisionary cards editing

@@ -189,16 +189,19 @@ class ProvisionaryCardsReviewController
           'Found ${cardsList.length} provisionary cards, setting first card as current',
         );
         final firstCard = cardsList[0];
-        state = AsyncValue.data(
-          ProvisionaryCardsReviewData(
-            provisionaryCards: cardsList,
-            currentIndex: 0,
-            lastDeckId: lastDeckId,
-            doubleSided: doubleSided,
-            questionText: firstCard.text,
-            answerText: '',
-          ),
+        final newState = ProvisionaryCardsReviewData(
+          provisionaryCards: cardsList,
+          currentIndex: 0,
+          lastDeckId: lastDeckId,
+          doubleSided: doubleSided,
+          questionText: firstCard.text,
+          answerText: '',
         );
+
+        state = AsyncValue.data(newState);
+
+        // Note: AI generation will be triggered when the user selects a deck
+        // or when the widget calls triggerGeneration with cloudFunctions
       }
 
       _log.d('Successfully loaded ${cardsList.length} provisionary cards');
@@ -262,13 +265,32 @@ class ProvisionaryCardsReviewController
         currentData.completedCardIds,
       );
 
+      // Update form fields for the next card
+      String? nextQuestionText;
+      String? nextAnswerText;
+      if (nextIndex >= 0 && nextIndex < currentData.provisionaryCards.length) {
+        final nextCard = currentData.provisionaryCards[nextIndex];
+        nextQuestionText = currentData.isQuestion ? nextCard.text : '';
+        nextAnswerText = currentData.isQuestion ? '' : nextCard.text;
+      }
+
       state = AsyncValue.data(
         currentData.copyWith(
           isLoading: false,
           discardedCardIds: newDiscardedIds,
           currentIndex: nextIndex,
+          questionText: nextQuestionText ?? '',
+          answerText: nextAnswerText ?? '',
+          explanationText: '',
+          fetchingSuggestion: false,
         ),
       );
+
+      // Trigger AI generation for the next card if we have a deck selected
+      if (nextIndex >= 0 && nextIndex < currentData.provisionaryCards.length) {
+        // Note: We don't have cloudFunctions in discardCard, so we'll trigger generation
+        // when the user selects a deck or manually saves the field
+      }
 
       _log.d('Successfully discarded provisionary card at index: $index');
     } catch (error, stackTrace) {
@@ -332,13 +354,39 @@ class ProvisionaryCardsReviewController
         newCompletedIds,
       );
 
-      state = AsyncValue.data(
-        currentData.copyWith(
-          isLoading: false,
-          completedCardIds: newCompletedIds,
-          currentIndex: nextIndex,
-        ),
-      );
+      // Update form fields for the next card
+      String? nextQuestionText;
+      String? nextAnswerText;
+      if (nextIndex >= 0 && nextIndex < currentData.provisionaryCards.length) {
+        final nextCard = currentData.provisionaryCards[nextIndex];
+        nextQuestionText = currentData.isQuestion ? nextCard.text : '';
+        nextAnswerText = currentData.isQuestion ? '' : nextCard.text;
+      }
+
+      // Set the form fields and trigger generation if we have cloudFunctions
+      if (cloudFunctions != null) {
+        if (currentData.isQuestion) {
+          await setQuestionTextAndGenerate(
+            nextQuestionText ?? '',
+            cloudFunctions,
+          );
+        } else {
+          await setAnswerTextAndGenerate(nextAnswerText ?? '', cloudFunctions);
+        }
+      } else {
+        // Fallback: just set the fields without generation
+        state = AsyncValue.data(
+          currentData.copyWith(
+            isLoading: false,
+            completedCardIds: newCompletedIds,
+            currentIndex: nextIndex,
+            questionText: nextQuestionText ?? '',
+            answerText: nextAnswerText ?? '',
+            explanationText: '',
+            fetchingSuggestion: false,
+          ),
+        );
+      }
 
       _log.d('Successfully finalized provisionary card at index: $index');
     } catch (error, stackTrace) {
@@ -501,11 +549,47 @@ class ProvisionaryCardsReviewController
     }
   }
 
+  /// Sets the question text and optionally triggers generation
+  Future<void> setQuestionTextAndGenerate(
+    String questionText,
+    CloudFunctions? cloudFunctions,
+  ) async {
+    final currentData = state.value;
+    if (currentData != null) {
+      state = AsyncValue.data(currentData.copyWith(questionText: questionText));
+
+      // Trigger generation if we're in question mode and have a deck selected
+      if (currentData.isQuestion &&
+          currentData.selectedDeckId != null &&
+          cloudFunctions != null) {
+        await triggerGeneration(cloudFunctions);
+      }
+    }
+  }
+
   /// Sets the answer text
   void setAnswerText(String answerText) {
     final currentData = state.value;
     if (currentData != null) {
       state = AsyncValue.data(currentData.copyWith(answerText: answerText));
+    }
+  }
+
+  /// Sets the answer text and optionally triggers generation
+  Future<void> setAnswerTextAndGenerate(
+    String answerText,
+    CloudFunctions? cloudFunctions,
+  ) async {
+    final currentData = state.value;
+    if (currentData != null) {
+      state = AsyncValue.data(currentData.copyWith(answerText: answerText));
+
+      // Trigger generation if we're in answer mode and have a deck selected
+      if (!currentData.isQuestion &&
+          currentData.selectedDeckId != null &&
+          cloudFunctions != null) {
+        await triggerGeneration(cloudFunctions);
+      }
     }
   }
 
