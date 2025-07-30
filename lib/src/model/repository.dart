@@ -62,18 +62,18 @@ abstract class CardsRepository extends ChangeNotifier {
   Future<void> deleteCard(String cardId);
 
   Future<Iterable<(model.CardStats, model.Card)>> loadCardsWithStatsToReview({
-    model.DeckId? deckId,
-    model.DeckGroupId? deckGroupId,
+    String? deckId,
+    String? deckGroupId,
   });
 
   Future<Iterable<(model.CardStats, model.Card)>> loadCardsWithStats({
-    model.DeckId? deckId,
-    model.DeckGroupId? deckGroupId,
+    String? deckId,
+    String? deckGroupId,
   });
 
   Future<Map<model.State, int>> cardsToReviewCount({
-    model.DeckId? deckId,
-    model.DeckGroupId? deckGroupId,
+    String? deckId,
+    String? deckGroupId,
   });
 
   Future<model.CardStats> loadCardStats(
