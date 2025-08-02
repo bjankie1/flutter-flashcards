@@ -4,6 +4,7 @@ import 'package:logger/logger.dart';
 
 import '../../model/cards.dart' as model;
 import '../../model/repository.dart';
+import '../../common/sorting_utils.dart';
 import '../deck_groups/deck_groups_controller.dart';
 
 part 'decks_controller.g.dart';
@@ -139,7 +140,10 @@ AsyncValue<List<model.Deck>> sortedDecks(Ref ref) {
   return decksAsync.when(
     data: (decks) {
       final sortedDecks = decks.toList();
-      sortedDecks.sort((deck1, deck2) => deck1.name.compareTo(deck2.name));
+      sortedDecks.sort(
+        (deck1, deck2) =>
+            SortingUtils.compareWithDiacritics(deck1.name, deck2.name),
+      );
       return AsyncValue.data(sortedDecks);
     },
     loading: () => const AsyncValue.loading(),

@@ -7,7 +7,7 @@ part of 'provisionary_cards_review_controller.dart';
 // **************************************************************************
 
 String _$provisionaryCardsReviewControllerHash() =>
-    r'fa34fb46d7b18204e7178b94bb441bd238321508';
+    r'90cd4a117d411c0a54ad6efc6298275d7e259479';
 
 /// Controller for managing provisionary cards review operations
 ///
