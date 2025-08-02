@@ -33,3 +33,8 @@
   date: 2025-07-28
   changes:
     - Fixed provisionary cards editing
+
+- version: 1.0.9
+  date: 2025-08-02
+  changes:
+    - Improved cards sorting

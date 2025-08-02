@@ -25,7 +25,7 @@ final cardsRepositoryProvider = AutoDisposeProvider<CardsRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CardsRepositoryRef = AutoDisposeProviderRef<CardsRepository>;
-String _$sortedDecksHash() => r'40c334840807521d331ac3dc15dd671b146bcd22';
+String _$sortedDecksHash() => r'45cd4334167fe9b1410ddf5d396b49c08d1db46a';
 
 /// Provider for sorted decks
 ///

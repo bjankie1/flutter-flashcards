@@ -7,7 +7,7 @@ part of 'cards_list_controller.dart';
 // **************************************************************************
 
 String _$cardsListControllerHash() =>
-    r'5c13f46d9c1cb5d12c9903ce47c962cbb9ece342';
+    r'affcf2e2061963df4bc4f4cb35036a8589c5e80b';
 
 /// Copied from Dart SDK
 class _SystemHash {
