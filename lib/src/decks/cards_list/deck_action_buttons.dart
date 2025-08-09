@@ -17,11 +17,16 @@ class DeckActionButtons extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    return Row(
-      children: [
-        _LearnButtonWidget(deckId: deckId),
-        _GenerateFromGoogleDocButtonWidget(deckId: deckId),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        spacing: 8.0,
+        children: [
+          _LearnButtonWidget(deckId: deckId),
+          _GenerateFromGoogleDocButtonWidget(deckId: deckId),
+        ],
+      ),
     );
   }
 
