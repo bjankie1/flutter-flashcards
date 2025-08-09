@@ -81,8 +81,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get deleteDeckConfirmation =>
-      'Are you sure you want to delete this deck?';
+  String get deleteDeckConfirmation => 'Are you sure you want to delete this deck?';
 
   @override
   String get delete => 'Delete';
@@ -424,8 +423,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hintIconTooltip => 'This card has a hint';
 
   @override
-  String get cardOptionDoubleSidedTooltip =>
-      'This card can be learned from both sides';
+  String get cardOptionDoubleSidedTooltip => 'This card can be learned from both sides';
 
   @override
   String get deleteCardTooltip => 'Delete card';
@@ -510,8 +508,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updateAvailable => 'Update Available';
 
   @override
-  String get updateAvailableMessage =>
-      'A new version of the app is available. Update now to get the latest features and improvements.';
+  String get updateAvailableMessage => 'A new version of the app is available. Update now to get the latest features and improvements.';
 
   @override
   String get updateNow => 'Update Now';
@@ -544,8 +541,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noUpdateAvailable => 'You\'re using the latest version';
 
   @override
-  String get updateReminder =>
-      'Don\'t forget to update! A new version is available.';
+  String get updateReminder => 'Don\'t forget to update! A new version is available.';
 
   @override
   String get deckDetails => 'Deck Details';
@@ -590,19 +586,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updateSettings => 'Update Settings';
 
   @override
-  String get automaticUpdateChecks =>
-      'Automatic update checks every 10 minutes';
+  String get automaticUpdateChecks => 'Automatic update checks every 10 minutes';
 
   @override
-  String get versionCheckingWebOnly =>
-      'Version checking is only available on web platform';
+  String get versionCheckingWebOnly => 'Version checking is only available on web platform';
 
   @override
   String get googleDocLink => 'Google Doc Link';
 
   @override
-  String get googleDocHelperText =>
-      'Paste the link to your Google Doc to generate cards from it.';
+  String get googleDocHelperText => 'Paste the link to your Google Doc to generate cards from it.';
 
   @override
   String get selectGoogleDoc => 'Select Google Doc';
@@ -624,15 +617,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get googleDocUrlHint => 'https://docs.google.com/document/d/...';
 
   @override
-  String get googleDocUrlExample =>
-      'Example: https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit';
+  String get googleDocUrlExample => 'Example: https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit';
 
   @override
   String get pleaseEnterGoogleDocUrl => 'Please enter a Google Doc URL';
 
   @override
-  String get invalidGoogleDocUrl =>
-      'Invalid Google Doc URL. Please check the URL and try again.';
+  String get invalidGoogleDocUrl => 'Invalid Google Doc URL. Please check the URL and try again.';
 
   @override
   String get loadButton => 'Load';
@@ -661,36 +652,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noCollaboratorsYet => 'No collaborators yet';
 
   @override
-  String get inviteCollaboratorHint =>
-      'Invite someone to collaborate on your flashcards';
+  String get inviteCollaboratorHint => 'Invite someone to collaborate on your flashcards';
 
   @override
-  String get answersLabelTooltip =>
-      'Total number of answers (cards reviewed) in the selected period.';
+  String get answersLabelTooltip => 'Total number of answers (cards reviewed) in the selected period.';
 
   @override
-  String get totalTimeLabelTooltip =>
-      'Total time spent reviewing cards in the selected period.';
+  String get totalTimeLabelTooltip => 'Total time spent reviewing cards in the selected period.';
 
   @override
-  String get averageTimeLabelTooltip =>
-      'Average time spent reviewing cards per day in the selected period.';
+  String get averageTimeLabelTooltip => 'Average time spent reviewing cards per day in the selected period.';
 
   @override
-  String get cardReviewedPerHourTooltip =>
-      'Distribution of card reviews by time of day. Helps you see when you study most.';
+  String get cardReviewedPerHourTooltip => 'Distribution of card reviews by time of day. Helps you see when you study most.';
 
   @override
-  String get cardReviewDailyTooltip =>
-      'Number of cards reviewed each day in the selected period.';
+  String get cardReviewDailyTooltip => 'Number of cards reviewed each day in the selected period.';
 
   @override
-  String get countCardsPerDeckChartTooltip =>
-      'Shows how many cards you studied from each deck.';
+  String get countCardsPerDeckChartTooltip => 'Shows how many cards you studied from each deck.';
 
   @override
-  String get timePerDeckChartTooltip =>
-      'Shows how much time you spent studying each deck.';
+  String get timePerDeckChartTooltip => 'Shows how much time you spent studying each deck.';
 
   @override
   String get signInTitle => 'Sign In';
@@ -818,16 +801,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get explanationDescriptionLabel => 'Answer explanation description';
 
   @override
-  String get frontCardDescriptionHint =>
-      'Describe what should be on the front of cards in this deck';
+  String get frontCardDescriptionHint => 'Describe what should be on the front of cards in this deck';
 
   @override
-  String get backCardDescriptionHint =>
-      'Describe what should be on the back of cards in this deck';
+  String get backCardDescriptionHint => 'Describe what should be on the back of cards in this deck';
 
   @override
-  String get explanationDescriptionHint =>
-      'Describe what explanations should include for answers in this deck';
+  String get explanationDescriptionHint => 'Describe what explanations should include for answers in this deck';
 
   @override
   String get frontCardDescriptionSavedMessage => 'Front card description saved';
@@ -836,35 +816,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backCardDescriptionSavedMessage => 'Back card description saved';
 
   @override
-  String get explanationDescriptionSavedMessage =>
-      'Explanation description saved';
+  String get explanationDescriptionSavedMessage => 'Explanation description saved';
 
   @override
-  String get frontCardDescriptionSaveErrorMessage =>
-      'Error saving front card description';
+  String get frontCardDescriptionSaveErrorMessage => 'Error saving front card description';
 
   @override
-  String get backCardDescriptionSaveErrorMessage =>
-      'Error saving back card description';
+  String get backCardDescriptionSaveErrorMessage => 'Error saving back card description';
 
   @override
-  String get explanationDescriptionSaveErrorMessage =>
-      'Error saving explanation description';
+  String get explanationDescriptionSaveErrorMessage => 'Error saving explanation description';
 
   @override
   String get noProvisionaryCardsMessage => 'No card proposals to review';
 
   @override
-  String get noProvisionaryCardsDescription =>
-      'You don\'t have any quick notes waiting to be turned into flashcards. Add some by using the quick card creation feature.';
+  String get noProvisionaryCardsDescription => 'You don\'t have any quick notes waiting to be turned into flashcards. Add some by using the quick card creation feature.';
 
   @override
-  String get allProvisionaryCardsReviewedMessage =>
-      'All card proposals reviewed!';
+  String get allProvisionaryCardsReviewedMessage => 'All card proposals reviewed!';
 
   @override
-  String get allProvisionaryCardsReviewedDescription =>
-      'Great job! You\'ve processed all your quick notes. They\'ve been converted into proper flashcards and are ready for learning.';
+  String get allProvisionaryCardsReviewedDescription => 'Great job! You\'ve processed all your quick notes. They\'ve been converted into proper flashcards and are ready for learning.';
 
   @override
   String get goBack => 'Go back';
@@ -876,8 +849,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get warningTitle => 'Warning';
 
   @override
-  String get finalizeEditingWarning =>
-      'Please save or cancel your edits in all fields before saving the card.';
+  String get finalizeEditingWarning => 'Please save or cancel your edits in all fields before saving the card.';
 
   @override
   String get ok => 'OK';
@@ -886,12 +858,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get generateCardDescriptions => 'Generate Card Descriptions';
 
   @override
-  String get cardDescriptionsGeneratedMessage =>
-      'Card descriptions generated successfully';
+  String get cardDescriptionsGeneratedMessage => 'Card descriptions generated successfully';
 
   @override
-  String get cardDescriptionsGenerationErrorMessage =>
-      'Error generating card descriptions';
+  String get cardDescriptionsGenerationErrorMessage => 'Error generating card descriptions';
 
   @override
   String get generatedCardDescriptions => 'Generated Card Descriptions';
@@ -906,12 +876,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get apply => 'Apply';
 
   @override
-  String get cardDescriptionsAppliedMessage =>
-      'Card descriptions applied successfully';
+  String get cardDescriptionsAppliedMessage => 'Card descriptions applied successfully';
 
   @override
-  String get cardDescriptionsApplyErrorMessage =>
-      'Error applying card descriptions';
+  String get cardDescriptionsApplyErrorMessage => 'Error applying card descriptions';
 
   @override
   String get cardDescriptionsConfigured => 'Card descriptions configured';

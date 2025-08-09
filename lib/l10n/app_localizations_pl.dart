@@ -81,8 +81,7 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get deleteDeckConfirmation =>
-      'Czy na pewno chcesz usunąć ten zestaw kart?';
+  String get deleteDeckConfirmation => 'Czy na pewno chcesz usunąć ten zestaw kart?';
 
   @override
   String get delete => 'Usuń';
@@ -255,8 +254,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get decksTitle => 'Moje zestawy';
 
   @override
-  String get noDecksMessage =>
-      'Nie masz jeszcze zestawów. Dodaj swój pierwszy.';
+  String get noDecksMessage => 'Nie masz jeszcze zestawów. Dodaj swój pierwszy.';
 
   @override
   String get profileNameChanged => 'Nazwa profilu zmieniona';
@@ -319,8 +317,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get deckGeneration => 'Generowanie zestawów kart';
 
   @override
-  String get inputTextForGenerator =>
-      'Wprowadź tekst na podstawie którego chcesz wygenerować karty';
+  String get inputTextForGenerator => 'Wprowadź tekst na podstawie którego chcesz wygenerować karty';
 
   @override
   String get generateCards => 'Generuj karty';
@@ -347,8 +344,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get deckSharedListTitle => 'Kto ma już dostęp';
 
   @override
-  String get deckNotSharedMessage =>
-      'Nie ma jeszcze nikogo, kto ma dostęp do tego zestawu';
+  String get deckNotSharedMessage => 'Nie ma jeszcze nikogo, kto ma dostęp do tego zestawu';
 
   @override
   String get quickAddCard => 'Szybko dodaj kartę';
@@ -427,15 +423,13 @@ class AppLocalizationsPl extends AppLocalizations {
   String get hintIconTooltip => 'Ta karta ma podpowiedź';
 
   @override
-  String get cardOptionDoubleSidedTooltip =>
-      'Ta karta może być uczona z obu stron';
+  String get cardOptionDoubleSidedTooltip => 'Ta karta może być uczona z obu stron';
 
   @override
   String get deleteCardTooltip => 'Usuń kartę';
 
   @override
-  String get deckDescriptionSaveErrorMessage =>
-      'Nie udało się zapisać opisu zestawu';
+  String get deckDescriptionSaveErrorMessage => 'Nie udało się zapisać opisu zestawu';
 
   @override
   String get learningStatisticsDialogTitle => 'Statystyki nauki';
@@ -518,8 +512,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get updateAvailable => 'Dostępna aktualizacja';
 
   @override
-  String get updateAvailableMessage =>
-      'Dostępna jest nowa wersja aplikacji. Zaktualizuj teraz, aby uzyskać najnowsze funkcje i ulepszenia.';
+  String get updateAvailableMessage => 'Dostępna jest nowa wersja aplikacji. Zaktualizuj teraz, aby uzyskać najnowsze funkcje i ulepszenia.';
 
   @override
   String get updateNow => 'Zaktualizuj teraz';
@@ -540,8 +533,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get updateInstalling => 'Instalowanie aktualizacji...';
 
   @override
-  String get updateComplete =>
-      'Aktualizacja zakończona! Aplikacja zostanie przeładowana.';
+  String get updateComplete => 'Aktualizacja zakończona! Aplikacja zostanie przeładowana.';
 
   @override
   String get updateError => 'Aktualizacja nie powiodła się. Spróbuj ponownie.';
@@ -553,8 +545,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get noUpdateAvailable => 'Używasz najnowszej wersji';
 
   @override
-  String get updateReminder =>
-      'Nie zapomnij zaktualizować! Dostępna jest nowa wersja.';
+  String get updateReminder => 'Nie zapomnij zaktualizować! Dostępna jest nowa wersja.';
 
   @override
   String get deckDetails => 'Szczegóły talii';
@@ -599,19 +590,16 @@ class AppLocalizationsPl extends AppLocalizations {
   String get updateSettings => 'Ustawienia aktualizacji';
 
   @override
-  String get automaticUpdateChecks =>
-      'Automatyczne sprawdzanie aktualizacji co 10 minut';
+  String get automaticUpdateChecks => 'Automatyczne sprawdzanie aktualizacji co 10 minut';
 
   @override
-  String get versionCheckingWebOnly =>
-      'Sprawdzanie wersji jest dostępne tylko na platformie web';
+  String get versionCheckingWebOnly => 'Sprawdzanie wersji jest dostępne tylko na platformie web';
 
   @override
   String get googleDocLink => 'Link do Dokumentu Google';
 
   @override
-  String get googleDocHelperText =>
-      'Wklej link do swojego Dokumentu Google, aby wygenerować z niego fiszki.';
+  String get googleDocHelperText => 'Wklej link do swojego Dokumentu Google, aby wygenerować z niego fiszki.';
 
   @override
   String get selectGoogleDoc => 'Wybierz Dokument Google';
@@ -633,16 +621,13 @@ class AppLocalizationsPl extends AppLocalizations {
   String get googleDocUrlHint => 'https://docs.google.com/document/d/...';
 
   @override
-  String get googleDocUrlExample =>
-      'Przykład: https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit';
+  String get googleDocUrlExample => 'Przykład: https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit';
 
   @override
-  String get pleaseEnterGoogleDocUrl =>
-      'Proszę wprowadzić URL Dokumentu Google';
+  String get pleaseEnterGoogleDocUrl => 'Proszę wprowadzić URL Dokumentu Google';
 
   @override
-  String get invalidGoogleDocUrl =>
-      'Nieprawidłowy URL Dokumentu Google. Sprawdź URL i spróbuj ponownie.';
+  String get invalidGoogleDocUrl => 'Nieprawidłowy URL Dokumentu Google. Sprawdź URL i spróbuj ponownie.';
 
   @override
   String get loadButton => 'Załaduj';
@@ -671,36 +656,28 @@ class AppLocalizationsPl extends AppLocalizations {
   String get noCollaboratorsYet => 'Brak współpracowników';
 
   @override
-  String get inviteCollaboratorHint =>
-      'Zaproś kogoś do współpracy nad fiszkami';
+  String get inviteCollaboratorHint => 'Zaproś kogoś do współpracy nad fiszkami';
 
   @override
-  String get answersLabelTooltip =>
-      'Total number of answers (cards reviewed) in the selected period.';
+  String get answersLabelTooltip => 'Total number of answers (cards reviewed) in the selected period.';
 
   @override
-  String get totalTimeLabelTooltip =>
-      'Total time spent reviewing cards in the selected period.';
+  String get totalTimeLabelTooltip => 'Total time spent reviewing cards in the selected period.';
 
   @override
-  String get averageTimeLabelTooltip =>
-      'Average time spent reviewing cards per day in the selected period.';
+  String get averageTimeLabelTooltip => 'Average time spent reviewing cards per day in the selected period.';
 
   @override
-  String get cardReviewedPerHourTooltip =>
-      'Distribution of card reviews by time of day. Helps you see when you study most.';
+  String get cardReviewedPerHourTooltip => 'Distribution of card reviews by time of day. Helps you see when you study most.';
 
   @override
-  String get cardReviewDailyTooltip =>
-      'Number of cards reviewed each day in the selected period.';
+  String get cardReviewDailyTooltip => 'Number of cards reviewed each day in the selected period.';
 
   @override
-  String get countCardsPerDeckChartTooltip =>
-      'Shows how many cards you studied from each deck.';
+  String get countCardsPerDeckChartTooltip => 'Shows how many cards you studied from each deck.';
 
   @override
-  String get timePerDeckChartTooltip =>
-      'Shows how much time you spent studying each deck.';
+  String get timePerDeckChartTooltip => 'Shows how much time you spent studying each deck.';
 
   @override
   String get signInTitle => 'Zaloguj się';
@@ -828,16 +805,13 @@ class AppLocalizationsPl extends AppLocalizations {
   String get explanationDescriptionLabel => 'Opis wyjaśnienia odpowiedzi';
 
   @override
-  String get frontCardDescriptionHint =>
-      'Opisz co powinno być na przodzie kart w tym zestawie';
+  String get frontCardDescriptionHint => 'Opisz co powinno być na przodzie kart w tym zestawie';
 
   @override
-  String get backCardDescriptionHint =>
-      'Opisz co powinno być na tyle kart w tym zestawie';
+  String get backCardDescriptionHint => 'Opisz co powinno być na tyle kart w tym zestawie';
 
   @override
-  String get explanationDescriptionHint =>
-      'Opisz co powinny zawierać wyjaśnienia odpowiedzi w tym zestawie';
+  String get explanationDescriptionHint => 'Opisz co powinny zawierać wyjaśnienia odpowiedzi w tym zestawie';
 
   @override
   String get frontCardDescriptionSavedMessage => 'Opis przodu karty zapisany';
@@ -849,32 +823,25 @@ class AppLocalizationsPl extends AppLocalizations {
   String get explanationDescriptionSavedMessage => 'Opis wyjaśnienia zapisany';
 
   @override
-  String get frontCardDescriptionSaveErrorMessage =>
-      'Błąd zapisywania opisu przodu karty';
+  String get frontCardDescriptionSaveErrorMessage => 'Błąd zapisywania opisu przodu karty';
 
   @override
-  String get backCardDescriptionSaveErrorMessage =>
-      'Błąd zapisywania opisu tyłu karty';
+  String get backCardDescriptionSaveErrorMessage => 'Błąd zapisywania opisu tyłu karty';
 
   @override
-  String get explanationDescriptionSaveErrorMessage =>
-      'Błąd zapisywania opisu wyjaśnienia';
+  String get explanationDescriptionSaveErrorMessage => 'Błąd zapisywania opisu wyjaśnienia';
 
   @override
-  String get noProvisionaryCardsMessage =>
-      'Brak propozycji kart do przejrzenia';
+  String get noProvisionaryCardsMessage => 'Brak propozycji kart do przejrzenia';
 
   @override
-  String get noProvisionaryCardsDescription =>
-      'Nie masz żadnych szybkich notatek oczekujących na przekształcenie w fiszki. Dodaj je używając funkcji szybkiego dodawania kart.';
+  String get noProvisionaryCardsDescription => 'Nie masz żadnych szybkich notatek oczekujących na przekształcenie w fiszki. Dodaj je używając funkcji szybkiego dodawania kart.';
 
   @override
-  String get allProvisionaryCardsReviewedMessage =>
-      'Wszystkie propozycje kart przejrzane!';
+  String get allProvisionaryCardsReviewedMessage => 'Wszystkie propozycje kart przejrzane!';
 
   @override
-  String get allProvisionaryCardsReviewedDescription =>
-      'Świetna robota! Przetworzyłeś wszystkie swoje szybkie notatki. Zostały przekształcone w odpowiednie fiszki i są gotowe do nauki.';
+  String get allProvisionaryCardsReviewedDescription => 'Świetna robota! Przetworzyłeś wszystkie swoje szybkie notatki. Zostały przekształcone w odpowiednie fiszki i są gotowe do nauki.';
 
   @override
   String get goBack => 'Wróć';
@@ -886,8 +853,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get warningTitle => 'Ostrzeżenie';
 
   @override
-  String get finalizeEditingWarning =>
-      'Zapisz lub anuluj edycję wszystkich pól przed zapisaniem karty.';
+  String get finalizeEditingWarning => 'Zapisz lub anuluj edycję wszystkich pól przed zapisaniem karty.';
 
   @override
   String get ok => 'OK';
@@ -896,12 +862,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get generateCardDescriptions => 'Generuj opisy kart';
 
   @override
-  String get cardDescriptionsGeneratedMessage =>
-      'Opisy kart zostały wygenerowane pomyślnie';
+  String get cardDescriptionsGeneratedMessage => 'Opisy kart zostały wygenerowane pomyślnie';
 
   @override
-  String get cardDescriptionsGenerationErrorMessage =>
-      'Błąd podczas generowania opisów kart';
+  String get cardDescriptionsGenerationErrorMessage => 'Błąd podczas generowania opisów kart';
 
   @override
   String get generatedCardDescriptions => 'Wygenerowane opisy kart';
@@ -916,12 +880,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get apply => 'Zastosuj';
 
   @override
-  String get cardDescriptionsAppliedMessage =>
-      'Opisy kart zostały zastosowane pomyślnie';
+  String get cardDescriptionsAppliedMessage => 'Opisy kart zostały zastosowane pomyślnie';
 
   @override
-  String get cardDescriptionsApplyErrorMessage =>
-      'Błąd podczas stosowania opisów kart';
+  String get cardDescriptionsApplyErrorMessage => 'Błąd podczas stosowania opisów kart';
 
   @override
   String get cardDescriptionsConfigured => 'Opisy kart skonfigurowane';
