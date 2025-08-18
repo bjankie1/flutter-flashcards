@@ -28,7 +28,7 @@ dependencies:
   riverpod_annotation: ^2.3.5
   flutter_tex: ^5.1.9
   firebase_ui_auth: ^3.0.1
-  go_router: ^16.0.0
+  go_router: ^16.1.0
   google_sign_in: ^6.3.0
   firebase_ui_oauth_google: ^2.0.1
   logger: ^2.6.0
@@ -45,7 +45,7 @@ dependencies:
   fl_chart: ^1.0.0
   dynamic_path_url_strategy: ^1.0.0
   image_picker: ^1.1.2
-  image_picker_for_web: ^3.0.6
+  image_picker_for_web: ^3.1.0
   clock: ^1.1.2
   email_validator: ^2.1.17
   crypto: ^3.0.6
@@ -65,12 +65,12 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   build_runner: ^2.5.4
   json_serializable: ^6.9.0
-  freezed: ^2.5.7
+  # freezed: ^3.2.0
   fake_cloud_firestore: ^4.0.0
   firebase_auth_mocks: ^0.15.1
   mocktail: ^1.0.4
   flutter_launcher_icons: ^0.14.3
-  riverpod_generator: ^2.6.3
+  riverpod_generator: ^2.6.5
 
 flutter:
   uses-material-design: true
