@@ -9,19 +9,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Provisionary cards support">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+    <list default="true" id="606f4fd0-5828-4674-b068-5a2543c0fee3" name="Changes" comment="Upgrade Firebase and related dependencies to latest versions&#10;&#10;- Updated Firebase packages (cloud_firestore, firebase_auth, firebase_core, firebase_database, firebase_remote_config, firebase_storage, firebase_ui_auth, firebase_ui_oauth_google, cloud_functions, firebase_ai) to their latest versions in pubspec.yaml.&#10;- Upgraded other dependencies including google_sign_in, build_runner, fake_cloud_firestore, firebase_auth_mocks, and riverpod_generator.&#10;- Added app_links and gtk plugins for improved platform integration.&#10;- Updated generated plugin registration files for Linux, Windows, and macOS to reflect new and updated plugins.&#10;- Added .idea directory to .gitignore.">
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/linux/flutter/generated_plugins.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/windows/flutter/generated_plugins.cmake" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -549,7 +540,15 @@
       <option name="project" value="LOCAL" />
       <updated>1748234168467</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="Upgrade Firebase and related dependencies to latest versions&#10;&#10;- Updated Firebase packages (cloud_firestore, firebase_auth, firebase_core, firebase_database, firebase_remote_config, firebase_storage, firebase_ui_auth, firebase_ui_oauth_google, cloud_functions, firebase_ai) to their latest versions in pubspec.yaml.&#10;- Upgraded other dependencies including google_sign_in, build_runner, fake_cloud_firestore, firebase_auth_mocks, and riverpod_generator.&#10;- Added app_links and gtk plugins for improved platform integration.&#10;- Updated generated plugin registration files for Linux, Windows, and macOS to reflect new and updated plugins.&#10;- Added .idea directory to .gitignore.">
+      <option name="closed" value="true" />
+      <created>1755492824484</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1755492824484</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -586,6 +585,7 @@
     <MESSAGE value="Improvements in card generation flow" />
     <MESSAGE value="Fixes in deck sharing" />
     <MESSAGE value="Provisionary cards support" />
-    <option name="LAST_COMMIT_MESSAGE" value="Provisionary cards support" />
+    <MESSAGE value="Upgrade Firebase and related dependencies to latest versions&#10;&#10;- Updated Firebase packages (cloud_firestore, firebase_auth, firebase_core, firebase_database, firebase_remote_config, firebase_storage, firebase_ui_auth, firebase_ui_oauth_google, cloud_functions, firebase_ai) to their latest versions in pubspec.yaml.&#10;- Upgraded other dependencies including google_sign_in, build_runner, fake_cloud_firestore, firebase_auth_mocks, and riverpod_generator.&#10;- Added app_links and gtk plugins for improved platform integration.&#10;- Updated generated plugin registration files for Linux, Windows, and macOS to reflect new and updated plugins.&#10;- Added .idea directory to .gitignore." />
+    <option name="LAST_COMMIT_MESSAGE" value="Upgrade Firebase and related dependencies to latest versions&#10;&#10;- Updated Firebase packages (cloud_firestore, firebase_auth, firebase_core, firebase_database, firebase_remote_config, firebase_storage, firebase_ui_auth, firebase_ui_oauth_google, cloud_functions, firebase_ai) to their latest versions in pubspec.yaml.&#10;- Upgraded other dependencies including google_sign_in, build_runner, fake_cloud_firestore, firebase_auth_mocks, and riverpod_generator.&#10;- Added app_links and gtk plugins for improved platform integration.&#10;- Updated generated plugin registration files for Linux, Windows, and macOS to reflect new and updated plugins.&#10;- Added .idea directory to .gitignore." />
   </component>
 </project>
