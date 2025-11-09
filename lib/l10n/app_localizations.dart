@@ -266,6 +266,12 @@ abstract class AppLocalizations {
   /// **'Back card description saved'**
   String get backCardDescriptionSavedMessage;
 
+  /// No description provided for @backCardLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Back card language'**
+  String get backCardLabel;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
@@ -553,6 +559,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Deck not found'**
   String get deckNotFoundMessage;
+
+  /// No description provided for @deckNotSharedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck has yet been shared with anyone'**
+  String get deckNotSharedMessage;
 
   /// No description provided for @deckProgress.
   ///
@@ -932,6 +944,18 @@ abstract class AppLocalizations {
   /// **'Invalid Google Doc URL. Please check the URL and try again.'**
   String get invalidGoogleDocUrl;
 
+  /// No description provided for @invitationEmailHelperText.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitees email'**
+  String get invitationEmailHelperText;
+
+  /// No description provided for @invitationErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error sending invitation'**
+  String get invitationErrorMessage;
+
   /// No description provided for @invitationSentMessage.
   ///
   /// In en, this message translates to:
@@ -985,6 +1009,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Learn everything'**
   String get learnEverything;
+
+  /// No description provided for @learnProgressMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{total} cards to review'**
+  String learnProgressMessage(int total);
 
   /// No description provided for @learning.
   ///

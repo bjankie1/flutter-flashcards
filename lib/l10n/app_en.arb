@@ -31,6 +31,7 @@
     "backCardDescriptionLabel": "Back of card description",
     "backCardDescriptionSaveErrorMessage": "Error saving back card description",
     "backCardDescriptionSavedMessage": "Back card description saved",
+    "backCardLabel": "Back card language",
     "cancel": "Cancel",
     "cancelButtonLabel": "Cancel",
     "cardAnswerDisplay": "Answer:",
@@ -103,6 +104,7 @@
     "deckNamePrompt": "Please enter a deck name",
     "deckNameSavedMessage": "Deck name saved",
     "deckNotFoundMessage": "Deck not found",
+    "deckNotSharedMessage": "Deck has yet been shared with anyone",
     "deckProgress": "{deckName} Progress",
     "@deckProgress": {
         "placeholders": {
@@ -230,6 +232,8 @@
     "inputTextForGenerator": "Text to generate flashcards for",
     "invalidEmailMessage": "Please enter a valid email",
     "invalidGoogleDocUrl": "Invalid Google Doc URL. Please check the URL and try again.",
+    "invitationEmailHelperText": "Invitees email",
+    "invitationErrorMessage": "Error sending invitation",
     "invitationSentMessage": "Invitation sent",
     "inviteCollaboratorHint": "Invite someone to collaborate on your flashcards",
     "@inviteCollaboratorHint": {
@@ -251,6 +255,14 @@
     "latestAvailableVersion": "Latest Available Version",
     "learn": "Learn",
     "learnEverything": "Learn everything",
+    "learnProgressMessage": "{total} cards to review",
+    "@learnProgressMessage": {
+        "placeholders": {
+            "total": {
+                "type": "int"
+            }
+        }
+    },
     "learning": "Learning",
     "learningStatisticsAnswer": "Answer",
     "learningStatisticsClose": "Close",

@@ -100,6 +100,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get backCardDescriptionSavedMessage => 'Opis tyłu karty zapisany';
 
   @override
+  String get backCardLabel => 'Język na karcie z tyłu';
+
+  @override
   String get cancel => 'Anuluj';
 
   @override
@@ -257,6 +260,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get deckNotFoundMessage => 'Nie ma takiego zestawu';
+
+  @override
+  String get deckNotSharedMessage => 'Deck has yet been shared with anyone';
 
   @override
   String deckProgress(String deckName) {
@@ -478,6 +484,12 @@ class AppLocalizationsPl extends AppLocalizations {
       'Nieprawidłowy URL Dokumentu Google. Sprawdź URL i spróbuj ponownie.';
 
   @override
+  String get invitationEmailHelperText => 'Adres email osoby zapraszanej';
+
+  @override
+  String get invitationErrorMessage => 'Błąd podczas wysyłania zaproszenia';
+
+  @override
   String get invitationSentMessage => 'Zaproszenie wysłane';
 
   @override
@@ -509,6 +521,11 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get learnEverything => 'Pełna powtórka';
+
+  @override
+  String learnProgressMessage(int total) {
+    return 'Pozostało $total kart do nauki';
+  }
 
   @override
   String get learning => 'Nauczanie';

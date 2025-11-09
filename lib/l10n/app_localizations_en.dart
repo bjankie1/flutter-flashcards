@@ -100,6 +100,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backCardDescriptionSavedMessage => 'Back card description saved';
 
   @override
+  String get backCardLabel => 'Back card language';
+
+  @override
   String get cancel => 'Cancel';
 
   @override
@@ -256,6 +259,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deckNotFoundMessage => 'Deck not found';
+
+  @override
+  String get deckNotSharedMessage => 'Deck has yet been shared with anyone';
 
   @override
   String deckProgress(String deckName) {
@@ -477,6 +483,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Invalid Google Doc URL. Please check the URL and try again.';
 
   @override
+  String get invitationEmailHelperText => 'Invitees email';
+
+  @override
+  String get invitationErrorMessage => 'Error sending invitation';
+
+  @override
   String get invitationSentMessage => 'Invitation sent';
 
   @override
@@ -508,6 +520,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get learnEverything => 'Learn everything';
+
+  @override
+  String learnProgressMessage(int total) {
+    return '$total cards to review';
+  }
 
   @override
   String get learning => 'Learning';
