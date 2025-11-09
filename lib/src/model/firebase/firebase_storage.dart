@@ -21,52 +21,69 @@ class StorageService {
     return '/users/${userId ?? _userId}/avatar';
   }
 
-  Future<void> uploadCardIllustration(XFile image, String cardId, String name,
-      {void Function()? onPaused,
-      void Function()? onCancelled,
-      void Function()? onError,
-      void Function()? onSuccess}) async {
+  Future<void> uploadCardIllustration(
+    XFile image,
+    String cardId,
+    String name, {
+    void Function()? onPaused,
+    void Function()? onCancelled,
+    void Function()? onError,
+    void Function()? onSuccess,
+  }) async {
     if (_userId == null) throw Exception('User not logged');
     _log.i(
-        'Uploading image ${image.name} from ${image.path} as ${image.mimeType}');
+      'Uploading image ${image.name} from ${image.path} as ${image.mimeType}',
+    );
     final storageRef = _storage.ref();
-    final fileRef =
-        storageRef.child(_cardIllustrationStoragePath(cardId, name));
-    await _uploadDataToStorage(image, fileRef,
-        onPaused: onPaused,
-        onCancelled: onCancelled,
-        onError: onError,
-        onSuccess: onSuccess);
+    final fileRef = storageRef.child(
+      _cardIllustrationStoragePath(cardId, name),
+    );
+    await _uploadDataToStorage(
+      image,
+      fileRef,
+      onPaused: onPaused,
+      onCancelled: onCancelled,
+      onError: onError,
+      onSuccess: onSuccess,
+    );
   }
 
-  Future<void> uploadUserAvatar(XFile image,
-      {void Function()? onPaused,
-      void Function()? onCancelled,
-      void Function()? onError,
-      void Function()? onSuccess}) async {
+  Future<void> uploadUserAvatar(
+    XFile image, {
+    void Function()? onPaused,
+    void Function()? onCancelled,
+    void Function()? onError,
+    void Function()? onSuccess,
+  }) async {
     if (_userId == null) throw Exception('User not logged');
     _log.i(
-        'Uploading user avatar ${image.name} from ${image.path} as ${image.mimeType}');
+      'Uploading user avatar ${image.name} from ${image.path} as ${image.mimeType}',
+    );
     final storageRef = _storage.ref();
     final fileRef = storageRef.child(_userAvatarStoragePath());
-    await _uploadDataToStorage(image, fileRef,
-        onPaused: onPaused,
-        onCancelled: onCancelled,
-        onError: onError,
-        onSuccess: onSuccess);
+    await _uploadDataToStorage(
+      image,
+      fileRef,
+      onPaused: onPaused,
+      onCancelled: onCancelled,
+      onError: onError,
+      onSuccess: onSuccess,
+    );
   }
 
-  Future<void> _uploadDataToStorage(XFile image, Reference fileRef,
-      {void Function()? onPaused,
-      void Function()? onCancelled,
-      void Function()? onError,
-      void Function()? onSuccess}) async {
+  Future<void> _uploadDataToStorage(
+    XFile image,
+    Reference fileRef, {
+    void Function()? onPaused,
+    void Function()? onCancelled,
+    void Function()? onError,
+    void Function()? onSuccess,
+  }) async {
     final bytes = await image.readAsBytes();
     final task = fileRef.putData(
-        bytes,
-        SettableMetadata(
-          contentType: image.mimeType,
-        ));
+      bytes,
+      SettableMetadata(contentType: image.mimeType),
+    );
     task.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
       switch (taskSnapshot.state) {
         case TaskState.running:
@@ -87,8 +104,9 @@ class StorageService {
 
   Future<String> cardIllustrationUrl(String cardId, String name) async {
     final storageRef = _storage.ref();
-    final fileRef =
-        storageRef.child(_cardIllustrationStoragePath(cardId, name));
+    final fileRef = storageRef.child(
+      _cardIllustrationStoragePath(cardId, name),
+    );
     String url = await fileRef.getDownloadURL();
     return url;
   }
@@ -99,17 +117,22 @@ class StorageService {
     try {
       return await fileRef.getDownloadURL();
     } on FirebaseException catch (error, stackTrace) {
-      _log.w('Error getting user avatar URL: $error with code ${error.code}',
-          stackTrace: stackTrace);
+      _log.w(
+        'Error getting user avatar URL: $error with code ${error.code}',
+        stackTrace: stackTrace,
+      );
       return null;
     }
   }
 
   Future<(Uint8List?, FullMetadata)> cardIllustrationData(
-      String cardId, String name) async {
+    String cardId,
+    String name,
+  ) async {
     final storageRef = _storage.ref();
-    final fileRef =
-        storageRef.child(_cardIllustrationStoragePath(cardId, name));
+    final fileRef = storageRef.child(
+      _cardIllustrationStoragePath(cardId, name),
+    );
     final metadata = await fileRef.getMetadata();
     final data = await fileRef.getData();
     return (data, metadata);

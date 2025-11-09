@@ -20,4 +20,4 @@ class CardReviewStats {
     required this.ratings,
     required this.reviewTimeOfDay,
   });
-} 
+}

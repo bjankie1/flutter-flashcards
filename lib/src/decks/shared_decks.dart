@@ -19,9 +19,12 @@ class SharedDeckListWidget extends StatelessWidget {
         final avatars = _avatarsWidgets(userToDecks.keys);
         final List<(UserId, model.Deck)> userDeckTuple = userToDecks.entries
             .fold(
-                [],
-                (acc, entry) =>
-                    [...acc, ...entry.value.map((deck) => (entry.key, deck))]);
+              [],
+              (acc, entry) => [
+                ...acc,
+                ...entry.value.map((deck) => (entry.key, deck)),
+              ],
+            );
         userDeckTuple.sort((t1, t2) => t1.$2.name.compareTo(t2.$2.name));
         return SizedBox(
           width: 800,
@@ -36,7 +39,9 @@ class SharedDeckListWidget extends StatelessWidget {
                 }
                 final tuple = userDeckTuple[index];
                 return SharedDeckItem(
-                    avatar: avatars[tuple.$1]!, deck: tuple.$2);
+                  avatar: avatars[tuple.$1]!,
+                  deck: tuple.$2,
+                );
               },
             ),
           ),
@@ -46,12 +51,9 @@ class SharedDeckListWidget extends StatelessWidget {
   }
 
   Map<UserId, Widget> _avatarsWidgets(Iterable<UserId> userIds) {
-    return Map.fromEntries(userIds.map((uid) => MapEntry(
-        uid,
-        Avatar(
-          size: 20,
-          userId: uid,
-        ))));
+    return Map.fromEntries(
+      userIds.map((uid) => MapEntry(uid, Avatar(size: 20, userId: uid))),
+    );
   }
 }
 
@@ -66,10 +68,7 @@ class SharedDeckItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       // dense: true,
-      title: Text(
-        deck.name,
-        style: context.textTheme.headlineMedium,
-      ),
+      title: Text(deck.name, style: context.textTheme.headlineMedium),
       subtitle: Text(deck.description ?? ''),
       leading: avatar,
       trailing: ElevatedButton.icon(

@@ -24,10 +24,7 @@ class CardEditPage extends StatelessWidget {
             : GptMarkdown(context.l10n.editCardTitle(deck?.name ?? '')),
         currentPage: PageIndex.cards,
         child: deck != null
-            ? CardEdit(
-                card: card,
-                deck: deck,
-              )
+            ? CardEdit(card: card, deck: deck)
             : Text(context.l10n.deckNotFoundMessage),
       ),
     );

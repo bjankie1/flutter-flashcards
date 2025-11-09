@@ -24,8 +24,10 @@ void main() {
         expect(stats.numberOfReviews, 1);
         expect(stats.dateAdded, currentClockDateTime);
         expect(stats.interval, 1);
-        expect(stats.nextReviewDate,
-            closeToTime(now, tolerance: Duration(hours: 1)));
+        expect(
+          stats.nextReviewDate,
+          closeToTime(now, tolerance: Duration(hours: 1)),
+        );
       });
     });
 
@@ -37,8 +39,10 @@ void main() {
       var schedulingCards = f.repeat(card, now);
       final stats = schedulingCards[model.Rating.hard]!.card;
 
-      expect(stats.nextReviewDate,
-          closeToTime(now.add(const Duration(minutes: 5))));
+      expect(
+        stats.nextReviewDate,
+        closeToTime(now.add(const Duration(minutes: 5))),
+      );
     });
 
     test('calculateNextReview - first review - good', () {
@@ -49,8 +53,10 @@ void main() {
       final schedulingCards = f.repeat(card, now);
       final stats = schedulingCards[model.Rating.good]!.card;
 
-      expect(stats.nextReviewDate,
-          closeToTime(now.add(const Duration(minutes: 10))));
+      expect(
+        stats.nextReviewDate,
+        closeToTime(now.add(const Duration(minutes: 10))),
+      );
     });
 
     test('calculateNextReview - first review - easy', () {
@@ -63,23 +69,26 @@ void main() {
 
       expect(stats.interval, 6);
       expect(
-          stats.nextReviewDate, closeToTime(now.add(const Duration(days: 6))));
+        stats.nextReviewDate,
+        closeToTime(now.add(const Duration(days: 6))),
+      );
     });
 
     test('calculateNextReview - subsequent review - again', () {
       final now = DateTime.now();
       final cardId = 'testCardId';
       final currentStats = model.CardStats(
-          cardId: cardId,
-          stability: 2.5,
-          difficulty: 2.5,
-          lastReview: now.subtract(const Duration(days: 1)),
-          numberOfReviews: 1,
-          numberOfLapses: 0,
-          dateAdded: now.subtract(const Duration(days: 2)),
-          interval: 0,
-          nextReviewDate: now,
-          state: model.State.learning);
+        cardId: cardId,
+        stability: 2.5,
+        difficulty: 2.5,
+        lastReview: now.subtract(const Duration(days: 1)),
+        numberOfReviews: 1,
+        numberOfLapses: 0,
+        dateAdded: now.subtract(const Duration(days: 2)),
+        interval: 0,
+        nextReviewDate: now,
+        state: model.State.learning,
+      );
       var f = FSRS();
       final schedulingCards = f.repeat(currentStats, now);
       final stats = schedulingCards[model.Rating.again]!.card;

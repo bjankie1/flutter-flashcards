@@ -10,8 +10,13 @@ class ReviewLog {
   DateTime review;
   State state;
 
-  ReviewLog(this.rating, this.scheduledDays, this.elapsedDays, this.review,
-      this.state);
+  ReviewLog(
+    this.rating,
+    this.scheduledDays,
+    this.elapsedDays,
+    this.review,
+    this.state,
+  );
 
   @override
   String toString() {
@@ -78,9 +83,11 @@ class SchedulingCards {
     good = good.withInterval(goodInterval.toInt());
     easy = easy.withInterval(easyInterval.toInt());
     again = again.nextReview(now.add(Duration(minutes: 5)));
-    hard = hard.nextReview((hardInterval > 0)
-        ? now.add(Duration(days: hardInterval.toInt()))
-        : now.add(Duration(minutes: 10)));
+    hard = hard.nextReview(
+      (hardInterval > 0)
+          ? now.add(Duration(days: hardInterval.toInt()))
+          : now.add(Duration(minutes: 10)),
+    );
     good = good.nextReview(now.add(Duration(days: goodInterval.toInt())));
     easy = easy.nextReview(now.add(Duration(days: easyInterval.toInt())));
   }
@@ -89,15 +96,21 @@ class SchedulingCards {
     final elapsedDays = card.elapsedDays();
     return {
       Rating.again: SchedulingInfo(
-          again,
-          ReviewLog(
-              Rating.again, again.interval, elapsedDays, now, card.state)),
-      Rating.hard: SchedulingInfo(hard,
-          ReviewLog(Rating.hard, hard.interval, elapsedDays, now, card.state)),
-      Rating.good: SchedulingInfo(good,
-          ReviewLog(Rating.good, good.interval, elapsedDays, now, card.state)),
-      Rating.easy: SchedulingInfo(easy,
-          ReviewLog(Rating.easy, easy.interval, elapsedDays, now, card.state)),
+        again,
+        ReviewLog(Rating.again, again.interval, elapsedDays, now, card.state),
+      ),
+      Rating.hard: SchedulingInfo(
+        hard,
+        ReviewLog(Rating.hard, hard.interval, elapsedDays, now, card.state),
+      ),
+      Rating.good: SchedulingInfo(
+        good,
+        ReviewLog(Rating.good, good.interval, elapsedDays, now, card.state),
+      ),
+      Rating.easy: SchedulingInfo(
+        easy,
+        ReviewLog(Rating.easy, easy.interval, elapsedDays, now, card.state),
+      ),
     };
   }
 }
@@ -122,6 +135,6 @@ class Parameters {
     0.34,
     1.26,
     0.29,
-    2.61
+    2.61,
   ];
-} 
+}

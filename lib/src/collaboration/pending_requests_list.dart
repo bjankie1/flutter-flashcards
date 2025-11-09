@@ -9,24 +9,26 @@ class PendingRequestsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryLoader(
-        fetcher: (repository) => repository
-            .pendingInvitations(sent: sent)
-            .then((value) => value.toList()),
-        builder: (context, invitations, _) {
-          return Expanded(
-            child: ListView.builder(
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Row(
-                      children: [
-                        Text(invitations[index].receivingUserEmail),
-                        Text(invitations[index].status.name),
-                      ],
-                    ),
-                  );
-                },
-                itemCount: invitations.length),
-          );
-        });
+      fetcher: (repository) => repository
+          .pendingInvitations(sent: sent)
+          .then((value) => value.toList()),
+      builder: (context, invitations, _) {
+        return Expanded(
+          child: ListView.builder(
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Row(
+                  children: [
+                    Text(invitations[index].receivingUserEmail),
+                    Text(invitations[index].status.name),
+                  ],
+                ),
+              );
+            },
+            itemCount: invitations.length,
+          ),
+        );
+      },
+    );
   }
 }

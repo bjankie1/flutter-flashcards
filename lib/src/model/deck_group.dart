@@ -28,24 +28,24 @@ class DeckGroup {
     Set<DeckId>? decks,
   }) {
     return DeckGroup(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        description: description ?? this.description,
-        decks: decks ?? this.decks);
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      decks: decks ?? this.decks,
+    );
   }
 
   factory DeckGroup.fromJson(String id, Map<String, dynamic> json) => DeckGroup(
-        id: id,
-        name: json['name'] as String,
-        description: json['description'] as String?,
-        decks:
-            (json['decks'] as List<dynamic>).map((id) => id.toString()).toSet(),
-      );
+    id: id,
+    name: json['name'] as String,
+    description: json['description'] as String?,
+    decks: (json['decks'] as List<dynamic>).map((id) => id.toString()).toSet(),
+  );
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'name__lowercase': name.toLowerCase(),
-        'description': description,
-        'decks': decks == null ? [] : decks!.toList(),
-      };
-} 
+    'name': name,
+    'name__lowercase': name.toLowerCase(),
+    'description': description,
+    'decks': decks == null ? [] : decks!.toList(),
+  };
+}

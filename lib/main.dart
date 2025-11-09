@@ -19,7 +19,7 @@ import 'package:flutter_flashcards/src/model/firebase/firebase_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart' as provider_package;
-import 'package:url_strategy/url_strategy.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 import 'src/app.dart';
 import 'src/model/repository_provider.dart';
@@ -49,7 +49,7 @@ void main() async {
 
   // settings that cause the route to be represented in the URL
   GoRouter.optionURLReflectsImperativeAPIs = true;
-  setPathUrlStrategy();
+  usePathUrlStrategy();
 
   if (AppConfig.useFirebaseEmulator) {
     // Connect to the Firestore emulator

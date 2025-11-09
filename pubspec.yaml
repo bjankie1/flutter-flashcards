@@ -7,16 +7,18 @@ publish_to: 'none'
 version: 1.0.5+1
 
 environment:
-  sdk: ^3.8.0
+  sdk: ^3.9.0
 
 dependencies:
-  cloud_firestore: ^5.6.11
-  firebase_auth: ^5.6.2
-  firebase_core: ^3.15.1
-  firebase_database: ^11.3.9
-  firebase_remote_config: ^5.4.7
-  firebase_storage: ^12.4.9
+  cloud_firestore: ^6.0.3
+  firebase_auth: ^6.1.1
+  firebase_core: ^4.2.0
+  firebase_database: ^12.0.3
+  firebase_remote_config: ^6.1.0
+  firebase_storage: ^13.0.3
   flutter:
+    sdk: flutter
+  flutter_web_plugins:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
@@ -25,35 +27,35 @@ dependencies:
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
   flutter_tex: ^5.1.9
-  firebase_ui_auth: ^1.17.0
+  firebase_ui_auth: ^3.0.1
   go_router: ^16.0.0
   google_sign_in: ^6.2.1
-  firebase_ui_oauth_google: ^1.4.2
+  firebase_ui_oauth_google: ^2.0.1
   logger: ^2.6.0
-  flutter_markdown: ^0.7.7+1
+  flutter_markdown_plus: ^1.0.5
   gpt_markdown: ^1.1.2
   flutter_math_fork: ^0.7.4
-  fsrs: any
-  intl: any
-  intl_translation: any
-  flex_seed_scheme: any
-  flex_color_scheme: any
+  fsrs: ^2.0.1
+  intl: ^0.20.2
+  intl_translation: ^0.20.0
+  flex_seed_scheme: ^3.5.1
+  flex_color_scheme: ^8.3.0
   random_color_scheme: ^0.1.4
   flag: ^7.0.0
   fl_chart: ^1.0.0
-  url_strategy: ^0.3.0
+  dynamic_path_url_strategy: ^1.0.0
   image_picker: ^1.1.2
   image_picker_for_web: ^3.0.6
   clock: ^1.1.2
   email_validator: ^2.1.17
   crypto: ^3.0.6
-  cloud_functions: ^5.6.1
-  package_info_plus: ^8.1.3
+  cloud_functions: ^6.0.3
+  package_info_plus: ^9.0.0
   file_picker: ^10.2.0
   http: ^1.4.0
-  googleapis: ^14.0.0
+  googleapis: ^15.0.0
   extension_google_sign_in_as_googleapis_auth: ^2.0.13
-  firebase_ai: ^2.2.1
+  firebase_ai: ^3.4.0
   freezed_annotation: ^2.4.4
 
 dev_dependencies:
@@ -61,11 +63,11 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^6.0.0
-  build_runner: ^2.4.14
-  json_serializable: ^6.9.0
-  freezed: ^2.5.7
-  fake_cloud_firestore: ^3.1.0
-  firebase_auth_mocks: ^0.14.1
+  build_runner: ^2.4.0
+  json_serializable: ^6.8.0
+  freezed: ^2.5.2
+  fake_cloud_firestore: ^4.0.0
+  firebase_auth_mocks: ^0.15.1
   mocktail: ^1.0.4
   flutter_launcher_icons: ^0.14.3
   riverpod_generator: ^2.4.0

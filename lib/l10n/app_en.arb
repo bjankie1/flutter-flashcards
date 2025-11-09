@@ -1,410 +1,417 @@
 {
-  "@@locale": "en",
-  "appTitle": "Flashcards",
-  "cards": "Cards",
-  "decks": "Decks",
-  "learning": "Learning",
-  "learn": "Learn",
-  "statistics": "Statistics",
-  "settings": "Settings",
-  "profile": "Profile",
-  "cardsToReview": "To review: {count}",
-  "@cardsToReview": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "noCardsMessage": "No cards found.",
-  "add": "Add",
-  "deckSaved": "'Deck saved!'",
-  "deckName": "Deck name",
-  "addDeck": "Add deck",
-  "addCard": "Add card",
-  "editDeck": "Edit deck",
-  "editCard": "Edit card",
-  "deckEmptyMessage": "Deck has no cards yet.",
-  "deckHeader": "Cards for {deckName}",
-  "@deckHeader": {
-    "placeholders": {
-      "deckName": {
-        "type": "String"
-      }
-    }
-  },
-  "saveAndNext": "Save and add next",
-  "saving": "Saving...",
-  "deleteDeck": "Delete {deck}",
-  "@deleteDeck": {
-    "placeholders": {
-      "deck": {
-        "type": "String"
-      }
-    }
-  },
-  "deleteDeckConfirmation": "Are you sure you want to delete this deck?",
-  "delete": "Delete",
-  "signIn": "Login",
-  "signOut": "Logout",
-  "deckNamePrompt": "Please enter a deck name",
-  "noCardsToLearn": "No cards to learn",
-  "answerRecordedMessage": "Answer recorded",
-  "showAnswer": "Show answer",
-  "learnProgressMessage": "{total} cards to review",
-  "@learnProgressMessage": {
-    "placeholders": {
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "learnEverything": "Learn everything",
-  "hintPrompt": "Hint (optional)",
-  "hintLabel": "Hint",
-  "rateAgainLabel": "Again",
-  "rateHardLabel": "Hard",
-  "rateGoodLabel": "Good",
-  "rateEasyLabel": "Easy",
-  "userNotLoggedIn": "You need to log in",
-  "printHours": "{hours} hours",
-  "@printHours": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
-  "printMinutes": "{minutes} minutes",
-  "@printMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "printSeconds": "{seconds} seconds",
-  "@printSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "weekDurationFilterLabel": "Last 7 days",
-  "monthDurationFilterLabel": "Last month",
-  "cardReviewedPerHourHeader": "Cards reviewed per hour",
-  "deckNameSavedMessage": "Deck name saved",
-  "deckDescriptionSavedMessage": "Deck description saved",
-  "errorSavingDescriptionMessage": "Error saving description",
-  "countCardsPerDeckChartTitle": "Number of cards studied per deck",
-  "timePerDeckChartTitle": "Time spent per deck",
-  "answerLabel": "Answer",
-  "answerHint": "Answer text",
-  "questionLabel": "Question",
-  "questionHint": "Question text",
-  "cardSavedMessage": "Card saved",
-  "cardSavingErrorMessage": "Error saving card",
-  "editCardTitle": "Editing card in **{deck}** deck",
-  "@editCardTitle": {
-    "placeholders": {
-      "deck": {
-        "type": "String"
-      }
-    }
-  },
-  "generateCardsForDeck": "Generate card for **{deck}** deck",
-  "@generateCardsForDeck": {
-    "placeholders": {
-      "deck": {
-        "type": "String"
-      }
-    }
-  },
-  "createCardTitle": "Create card in **{deck}**",
-  "@createCardTitle": {
-    "placeholders": {
-      "deck": {
-        "type": "String"
-      }
-    }
-  },
-  "collaboration": "Collaboration",
-  "sentInvitationsHeader": "Sent invitations",
-  "pendingInvitationsHeader": "Pending invitations",
-  "collaboratorsHeader": "Collaborators",
-  "inviteCollaboratorPrompt": "Enter collaborator email",
-  "invitationEmailHelperText": "Invitees email",
-  "invalidEmailMessage": "Please enter a valid email",
-  "sendInvitationButtonTooltip": "Send invitation",
-  "invitationSentMessage": "Invitation sent",
-  "cardDeletedMessage": "Card deleted",
-  "cardDeletionErrorMessage": "Error deleting card",
-  "allCardsReviewedMessage": "Well done!",
-  "personFilterLabel": "You or friend",
-  "deckSharedMessage": "Deck has been shared",
-  "deckSharedFailedMessage": "Failed sharing deck",
-  "decksTitle": "My decks",
-  "noDecksMessage": "No decks found. Add your first deck",
-  "profileNameChanged": "Profile name changed",
-  "noSharedDecksMessage": "No shared decks found",
-  "deckNotFoundMessage": "Deck not found",
-  "cardOptionDoubleSided": "Learn both sides",
-  "decksWithoutGroupHeader": "Decks without group",
-  "sharedDecksHeader": "Decks sheared by other users",
-  "addDeckToGroup": "Add deck to group",
-  "saveButton": "Save",
-  "newDeckGroupName": "New deck group",
-  "newDeckGroupHelper": "Enter new deck group name",
-  "newDeckGroupAddedMessage": "New deck group added",
-  "explanationLabel": "Explanation:",
-  "cardReviewDaily": "Cards reviews per day",
-  "frontCardLabel": "Front card language",
-  "languageHint": "Choose language",
-  "backCardLabel": "Back card language",
-  "deckDescription": "Deck description",
-  "deckSelect": "Select a deck",
-  "addToDeck": "Add cards to deck",
-  "deckGeneration": "Generate cards",
-  "inputTextForGenerator": "Text to generate flashcards for",
-  "generateCards": "Generate cards",
-  "generateFlashcards": "Generate flashcards",
-  "inputText": "Text",
-  "addCardsToDeck": "Add cards to deck",
-  "createNewDeck": "Create new deck",
-  "shareDeck": "Share deck with others",
-  "deckSharingHeader": "Deck sharing",
-  "deckSharedListTitle": "People with access",
-  "deckNotSharedMessage": "Deck has yet been shared with anyone",
-  "quickAddCard": "Quick add card",
-  "provisionaryCardText": "Provisionary note",
-  "cardProposalLabel": "Card Proposal",
-  "provisionaryCardsReviewHeadline": "Provisionary cards review",
-  "provisionaryCardsReviewButton": "Review provisionary cards",
-  "discard": "Discard",
-  "later": "Later",
-  "noProvisionaryCardsHeadline": "No provisionary cards to review",
-  "switchToLightMode": "Switch to light mode",
-  "switchToDarkMode": "Switch to dark mode",
-  "switchToEnglish": "Switch to English",
-  "switchToPolish": "Switch to Polish",
-  "totalProgressLabel": "Total Progress",
-  "deckProgress": "{deckName} Progress",
-  "@deckProgress": {
-    "placeholders": {
-      "deckName": { "type": "String" }
-    }
-  },
-  "progressPercent": "+{percent}%",
-  "@progressPercent": {
-    "placeholders": {
-      "percent": { "type": "int" }
-    }
-  },
-  "masteryNew": "New",
-  "masteryLearning": "Learning",
-  "masteryYoung": "Young",
-  "masteryMature": "Mature",
-  "errorLoadingCards": "Error loading cards",
-  "cardQuestionDisplay": "Question:",
-  "cardAnswerDisplay": "Answer:",
-  "cardsSearchHint": "Search cards...",
-  "hintIconTooltip": "This card has a hint",
-  "cardOptionDoubleSidedTooltip": "This card can be learned from both sides",
-  "deleteCardTooltip": "Delete card",
-  "deckDescriptionSaveErrorMessage": "Error saving deck description",
-  "learningStatisticsDialogTitle": "Learning Statistics",
-  "learningStatisticsMetric": "Metric",
-  "learningStatisticsQuestion": "Question",
-  "learningStatisticsAnswer": "Answer",
-  "learningStatisticsValue": "Value",
-  "learningStatisticsNumberOfReviews": "Number of reviews",
-  "learningStatisticsDifficulty": "Difficulty",
-  "learningStatisticsLastReview": "Last review",
-  "learningStatisticsNextReview": "Next review",
-  "learningStatisticsDifficultyEasy": "Easy",
-  "learningStatisticsDifficultyMedium": "Medium",
-  "learningStatisticsDifficultyHard": "Hard",
-  "learningStatisticsNotScheduled": "Not scheduled",
-  "learningStatisticsDueAlready": "due already",
-  "learningStatisticsToday": "Today",
-  "learningStatisticsYesterday": "Yesterday",
-  "learningStatisticsClose": "Close",
-  "learningStatisticsDay": "{count, plural, one {# day} other {# days}}",
-  "learningStatisticsHour": "{count, plural, one {# hour} other {# hours}}",
-  "updateAvailable": "Update Available",
-  "updateAvailableMessage": "A new version of the app is available. Update now to get the latest features and improvements.",
-  "updateNow": "Update Now",
-  "updateLater": "Later",
-  "updatingApp": "Updating...",
-  "updateCheckFailed": "Failed to check for updates",
-  "updateDownloading": "Downloading update...",
-  "updateInstalling": "Installing update...",
-  "updateComplete": "Update complete! The app will reload.",
-  "updateError": "Update failed. Please try again.",
-  "checkingForUpdates": "Checking for updates...",
-  "noUpdateAvailable": "You're using the latest version",
-  "updateReminder": "Don't forget to update! A new version is available.",
-  "deckDetails": "Deck Details",
-  "@deckDetails": {
-    "description": "Title for the deck details page"
-  },
-  "generateFromGoogleDoc": "Generate from Google Doc",
-  "personalInfo": "Personal info",
-  "myName": "My name",
-  "email": "Email",
-  "yourName": "Your name",
-  "imageRecorded": "Image recorded",
-  "errorUploadingImage": "Error uploading image",
-  "appVersion": "App Version",
-  "currentVersion": "Current Version",
-  "latestAvailableVersion": "Latest Available Version",
-  "minimumRequiredVersion": "Minimum Required Version",
-  "checkForUpdates": "Check for Updates",
-  "updateSettings": "Update Settings",
-  "automaticUpdateChecks": "Automatic update checks every 10 minutes",
-  "versionCheckingWebOnly": "Version checking is only available on web platform",
-  "googleDocLink": "Google Doc Link",
-  "googleDocHelperText": "Paste the link to your Google Doc to generate cards from it.",
-  "selectGoogleDoc": "Select Google Doc",
-  "docContentLength": "Doc content length: {length}",
-  "@docContentLength": {
-    "placeholders": {
-      "length": {
-        "type": "int"
-      }
-    }
-  },
-  "errorPrefix": "Error: {message}",
-  "@errorPrefix": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "enterGoogleDocUrl": "Enter Google Doc URL:",
-  "googleDocUrlHint": "https://docs.google.com/document/d/...",
-  "googleDocUrlExample": "Example: https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit",
-  "pleaseEnterGoogleDocUrl": "Please enter a Google Doc URL",
-  "invalidGoogleDocUrl": "Invalid Google Doc URL. Please check the URL and try again.",
-  "loadButton": "Load",
-  "@addCard": {
-    "description": "Label for add card button"
-  },
-  "cancelButtonLabel": "Cancel",
-  "retry": "Retry",
-  "answersLabel": "Answers:",
-  "totalTimeLabel": "Total time:",
-  "averageTimeLabel": "Average (s):",
-  "errorLoadingCollaborators": "Error loading collaborators: {error}",
-  "@errorLoadingCollaborators": {
-    "description": "Error message shown when collaborators list fails to load.",
-    "placeholders": {"error": {"type": "String"}}
-  },
-  "noCollaboratorsYet": "No collaborators yet",
-  "@noCollaboratorsYet": {
-    "description": "Shown when there are no collaborators in the list."
-  },
-  "inviteCollaboratorHint": "Invite someone to collaborate on your flashcards",
-  "@inviteCollaboratorHint": {
-    "description": "Hint shown when there are no collaborators."
-  },
-  "answersLabelTooltip": "Total number of answers (cards reviewed) in the selected period.",
-  "totalTimeLabelTooltip": "Total time spent reviewing cards in the selected period.",
-  "averageTimeLabelTooltip": "Average time spent reviewing cards per day in the selected period.",
-  "cardReviewedPerHourTooltip": "Distribution of card reviews by time of day. Helps you see when you study most.",
-  "cardReviewDailyTooltip": "Number of cards reviewed each day in the selected period.",
-  "countCardsPerDeckChartTooltip": "Shows how many cards you studied from each deck.",
-  "timePerDeckChartTooltip": "Shows how much time you spent studying each deck.",
-  "signInTitle": "Sign In",
-  "emailLabel": "Email",
-  "passwordLabel": "Password",
-  "signInButton": "Sign In",
-  "orLabel": "or",
-  "signInWithGoogleButton": "Sign in with Google",
-  "signUpTitle": "Create Account",
-  "signUpButton": "Sign Up",
-  "signUpWithGoogleButton": "Sign up with Google",
-  "confirmPasswordLabel": "Confirm Password",
-  "alreadyHaveAccount": "Already have an account?",
-  "dontHaveAccount": "Don't have an account?",
-  "signUpLink": "Sign up",
-  "signInLink": "Sign in",
-  "selectCard": "Select card",
-  "deselectCard": "Deselect card",
-  "uploadNewFile": "Upload new file",
-  "regenerateFlashcards": "Regenerate flashcards",
-  "generatedFlashcards": "Generated Flashcards ({count})",
-  "editCards": "Edit Cards",
-  "saveToDeck": "Save to Deck",
-  "showContent": "Show content",
-  "close": "Close",
-  "docLength": "Doc length: {length}",
-  "@docLength": {
-    "placeholders": {
-      "length": {
-        "type": "int"
-      }
-    }
-  },
-  "fileSize": "File size: {size} bytes",
-  "@fileSize": {
-    "placeholders": {
-      "size": {
-        "type": "int"
-      }
-    }
-  },
-  "selectInputSource": "Select input source",
-  "pasteText": "Paste text",
-  "uploadPdf": "Upload PDF",
-  "uploadImage": "Upload image",
-  "cancel": "Cancel",
-  "confirm": "Confirm",
-  "pasteTextHint": "Paste your text here...",
-  "textContentLength": "Text content length: {length}",
-  "@textContentLength": {
-    "placeholders": {
-      "length": {
-        "type": "int"
-      }
-    }
-  },
-  "addFrontCardDescription": "add front of the card description",
-  "addBackCardDescription": "add back of the card description",
-  "addExplanationDescription": "add answer explanation description",
-  "frontCardDescriptionLabel": "Front of card description",
-  "backCardDescriptionLabel": "Back of card description",
-  "explanationDescriptionLabel": "Answer explanation description",
-  "frontCardDescriptionHint": "Describe what should be on the front of cards in this deck",
-  "backCardDescriptionHint": "Describe what should be on the back of cards in this deck",
-  "explanationDescriptionHint": "Describe what explanations should include for answers in this deck",
-  "frontCardDescriptionSavedMessage": "Front card description saved",
-  "backCardDescriptionSavedMessage": "Back card description saved",
-  "explanationDescriptionSavedMessage": "Explanation description saved",
-  "frontCardDescriptionSaveErrorMessage": "Error saving front card description",
-  "backCardDescriptionSaveErrorMessage": "Error saving back card description",
-  "explanationDescriptionSaveErrorMessage": "Error saving explanation description",
-  "noProvisionaryCardsMessage": "No card proposals to review",
-  "noProvisionaryCardsDescription": "You don't have any quick notes waiting to be turned into flashcards. Add some by using the quick card creation feature.",
-  "allProvisionaryCardsReviewedMessage": "All card proposals reviewed!",
-  "allProvisionaryCardsReviewedDescription": "Great job! You've processed all your quick notes. They've been converted into proper flashcards and are ready for learning.",
-  "goBack": "Go back",
-  "openDeck": "Open deck",
-  "warningTitle": "Warning",
-  "finalizeEditingWarning": "Please save or cancel your edits in all fields before saving the card.",
-  "ok": "OK",
-  "generateCardDescriptions": "Generate Card Descriptions",
-  "cardDescriptionsGeneratedMessage": "Card descriptions generated successfully",
-  "cardDescriptionsGenerationErrorMessage": "Error generating card descriptions",
-  "generatedCardDescriptions": "Generated Card Descriptions",
-  "confidenceLevel": "Confidence Level",
-  "analysis": "Analysis",
-  "apply": "Apply",
-  "cardDescriptionsAppliedMessage": "Card descriptions applied successfully",
-  "cardDescriptionsApplyErrorMessage": "Error applying card descriptions",
-  "cardDescriptionsConfigured": "Card descriptions configured",
-  "regenerateCardDescriptions": "Regenerate descriptions",
-  "cardDescriptions": "Card Descriptions"
+    "@@locale": "en",
+    "add": "Add",
+    "addBackCardDescription": "add back of the card description",
+    "addCard": "Add card",
+    "@addCard": {
+        "description": "Label for add card button"
+    },
+    "addCardsToDeck": "Add cards to deck",
+    "addDeck": "Add deck",
+    "addDeckToGroup": "Add deck to group",
+    "addExplanationDescription": "add answer explanation description",
+    "addFrontCardDescription": "add front of the card description",
+    "allCardsReviewedMessage": "Well done!",
+    "allProvisionaryCardsReviewedDescription": "Great job! You've processed all your quick notes. They've been converted into proper flashcards and are ready for learning.",
+    "allProvisionaryCardsReviewedMessage": "All card proposals reviewed!",
+    "alreadyHaveAccount": "Already have an account?",
+    "analysis": "Analysis",
+    "answerHint": "Answer text",
+    "answerLabel": "Answer",
+    "answerRecordedMessage": "Answer recorded",
+    "answersLabel": "Answers:",
+    "answersLabelTooltip": "Total number of answers (cards reviewed) in the selected period.",
+    "apply": "Apply",
+    "appTitle": "Flashcards",
+    "appVersion": "App Version",
+    "automaticUpdateChecks": "Automatic update checks every 10 minutes",
+    "averageTimeLabel": "Average (s):",
+    "averageTimeLabelTooltip": "Average time spent reviewing cards per day in the selected period.",
+    "backCardDescriptionHint": "Describe what should be on the back of cards in this deck",
+    "backCardDescriptionLabel": "Back of card description",
+    "backCardDescriptionSaveErrorMessage": "Error saving back card description",
+    "backCardDescriptionSavedMessage": "Back card description saved",
+    "cancel": "Cancel",
+    "cancelButtonLabel": "Cancel",
+    "cardAnswerDisplay": "Answer:",
+    "cardDeletedMessage": "Card deleted",
+    "cardDeletionErrorMessage": "Error deleting card",
+    "cardDescriptions": "Card Descriptions",
+    "cardDescriptionsAppliedMessage": "Card descriptions applied successfully",
+    "cardDescriptionsApplyErrorMessage": "Error applying card descriptions",
+    "cardDescriptionsConfigured": "Card descriptions configured",
+    "cardDescriptionsGeneratedMessage": "Card descriptions generated successfully",
+    "cardDescriptionsGenerationErrorMessage": "Error generating card descriptions",
+    "cardOptionDoubleSided": "Learn both sides",
+    "cardOptionDoubleSidedTooltip": "This card can be learned from both sides",
+    "cardProposalLabel": "Card Proposal",
+    "cardQuestionDisplay": "Question:",
+    "cardReviewDaily": "Cards reviews per day",
+    "cardReviewDailyTooltip": "Number of cards reviewed each day in the selected period.",
+    "cardReviewedPerHourHeader": "Cards reviewed per hour",
+    "cardReviewedPerHourTooltip": "Distribution of card reviews by time of day. Helps you see when you study most.",
+    "cardSavedMessage": "Card saved",
+    "cardSavingErrorMessage": "Error saving card",
+    "cards": "Cards",
+    "cardsSearchHint": "Search cards...",
+    "cardsToReview": "To review: {count}",
+    "@cardsToReview": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkForUpdates": "Check for Updates",
+    "checkingForUpdates": "Checking for updates...",
+    "close": "Close",
+    "collaboration": "Collaboration",
+    "collaboratorsHeader": "Collaborators",
+    "confidenceLevel": "Confidence Level",
+    "confirm": "Confirm",
+    "confirmPasswordLabel": "Confirm Password",
+    "countCardsPerDeckChartTitle": "Number of cards studied per deck",
+    "countCardsPerDeckChartTooltip": "Shows how many cards you studied from each deck.",
+    "createCardTitle": "Create card in **{deck}**",
+    "@createCardTitle": {
+        "placeholders": {
+            "deck": {
+                "type": "String"
+            }
+        }
+    },
+    "createNewDeck": "Create new deck",
+    "currentVersion": "Current Version",
+    "deckDescription": "Deck description",
+    "deckDescriptionSaveErrorMessage": "Error saving deck description",
+    "deckDescriptionSavedMessage": "Deck description saved",
+    "deckDetails": "Deck Details",
+    "@deckDetails": {
+        "description": "Title for the deck details page"
+    },
+    "deckEmptyMessage": "Deck has no cards yet.",
+    "deckGeneration": "Generate cards",
+    "deckHeader": "Cards for {deckName}",
+    "@deckHeader": {
+        "placeholders": {
+            "deckName": {
+                "type": "String"
+            }
+        }
+    },
+    "deckName": "Deck name",
+    "deckNamePrompt": "Please enter a deck name",
+    "deckNameSavedMessage": "Deck name saved",
+    "deckNotFoundMessage": "Deck not found",
+    "deckProgress": "{deckName} Progress",
+    "@deckProgress": {
+        "placeholders": {
+            "deckName": {
+                "type": "String"
+            }
+        }
+    },
+    "deckSaved": "'Deck saved!'",
+    "deckSelect": "Select a deck",
+    "deckSharedFailedMessage": "Failed sharing deck",
+    "deckSharedListTitle": "People with access",
+    "deckSharedMessage": "Deck has been shared",
+    "deckSharingHeader": "Deck sharing",
+    "decks": "Decks",
+    "decksTitle": "My decks",
+    "decksWithoutGroupHeader": "Decks without group",
+    "delete": "Delete",
+    "deleteCardTooltip": "Delete card",
+    "deleteDeck": "Delete {deck}",
+    "@deleteDeck": {
+        "placeholders": {
+            "deck": {
+                "type": "String"
+            }
+        }
+    },
+    "deleteDeckConfirmation": "Are you sure you want to delete this deck?",
+    "deselectCard": "Deselect card",
+    "discard": "Discard",
+    "docContentLength": "Doc content length: {length}",
+    "@docContentLength": {
+        "placeholders": {
+            "length": {
+                "type": "int"
+            }
+        }
+    },
+    "docLength": "Doc length: {length}",
+    "@docLength": {
+        "placeholders": {
+            "length": {
+                "type": "int"
+            }
+        }
+    },
+    "dontHaveAccount": "Don't have an account?",
+    "editCard": "Edit card",
+    "editCardTitle": "Editing card in **{deck}** deck",
+    "@editCardTitle": {
+        "placeholders": {
+            "deck": {
+                "type": "String"
+            }
+        }
+    },
+    "editCards": "Edit Cards",
+    "editDeck": "Edit deck",
+    "email": "Email",
+    "emailLabel": "Email",
+    "enterGoogleDocUrl": "Enter Google Doc URL:",
+    "errorLoadingCards": "Error loading cards",
+    "errorLoadingCollaborators": "Error loading collaborators: {error}",
+    "@errorLoadingCollaborators": {
+        "description": "Error message shown when collaborators list fails to load.",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "errorPrefix": "Error: {message}",
+    "@errorPrefix": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "errorSavingDescriptionMessage": "Error saving description",
+    "errorUploadingImage": "Error uploading image",
+    "explanationDescriptionHint": "Describe what explanations should include for answers in this deck",
+    "explanationDescriptionLabel": "Answer explanation description",
+    "explanationDescriptionSaveErrorMessage": "Error saving explanation description",
+    "explanationDescriptionSavedMessage": "Explanation description saved",
+    "explanationLabel": "Explanation:",
+    "fileSize": "File size: {size} bytes",
+    "@fileSize": {
+        "placeholders": {
+            "size": {
+                "type": "int"
+            }
+        }
+    },
+    "finalizeEditingWarning": "Please save or cancel your edits in all fields before saving the card.",
+    "frontCardDescriptionHint": "Describe what should be on the front of cards in this deck",
+    "frontCardDescriptionLabel": "Front of card description",
+    "frontCardDescriptionSaveErrorMessage": "Error saving front card description",
+    "frontCardDescriptionSavedMessage": "Front card description saved",
+    "frontCardLabel": "Front card language",
+    "generateCardDescriptions": "Generate Card Descriptions",
+    "generateCards": "Generate cards",
+    "generateCardsForDeck": "Generate card for **{deck}** deck",
+    "@generateCardsForDeck": {
+        "placeholders": {
+            "deck": {
+                "type": "String"
+            }
+        }
+    },
+    "generateFlashcards": "Generate flashcards",
+    "generateFromGoogleDoc": "Generate from Google Doc",
+    "generatedCardDescriptions": "Generated Card Descriptions",
+    "generatedFlashcards": "Generated Flashcards ({count})",
+    "goBack": "Go back",
+    "googleDocHelperText": "Paste the link to your Google Doc to generate cards from it.",
+    "googleDocLink": "Google Doc Link",
+    "googleDocUrlExample": "Example: https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit",
+    "googleDocUrlHint": "https://docs.google.com/document/d/...",
+    "hintIconTooltip": "This card has a hint",
+    "hintLabel": "Hint",
+    "hintPrompt": "Hint (optional)",
+    "imageRecorded": "Image recorded",
+    "inputText": "Text",
+    "inputTextForGenerator": "Text to generate flashcards for",
+    "invalidEmailMessage": "Please enter a valid email",
+    "invalidGoogleDocUrl": "Invalid Google Doc URL. Please check the URL and try again.",
+    "invitationSentMessage": "Invitation sent",
+    "inviteCollaboratorHint": "Invite someone to collaborate on your flashcards",
+    "@inviteCollaboratorHint": {
+        "description": "Hint shown when there are no collaborators."
+    },
+    "inviteCollaboratorPrompt": "Enter collaborator email",
+    "languageHint": "Choose language",
+    "lastUpdated": "Last updated on {date}",
+    "@lastUpdated": {
+        "description": "The date when the card was last updated",
+        "placeholders": {
+            "date": {
+                "type": "DateTime",
+                "format": "yMMMd"
+            }
+        }
+    },
+    "later": "Later",
+    "latestAvailableVersion": "Latest Available Version",
+    "learn": "Learn",
+    "learnEverything": "Learn everything",
+    "learning": "Learning",
+    "learningStatisticsAnswer": "Answer",
+    "learningStatisticsClose": "Close",
+    "learningStatisticsDay": "{count, plural, one {# day} other {# days}}",
+    "learningStatisticsDifficulty": "Difficulty",
+    "learningStatisticsDifficultyEasy": "Easy",
+    "learningStatisticsDifficultyHard": "Hard",
+    "learningStatisticsDifficultyMedium": "Medium",
+    "learningStatisticsDialogTitle": "Learning Statistics",
+    "learningStatisticsDueAlready": "due already",
+    "learningStatisticsHour": "{count, plural, one {# hour} other {# hours}}",
+    "learningStatisticsLastReview": "Last review",
+    "learningStatisticsMetric": "Metric",
+    "learningStatisticsNextReview": "Next review",
+    "learningStatisticsNotScheduled": "Not scheduled",
+    "learningStatisticsNumberOfReviews": "Number of reviews",
+    "learningStatisticsQuestion": "Question",
+    "learningStatisticsToday": "Today",
+    "learningStatisticsValue": "Value",
+    "learningStatisticsYesterday": "Yesterday",
+    "loadButton": "Load",
+    "masteryLearning": "Learning",
+    "masteryMature": "Mature",
+    "masteryNew": "New",
+    "masteryYoung": "Young",
+    "minimumRequiredVersion": "Minimum Required Version",
+    "monthDurationFilterLabel": "Last month",
+    "myName": "My name",
+    "newDeckGroupAddedMessage": "New deck group added",
+    "newDeckGroupHelper": "Enter new deck group name",
+    "newDeckGroupName": "New deck group",
+    "noCardsMessage": "No cards found.",
+    "noCardsToLearn": "No cards to learn",
+    "noCollaboratorsYet": "No collaborators yet",
+    "@noCollaboratorsYet": {
+        "description": "Shown when there are no collaborators in the list."
+    },
+    "noDecksMessage": "No decks found. Add your first deck",
+    "noProvisionaryCardsDescription": "You don't have any quick notes waiting to be turned into flashcards. Add some by using the quick card creation feature.",
+    "noProvisionaryCardsHeadline": "No provisionary cards to review",
+    "noProvisionaryCardsMessage": "No card proposals to review",
+    "noSharedDecksMessage": "No shared decks found",
+    "noUpdateAvailable": "You're using the latest version",
+    "notReviewed": "Not reviewed",
+    "ok": "OK",
+    "openDeck": "Open deck",
+    "orLabel": "or",
+    "passwordLabel": "Password",
+    "pasteText": "Paste text",
+    "pasteTextHint": "Paste your text here...",
+    "pendingInvitationsHeader": "Pending invitations",
+    "personFilterLabel": "You or friend",
+    "personalInfo": "Personal info",
+    "pleaseEnterGoogleDocUrl": "Please enter a Google Doc URL",
+    "printHours": "{hours} hours",
+    "@printHours": {
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "printMinutes": "{minutes} minutes",
+    "@printMinutes": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "printSeconds": "{seconds} seconds",
+    "@printSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "profile": "Profile",
+    "profileNameChanged": "Profile name changed",
+    "progressPercent": "+{percent}%",
+    "@progressPercent": {
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "provisionaryCardsReviewButton": "Review provisionary cards",
+    "provisionaryCardsReviewHeadline": "Provisionary cards review",
+    "provisionaryCardText": "Provisionary note",
+    "questionHint": "Question text",
+    "questionLabel": "Question",
+    "quickAddCard": "Quick add card",
+    "rateAgainLabel": "Again",
+    "rateEasyLabel": "Easy",
+    "rateGoodLabel": "Good",
+    "rateHardLabel": "Hard",
+    "regenerateCardDescriptions": "Regenerate descriptions",
+    "regenerateFlashcards": "Regenerate flashcards",
+    "retry": "Retry",
+    "saveAndNext": "Save and add next",
+    "saveButton": "Save",
+    "saveToDeck": "Save to Deck",
+    "saving": "Saving...",
+    "selectCard": "Select card",
+    "selectGoogleDoc": "Select Google Doc",
+    "selectInputSource": "Select input source",
+    "sendInvitationButtonTooltip": "Send invitation",
+    "sentInvitationsHeader": "Sent invitations",
+    "settings": "Settings",
+    "shareDeck": "Share deck with others",
+    "sharedDecksHeader": "Decks sheared by other users",
+    "showAnswer": "Show answer",
+    "showContent": "Show content",
+    "signIn": "Login",
+    "signInButton": "Sign In",
+    "signInLink": "Sign in",
+    "signInTitle": "Sign In",
+    "signInWithGoogleButton": "Sign in with Google",
+    "signOut": "Logout",
+    "signUpButton": "Sign Up",
+    "signUpLink": "Sign up",
+    "signUpTitle": "Create Account",
+    "signUpWithGoogleButton": "Sign up with Google",
+    "statistics": "Statistics",
+    "switchToDarkMode": "Switch to dark mode",
+    "switchToEnglish": "Switch to English",
+    "switchToLightMode": "Switch to light mode",
+    "switchToPolish": "Switch to Polish",
+    "textContentLength": "Text content length: {length}",
+    "@textContentLength": {
+        "placeholders": {
+            "length": {
+                "type": "int"
+            }
+        }
+    },
+    "timePerDeckChartTitle": "Time spent per deck",
+    "timePerDeckChartTooltip": "Shows how much time you spent studying each deck.",
+    "totalProgressLabel": "Total Progress",
+    "totalTimeLabel": "Total time:",
+    "totalTimeLabelTooltip": "Total time spent reviewing cards in the selected period.",
+    "updateAvailable": "Update Available",
+    "updateAvailableMessage": "A new version of the app is available. Update now to get the latest features and improvements.",
+    "updateCheckFailed": "Failed to check for updates",
+    "updateComplete": "Update complete! The app will reload.",
+    "updateDownloading": "Downloading update...",
+    "updateError": "Update failed. Please try again.",
+    "updateInstalling": "Installing update...",
+    "updateLater": "Later",
+    "updateNow": "Update Now",
+    "updateReminder": "Don't forget to update! A new version is available.",
+    "updateSettings": "Update Settings",
+    "updatingApp": "Updating...",
+    "uploadImage": "Upload image",
+    "uploadNewFile": "Upload new file",
+    "uploadPdf": "Upload PDF",
+    "userNotLoggedIn": "You need to log in",
+    "versionCheckingWebOnly": "Version checking is only available on web platform",
+    "warningTitle": "Warning",
+    "weekDurationFilterLabel": "Last 7 days",
+    "yourName": "Your name"
 }

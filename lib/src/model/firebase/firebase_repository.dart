@@ -1084,6 +1084,7 @@ Mature: ${breakdown[CardMastery.mature]}''');
       description: description,
     );
     await docRef.set(group).logError('Error creating deck group');
+    notifyDeckGroupChanged();
     return group;
   }
 
@@ -1094,6 +1095,7 @@ Mature: ${breakdown[CardMastery.mature]}''');
         .doc(groupId)
         .delete()
         .logError('Error deleting deck group');
+    notifyDeckGroupChanged();
   }
 
   @override
@@ -1186,6 +1188,7 @@ Mature: ${breakdown[CardMastery.mature]}''');
       throw 'Group ${group.id} does not exists';
     }
     await docRef.set(group);
+    notifyDeckGroupChanged();
   }
 
   /// Loads CardStats for a list of cardIds, batching requests in groups of 30.

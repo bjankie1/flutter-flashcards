@@ -7,7 +7,7 @@ part of 'deck_details_controller.dart';
 // **************************************************************************
 
 String _$deckDetailsControllerHash() =>
-    r'98b9be147d0f34b48fe42912bf1edd5fee754e6e';
+    r'a68e6174915515ab4a4ecf0eeca59fc332d6a54d';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -34,9 +34,7 @@ abstract class _$DeckDetailsController
     extends BuildlessAutoDisposeNotifier<AsyncValue<model.Deck>> {
   late final String deckId;
 
-  AsyncValue<model.Deck> build(
-    String deckId,
-  );
+  AsyncValue<model.Deck> build(String deckId);
 }
 
 /// Controller for managing deck details operations
@@ -57,21 +55,15 @@ class DeckDetailsControllerFamily extends Family<AsyncValue<model.Deck>> {
   /// Controller for managing deck details operations
   ///
   /// Copied from [DeckDetailsController].
-  DeckDetailsControllerProvider call(
-    String deckId,
-  ) {
-    return DeckDetailsControllerProvider(
-      deckId,
-    );
+  DeckDetailsControllerProvider call(String deckId) {
+    return DeckDetailsControllerProvider(deckId);
   }
 
   @override
   DeckDetailsControllerProvider getProviderOverride(
     covariant DeckDetailsControllerProvider provider,
   ) {
-    return call(
-      provider.deckId,
-    );
+    return call(provider.deckId);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -92,26 +84,28 @@ class DeckDetailsControllerFamily extends Family<AsyncValue<model.Deck>> {
 /// Controller for managing deck details operations
 ///
 /// Copied from [DeckDetailsController].
-class DeckDetailsControllerProvider extends AutoDisposeNotifierProviderImpl<
-    DeckDetailsController, AsyncValue<model.Deck>> {
+class DeckDetailsControllerProvider
+    extends
+        AutoDisposeNotifierProviderImpl<
+          DeckDetailsController,
+          AsyncValue<model.Deck>
+        > {
   /// Controller for managing deck details operations
   ///
   /// Copied from [DeckDetailsController].
-  DeckDetailsControllerProvider(
-    String deckId,
-  ) : this._internal(
-          () => DeckDetailsController()..deckId = deckId,
-          from: deckDetailsControllerProvider,
-          name: r'deckDetailsControllerProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$deckDetailsControllerHash,
-          dependencies: DeckDetailsControllerFamily._dependencies,
-          allTransitiveDependencies:
-              DeckDetailsControllerFamily._allTransitiveDependencies,
-          deckId: deckId,
-        );
+  DeckDetailsControllerProvider(String deckId)
+    : this._internal(
+        () => DeckDetailsController()..deckId = deckId,
+        from: deckDetailsControllerProvider,
+        name: r'deckDetailsControllerProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$deckDetailsControllerHash,
+        dependencies: DeckDetailsControllerFamily._dependencies,
+        allTransitiveDependencies:
+            DeckDetailsControllerFamily._allTransitiveDependencies,
+        deckId: deckId,
+      );
 
   DeckDetailsControllerProvider._internal(
     super._createNotifier, {
@@ -129,9 +123,7 @@ class DeckDetailsControllerProvider extends AutoDisposeNotifierProviderImpl<
   AsyncValue<model.Deck> runNotifierBuild(
     covariant DeckDetailsController notifier,
   ) {
-    return notifier.build(
-      deckId,
-    );
+    return notifier.build(deckId);
   }
 
   @override
@@ -151,8 +143,11 @@ class DeckDetailsControllerProvider extends AutoDisposeNotifierProviderImpl<
   }
 
   @override
-  AutoDisposeNotifierProviderElement<DeckDetailsController,
-      AsyncValue<model.Deck>> createElement() {
+  AutoDisposeNotifierProviderElement<
+    DeckDetailsController,
+    AsyncValue<model.Deck>
+  >
+  createElement() {
     return _DeckDetailsControllerProviderElement(this);
   }
 
@@ -170,8 +165,6 @@ class DeckDetailsControllerProvider extends AutoDisposeNotifierProviderImpl<
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 mixin DeckDetailsControllerRef
     on AutoDisposeNotifierProviderRef<AsyncValue<model.Deck>> {
   /// The parameter `deckId` of this provider.
@@ -179,12 +172,17 @@ mixin DeckDetailsControllerRef
 }
 
 class _DeckDetailsControllerProviderElement
-    extends AutoDisposeNotifierProviderElement<DeckDetailsController,
-        AsyncValue<model.Deck>> with DeckDetailsControllerRef {
+    extends
+        AutoDisposeNotifierProviderElement<
+          DeckDetailsController,
+          AsyncValue<model.Deck>
+        >
+    with DeckDetailsControllerRef {
   _DeckDetailsControllerProviderElement(super.provider);
 
   @override
   String get deckId => (origin as DeckDetailsControllerProvider).deckId;
 }
+
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

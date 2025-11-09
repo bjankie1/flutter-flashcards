@@ -77,6 +77,19 @@ class DecksController extends _$DecksController {
       rethrow;
     }
   }
+
+  Future<void> saveDeckGroup(model.DeckGroup deckGroup) async {
+    try {
+      _log.d('Saving deck group: ${deckGroup.name}');
+      final repository = ref.read(cardsRepositoryProvider);
+      await repository.createDeckGroup(deckGroup.name, deckGroup.description);
+      await _loadDecks(); // Refresh the list
+      _log.d('Successfully saved deck group: ${deckGroup.name}');
+    } catch (error, stackTrace) {
+      _log.e('Error saving deck group', error: error, stackTrace: stackTrace);
+      rethrow;
+    }
+  }
 }
 
 /// Provider for the cards repository
@@ -100,4 +113,42 @@ AsyncValue<List<model.Deck>> sortedDecks(Ref ref) {
     loading: () => const AsyncValue.loading(),
     error: (error, stackTrace) => AsyncValue.error(error, stackTrace),
   );
+}
+
+@riverpod
+class DeckGroups extends _$DeckGroups {
+  @override
+  Future<Iterable<model.DeckGroup>> build() async {
+    return ref.watch(cardsRepositoryProvider).loadDeckGroups();
+  }
+
+  Future<void> createDeckGroup(String name, String? description) async {
+    final repository = ref.read(cardsRepositoryProvider);
+    await repository.createDeckGroup(name, description);
+    ref.invalidateSelf();
+  }
+
+  Future<void> deleteDeckGroup(String groupId) async {
+    final repository = ref.read(cardsRepositoryProvider);
+    await repository.deleteDeckGroup(groupId);
+    ref.invalidateSelf();
+  }
+
+  Future<void> addDeckToGroup(String deckId, String groupId) async {
+    final repository = ref.read(cardsRepositoryProvider);
+    await repository.addDeckToGroup(deckId, groupId);
+    ref.invalidateSelf();
+  }
+
+  Future<void> removeDeckFromGroup(String deckId, String groupId) async {
+    final repository = ref.read(cardsRepositoryProvider);
+    await repository.removeDeckFromGroup(deckId, groupId);
+    ref.invalidateSelf();
+  }
+
+  Future<void> updateDeckGroup(model.DeckGroup group) async {
+    final repository = ref.read(cardsRepositoryProvider);
+    await repository.updateDeckGroup(group);
+    ref.invalidateSelf();
+  }
 }

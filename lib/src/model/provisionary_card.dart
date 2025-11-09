@@ -10,8 +10,14 @@ class ProvisionaryCard extends FirebaseSerializable {
   final DateTime? finalizedDate;
   final String? resultingCardId;
 
-  ProvisionaryCard(this.id, this.text, this.answer, this.createdDate,
-      this.finalizedDate, this.resultingCardId);
+  ProvisionaryCard(
+    this.id,
+    this.text,
+    this.answer,
+    this.createdDate,
+    this.finalizedDate,
+    this.resultingCardId,
+  );
 
   @override
   String? get idValue => id;
@@ -61,4 +67,4 @@ class ProvisionaryCard extends FirebaseSerializable {
       resultingCardId,
     );
   }
-} 
+}

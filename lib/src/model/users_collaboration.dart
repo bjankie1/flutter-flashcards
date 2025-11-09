@@ -13,20 +13,22 @@ class UserProfile extends FirebaseSerializable {
   final Locale locale;
   final DateTime? avatarUploadTime;
 
-  UserProfile(
-      {required this.id,
-      required this.email,
-      required this.name,
-      required this.theme,
-      required this.locale,
-      this.avatarUploadTime});
+  UserProfile({
+    required this.id,
+    required this.email,
+    required this.name,
+    required this.theme,
+    required this.locale,
+    this.avatarUploadTime,
+  });
 
-  UserProfile copyWith(
-      {String? email,
-      String? name,
-      ThemeMode? theme,
-      Locale? locale,
-      DateTime? avatarUploadTime}) {
+  UserProfile copyWith({
+    String? email,
+    String? name,
+    ThemeMode? theme,
+    Locale? locale,
+    DateTime? avatarUploadTime,
+  }) {
     return UserProfile(
       id: id,
       email: email ?? this.email,
@@ -39,21 +41,22 @@ class UserProfile extends FirebaseSerializable {
 
   @override
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'email': email,
-        'themeIndex': theme.index,
-        'locale': locale.languageCode,
-        'avatarUploadTime': avatarUploadTime,
-      };
+    'name': name,
+    'email': email,
+    'themeIndex': theme.index,
+    'locale': locale.languageCode,
+    'avatarUploadTime': avatarUploadTime,
+  };
 
   factory UserProfile.fromJson(String id, Map<String, dynamic> data) =>
       UserProfile(
-          id: id,
-          email: data['email'] ?? '',
-          name: data['name'],
-          theme: ThemeMode.values[data['themeIndex']],
-          locale: Locale(data['locale']),
-          avatarUploadTime: (data['avatarUploadTime'] as Timestamp?)?.toDate());
+        id: id,
+        email: data['email'] ?? '',
+        name: data['name'],
+        theme: ThemeMode.values[data['themeIndex']],
+        locale: Locale(data['locale']),
+        avatarUploadTime: (data['avatarUploadTime'] as Timestamp?)?.toDate(),
+      );
 
   @override
   String? get idValue => id;
@@ -89,26 +92,29 @@ class CollaborationInvitation implements FirebaseSerializable {
   Timestamp? lastChangeTimestamp;
   InvitationStatus status;
 
-  CollaborationInvitation(
-      {required this.id,
-      required this.initiatorUserId,
-      this.receivingUserId,
-      required this.receivingUserEmail,
-      required this.sentTimestamp,
-      this.lastChangeTimestamp,
-      required this.status});
+  CollaborationInvitation({
+    required this.id,
+    required this.initiatorUserId,
+    this.receivingUserId,
+    required this.receivingUserEmail,
+    required this.sentTimestamp,
+    this.lastChangeTimestamp,
+    required this.status,
+  });
 
   /// Method invoked by receiver of the invitation who can accept or reject the invitation
   CollaborationInvitation changeStatus(
-          InvitationStatus status, String userId) =>
-      CollaborationInvitation(
-          id: id,
-          initiatorUserId: initiatorUserId,
-          receivingUserId: userId,
-          receivingUserEmail: receivingUserEmail,
-          sentTimestamp: sentTimestamp,
-          lastChangeTimestamp: currentClockTimestamp,
-          status: status);
+    InvitationStatus status,
+    String userId,
+  ) => CollaborationInvitation(
+    id: id,
+    initiatorUserId: initiatorUserId,
+    receivingUserId: userId,
+    receivingUserEmail: receivingUserEmail,
+    sentTimestamp: sentTimestamp,
+    lastChangeTimestamp: currentClockTimestamp,
+    status: status,
+  );
 
   @override
   int get hashCode => id.hashCode;
@@ -123,25 +129,26 @@ class CollaborationInvitation implements FirebaseSerializable {
 
   @override
   Map<String, dynamic> toJson() => {
-        'initiatorUserId': initiatorUserId,
-        'receivingUserId': receivingUserId,
-        'receivingUserEmail': receivingUserEmail,
-        'sentTimestamp': sentTimestamp,
-        'lastChangeTimestamp': lastChangeTimestamp,
-        'status': status.name
-      };
+    'initiatorUserId': initiatorUserId,
+    'receivingUserId': receivingUserId,
+    'receivingUserEmail': receivingUserEmail,
+    'sentTimestamp': sentTimestamp,
+    'lastChangeTimestamp': lastChangeTimestamp,
+    'status': status.name,
+  };
 
   factory CollaborationInvitation.fromJson(
-          String id, Map<String, dynamic> data) =>
-      CollaborationInvitation(
-          id: id,
-          initiatorUserId: data['initiatorUserId'],
-          receivingUserId: data['receivingUserId'],
-          receivingUserEmail: data['receivingUserEmail'],
-          sentTimestamp: data['sentTimestamp'],
-          lastChangeTimestamp: data['lastChangeTimestamp'],
-          status: InvitationStatus.values
-              .firstWhere((s) => s.name == data['status']));
+    String id,
+    Map<String, dynamic> data,
+  ) => CollaborationInvitation(
+    id: id,
+    initiatorUserId: data['initiatorUserId'],
+    receivingUserId: data['receivingUserId'],
+    receivingUserEmail: data['receivingUserEmail'],
+    sentTimestamp: data['sentTimestamp'],
+    lastChangeTimestamp: data['lastChangeTimestamp'],
+    status: InvitationStatus.values.firstWhere((s) => s.name == data['status']),
+  );
 
   @override
   String? get idValue => id;

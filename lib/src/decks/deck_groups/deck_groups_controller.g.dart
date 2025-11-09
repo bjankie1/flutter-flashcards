@@ -14,18 +14,17 @@ String _$sharedDecksHash() => r'8ce5b4306b749e8c17fc883dc32ae175ebb9beac';
 @ProviderFor(sharedDecks)
 final sharedDecksProvider =
     AutoDisposeFutureProvider<Map<UserId, Iterable<model.Deck>>>.internal(
-  sharedDecks,
-  name: r'sharedDecksProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$sharedDecksHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+      sharedDecks,
+      name: r'sharedDecksProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$sharedDecksHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef SharedDecksRef
-    = AutoDisposeFutureProviderRef<Map<UserId, Iterable<model.Deck>>>;
+typedef SharedDecksRef =
+    AutoDisposeFutureProviderRef<Map<UserId, Iterable<model.Deck>>>;
 String _$cardsToReviewCountByGroupHash() =>
     r'e043537ed703fe3a72b2523c7c74dad807bf33a2';
 
@@ -69,21 +68,15 @@ class CardsToReviewCountByGroupFamily
   /// Provider for cards to review count by deck group
   ///
   /// Copied from [cardsToReviewCountByGroup].
-  CardsToReviewCountByGroupProvider call(
-    String? deckGroupId,
-  ) {
-    return CardsToReviewCountByGroupProvider(
-      deckGroupId,
-    );
+  CardsToReviewCountByGroupProvider call(String? deckGroupId) {
+    return CardsToReviewCountByGroupProvider(deckGroupId);
   }
 
   @override
   CardsToReviewCountByGroupProvider getProviderOverride(
     covariant CardsToReviewCountByGroupProvider provider,
   ) {
-    return call(
-      provider.deckGroupId,
-    );
+    return call(provider.deckGroupId);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -109,24 +102,22 @@ class CardsToReviewCountByGroupProvider
   /// Provider for cards to review count by deck group
   ///
   /// Copied from [cardsToReviewCountByGroup].
-  CardsToReviewCountByGroupProvider(
-    String? deckGroupId,
-  ) : this._internal(
-          (ref) => cardsToReviewCountByGroup(
-            ref as CardsToReviewCountByGroupRef,
-            deckGroupId,
-          ),
-          from: cardsToReviewCountByGroupProvider,
-          name: r'cardsToReviewCountByGroupProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$cardsToReviewCountByGroupHash,
-          dependencies: CardsToReviewCountByGroupFamily._dependencies,
-          allTransitiveDependencies:
-              CardsToReviewCountByGroupFamily._allTransitiveDependencies,
-          deckGroupId: deckGroupId,
-        );
+  CardsToReviewCountByGroupProvider(String? deckGroupId)
+    : this._internal(
+        (ref) => cardsToReviewCountByGroup(
+          ref as CardsToReviewCountByGroupRef,
+          deckGroupId,
+        ),
+        from: cardsToReviewCountByGroupProvider,
+        name: r'cardsToReviewCountByGroupProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$cardsToReviewCountByGroupHash,
+        dependencies: CardsToReviewCountByGroupFamily._dependencies,
+        allTransitiveDependencies:
+            CardsToReviewCountByGroupFamily._allTransitiveDependencies,
+        deckGroupId: deckGroupId,
+      );
 
   CardsToReviewCountByGroupProvider._internal(
     super._createNotifier, {
@@ -143,8 +134,9 @@ class CardsToReviewCountByGroupProvider
   @override
   Override overrideWith(
     FutureOr<Map<model.State, int>> Function(
-            CardsToReviewCountByGroupRef provider)
-        create,
+      CardsToReviewCountByGroupRef provider,
+    )
+    create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -180,8 +172,6 @@ class CardsToReviewCountByGroupProvider
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 mixin CardsToReviewCountByGroupRef
     on AutoDisposeFutureProviderRef<Map<model.State, int>> {
   /// The parameter `deckGroupId` of this provider.
@@ -205,19 +195,21 @@ String _$deckGroupsControllerHash() =>
 ///
 /// Copied from [DeckGroupsController].
 @ProviderFor(DeckGroupsController)
-final deckGroupsControllerProvider = AutoDisposeNotifierProvider<
-    DeckGroupsController,
-    AsyncValue<List<(model.DeckGroup?, List<model.Deck>)>>>.internal(
-  DeckGroupsController.new,
-  name: r'deckGroupsControllerProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$deckGroupsControllerHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final deckGroupsControllerProvider =
+    AutoDisposeNotifierProvider<
+      DeckGroupsController,
+      AsyncValue<List<(model.DeckGroup?, List<model.Deck>)>>
+    >.internal(
+      DeckGroupsController.new,
+      name: r'deckGroupsControllerProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$deckGroupsControllerHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
-typedef _$DeckGroupsController = AutoDisposeNotifier<
-    AsyncValue<List<(model.DeckGroup?, List<model.Deck>)>>>;
+typedef _$DeckGroupsController =
+    AutoDisposeNotifier<AsyncValue<List<(model.DeckGroup?, List<model.Deck>)>>>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

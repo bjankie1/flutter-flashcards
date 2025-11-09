@@ -206,12 +206,12 @@ class LanguageAutocompletePicker extends StatelessWidget {
         }
         return supportedLanguages.where((Map<String, String> language) {
           // Filter based on whether the language name (endonym) contains the input text (case-insensitive)
-          return language['name']!
-                  .toLowerCase()
-                  .contains(textEditingValue.text.toLowerCase()) ||
-              language['code']!
-                  .toLowerCase()
-                  .contains(textEditingValue.text.toLowerCase());
+          return language['name']!.toLowerCase().contains(
+                textEditingValue.text.toLowerCase(),
+              ) ||
+              language['code']!.toLowerCase().contains(
+                textEditingValue.text.toLowerCase(),
+              );
         });
       },
       displayStringForOption: (Map<String, String> option) => option['name']!,
@@ -219,60 +219,70 @@ class LanguageAutocompletePicker extends StatelessWidget {
       // Called when an option is selected from the list.
       onSelected: (Map<String, String> selectedLanguage) {
         debugPrint(
-            'Selected language: ${selectedLanguage['name']} (${selectedLanguage['code']})');
+          'Selected language: ${selectedLanguage['name']} (${selectedLanguage['code']})',
+        );
         onLanguageSelected(selectedLanguage);
       },
 
       // Builds the text field where the user types.
-      fieldViewBuilder: (BuildContext context,
-          TextEditingController textEditingController,
-          FocusNode focusNode,
-          VoidCallback onFieldSubmitted) {
-        // Set initial text if provided
-        if (initialText != null && textEditingController.text.isEmpty) {
-          textEditingController.text = initialText!;
-        }
+      fieldViewBuilder:
+          (
+            BuildContext context,
+            TextEditingController textEditingController,
+            FocusNode focusNode,
+            VoidCallback onFieldSubmitted,
+          ) {
+            // Set initial text if provided
+            if (initialText != null && textEditingController.text.isEmpty) {
+              textEditingController.text = initialText!;
+            }
 
-        return TextFormField(
-          controller: textEditingController,
-          focusNode: focusNode,
-          decoration: InputDecoration(
-              label: Text(context.l10n.languageHint),
-              border: OutlineInputBorder(),
-              helperText: label),
-          onFieldSubmitted: (_) => onFieldSubmitted(),
-        );
-      },
+            return TextFormField(
+              controller: textEditingController,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                label: Text(context.l10n.languageHint),
+                border: OutlineInputBorder(),
+                helperText: label,
+              ),
+              onFieldSubmitted: (_) => onFieldSubmitted(),
+            );
+          },
 
       // Builds the widget that displays the options.
-      optionsViewBuilder: (BuildContext context,
-          AutocompleteOnSelected<Map<String, String>> onSelected,
-          Iterable<Map<String, String>> options) {
-        return Align(
-          alignment: Alignment.topLeft,
-          child: Material(
-            elevation: 4.0,
-            child: SizedBox(
-              height: 200.0, // Set a fixed height for the dropdown
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: options.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final Map<String, String> language = options.elementAt(index);
-                  return ListTile(
-                    title: Text(language['name']!),
-                    // You could show the code as a subtitle if desired
-                    // subtitle: Text(language['code']!),
-                    onTap: () {
-                      onSelected(language);
+      optionsViewBuilder:
+          (
+            BuildContext context,
+            AutocompleteOnSelected<Map<String, String>> onSelected,
+            Iterable<Map<String, String>> options,
+          ) {
+            return Align(
+              alignment: Alignment.topLeft,
+              child: Material(
+                elevation: 4.0,
+                child: SizedBox(
+                  height: 200.0, // Set a fixed height for the dropdown
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: options.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final Map<String, String> language = options.elementAt(
+                        index,
+                      );
+                      return ListTile(
+                        title: Text(language['name']!),
+                        // You could show the code as a subtitle if desired
+                        // subtitle: Text(language['code']!),
+                        onTap: () {
+                          onSelected(language);
+                        },
+                      );
                     },
-                  );
-                },
+                  ),
+                ),
               ),
-            ),
-          ),
-        );
-      },
+            );
+          },
     );
   }
 }

@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 
 class ThemeSelector extends StatelessWidget {
-  const ThemeSelector({
-    super.key,
-  });
+  const ThemeSelector({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +19,8 @@ class ThemeSelector extends StatelessWidget {
             value: ThemeMode.system,
             child: Text('System Theme'),
           ),
-          DropdownMenuItem(
-            value: ThemeMode.light,
-            child: Text('Light Theme'),
-          ),
-          DropdownMenuItem(
-            value: ThemeMode.dark,
-            child: Text('Dark Theme'),
-          )
+          DropdownMenuItem(value: ThemeMode.light, child: Text('Light Theme')),
+          DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark Theme')),
         ],
       ),
     );

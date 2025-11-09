@@ -34,9 +34,7 @@ abstract class _$CardsReviewController
     extends BuildlessAutoDisposeNotifier<ReviewState> {
   late final StudySession session;
 
-  ReviewState build(
-    StudySession session,
-  );
+  ReviewState build(StudySession session);
 }
 
 /// Controller for managing card review operations
@@ -57,21 +55,15 @@ class CardsReviewControllerFamily extends Family<ReviewState> {
   /// Controller for managing card review operations
   ///
   /// Copied from [CardsReviewController].
-  CardsReviewControllerProvider call(
-    StudySession session,
-  ) {
-    return CardsReviewControllerProvider(
-      session,
-    );
+  CardsReviewControllerProvider call(StudySession session) {
+    return CardsReviewControllerProvider(session);
   }
 
   @override
   CardsReviewControllerProvider getProviderOverride(
     covariant CardsReviewControllerProvider provider,
   ) {
-    return call(
-      provider.session,
-    );
+    return call(provider.session);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -92,26 +84,25 @@ class CardsReviewControllerFamily extends Family<ReviewState> {
 /// Controller for managing card review operations
 ///
 /// Copied from [CardsReviewController].
-class CardsReviewControllerProvider extends AutoDisposeNotifierProviderImpl<
-    CardsReviewController, ReviewState> {
+class CardsReviewControllerProvider
+    extends
+        AutoDisposeNotifierProviderImpl<CardsReviewController, ReviewState> {
   /// Controller for managing card review operations
   ///
   /// Copied from [CardsReviewController].
-  CardsReviewControllerProvider(
-    StudySession session,
-  ) : this._internal(
-          () => CardsReviewController()..session = session,
-          from: cardsReviewControllerProvider,
-          name: r'cardsReviewControllerProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$cardsReviewControllerHash,
-          dependencies: CardsReviewControllerFamily._dependencies,
-          allTransitiveDependencies:
-              CardsReviewControllerFamily._allTransitiveDependencies,
-          session: session,
-        );
+  CardsReviewControllerProvider(StudySession session)
+    : this._internal(
+        () => CardsReviewController()..session = session,
+        from: cardsReviewControllerProvider,
+        name: r'cardsReviewControllerProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$cardsReviewControllerHash,
+        dependencies: CardsReviewControllerFamily._dependencies,
+        allTransitiveDependencies:
+            CardsReviewControllerFamily._allTransitiveDependencies,
+        session: session,
+      );
 
   CardsReviewControllerProvider._internal(
     super._createNotifier, {
@@ -126,12 +117,8 @@ class CardsReviewControllerProvider extends AutoDisposeNotifierProviderImpl<
   final StudySession session;
 
   @override
-  ReviewState runNotifierBuild(
-    covariant CardsReviewController notifier,
-  ) {
-    return notifier.build(
-      session,
-    );
+  ReviewState runNotifierBuild(covariant CardsReviewController notifier) {
+    return notifier.build(session);
   }
 
   @override
@@ -152,7 +139,7 @@ class CardsReviewControllerProvider extends AutoDisposeNotifierProviderImpl<
 
   @override
   AutoDisposeNotifierProviderElement<CardsReviewController, ReviewState>
-      createElement() {
+  createElement() {
     return _CardsReviewControllerProviderElement(this);
   }
 
@@ -170,20 +157,20 @@ class CardsReviewControllerProvider extends AutoDisposeNotifierProviderImpl<
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 mixin CardsReviewControllerRef on AutoDisposeNotifierProviderRef<ReviewState> {
   /// The parameter `session` of this provider.
   StudySession get session;
 }
 
 class _CardsReviewControllerProviderElement
-    extends AutoDisposeNotifierProviderElement<CardsReviewController,
-        ReviewState> with CardsReviewControllerRef {
+    extends
+        AutoDisposeNotifierProviderElement<CardsReviewController, ReviewState>
+    with CardsReviewControllerRef {
   _CardsReviewControllerProviderElement(super.provider);
 
   @override
   StudySession get session => (origin as CardsReviewControllerProvider).session;
 }
+
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

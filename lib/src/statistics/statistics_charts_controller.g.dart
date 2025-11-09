@@ -34,9 +34,7 @@ abstract class _$StatisticsChartsController
     extends BuildlessAutoDisposeAsyncNotifier<Iterable<model.CardAnswer>> {
   late final StatisticsLoadParams params;
 
-  FutureOr<Iterable<model.CardAnswer>> build(
-    StatisticsLoadParams params,
-  );
+  FutureOr<Iterable<model.CardAnswer>> build(StatisticsLoadParams params);
 }
 
 /// Controller for managing statistics charts operations
@@ -58,21 +56,15 @@ class StatisticsChartsControllerFamily
   /// Controller for managing statistics charts operations
   ///
   /// Copied from [StatisticsChartsController].
-  StatisticsChartsControllerProvider call(
-    StatisticsLoadParams params,
-  ) {
-    return StatisticsChartsControllerProvider(
-      params,
-    );
+  StatisticsChartsControllerProvider call(StatisticsLoadParams params) {
+    return StatisticsChartsControllerProvider(params);
   }
 
   @override
   StatisticsChartsControllerProvider getProviderOverride(
     covariant StatisticsChartsControllerProvider provider,
   ) {
-    return call(
-      provider.params,
-    );
+    return call(provider.params);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -94,26 +86,27 @@ class StatisticsChartsControllerFamily
 ///
 /// Copied from [StatisticsChartsController].
 class StatisticsChartsControllerProvider
-    extends AutoDisposeAsyncNotifierProviderImpl<StatisticsChartsController,
-        Iterable<model.CardAnswer>> {
+    extends
+        AutoDisposeAsyncNotifierProviderImpl<
+          StatisticsChartsController,
+          Iterable<model.CardAnswer>
+        > {
   /// Controller for managing statistics charts operations
   ///
   /// Copied from [StatisticsChartsController].
-  StatisticsChartsControllerProvider(
-    StatisticsLoadParams params,
-  ) : this._internal(
-          () => StatisticsChartsController()..params = params,
-          from: statisticsChartsControllerProvider,
-          name: r'statisticsChartsControllerProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$statisticsChartsControllerHash,
-          dependencies: StatisticsChartsControllerFamily._dependencies,
-          allTransitiveDependencies:
-              StatisticsChartsControllerFamily._allTransitiveDependencies,
-          params: params,
-        );
+  StatisticsChartsControllerProvider(StatisticsLoadParams params)
+    : this._internal(
+        () => StatisticsChartsController()..params = params,
+        from: statisticsChartsControllerProvider,
+        name: r'statisticsChartsControllerProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$statisticsChartsControllerHash,
+        dependencies: StatisticsChartsControllerFamily._dependencies,
+        allTransitiveDependencies:
+            StatisticsChartsControllerFamily._allTransitiveDependencies,
+        params: params,
+      );
 
   StatisticsChartsControllerProvider._internal(
     super._createNotifier, {
@@ -131,9 +124,7 @@ class StatisticsChartsControllerProvider
   FutureOr<Iterable<model.CardAnswer>> runNotifierBuild(
     covariant StatisticsChartsController notifier,
   ) {
-    return notifier.build(
-      params,
-    );
+    return notifier.build(params);
   }
 
   @override
@@ -153,8 +144,11 @@ class StatisticsChartsControllerProvider
   }
 
   @override
-  AutoDisposeAsyncNotifierProviderElement<StatisticsChartsController,
-      Iterable<model.CardAnswer>> createElement() {
+  AutoDisposeAsyncNotifierProviderElement<
+    StatisticsChartsController,
+    Iterable<model.CardAnswer>
+  >
+  createElement() {
     return _StatisticsChartsControllerProviderElement(this);
   }
 
@@ -173,8 +167,6 @@ class StatisticsChartsControllerProvider
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 mixin StatisticsChartsControllerRef
     on AutoDisposeAsyncNotifierProviderRef<Iterable<model.CardAnswer>> {
   /// The parameter `params` of this provider.
@@ -182,13 +174,18 @@ mixin StatisticsChartsControllerRef
 }
 
 class _StatisticsChartsControllerProviderElement
-    extends AutoDisposeAsyncNotifierProviderElement<StatisticsChartsController,
-        Iterable<model.CardAnswer>> with StatisticsChartsControllerRef {
+    extends
+        AutoDisposeAsyncNotifierProviderElement<
+          StatisticsChartsController,
+          Iterable<model.CardAnswer>
+        >
+    with StatisticsChartsControllerRef {
   _StatisticsChartsControllerProviderElement(super.provider);
 
   @override
   StatisticsLoadParams get params =>
       (origin as StatisticsChartsControllerProvider).params;
 }
+
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

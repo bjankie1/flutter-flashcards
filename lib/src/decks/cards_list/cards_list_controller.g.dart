@@ -34,9 +34,7 @@ abstract class _$CardsListController
     extends BuildlessAutoDisposeNotifier<AsyncValue<CardsListData>> {
   late final String deckId;
 
-  AsyncValue<CardsListData> build(
-    String deckId,
-  );
+  AsyncValue<CardsListData> build(String deckId);
 }
 
 /// Controller for managing cards list operations
@@ -57,21 +55,15 @@ class CardsListControllerFamily extends Family<AsyncValue<CardsListData>> {
   /// Controller for managing cards list operations
   ///
   /// Copied from [CardsListController].
-  CardsListControllerProvider call(
-    String deckId,
-  ) {
-    return CardsListControllerProvider(
-      deckId,
-    );
+  CardsListControllerProvider call(String deckId) {
+    return CardsListControllerProvider(deckId);
   }
 
   @override
   CardsListControllerProvider getProviderOverride(
     covariant CardsListControllerProvider provider,
   ) {
-    return call(
-      provider.deckId,
-    );
+    return call(provider.deckId);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -92,26 +84,28 @@ class CardsListControllerFamily extends Family<AsyncValue<CardsListData>> {
 /// Controller for managing cards list operations
 ///
 /// Copied from [CardsListController].
-class CardsListControllerProvider extends AutoDisposeNotifierProviderImpl<
-    CardsListController, AsyncValue<CardsListData>> {
+class CardsListControllerProvider
+    extends
+        AutoDisposeNotifierProviderImpl<
+          CardsListController,
+          AsyncValue<CardsListData>
+        > {
   /// Controller for managing cards list operations
   ///
   /// Copied from [CardsListController].
-  CardsListControllerProvider(
-    String deckId,
-  ) : this._internal(
-          () => CardsListController()..deckId = deckId,
-          from: cardsListControllerProvider,
-          name: r'cardsListControllerProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$cardsListControllerHash,
-          dependencies: CardsListControllerFamily._dependencies,
-          allTransitiveDependencies:
-              CardsListControllerFamily._allTransitiveDependencies,
-          deckId: deckId,
-        );
+  CardsListControllerProvider(String deckId)
+    : this._internal(
+        () => CardsListController()..deckId = deckId,
+        from: cardsListControllerProvider,
+        name: r'cardsListControllerProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$cardsListControllerHash,
+        dependencies: CardsListControllerFamily._dependencies,
+        allTransitiveDependencies:
+            CardsListControllerFamily._allTransitiveDependencies,
+        deckId: deckId,
+      );
 
   CardsListControllerProvider._internal(
     super._createNotifier, {
@@ -129,9 +123,7 @@ class CardsListControllerProvider extends AutoDisposeNotifierProviderImpl<
   AsyncValue<CardsListData> runNotifierBuild(
     covariant CardsListController notifier,
   ) {
-    return notifier.build(
-      deckId,
-    );
+    return notifier.build(deckId);
   }
 
   @override
@@ -151,8 +143,11 @@ class CardsListControllerProvider extends AutoDisposeNotifierProviderImpl<
   }
 
   @override
-  AutoDisposeNotifierProviderElement<CardsListController,
-      AsyncValue<CardsListData>> createElement() {
+  AutoDisposeNotifierProviderElement<
+    CardsListController,
+    AsyncValue<CardsListData>
+  >
+  createElement() {
     return _CardsListControllerProviderElement(this);
   }
 
@@ -170,8 +165,6 @@ class CardsListControllerProvider extends AutoDisposeNotifierProviderImpl<
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 mixin CardsListControllerRef
     on AutoDisposeNotifierProviderRef<AsyncValue<CardsListData>> {
   /// The parameter `deckId` of this provider.
@@ -179,12 +172,17 @@ mixin CardsListControllerRef
 }
 
 class _CardsListControllerProviderElement
-    extends AutoDisposeNotifierProviderElement<CardsListController,
-        AsyncValue<CardsListData>> with CardsListControllerRef {
+    extends
+        AutoDisposeNotifierProviderElement<
+          CardsListController,
+          AsyncValue<CardsListData>
+        >
+    with CardsListControllerRef {
   _CardsListControllerProviderElement(super.provider);
 
   @override
   String get deckId => (origin as CardsListControllerProvider).deckId;
 }
+
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

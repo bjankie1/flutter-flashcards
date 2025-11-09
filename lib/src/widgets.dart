@@ -13,12 +13,9 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-          heading,
-          style: const TextStyle(fontSize: 24),
-        ),
-      );
+    padding: const EdgeInsets.all(8.0),
+    child: Text(heading, style: const TextStyle(fontSize: 24)),
+  );
 }
 
 class Paragraph extends StatelessWidget {
@@ -26,12 +23,9 @@ class Paragraph extends StatelessWidget {
   final String content;
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Text(
-          content,
-          style: const TextStyle(fontSize: 18),
-        ),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    child: Text(content, style: const TextStyle(fontSize: 18)),
+  );
 }
 
 class IconAndDetail extends StatelessWidget {
@@ -41,18 +35,15 @@ class IconAndDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            Icon(icon),
-            const SizedBox(width: 8),
-            Text(
-              detail,
-              style: const TextStyle(fontSize: 18),
-            )
-          ],
-        ),
-      );
+    padding: const EdgeInsets.all(8.0),
+    child: Row(
+      children: [
+        Icon(icon),
+        const SizedBox(width: 8),
+        Text(detail, style: const TextStyle(fontSize: 18)),
+      ],
+    ),
+  );
 }
 
 class StyledButton extends StatelessWidget {
@@ -62,17 +53,22 @@ class StyledButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => OutlinedButton(
-        style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: Colors.deepPurple)),
-        onPressed: onPressed,
-        child: child,
-      );
+    style: OutlinedButton.styleFrom(
+      side: const BorderSide(color: Colors.deepPurple),
+    ),
+    onPressed: onPressed,
+    child: child,
+  );
 }
 
 class RepositoryLoader<T> extends StatelessWidget {
   final Logger _log = Logger();
   final Widget Function(
-      BuildContext context, T result, CardsRepository repository) builder;
+    BuildContext context,
+    T result,
+    CardsRepository repository,
+  )
+  builder;
 
   final Future<T> Function(CardsRepository repository) fetcher;
 
@@ -82,12 +78,13 @@ class RepositoryLoader<T> extends StatelessWidget {
 
   final Widget? noDataWidget;
 
-  RepositoryLoader(
-      {required this.fetcher,
-      required this.builder,
-      this.errorWidgetBuilder = _defaultErrorWidget,
-      this.indicatorWidget,
-      this.noDataWidget});
+  RepositoryLoader({
+    required this.fetcher,
+    required this.builder,
+    this.errorWidgetBuilder = _defaultErrorWidget,
+    this.indicatorWidget,
+    this.noDataWidget,
+  });
 
   static Widget _defaultErrorWidget(Object e) =>
       Center(child: Text('Error: $e'));
@@ -96,23 +93,26 @@ class RepositoryLoader<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final repository = Provider.of<CardsRepository>(context, listen: false);
     return FutureBuilder(
-        future: fetcher(repository),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return indicatorWidget ??
-                Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            _log.w('Error loading data',
-                error: snapshot.error, stackTrace: snapshot.stackTrace);
-            return errorWidgetBuilder(snapshot.error!);
-          }
-          if (!snapshot.hasData) {
-            _log.d('No data for widget');
-            return noDataWidget ?? Center(child: Text('No data'));
-          }
-          return builder(context, snapshot.data as T, repository);
-        });
+      future: fetcher(repository),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return indicatorWidget ?? Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          _log.w(
+            'Error loading data',
+            error: snapshot.error,
+            stackTrace: snapshot.stackTrace,
+          );
+          return errorWidgetBuilder(snapshot.error!);
+        }
+        if (!snapshot.hasData) {
+          _log.d('No data for widget');
+          return noDataWidget ?? Center(child: Text('No data'));
+        }
+        return builder(context, snapshot.data as T, repository);
+      },
+    );
   }
 }
 
@@ -120,8 +120,11 @@ class BreadcrumbBar extends StatelessWidget {
   final List<String> breadcrumbs;
   final void Function(int index) onBreadcrumbTap;
 
-  const BreadcrumbBar(
-      {required this.breadcrumbs, required this.onBreadcrumbTap, super.key});
+  const BreadcrumbBar({
+    required this.breadcrumbs,
+    required this.onBreadcrumbTap,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

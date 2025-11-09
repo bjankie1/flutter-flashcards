@@ -21,8 +21,9 @@ class Avatar extends StatelessWidget {
       _avatarImage.value = NetworkImage(context.appState.userAvatarUrl.value!);
       context.appState.userAvatarUrl.addListener(() {
         if (context.appState.userAvatarUrl.value != null) {
-          _avatarImage.value =
-              NetworkImage(context.appState.userAvatarUrl.value!);
+          _avatarImage.value = NetworkImage(
+            context.appState.userAvatarUrl.value!,
+          );
         }
       });
     }
@@ -35,14 +36,15 @@ class Avatar extends StatelessWidget {
   Widget build(BuildContext context) {
     loadAvatarUrl(context);
     return SizedBox(
-        height: size,
-        width: size,
-        child: ValueListenableBuilder(
-          valueListenable: _avatarImage,
-          builder: (context, image, _) => CircleAvatar(
-            minRadius: size / 2,
-            backgroundImage: image ?? randomFace,
-          ),
-        ));
+      height: size,
+      width: size,
+      child: ValueListenableBuilder(
+        valueListenable: _avatarImage,
+        builder: (context, image, _) => CircleAvatar(
+          minRadius: size / 2,
+          backgroundImage: image ?? randomFace,
+        ),
+      ),
+    );
   }
 }

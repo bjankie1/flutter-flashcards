@@ -28,12 +28,12 @@ class CardAnswer implements FirebaseSerializable {
 
   @override
   Map<String, dynamic> toJson() => {
-        'cardId': cardId,
-        'variant': variant.name,
-        'reviewStart': reviewStart,
-        'answerRate': rating.index,
-        'timeSpent': timeSpent.inMilliseconds,
-      };
+    'cardId': cardId,
+    'variant': variant.name,
+    'reviewStart': reviewStart,
+    'answerRate': rating.index,
+    'timeSpent': timeSpent.inMilliseconds,
+  };
 
   @override
   String get idValue => '$cardId::${variant.name}';
@@ -50,4 +50,4 @@ class CardAnswer implements FirebaseSerializable {
             variant == other.variant &&
             reviewStart == other.reviewStart;
   }
-} 
+}

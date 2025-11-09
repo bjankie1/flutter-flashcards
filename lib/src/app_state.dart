@@ -103,11 +103,12 @@ class AppState extends ChangeNotifier {
         : ThemeMode.light;
   }
 
-  void updateUserProfile(
-      {Locale? locale,
-      ThemeMode? theme,
-      String? name,
-      bool newAvatar = false}) {
+  void updateUserProfile({
+    Locale? locale,
+    ThemeMode? theme,
+    String? name,
+    bool newAvatar = false,
+  }) {
     var newProfile = _userProfile.value!;
     if (locale != null) {
       _log.d('Updating locale to ${locale.languageCode}');
@@ -123,8 +124,9 @@ class AppState extends ChangeNotifier {
     }
     if (newAvatar) {
       _log.d('Updated avatar');
-      newProfile =
-          _userProfile.value!.copyWith(avatarUploadTime: DateTime.now());
+      newProfile = _userProfile.value!.copyWith(
+        avatarUploadTime: DateTime.now(),
+      );
     }
     _userProfile.value = newProfile;
   }
@@ -137,9 +139,11 @@ class AppState extends ChangeNotifier {
     _log.d('Reloading avatar url');
     _userAvatarUrl.value = await storageService
         .userAvatarUrl()
-        .then((value) => value != null
-            ? '$value?v=${userProfile.value?.avatarUploadTime}' // add timestamp to URL to force reload
-            : null)
+        .then(
+          (value) => value != null
+              ? '$value?v=${userProfile.value?.avatarUploadTime}' // add timestamp to URL to force reload
+              : null,
+        )
         .logError('Error loading avatar URL');
   }
 }
