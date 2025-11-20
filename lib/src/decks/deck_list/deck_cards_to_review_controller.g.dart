@@ -34,7 +34,9 @@ abstract class _$DeckCardsToReviewController
     extends BuildlessAutoDisposeNotifier<AsyncValue<Map<model.State, int>>> {
   late final String deckId;
 
-  AsyncValue<Map<model.State, int>> build(String deckId);
+  AsyncValue<Map<model.State, int>> build(
+    String deckId,
+  );
 }
 
 /// Controller for managing cards to review count for a specific deck
@@ -56,15 +58,21 @@ class DeckCardsToReviewControllerFamily
   /// Controller for managing cards to review count for a specific deck
   ///
   /// Copied from [DeckCardsToReviewController].
-  DeckCardsToReviewControllerProvider call(String deckId) {
-    return DeckCardsToReviewControllerProvider(deckId);
+  DeckCardsToReviewControllerProvider call(
+    String deckId,
+  ) {
+    return DeckCardsToReviewControllerProvider(
+      deckId,
+    );
   }
 
   @override
   DeckCardsToReviewControllerProvider getProviderOverride(
     covariant DeckCardsToReviewControllerProvider provider,
   ) {
-    return call(provider.deckId);
+    return call(
+      provider.deckId,
+    );
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -86,27 +94,26 @@ class DeckCardsToReviewControllerFamily
 ///
 /// Copied from [DeckCardsToReviewController].
 class DeckCardsToReviewControllerProvider
-    extends
-        AutoDisposeNotifierProviderImpl<
-          DeckCardsToReviewController,
-          AsyncValue<Map<model.State, int>>
-        > {
+    extends AutoDisposeNotifierProviderImpl<DeckCardsToReviewController,
+        AsyncValue<Map<model.State, int>>> {
   /// Controller for managing cards to review count for a specific deck
   ///
   /// Copied from [DeckCardsToReviewController].
-  DeckCardsToReviewControllerProvider(String deckId)
-    : this._internal(
-        () => DeckCardsToReviewController()..deckId = deckId,
-        from: deckCardsToReviewControllerProvider,
-        name: r'deckCardsToReviewControllerProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$deckCardsToReviewControllerHash,
-        dependencies: DeckCardsToReviewControllerFamily._dependencies,
-        allTransitiveDependencies:
-            DeckCardsToReviewControllerFamily._allTransitiveDependencies,
-        deckId: deckId,
-      );
+  DeckCardsToReviewControllerProvider(
+    String deckId,
+  ) : this._internal(
+          () => DeckCardsToReviewController()..deckId = deckId,
+          from: deckCardsToReviewControllerProvider,
+          name: r'deckCardsToReviewControllerProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$deckCardsToReviewControllerHash,
+          dependencies: DeckCardsToReviewControllerFamily._dependencies,
+          allTransitiveDependencies:
+              DeckCardsToReviewControllerFamily._allTransitiveDependencies,
+          deckId: deckId,
+        );
 
   DeckCardsToReviewControllerProvider._internal(
     super._createNotifier, {
@@ -124,7 +131,9 @@ class DeckCardsToReviewControllerProvider
   AsyncValue<Map<model.State, int>> runNotifierBuild(
     covariant DeckCardsToReviewController notifier,
   ) {
-    return notifier.build(deckId);
+    return notifier.build(
+      deckId,
+    );
   }
 
   @override
@@ -144,11 +153,8 @@ class DeckCardsToReviewControllerProvider
   }
 
   @override
-  AutoDisposeNotifierProviderElement<
-    DeckCardsToReviewController,
-    AsyncValue<Map<model.State, int>>
-  >
-  createElement() {
+  AutoDisposeNotifierProviderElement<DeckCardsToReviewController,
+      AsyncValue<Map<model.State, int>>> createElement() {
     return _DeckCardsToReviewControllerProviderElement(this);
   }
 
@@ -174,17 +180,12 @@ mixin DeckCardsToReviewControllerRef
 }
 
 class _DeckCardsToReviewControllerProviderElement
-    extends
-        AutoDisposeNotifierProviderElement<
-          DeckCardsToReviewController,
-          AsyncValue<Map<model.State, int>>
-        >
-    with DeckCardsToReviewControllerRef {
+    extends AutoDisposeNotifierProviderElement<DeckCardsToReviewController,
+        AsyncValue<Map<model.State, int>>> with DeckCardsToReviewControllerRef {
   _DeckCardsToReviewControllerProviderElement(super.provider);
 
   @override
   String get deckId => (origin as DeckCardsToReviewControllerProvider).deckId;
 }
-
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -15,14 +15,14 @@ String _$deckDetailsPageControllerHash() =>
 @ProviderFor(DeckDetailsPageController)
 final deckDetailsPageControllerProvider =
     AutoDisposeNotifierProvider<DeckDetailsPageController, void>.internal(
-      DeckDetailsPageController.new,
-      name: r'deckDetailsPageControllerProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$deckDetailsPageControllerHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  DeckDetailsPageController.new,
+  name: r'deckDetailsPageControllerProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$deckDetailsPageControllerHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 typedef _$DeckDetailsPageController = AutoDisposeNotifier<void>;
 // ignore_for_file: type=lint

@@ -7,7 +7,7 @@ part of 'card_descriptions_dialog_controller.dart';
 // **************************************************************************
 
 String _$cardDescriptionsDialogControllerHash() =>
-    r'7f5fdea0cf6ef4c2325c1ff655e7089aa88d4e3e';
+    r'ea9f26902ee99df4dbafafbce0748d6415e312f5';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -174,8 +174,6 @@ class CardDescriptionsDialogControllerProvider
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 mixin CardDescriptionsDialogControllerRef
     on AutoDisposeNotifierProviderRef<AsyncValue<model.Deck>> {
   /// The parameter `deckId` of this provider.
@@ -192,4 +190,4 @@ class _CardDescriptionsDialogControllerProviderElement
       (origin as CardDescriptionsDialogControllerProvider).deckId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

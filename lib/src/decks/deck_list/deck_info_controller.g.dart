@@ -34,7 +34,9 @@ abstract class _$DeckInfoController
     extends BuildlessAutoDisposeNotifier<AsyncValue<int>> {
   late final String deckId;
 
-  AsyncValue<int> build(String deckId);
+  AsyncValue<int> build(
+    String deckId,
+  );
 }
 
 /// Controller for managing deck info data (card count)
@@ -55,15 +57,21 @@ class DeckInfoControllerFamily extends Family<AsyncValue<int>> {
   /// Controller for managing deck info data (card count)
   ///
   /// Copied from [DeckInfoController].
-  DeckInfoControllerProvider call(String deckId) {
-    return DeckInfoControllerProvider(deckId);
+  DeckInfoControllerProvider call(
+    String deckId,
+  ) {
+    return DeckInfoControllerProvider(
+      deckId,
+    );
   }
 
   @override
   DeckInfoControllerProvider getProviderOverride(
     covariant DeckInfoControllerProvider provider,
   ) {
-    return call(provider.deckId);
+    return call(
+      provider.deckId,
+    );
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -84,25 +92,26 @@ class DeckInfoControllerFamily extends Family<AsyncValue<int>> {
 /// Controller for managing deck info data (card count)
 ///
 /// Copied from [DeckInfoController].
-class DeckInfoControllerProvider
-    extends
-        AutoDisposeNotifierProviderImpl<DeckInfoController, AsyncValue<int>> {
+class DeckInfoControllerProvider extends AutoDisposeNotifierProviderImpl<
+    DeckInfoController, AsyncValue<int>> {
   /// Controller for managing deck info data (card count)
   ///
   /// Copied from [DeckInfoController].
-  DeckInfoControllerProvider(String deckId)
-    : this._internal(
-        () => DeckInfoController()..deckId = deckId,
-        from: deckInfoControllerProvider,
-        name: r'deckInfoControllerProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$deckInfoControllerHash,
-        dependencies: DeckInfoControllerFamily._dependencies,
-        allTransitiveDependencies:
-            DeckInfoControllerFamily._allTransitiveDependencies,
-        deckId: deckId,
-      );
+  DeckInfoControllerProvider(
+    String deckId,
+  ) : this._internal(
+          () => DeckInfoController()..deckId = deckId,
+          from: deckInfoControllerProvider,
+          name: r'deckInfoControllerProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$deckInfoControllerHash,
+          dependencies: DeckInfoControllerFamily._dependencies,
+          allTransitiveDependencies:
+              DeckInfoControllerFamily._allTransitiveDependencies,
+          deckId: deckId,
+        );
 
   DeckInfoControllerProvider._internal(
     super._createNotifier, {
@@ -117,8 +126,12 @@ class DeckInfoControllerProvider
   final String deckId;
 
   @override
-  AsyncValue<int> runNotifierBuild(covariant DeckInfoController notifier) {
-    return notifier.build(deckId);
+  AsyncValue<int> runNotifierBuild(
+    covariant DeckInfoController notifier,
+  ) {
+    return notifier.build(
+      deckId,
+    );
   }
 
   @override
@@ -139,7 +152,7 @@ class DeckInfoControllerProvider
 
   @override
   AutoDisposeNotifierProviderElement<DeckInfoController, AsyncValue<int>>
-  createElement() {
+      createElement() {
     return _DeckInfoControllerProviderElement(this);
   }
 
@@ -163,14 +176,12 @@ mixin DeckInfoControllerRef on AutoDisposeNotifierProviderRef<AsyncValue<int>> {
 }
 
 class _DeckInfoControllerProviderElement
-    extends
-        AutoDisposeNotifierProviderElement<DeckInfoController, AsyncValue<int>>
-    with DeckInfoControllerRef {
+    extends AutoDisposeNotifierProviderElement<DeckInfoController,
+        AsyncValue<int>> with DeckInfoControllerRef {
   _DeckInfoControllerProviderElement(super.provider);
 
   @override
   String get deckId => (origin as DeckInfoControllerProvider).deckId;
 }
-
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

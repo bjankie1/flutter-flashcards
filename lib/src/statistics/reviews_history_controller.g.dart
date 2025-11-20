@@ -63,14 +63,20 @@ class ReviewHistoryControllerFamily extends Family<ReviewHistoryData> {
     Iterable<CardAnswer> answers,
     DateTimeRange<DateTime> dateRange,
   ) {
-    return ReviewHistoryControllerProvider(answers, dateRange);
+    return ReviewHistoryControllerProvider(
+      answers,
+      dateRange,
+    );
   }
 
   @override
   ReviewHistoryControllerProvider getProviderOverride(
     covariant ReviewHistoryControllerProvider provider,
   ) {
-    return call(provider.answers, provider.dateRange);
+    return call(
+      provider.answers,
+      provider.dateRange,
+    );
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -91,12 +97,8 @@ class ReviewHistoryControllerFamily extends Family<ReviewHistoryData> {
 /// Controller for managing review history operations
 ///
 /// Copied from [ReviewHistoryController].
-class ReviewHistoryControllerProvider
-    extends
-        AutoDisposeNotifierProviderImpl<
-          ReviewHistoryController,
-          ReviewHistoryData
-        > {
+class ReviewHistoryControllerProvider extends AutoDisposeNotifierProviderImpl<
+    ReviewHistoryController, ReviewHistoryData> {
   /// Controller for managing review history operations
   ///
   /// Copied from [ReviewHistoryController].
@@ -104,20 +106,21 @@ class ReviewHistoryControllerProvider
     Iterable<CardAnswer> answers,
     DateTimeRange<DateTime> dateRange,
   ) : this._internal(
-        () => ReviewHistoryController()
-          ..answers = answers
-          ..dateRange = dateRange,
-        from: reviewHistoryControllerProvider,
-        name: r'reviewHistoryControllerProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$reviewHistoryControllerHash,
-        dependencies: ReviewHistoryControllerFamily._dependencies,
-        allTransitiveDependencies:
-            ReviewHistoryControllerFamily._allTransitiveDependencies,
-        answers: answers,
-        dateRange: dateRange,
-      );
+          () => ReviewHistoryController()
+            ..answers = answers
+            ..dateRange = dateRange,
+          from: reviewHistoryControllerProvider,
+          name: r'reviewHistoryControllerProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$reviewHistoryControllerHash,
+          dependencies: ReviewHistoryControllerFamily._dependencies,
+          allTransitiveDependencies:
+              ReviewHistoryControllerFamily._allTransitiveDependencies,
+          answers: answers,
+          dateRange: dateRange,
+        );
 
   ReviewHistoryControllerProvider._internal(
     super._createNotifier, {
@@ -137,7 +140,10 @@ class ReviewHistoryControllerProvider
   ReviewHistoryData runNotifierBuild(
     covariant ReviewHistoryController notifier,
   ) {
-    return notifier.build(answers, dateRange);
+    return notifier.build(
+      answers,
+      dateRange,
+    );
   }
 
   @override
@@ -161,7 +167,7 @@ class ReviewHistoryControllerProvider
 
   @override
   AutoDisposeNotifierProviderElement<ReviewHistoryController, ReviewHistoryData>
-  createElement() {
+      createElement() {
     return _ReviewHistoryControllerProviderElement(this);
   }
 
@@ -192,12 +198,8 @@ mixin ReviewHistoryControllerRef
 }
 
 class _ReviewHistoryControllerProviderElement
-    extends
-        AutoDisposeNotifierProviderElement<
-          ReviewHistoryController,
-          ReviewHistoryData
-        >
-    with ReviewHistoryControllerRef {
+    extends AutoDisposeNotifierProviderElement<ReviewHistoryController,
+        ReviewHistoryData> with ReviewHistoryControllerRef {
   _ReviewHistoryControllerProviderElement(super.provider);
 
   @override
@@ -207,6 +209,5 @@ class _ReviewHistoryControllerProviderElement
   DateTimeRange<DateTime> get dateRange =>
       (origin as ReviewHistoryControllerProvider).dateRange;
 }
-
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

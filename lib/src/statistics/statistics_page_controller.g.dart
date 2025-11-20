@@ -15,17 +15,17 @@ String _$usersWithStatsAccessHash() =>
 @ProviderFor(usersWithStatsAccess)
 final usersWithStatsAccessProvider =
     AutoDisposeFutureProvider<Iterable<UserProfile>>.internal(
-      usersWithStatsAccess,
-      name: r'usersWithStatsAccessProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$usersWithStatsAccessHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  usersWithStatsAccess,
+  name: r'usersWithStatsAccessProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$usersWithStatsAccessHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-typedef UsersWithStatsAccessRef =
-    AutoDisposeFutureProviderRef<Iterable<UserProfile>>;
+typedef UsersWithStatsAccessRef
+    = AutoDisposeFutureProviderRef<Iterable<UserProfile>>;
 String _$statisticsPageControllerHash() =>
     r'5adde52b97d3d14a63da241bba9122fe16344ece';
 
@@ -33,19 +33,16 @@ String _$statisticsPageControllerHash() =>
 ///
 /// Copied from [StatisticsPageController].
 @ProviderFor(StatisticsPageController)
-final statisticsPageControllerProvider =
-    AutoDisposeNotifierProvider<
-      StatisticsPageController,
-      StatisticsPageData
-    >.internal(
-      StatisticsPageController.new,
-      name: r'statisticsPageControllerProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$statisticsPageControllerHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+final statisticsPageControllerProvider = AutoDisposeNotifierProvider<
+    StatisticsPageController, StatisticsPageData>.internal(
+  StatisticsPageController.new,
+  name: r'statisticsPageControllerProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$statisticsPageControllerHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 typedef _$StatisticsPageController = AutoDisposeNotifier<StatisticsPageData>;
 // ignore_for_file: type=lint
