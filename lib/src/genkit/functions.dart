@@ -80,6 +80,13 @@ class CloudFunctions {
     return currentUser;
   }
 
+  /// Categorizes a deck based on its name and description.
+  ///
+  /// This function takes the deck's name and description as input and returns a
+  /// `DeckCategory` enum value. It typically involves calling a backend service
+  /// or AI model to produce the category.
+  ///
+  /// Throws an exception if the user is not logged in.
   Future<model.DeckCategory> deckCategory(
     String deckName,
     String deckDescription,
@@ -116,6 +123,14 @@ class CloudFunctions {
     }
   }
 
+  /// Generates an answer for a flashcard based on the provided deck and card details.
+  ///
+  /// This function takes the deck's name and description, along with the card's
+  /// question, front and back descriptions, and an optional explanation description,
+  /// to generate a `GeneratedAnswer`. It typically involves calling a backend
+  /// service or AI model to produce the answer.
+  ///
+  /// Throws an exception if the user is not logged in or if the card question is empty.
   Future<GeneratedAnswer> generateCardAnswer(
     String deckName,
     String deckDescription,
@@ -241,6 +256,13 @@ class CloudFunctions {
     }
   }
 
+  /// Generates a reverse description for a flashcard based on the provided deck and card details.
+  ///
+  /// This function takes the deck's name and description, along with the card's front and back descriptions,
+  /// and an optional explanation description, to generate a reverse description. It typically involves calling
+  /// a backend service or AI model to produce the description.
+  ///
+  /// Throws an exception if the user is not logged in.
   Future<String> generateReverseDescription(
     String deckName,
     String deckDescription,
@@ -290,6 +312,14 @@ class CloudFunctions {
     }
   }
 
+  /// Generates card suggestions for a given text based on the provided languages.
+  ///
+  /// This function takes the front and back languages, along with the text to be
+  /// processed, and returns an iterable of `FrontBack` objects containing the
+  /// generated front and back card descriptions. It typically involves calling a
+  /// backend service or AI model to produce the card suggestions.
+  ///
+  /// Throws an exception if the input text or languages are empty.
   Future<Iterable<FrontBack>> generateCardsForText(
     String frontLanguage,
     String backLanguage,
@@ -335,6 +365,15 @@ class CloudFunctions {
     }
   }
 
+  /// Generates card descriptions for a given deck and list of cards.
+  ///
+  /// This function takes the deck's name, an optional deck description, and a list
+  /// of cards to be processed. It returns a `CardDescriptionResult` object containing
+  /// the generated front and back card descriptions, along with an explanation description,
+  /// confidence level, and analysis. It typically involves calling a backend service or
+  /// AI model to produce the card descriptions.
+  ///
+  /// Throws an exception if the input deck name is empty or if the list of cards is empty.
   Future<CardDescriptionResult> generateCardDescriptions({
     required String deckName,
     String? deckDescription,
