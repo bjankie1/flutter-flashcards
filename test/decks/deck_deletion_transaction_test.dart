@@ -65,7 +65,7 @@ void main() {
         ).called(1); // Called once during deletion
         verify(
           () => mockRepository.loadDeckGroups(),
-        ).called(2); // Called during transaction and during controller rebuild
+        ).called(1); // Called during transaction
         verify(
           () => mockRepository.removeDeckFromGroup(deckId, groupId),
         ).called(1);
@@ -108,7 +108,7 @@ void main() {
       ).called(1); // Called once during deletion
       verify(
         () => mockRepository.loadDeckGroups(),
-      ).called(2); // Called during transaction and during controller rebuild
+      ).called(1); // Called during transaction
       verifyNever(() => mockRepository.removeDeckFromGroup(any(), any()));
       verify(() => mockRepository.deleteDeck(deckId)).called(1);
     });
@@ -159,7 +159,7 @@ void main() {
       ).called(1); // Called once during deletion
       verify(
         () => mockRepository.loadDeckGroups(),
-      ).called(2); // Called during transaction and during controller rebuild
+      ).called(1); // Called during transaction
       verify(
         () => mockRepository.removeDeckFromGroup(deckId, 'group-1'),
       ).called(1);
@@ -242,7 +242,7 @@ void main() {
       ).called(1); // Called once during deletion
       verify(
         () => mockRepository.loadDeckGroups(),
-      ).called(2); // Called during transaction and during controller rebuild
+      ).called(1); // Called during transaction
       verifyNever(() => mockRepository.removeDeckFromGroup(any(), any()));
       verify(() => mockRepository.deleteDeck(deckId)).called(1);
     });
