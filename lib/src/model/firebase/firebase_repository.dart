@@ -502,7 +502,13 @@ Mature: ${breakdown[CardMastery.mature]}''');
     final collection = _cardsCollection;
     final result = deckIds != null && deckIds.isNotEmpty
         ? _batchQuery(query: collection, field: 'deckId', ids: deckIds)
-        : _batchQuery(query: collection, field: 'cardId', ids: cardIds!);
+        : _batchQuery(
+            query: _firestore
+                .collectionGroup(userPrefix(cardsCollectionName))
+                .withCardsConverter,
+            field: 'cardId',
+            ids: cardIds!,
+          );
     final cards = await result.logError('Error loading cards to review');
     _log.d(
       'Loaded ${cards.length} cards based on filter decks: $deckIds, cards: $cardIds',
