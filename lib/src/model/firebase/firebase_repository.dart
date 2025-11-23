@@ -1068,10 +1068,13 @@ Mature: ${breakdown[CardMastery.mature]}''');
     }
     _log.d('Creating deck group $name');
     final existing = await _deckGroupsCollection.get();
-    if (existing.docs
+    final existingGroupDoc = existing.docs
         .where((doc) => doc.data().name.toLowerCase() == name.toLowerCase())
-        .isNotEmpty) {
-      throw 'Group of name $name already exists';
+        .firstOrNull;
+
+    if (existingGroupDoc != null) {
+      _log.d('Group of name $name already exists, returning existing group');
+      return existingGroupDoc.data();
     }
     final docRef = _deckGroupsCollection.doc();
     final group = DeckGroup(

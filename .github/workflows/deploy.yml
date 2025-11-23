@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  FLUTTER_VERSION: '3.32.4'
+  FLUTTER_VERSION: '3.38.3'
   FIREBASE_PROJECT_ID: flashcards-521f0
 
 jobs:

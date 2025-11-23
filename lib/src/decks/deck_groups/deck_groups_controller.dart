@@ -128,13 +128,14 @@ class DeckGroupsController extends _$DeckGroupsController {
     }
   }
 
-  Future<void> createDeckGroup(String name, String? description) async {
+  Future<model.DeckGroup> createDeckGroup(String name, String? description) async {
     try {
       _log.d('Creating deck group: $name');
       final repository = ref.read(cardsRepositoryProvider);
-      await repository.createDeckGroup(name, description);
+      final group = await repository.createDeckGroup(name, description);
       ref.invalidateSelf();
       _log.d('Successfully created deck group: $name');
+      return group;
     } catch (error, stackTrace) {
       _log.e('Error creating deck group', error: error, stackTrace: stackTrace);
       rethrow;

@@ -102,18 +102,18 @@ class AddNewDeckGroup extends ConsumerWidget {
       return;
     }
     try {
-      await ref
+      final newGroup = await ref
           .read(deckGroupsControllerProvider.notifier)
           .createDeckGroup(_controller.text, '');
       await ref
           .read(deckGroupsControllerProvider.notifier)
           .addDeckToGroup(
             deckId: deckId,
-            groupId: '', // This will be set by the controller
+            groupId: newGroup.id,
           );
       context.showInfoSnackbar(context.l10n.newDeckGroupAddedMessage);
       _controller.clear();
-      onGroupAdded(model.DeckGroup(id: '', name: _controller.text));
+      onGroupAdded(newGroup);
     } catch (error) {
       context.showErrorSnackbar('Error creating deck group: $error');
     }

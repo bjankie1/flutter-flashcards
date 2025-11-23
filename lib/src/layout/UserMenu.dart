@@ -27,11 +27,11 @@ class UserMenu extends StatelessWidget {
         ),
         if (onCardDescriptions != null) ...[
           PopupMenuItem<int>(
+            onTap: onCardDescriptions,
             child: ListTile(
               title: Text(context.l10n.cardDescriptions),
               leading: Icon(Icons.description),
             ),
-            onTap: onCardDescriptions,
           ),
           PopupMenuDivider(),
         ],

@@ -7,6 +7,11 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Configuration
+# Ports: Firestore(8080), PubSub(8085), Auth(9099), Storage(9199), UI(14000), Functions(5001)
+EMULATOR_PORTS=(8080 8085 9099 9199 14000 5001)
+BACKUP_DIR=".firebase/backup"
+
 # Function to print colored output
 print_status() {
     echo -e "${BLUE}[INFO]${NC} $1"
@@ -22,6 +27,28 @@ print_warning() {
 
 print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Help function
+show_help() {
+    echo "Usage: ./scripts/firebase_emulator.sh [OPTIONS]"
+    echo ""
+    echo "Starts the Firebase Emulator Suite with data persistence."
+    echo ""
+    echo "Options:"
+    echo "  --clean    Start fresh (clear existing data) and do not import backup"
+    echo "  --help     Show this help message"
+    echo ""
+}
+
+# Function to check if Java is installed
+check_java() {
+    if ! command -v java &> /dev/null; then
+        print_error "Java is not installed or not in PATH."
+        print_error "Firebase Emulators require Java to run."
+        print_error "Please install Java and try again."
+        exit 1
+    fi
 }
 
 # Function to check if a port is in use
@@ -50,11 +77,9 @@ stop_firebase_emulators() {
         return 0
     fi
     
-    # If firebase emulators:stop fails, try to kill processes by port
-    local ports=(8080 8085 9099 9199 14000 5000 5002)
     local killed_any=false
     
-    for port in "${ports[@]}"; do
+    for port in "${EMULATOR_PORTS[@]}"; do
         if is_port_in_use $port; then
             local pid=$(get_pid_by_port $port)
             if [ ! -z "$pid" ]; then
@@ -79,10 +104,9 @@ stop_firebase_emulators() {
 
 # Function to check if ports are available
 check_ports() {
-    local ports=(8080 8085 9099 9199 14000)
     local unavailable_ports=()
     
-    for port in "${ports[@]}"; do
+    for port in "${EMULATOR_PORTS[@]}"; do
         if is_port_in_use $port; then
             unavailable_ports+=($port)
         fi
@@ -98,7 +122,22 @@ check_ports() {
 
 # Main execution
 main() {
+    local CLEAN_START=false
+
+    # Parse arguments
+    while [[ "$#" -gt 0 ]]; do
+        case $1 in
+            --clean) CLEAN_START=true ;;
+            --help) show_help; exit 0 ;;
+            *) print_error "Unknown parameter: $1"; show_help; exit 1 ;;
+        esac
+        shift
+    done
+
     print_status "Starting Firebase emulator setup..."
+    
+    # Check prerequisites
+    check_java
     
     # Check if firebase CLI is installed
     if ! command -v firebase &> /dev/null; then
@@ -127,17 +166,34 @@ main() {
     
     print_success "All required ports are available"
     
-    # Create backup directory if it doesn't exist
-    if [ ! -d ".firebase/backup" ]; then
+    # Handle backup directory
+    if [ "$CLEAN_START" = true ]; then
+        print_warning "Clean start requested. Removing existing backup..."
+        rm -rf "$BACKUP_DIR"
+    fi
+
+    if [ ! -d "$BACKUP_DIR" ]; then
         print_status "Creating backup directory..."
-        mkdir -p .firebase/backup
+        mkdir -p "$BACKUP_DIR"
     fi
     
     print_status "Starting Firebase emulators..."
     print_status "Emulator UI will be available at: http://localhost:14000"
     
     # Start the emulators
-    firebase emulators:start --import .firebase/backup --export-on-exit .firebase/backup
+    if [ "$CLEAN_START" = true ]; then
+        # Don't import, but export on exit
+        firebase emulators:start --export-on-exit "$BACKUP_DIR"
+    else
+        # Import if exists, export on exit
+        if [ -z "$(ls -A $BACKUP_DIR 2>/dev/null)" ]; then
+             print_status "No existing backup found. Starting fresh..."
+             firebase emulators:start --export-on-exit "$BACKUP_DIR"
+        else
+             print_status "Importing data from $BACKUP_DIR..."
+             firebase emulators:start --import "$BACKUP_DIR" --export-on-exit "$BACKUP_DIR"
+        fi
+    fi
 }
 
 # Run main function
