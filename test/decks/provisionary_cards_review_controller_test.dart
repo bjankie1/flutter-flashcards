@@ -87,7 +87,7 @@ void main() {
           // Keep the provider alive
           container.listen(
             provisionaryCardsReviewControllerProvider,
-            (_, __) {},
+            (_, _) {},
           );
 
           final controller = container.read(
@@ -166,7 +166,7 @@ void main() {
         // Keep the provider alive
         container.listen(
           provisionaryCardsReviewControllerProvider,
-          (_, __) {},
+          (_, _) {},
         );
 
         final controller = container.read(
@@ -262,7 +262,7 @@ void main() {
           // Keep the provider alive
           container.listen(
             provisionaryCardsReviewControllerProvider,
-            (_, __) {},
+            (_, _) {},
           );
 
           final controller = container.read(
@@ -364,7 +364,7 @@ void main() {
           // Keep the provider alive
           container.listen(
             provisionaryCardsReviewControllerProvider,
-            (_, __) {},
+            (_, _) {},
           );
 
           final controller = container.read(
@@ -477,7 +477,7 @@ void main() {
           // Keep the provider alive
           container.listen(
             provisionaryCardsReviewControllerProvider,
-            (_, __) {},
+            (_, _) {},
           );
 
           final controller = container.read(
@@ -952,7 +952,7 @@ void main() {
           // Keep the provider alive
           container.listen(
             provisionaryCardsReviewControllerProvider,
-            (_, __) {},
+            (_, _) {},
           );
 
           final controller = container.read(
