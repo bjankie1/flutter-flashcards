@@ -154,28 +154,28 @@ class ProvisionaryCardsReviewController
   /// Loads provisionary cards from the repository
   Future<void> _loadProvisionaryCards() async {
     try {
-      _log.d('Loading provisionary cards');
+
 
       // Preserve current context before loading, but handle uninitialized state
       final currentData = state.valueOrNull;
       final lastDeckId = currentData?.lastDeckId;
       final doubleSided = currentData?.doubleSided ?? true;
 
-      _log.d('Current state: lastDeckId=$lastDeckId, doubleSided=$doubleSided');
+
 
       state = const AsyncValue.loading();
-      _log.d('Set state to loading');
+
 
       final repository = ref.read(cardsRepositoryProvider);
-      _log.d('Got repository, calling listProvisionaryCards');
+
 
       final provisionaryCards = await repository.listProvisionaryCards();
       final cardsList = provisionaryCards.toList();
 
-      _log.d('Repository returned ${cardsList.length} provisionary cards');
+
 
       if (cardsList.isEmpty) {
-        _log.d('No provisionary cards found, setting empty state');
+
         state = AsyncValue.data(
           ProvisionaryCardsReviewData(
             provisionaryCards: cardsList,
@@ -185,9 +185,7 @@ class ProvisionaryCardsReviewController
           ),
         );
       } else {
-        _log.d(
-          'Found ${cardsList.length} provisionary cards, setting first card as current',
-        );
+
         final firstCard = cardsList[0];
         final newState = ProvisionaryCardsReviewData(
           provisionaryCards: cardsList,
@@ -204,7 +202,7 @@ class ProvisionaryCardsReviewController
         // or when the widget calls triggerGeneration with cloudFunctions
       }
 
-      _log.d('Successfully loaded ${cardsList.length} provisionary cards');
+
     } catch (error, stackTrace) {
       _log.e(
         'Error loading provisionary cards',
@@ -215,7 +213,7 @@ class ProvisionaryCardsReviewController
       // If the error is due to user not being authenticated, set empty state
       if (error.toString().contains('User not logged in') ||
           error.toString().contains('not logged')) {
-        _log.d('User is not authenticated, setting empty state');
+
         final currentData = state.valueOrNull;
         final lastDeckId = currentData?.lastDeckId;
         final doubleSided = currentData?.doubleSided ?? true;
@@ -245,7 +243,7 @@ class ProvisionaryCardsReviewController
     model.ProvisionaryCard provisionaryCard,
   ) async {
     try {
-      _log.d('Discarding provisionary card at index: $index');
+
       final currentData = state.value;
       if (currentData == null) return;
 
@@ -292,7 +290,7 @@ class ProvisionaryCardsReviewController
         // when the user selects a deck or manually saves the field
       }
 
-      _log.d('Successfully discarded provisionary card at index: $index');
+
     } catch (error, stackTrace) {
       _log.e(
         'Error discarding provisionary card',
@@ -323,7 +321,7 @@ class ProvisionaryCardsReviewController
     CloudFunctions? cloudFunctions,
   }) async {
     try {
-      _log.d('Finalizing provisionary card at index: $index');
+
       final currentData = state.value;
       if (currentData == null) return;
 
@@ -364,31 +362,25 @@ class ProvisionaryCardsReviewController
       }
 
       // Set the form fields and trigger generation if we have cloudFunctions
+      // Update state with new card info
+      state = AsyncValue.data(
+        currentData.copyWith(
+          isLoading: false,
+          completedCardIds: newCompletedIds,
+          currentIndex: nextIndex,
+          questionText: nextQuestionText ?? '',
+          answerText: nextAnswerText ?? '',
+          explanationText: '',
+          fetchingSuggestion: false,
+        ),
+      );
+
+      // Trigger generation if we have cloudFunctions
       if (cloudFunctions != null) {
-        if (currentData.isQuestion) {
-          await setQuestionTextAndGenerate(
-            nextQuestionText ?? '',
-            cloudFunctions,
-          );
-        } else {
-          await setAnswerTextAndGenerate(nextAnswerText ?? '', cloudFunctions);
-        }
-      } else {
-        // Fallback: just set the fields without generation
-        state = AsyncValue.data(
-          currentData.copyWith(
-            isLoading: false,
-            completedCardIds: newCompletedIds,
-            currentIndex: nextIndex,
-            questionText: nextQuestionText ?? '',
-            answerText: nextAnswerText ?? '',
-            explanationText: '',
-            fetchingSuggestion: false,
-          ),
-        );
+        await triggerGeneration(cloudFunctions);
       }
 
-      _log.d('Successfully finalized provisionary card at index: $index');
+
     } catch (error, stackTrace) {
       _log.e(
         'Error finalizing provisionary card',
@@ -556,7 +548,16 @@ class ProvisionaryCardsReviewController
   ) async {
     final currentData = state.value;
     if (currentData != null) {
-      state = AsyncValue.data(currentData.copyWith(questionText: questionText));
+      // If in question mode, clear answer to allow regeneration
+      final newAnswerText =
+          currentData.isQuestion ? '' : currentData.answerText;
+
+      state = AsyncValue.data(
+        currentData.copyWith(
+          questionText: questionText,
+          answerText: newAnswerText,
+        ),
+      );
 
       // Trigger generation if we're in question mode and have a deck selected
       if (currentData.isQuestion &&
@@ -582,7 +583,16 @@ class ProvisionaryCardsReviewController
   ) async {
     final currentData = state.value;
     if (currentData != null) {
-      state = AsyncValue.data(currentData.copyWith(answerText: answerText));
+      // If in answer mode, clear question to allow regeneration
+      final newQuestionText =
+          !currentData.isQuestion ? '' : currentData.questionText;
+
+      state = AsyncValue.data(
+        currentData.copyWith(
+          answerText: answerText,
+          questionText: newQuestionText,
+        ),
+      );
 
       // Trigger generation if we're in answer mode and have a deck selected
       if (!currentData.isQuestion &&
@@ -731,7 +741,7 @@ class ProvisionaryCardsReviewController
       final currentData = state.value;
       if (currentData == null) return;
 
-      _log.d('Generating answer for question: "$question" in deck: $deckId');
+
 
       // Set loading state
       state = AsyncValue.data(currentData.copyWith(fetchingSuggestion: true));
@@ -803,7 +813,7 @@ class ProvisionaryCardsReviewController
       );
 
       state = AsyncValue.data(updatedData);
-      _log.d('Successfully generated answer: "${generatedAnswer.answer}"');
+
     } catch (error, stackTrace) {
       _log.e('Error generating answer', error: error, stackTrace: stackTrace);
 

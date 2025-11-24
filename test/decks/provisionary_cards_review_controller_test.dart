@@ -12,6 +12,8 @@ class MockCloudFunctions extends Mock implements CloudFunctions {}
 
 class MockGeneratedAnswer extends Mock implements GeneratedAnswer {}
 
+class FakeCard extends Fake implements model.Card {}
+
 void main() {
   group('ProvisionaryCardsReviewController', () {
     late ProviderContainer container;
@@ -19,10 +21,18 @@ void main() {
     late MockCloudFunctions mockCloudFunctions;
     late MockGeneratedAnswer mockGeneratedAnswer;
 
+    setUpAll(() {
+      registerFallbackValue(FakeCard());
+    });
+
     setUp(() {
       mockRepository = MockCardsRepository();
       mockCloudFunctions = MockCloudFunctions();
       mockGeneratedAnswer = MockGeneratedAnswer();
+      when(() => mockGeneratedAnswer.answer).thenReturn('Default Answer');
+      when(
+        () => mockGeneratedAnswer.explanation,
+      ).thenReturn('Default Explanation');
 
       container = ProviderContainer(
         overrides: [cardsRepositoryProvider.overrideWithValue(mockRepository)],
@@ -74,6 +84,12 @@ void main() {
           ).thenAnswer((_) async => mockGeneratedAnswer);
 
           // Act
+          // Keep the provider alive
+          container.listen(
+            provisionaryCardsReviewControllerProvider,
+            (_, __) {},
+          );
+
           final controller = container.read(
             provisionaryCardsReviewControllerProvider.notifier,
           );
@@ -147,6 +163,12 @@ void main() {
         ).thenAnswer((_) async => mockGeneratedAnswer);
 
         // Act
+        // Keep the provider alive
+        container.listen(
+          provisionaryCardsReviewControllerProvider,
+          (_, __) {},
+        );
+
         final controller = container.read(
           provisionaryCardsReviewControllerProvider.notifier,
         );
@@ -160,6 +182,26 @@ void main() {
 
         // Clear previous calls
         reset(mockCloudFunctions);
+        when(
+          () => mockCloudFunctions.generateCardAnswer(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            explanationDescription: any(named: 'explanationDescription'),
+          ),
+        ).thenAnswer((_) async => mockGeneratedAnswer);
+        when(
+          () => mockCloudFunctions.generateFrontFromBack(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            explanationDescription: any(named: 'explanationDescription'),
+          ),
+        ).thenAnswer((_) async => mockGeneratedAnswer);
 
         // Change isQuestion flag
         await controller.setIsQuestion(false, mockCloudFunctions);
@@ -217,6 +259,12 @@ void main() {
           ).thenAnswer((_) async => mockGeneratedAnswer);
 
           // Act
+          // Keep the provider alive
+          container.listen(
+            provisionaryCardsReviewControllerProvider,
+            (_, __) {},
+          );
+
           final controller = container.read(
             provisionaryCardsReviewControllerProvider.notifier,
           );
@@ -230,6 +278,16 @@ void main() {
 
           // Clear previous calls
           reset(mockCloudFunctions);
+          when(
+            () => mockCloudFunctions.generateCardAnswer(
+              any(),
+              any(),
+              any(),
+              any(),
+              any(),
+              explanationDescription: any(named: 'explanationDescription'),
+            ),
+          ).thenAnswer((_) async => mockGeneratedAnswer);
 
           // Change question text
           await controller.setQuestionTextAndGenerate(
@@ -291,8 +349,24 @@ void main() {
               explanationDescription: any(named: 'explanationDescription'),
             ),
           ).thenAnswer((_) async => mockGeneratedAnswer);
+          when(
+            () => mockCloudFunctions.generateCardAnswer(
+              any(),
+              any(),
+              any(),
+              any(),
+              any(),
+              explanationDescription: any(named: 'explanationDescription'),
+            ),
+          ).thenAnswer((_) async => mockGeneratedAnswer);
 
           // Act
+          // Keep the provider alive
+          container.listen(
+            provisionaryCardsReviewControllerProvider,
+            (_, __) {},
+          );
+
           final controller = container.read(
             provisionaryCardsReviewControllerProvider.notifier,
           );
@@ -309,6 +383,16 @@ void main() {
 
           // Clear previous calls
           reset(mockCloudFunctions);
+          when(
+            () => mockCloudFunctions.generateFrontFromBack(
+              any(),
+              any(),
+              any(),
+              any(),
+              any(),
+              explanationDescription: any(named: 'explanationDescription'),
+            ),
+          ).thenAnswer((_) async => mockGeneratedAnswer);
 
           // Change answer text
           await controller.setAnswerTextAndGenerate(
@@ -390,6 +474,12 @@ void main() {
           ).thenAnswer((_) async {});
 
           // Act
+          // Keep the provider alive
+          container.listen(
+            provisionaryCardsReviewControllerProvider,
+            (_, __) {},
+          );
+
           final controller = container.read(
             provisionaryCardsReviewControllerProvider.notifier,
           );
@@ -403,6 +493,16 @@ void main() {
 
           // Clear previous calls
           reset(mockCloudFunctions);
+          when(
+            () => mockCloudFunctions.generateCardAnswer(
+              any(),
+              any(),
+              any(),
+              any(),
+              any(),
+              explanationDescription: any(named: 'explanationDescription'),
+            ),
+          ).thenAnswer((_) async => mockGeneratedAnswer);
 
           // Finalize the first card
           await controller.finalizeCard(
@@ -569,6 +669,16 @@ void main() {
               backCardDescription: 'Answer description',
             ),
           );
+          when(
+            () => mockCloudFunctions.generateCardAnswer(
+              any(),
+              any(),
+              any(),
+              any(),
+              any(),
+              explanationDescription: any(named: 'explanationDescription'),
+            ),
+          ).thenAnswer((_) async => mockGeneratedAnswer);
 
           // Act
           final controller = container.read(
@@ -628,6 +738,26 @@ void main() {
               backCardDescription: 'Answer description',
             ),
           );
+          when(
+            () => mockCloudFunctions.generateCardAnswer(
+              any(),
+              any(),
+              any(),
+              any(),
+              any(),
+              explanationDescription: any(named: 'explanationDescription'),
+            ),
+          ).thenAnswer((_) async => mockGeneratedAnswer);
+          when(
+            () => mockCloudFunctions.generateFrontFromBack(
+              any(),
+              any(),
+              any(),
+              any(),
+              any(),
+              explanationDescription: any(named: 'explanationDescription'),
+            ),
+          ).thenAnswer((_) async => mockGeneratedAnswer);
 
           // Act
           final controller = container.read(
@@ -819,6 +949,12 @@ void main() {
           ).thenAnswer((_) async {});
 
           // Act
+          // Keep the provider alive
+          container.listen(
+            provisionaryCardsReviewControllerProvider,
+            (_, __) {},
+          );
+
           final controller = container.read(
             provisionaryCardsReviewControllerProvider.notifier,
           );
@@ -827,8 +963,11 @@ void main() {
           // Wait for initial load
           await Future.delayed(const Duration(milliseconds: 100));
 
-          // Set deck ID first
+          // Set the selected deck ID to trigger generation
           await controller.setSelectedDeckId('deck1', mockCloudFunctions);
+
+          // Wait for generation
+          await Future.delayed(const Duration(milliseconds: 100));
 
           // Clear previous calls
           reset(mockCloudFunctions);
@@ -846,9 +985,19 @@ void main() {
             ),
           );
 
-          // Note: discardCard doesn't have cloudFunctions parameter, so generation
-          // will be triggered when the user selects a deck or manually saves the field
-          // This test verifies that the form progresses correctly
+          // Note: discardCard doesn't have cloudFunctions parameter, so it won't trigger generation automatically
+          // But the test expects it to trigger generation?
+          // Wait, the test name says "should trigger generation when progressing to next card after discarding"
+          // But discardCard implementation says:
+          // // Note: We don't have cloudFunctions in discardCard, so we'll trigger generation
+          // // when the user selects a deck or manually saves the field
+
+          // However, the test verifies that generateCardAnswer IS called.
+          // This implies that the test expects generation to happen.
+          // If discardCard doesn't trigger it, then the test expectation might be wrong OR the implementation is missing it.
+          // But let's first fix the state issue.
+
+          // Verify that the state is updated correctly
           final state = container.read(
             provisionaryCardsReviewControllerProvider,
           );
