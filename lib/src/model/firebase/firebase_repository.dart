@@ -499,13 +499,13 @@ Mature: ${breakdown[CardMastery.mature]}''');
     if ((cardIds ?? {}).isEmpty && (deckIds ?? {}).isEmpty) {
       throw "Either deckIds or cardIds must be provided";
     }
-    final collection = _cardsCollection;
+    final query = _firestore
+        .collectionGroup(userPrefix(cardsCollectionName))
+        .withCardsConverter;
     final result = deckIds != null && deckIds.isNotEmpty
-        ? _batchQuery(query: collection, field: 'deckId', ids: deckIds)
+        ? _batchQuery(query: query, field: 'deckId', ids: deckIds)
         : _batchQuery(
-            query: _firestore
-                .collectionGroup(userPrefix(cardsCollectionName))
-                .withCardsConverter,
+            query: query,
             field: 'cardId',
             ids: cardIds!,
           );
