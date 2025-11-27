@@ -7,11 +7,12 @@ import '../../genkit/functions.dart';
 import '../../services/translation_service.dart';
 import '../../common/build_context_extensions.dart';
 
-part 'deck_details_controller.g.dart';
+part 'card_descriptions_dialog_controller.g.dart';
 
-/// Controller for managing deck details operations
+/// Controller for managing card descriptions dialog operations
 @riverpod
-class DeckDetailsController extends _$DeckDetailsController {
+class CardDescriptionsDialogController
+    extends _$CardDescriptionsDialogController {
   final Logger _log = Logger();
   bool _isUpdating = false;
   bool _isGeneratingDescriptions = false;
@@ -24,7 +25,7 @@ class DeckDetailsController extends _$DeckDetailsController {
 
   @override
   AsyncValue<model.Deck> build(String deckId) {
-    _log.d('Loading deck details for deck: $deckId');
+    _log.d('Loading deck details for card descriptions dialog: $deckId');
     _translationService = TranslationService();
     _loadDeck();
     return const AsyncValue.loading();
@@ -118,31 +119,6 @@ class DeckDetailsController extends _$DeckDetailsController {
     }
   }
 
-  /// Updates the deck name
-  Future<void> updateDeckName(
-    String name,
-    CloudFunctions cloudFunctions,
-  ) async {
-    await _updateDeckField(
-      fieldName: 'name',
-      updateFunction: (deck) async => deck.copyWith(name: name),
-      cloudFunctions: cloudFunctions,
-      logMessage: 'Updating deck name for deck: $_deckId to: $name',
-    );
-  }
-
-  /// Updates the deck description
-  Future<void> updateDeckDescription(
-    String description,
-    CloudFunctions cloudFunctions,
-  ) async {
-    await _updateDeckField(
-      fieldName: 'description',
-      updateFunction: (deck) async => deck.copyWith(description: description),
-      cloudFunctions: cloudFunctions,
-    );
-  }
-
   /// Updates the front card description
   Future<void> updateFrontCardDescription(
     String frontCardDescription,
@@ -175,10 +151,8 @@ class DeckDetailsController extends _$DeckDetailsController {
 
         return updatedDeck;
       },
+      cloudFunctions: cloudFunctions,
     );
-
-    // Note: Reverse descriptions are now handled by the dedicated generateFrontFromBack function
-    // No need to generate reverse descriptions separately
   }
 
   /// Updates the back card description
@@ -213,10 +187,8 @@ class DeckDetailsController extends _$DeckDetailsController {
 
         return updatedDeck;
       },
+      cloudFunctions: cloudFunctions,
     );
-
-    // Note: Reverse descriptions are now handled by the dedicated generateFrontFromBack function
-    // No need to generate reverse descriptions separately
   }
 
   /// Updates the explanation description
@@ -253,129 +225,80 @@ class DeckDetailsController extends _$DeckDetailsController {
     );
   }
 
-  /// Refreshes the deck details
-  Future<void> refresh() async {
-    await _loadDeck();
-  }
-
-  /// Checks if the controller is ready and has a valid deck loaded
-  bool get isReady {
-    return state.hasValue && state.value != null;
-  }
-
-  /// Ensures the deck is loaded, refreshing if necessary
-  Future<void> ensureDeckLoaded() async {
-    if (!isReady) {
-      _log.d('Deck not ready, attempting to load deck: $_deckId');
-      await _loadDeck();
-    }
-  }
-
-  /// Gets the current deck with null safety check
-  model.Deck? getDeck() {
-    return state.value;
-  }
-
-  /// Gets the deck category
-  model.DeckCategory? getCategory() {
-    return state.value?.category;
-  }
-
-  /// Generates a card answer suggestion using AI with fallback logic for descriptions
-  Future<GeneratedAnswer> generateCardAnswer(
-    String cardQuestion,
-    BuildContext context,
-  ) async {
-    final currentDeck = state.value;
-    if (currentDeck == null) {
-      _log.e('No deck loaded in controller for deck ID: $_deckId');
-      throw Exception('No deck loaded for deck ID: $_deckId');
-    }
-
-    // Use translated descriptions if available, otherwise fall back to original
-    final effectiveFrontDescription =
-        currentDeck.frontCardDescriptionTranslated ??
-        currentDeck.frontCardDescription;
-    final effectiveBackDescription =
-        currentDeck.backCardDescriptionTranslated ??
-        currentDeck.backCardDescription;
-    final effectiveExplanationDescription =
-        currentDeck.explanationDescriptionTranslated ??
-        currentDeck.explanationDescription;
-
-    // Check if required descriptions are available
-    if (effectiveFrontDescription == null || effectiveBackDescription == null) {
-      _log.w(
-        'Deck missing required descriptions for deck: ${currentDeck.name} (ID: $_deckId)',
-      );
-      throw Exception(
-        'Deck must have front and back card descriptions to generate answers',
-      );
-    }
-
-    try {
-      return await context.cloudFunctions.generateCardAnswer(
-        currentDeck.name,
-        currentDeck.description ?? '',
-        cardQuestion,
-        effectiveFrontDescription,
-        effectiveBackDescription,
-        explanationDescription: effectiveExplanationDescription,
-      );
-    } catch (e, stackTrace) {
-      _log.e(
-        'Error generating card answer for deck: $_deckId',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      rethrow;
-    }
-  }
-
-  /// Generates card descriptions based on existing cards in the deck
+  /// Generates card descriptions using AI
   Future<CardDescriptionResult> generateCardDescriptions(
     BuildContext context,
   ) async {
-    final currentDeck = state.value;
-    if (currentDeck == null) {
-      _log.e('No deck loaded in controller for deck ID: $_deckId');
-      throw Exception('No deck loaded for deck ID: $_deckId');
+    if (_isGeneratingDescriptions) {
+      throw Exception('Already generating descriptions');
     }
 
-    // Set generating state
     _isGeneratingDescriptions = true;
-    ref.notifyListeners();
-
     try {
+      final currentDeck = state.value;
+      if (currentDeck == null) {
+        throw Exception('No deck loaded');
+      }
+
       // Load cards for the deck
       final repository = ref.read(cardsRepositoryProvider);
       final cards = await repository.loadCards(_deckId);
-
-      if (cards.isEmpty) {
-        throw Exception('No cards found in deck: ${currentDeck.name}');
-      }
+      final cardsList = cards.toList();
 
       _log.d(
-        'Generating card descriptions for deck: ${currentDeck.name} with ${cards.length} cards',
+        'Generating card descriptions for deck: $_deckId with ${cardsList.length} cards',
       );
-
-      return await context.cloudFunctions.generateCardDescriptions(
+      final cloudFunctions = context.cloudFunctions;
+      final result = await cloudFunctions.generateCardDescriptions(
         deckName: currentDeck.name,
         deckDescription: currentDeck.description,
-        cards: cards.toList(),
-        minCardsRequired: 3,
+        cards: cardsList,
       );
-    } catch (e, stackTrace) {
+
+      _log.d('Successfully generated card descriptions for deck: $_deckId');
+      return result;
+    } catch (error, stackTrace) {
       _log.e(
         'Error generating card descriptions for deck: $_deckId',
-        error: e,
+        error: error,
         stackTrace: stackTrace,
       );
       rethrow;
     } finally {
-      // Reset generating state
       _isGeneratingDescriptions = false;
-      ref.notifyListeners();
+    }
+  }
+
+  /// Applies generated descriptions to the deck
+  Future<void> applyGeneratedDescriptions(
+    CardDescriptionResult result,
+    CloudFunctions cloudFunctions,
+  ) async {
+    try {
+      if (result.frontCardDescription != null) {
+        await updateFrontCardDescription(
+          result.frontCardDescription!,
+          cloudFunctions,
+        );
+      }
+      if (result.backCardDescription != null) {
+        await updateBackCardDescription(
+          result.backCardDescription!,
+          cloudFunctions,
+        );
+      }
+      if (result.explanationDescription != null) {
+        await updateExplanationDescription(result.explanationDescription!);
+      }
+
+      _log.d('Successfully applied generated descriptions for deck: $_deckId');
+    } catch (error, stackTrace) {
+      _log.e(
+        'Error applying generated descriptions for deck: $_deckId',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      rethrow;
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logger/logger.dart';
 import '../../model/cards.dart' as model;
+import '../../common/sorting_utils.dart';
 import '../deck_list/decks_controller.dart';
 
 part 'cards_list_controller.g.dart';
@@ -22,8 +23,8 @@ class CardsListData {
     return cards
         .where(
           (card) =>
-              card.question.toLowerCase().contains(query) ||
-              card.answer.toLowerCase().contains(query),
+              SortingUtils.containsWithDiacritics(card.question, query) ||
+              SortingUtils.containsWithDiacritics(card.answer, query),
         )
         .toList();
   }
@@ -78,10 +79,10 @@ class CardsListController extends _$CardsListController {
         statsForCard.sort((a, b) => a.variant.index.compareTo(b.variant.index));
         cardStats[card.id] = statsForCard;
       }
+
       final sortedCards = cards.toList()
         ..sort(
-          (a, b) =>
-              a.question.toLowerCase().compareTo(b.question.toLowerCase()),
+          (a, b) => SortingUtils.compareWithDiacritics(a.question, b.question),
         );
       state = AsyncValue.data(
         CardsListData(cards: sortedCards, cardStats: cardStats),

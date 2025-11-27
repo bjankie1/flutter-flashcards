@@ -6,13 +6,14 @@ import 'package:go_router/go_router.dart';
 
 class UserMenu extends StatelessWidget {
   final Widget child;
+  final VoidCallback? onCardDescriptions;
 
-  const UserMenu({super.key, required this.child});
+  const UserMenu({super.key, this.onCardDescriptions, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton(
-      offset: Offset(0, 30),
+    return PopupMenuButton<int>(
+      offset: const Offset(0, 30),
       popUpAnimationStyle: AnimationStyle(
         curve: Easing.emphasizedDecelerate,
         duration: const Duration(seconds: 1),
@@ -24,6 +25,16 @@ class UserMenu extends StatelessWidget {
             leading: Avatar(size: 20),
           ),
         ),
+        if (onCardDescriptions != null) ...[
+          PopupMenuItem<int>(
+            onTap: onCardDescriptions,
+            child: ListTile(
+              title: Text(context.l10n.cardDescriptions),
+              leading: Icon(Icons.description),
+            ),
+          ),
+          PopupMenuDivider(),
+        ],
         PopupMenuItem<int>(
           child: ListTile(
             title: Text(context.l10n.settings),

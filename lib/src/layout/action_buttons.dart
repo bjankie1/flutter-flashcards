@@ -18,7 +18,7 @@ class ActionButtons extends ConsumerWidget {
 
     return provisionaryCardsAsync.when(
       data: (data) {
-        final provisionaryCardsCount = data.provisionaryCards.length;
+        final provisionaryCardsCount = data.unprocessedCardsCount;
         final hasCardsToReview = provisionaryCardsCount > 0;
 
         return Container(

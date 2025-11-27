@@ -18,3 +18,23 @@
   date: 2025-07-20
   changes:
     - Improved top navigation bar layout
+
+- version: 1.0.6
+  date: 2025-07-26
+  changes:
+    - Refresh deck groups on change
+
+- version: 1.0.7
+  date: 2025-07-27
+  changes:
+    - Improved card details view
+
+- version: 1.0.8
+  date: 2025-07-28
+  changes:
+    - Fixed provisionary cards editing
+
+- version: 1.0.9
+  date: 2025-08-02
+  changes:
+    - Improved cards sorting

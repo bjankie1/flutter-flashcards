@@ -27,6 +27,13 @@ abstract class CardsRepository extends ChangeNotifier {
 
   ValueListenable<bool> get decksGroupUpdated => _decksGroupUpdated;
 
+  final ValueNotifier<bool> _provisionaryCardsUpdated = ValueNotifier<bool>(
+    false,
+  );
+
+  ValueListenable<bool> get provisionaryCardsUpdated =>
+      _provisionaryCardsUpdated;
+
   Future<model.Card?> loadCard(String cardId);
 
   String nextCardId();
@@ -41,6 +48,9 @@ abstract class CardsRepository extends ChangeNotifier {
 
   Future<void> deleteDeck(String deckId);
 
+  /// Executes multiple operations in a single transaction
+  Future<void> runTransaction(Future<void> Function() operations);
+
   Future<Iterable<model.Card>> loadCards(String deckId);
 
   Future<Iterable<model.Card>> loadCardsByIds(Iterable<String> cardIds);
@@ -52,18 +62,18 @@ abstract class CardsRepository extends ChangeNotifier {
   Future<void> deleteCard(String cardId);
 
   Future<Iterable<(model.CardStats, model.Card)>> loadCardsWithStatsToReview({
-    model.DeckId? deckId,
-    model.DeckGroupId? deckGroupId,
+    String? deckId,
+    String? deckGroupId,
   });
 
   Future<Iterable<(model.CardStats, model.Card)>> loadCardsWithStats({
-    model.DeckId? deckId,
-    model.DeckGroupId? deckGroupId,
+    String? deckId,
+    String? deckGroupId,
   });
 
   Future<Map<model.State, int>> cardsToReviewCount({
-    model.DeckId? deckId,
-    model.DeckGroupId? deckGroupId,
+    String? deckId,
+    String? deckGroupId,
   });
 
   Future<model.CardStats> loadCardStats(
@@ -105,6 +115,12 @@ abstract class CardsRepository extends ChangeNotifier {
   @protected
   void notifyDeckGroupChanged() {
     _decksGroupUpdated.value = !_decksGroupUpdated.value;
+    notifyListeners();
+  }
+
+  @protected
+  void notifyProvisionaryCardChanged() {
+    _provisionaryCardsUpdated.value = !_provisionaryCardsUpdated.value;
     notifyListeners();
   }
 

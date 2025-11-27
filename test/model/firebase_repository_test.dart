@@ -151,12 +151,14 @@ void main() {
       expect(remainingDecks, hasLength(3));
     });
 
-    test('Should fail creating deck group with same or invalid name', () async {
-      await repository.createDeckGroup('name 1', null);
-      await expectLater(
-        repository.createDeckGroup('name 1', null),
-        throwsA(isA<String>()),
-      );
+    test('Should return existing group when creating deck group with same name',
+        () async {
+      final group1 = await repository.createDeckGroup('name 1', null);
+      final group2 = await repository.createDeckGroup('name 1', null);
+      expect(group1.id, group2.id);
+    });
+
+    test('Should fail creating deck group with invalid name', () async {
       await expectLater(
         repository.createDeckGroup('', null),
         throwsA(isA<String>()),

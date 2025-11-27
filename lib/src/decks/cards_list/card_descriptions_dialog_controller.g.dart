@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'deck_details_controller.dart';
+part of 'card_descriptions_dialog_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$deckDetailsControllerHash() =>
-    r'351b5eccd28b5deabb3e3c8478573e4576faf8b2';
+String _$cardDescriptionsDialogControllerHash() =>
+    r'ea9f26902ee99df4dbafafbce0748d6415e312f5';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -30,7 +30,7 @@ class _SystemHash {
   }
 }
 
-abstract class _$DeckDetailsController
+abstract class _$CardDescriptionsDialogController
     extends BuildlessAutoDisposeNotifier<AsyncValue<model.Deck>> {
   late final String deckId;
 
@@ -39,35 +39,37 @@ abstract class _$DeckDetailsController
   );
 }
 
-/// Controller for managing deck details operations
+/// Controller for managing card descriptions dialog operations
 ///
-/// Copied from [DeckDetailsController].
-@ProviderFor(DeckDetailsController)
-const deckDetailsControllerProvider = DeckDetailsControllerFamily();
+/// Copied from [CardDescriptionsDialogController].
+@ProviderFor(CardDescriptionsDialogController)
+const cardDescriptionsDialogControllerProvider =
+    CardDescriptionsDialogControllerFamily();
 
-/// Controller for managing deck details operations
+/// Controller for managing card descriptions dialog operations
 ///
-/// Copied from [DeckDetailsController].
-class DeckDetailsControllerFamily extends Family<AsyncValue<model.Deck>> {
-  /// Controller for managing deck details operations
+/// Copied from [CardDescriptionsDialogController].
+class CardDescriptionsDialogControllerFamily
+    extends Family<AsyncValue<model.Deck>> {
+  /// Controller for managing card descriptions dialog operations
   ///
-  /// Copied from [DeckDetailsController].
-  const DeckDetailsControllerFamily();
+  /// Copied from [CardDescriptionsDialogController].
+  const CardDescriptionsDialogControllerFamily();
 
-  /// Controller for managing deck details operations
+  /// Controller for managing card descriptions dialog operations
   ///
-  /// Copied from [DeckDetailsController].
-  DeckDetailsControllerProvider call(
+  /// Copied from [CardDescriptionsDialogController].
+  CardDescriptionsDialogControllerProvider call(
     String deckId,
   ) {
-    return DeckDetailsControllerProvider(
+    return CardDescriptionsDialogControllerProvider(
       deckId,
     );
   }
 
   @override
-  DeckDetailsControllerProvider getProviderOverride(
-    covariant DeckDetailsControllerProvider provider,
+  CardDescriptionsDialogControllerProvider getProviderOverride(
+    covariant CardDescriptionsDialogControllerProvider provider,
   ) {
     return call(
       provider.deckId,
@@ -86,34 +88,35 @@ class DeckDetailsControllerFamily extends Family<AsyncValue<model.Deck>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'deckDetailsControllerProvider';
+  String? get name => r'cardDescriptionsDialogControllerProvider';
 }
 
-/// Controller for managing deck details operations
+/// Controller for managing card descriptions dialog operations
 ///
-/// Copied from [DeckDetailsController].
-class DeckDetailsControllerProvider extends AutoDisposeNotifierProviderImpl<
-    DeckDetailsController, AsyncValue<model.Deck>> {
-  /// Controller for managing deck details operations
+/// Copied from [CardDescriptionsDialogController].
+class CardDescriptionsDialogControllerProvider
+    extends AutoDisposeNotifierProviderImpl<CardDescriptionsDialogController,
+        AsyncValue<model.Deck>> {
+  /// Controller for managing card descriptions dialog operations
   ///
-  /// Copied from [DeckDetailsController].
-  DeckDetailsControllerProvider(
+  /// Copied from [CardDescriptionsDialogController].
+  CardDescriptionsDialogControllerProvider(
     String deckId,
   ) : this._internal(
-          () => DeckDetailsController()..deckId = deckId,
-          from: deckDetailsControllerProvider,
-          name: r'deckDetailsControllerProvider',
+          () => CardDescriptionsDialogController()..deckId = deckId,
+          from: cardDescriptionsDialogControllerProvider,
+          name: r'cardDescriptionsDialogControllerProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$deckDetailsControllerHash,
-          dependencies: DeckDetailsControllerFamily._dependencies,
+                  : _$cardDescriptionsDialogControllerHash,
+          dependencies: CardDescriptionsDialogControllerFamily._dependencies,
           allTransitiveDependencies:
-              DeckDetailsControllerFamily._allTransitiveDependencies,
+              CardDescriptionsDialogControllerFamily._allTransitiveDependencies,
           deckId: deckId,
         );
 
-  DeckDetailsControllerProvider._internal(
+  CardDescriptionsDialogControllerProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -127,7 +130,7 @@ class DeckDetailsControllerProvider extends AutoDisposeNotifierProviderImpl<
 
   @override
   AsyncValue<model.Deck> runNotifierBuild(
-    covariant DeckDetailsController notifier,
+    covariant CardDescriptionsDialogController notifier,
   ) {
     return notifier.build(
       deckId,
@@ -135,10 +138,10 @@ class DeckDetailsControllerProvider extends AutoDisposeNotifierProviderImpl<
   }
 
   @override
-  Override overrideWith(DeckDetailsController Function() create) {
+  Override overrideWith(CardDescriptionsDialogController Function() create) {
     return ProviderOverride(
       origin: this,
-      override: DeckDetailsControllerProvider._internal(
+      override: CardDescriptionsDialogControllerProvider._internal(
         () => create()..deckId = deckId,
         from: from,
         name: null,
@@ -151,14 +154,15 @@ class DeckDetailsControllerProvider extends AutoDisposeNotifierProviderImpl<
   }
 
   @override
-  AutoDisposeNotifierProviderElement<DeckDetailsController,
+  AutoDisposeNotifierProviderElement<CardDescriptionsDialogController,
       AsyncValue<model.Deck>> createElement() {
-    return _DeckDetailsControllerProviderElement(this);
+    return _CardDescriptionsDialogControllerProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is DeckDetailsControllerProvider && other.deckId == deckId;
+    return other is CardDescriptionsDialogControllerProvider &&
+        other.deckId == deckId;
   }
 
   @override
@@ -170,19 +174,20 @@ class DeckDetailsControllerProvider extends AutoDisposeNotifierProviderImpl<
   }
 }
 
-mixin DeckDetailsControllerRef
+mixin CardDescriptionsDialogControllerRef
     on AutoDisposeNotifierProviderRef<AsyncValue<model.Deck>> {
   /// The parameter `deckId` of this provider.
   String get deckId;
 }
 
-class _DeckDetailsControllerProviderElement
-    extends AutoDisposeNotifierProviderElement<DeckDetailsController,
-        AsyncValue<model.Deck>> with DeckDetailsControllerRef {
-  _DeckDetailsControllerProviderElement(super.provider);
+class _CardDescriptionsDialogControllerProviderElement
+    extends AutoDisposeNotifierProviderElement<CardDescriptionsDialogController,
+        AsyncValue<model.Deck>> with CardDescriptionsDialogControllerRef {
+  _CardDescriptionsDialogControllerProviderElement(super.provider);
 
   @override
-  String get deckId => (origin as DeckDetailsControllerProvider).deckId;
+  String get deckId =>
+      (origin as CardDescriptionsDialogControllerProvider).deckId;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -23,7 +23,7 @@ final cardsRepositoryProvider = AutoDisposeProvider<CardsRepository>.internal(
 );
 
 typedef CardsRepositoryRef = AutoDisposeProviderRef<CardsRepository>;
-String _$sortedDecksHash() => r'40c334840807521d331ac3dc15dd671b146bcd22';
+String _$sortedDecksHash() => r'45cd4334167fe9b1410ddf5d396b49c08d1db46a';
 
 /// Provider for sorted decks
 ///
@@ -31,55 +31,47 @@ String _$sortedDecksHash() => r'40c334840807521d331ac3dc15dd671b146bcd22';
 @ProviderFor(sortedDecks)
 final sortedDecksProvider =
     AutoDisposeProvider<AsyncValue<List<model.Deck>>>.internal(
-      sortedDecks,
-      name: r'sortedDecksProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$sortedDecksHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  sortedDecks,
+  name: r'sortedDecksProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$sortedDecksHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 typedef SortedDecksRef = AutoDisposeProviderRef<AsyncValue<List<model.Deck>>>;
-String _$decksControllerHash() => r'cb91e39af75e5833d70e62ea92ca1976de427724';
+String _$decksControllerHash() => r'f22f1c92251e7f2baa30ffe37ae31a062e2b7138';
 
 /// Controller for managing deck-related operations
 ///
 /// Copied from [DecksController].
 @ProviderFor(DecksController)
-final decksControllerProvider =
-    AutoDisposeNotifierProvider<
-      DecksController,
-      AsyncValue<Iterable<model.Deck>>
-    >.internal(
-      DecksController.new,
-      name: r'decksControllerProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$decksControllerHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+final decksControllerProvider = AutoDisposeNotifierProvider<DecksController,
+    AsyncValue<Iterable<model.Deck>>>.internal(
+  DecksController.new,
+  name: r'decksControllerProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$decksControllerHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-typedef _$DecksController =
-    AutoDisposeNotifier<AsyncValue<Iterable<model.Deck>>>;
+typedef _$DecksController
+    = AutoDisposeNotifier<AsyncValue<Iterable<model.Deck>>>;
 String _$deckGroupsHash() => r'7fc704c85fe710518c85436ff468455ab2dca062';
 
 /// See also [DeckGroups].
 @ProviderFor(DeckGroups)
-final deckGroupsProvider =
-    AutoDisposeAsyncNotifierProvider<
-      DeckGroups,
-      Iterable<model.DeckGroup>
-    >.internal(
-      DeckGroups.new,
-      name: r'deckGroupsProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$deckGroupsHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+final deckGroupsProvider = AutoDisposeAsyncNotifierProvider<DeckGroups,
+    Iterable<model.DeckGroup>>.internal(
+  DeckGroups.new,
+  name: r'deckGroupsProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$deckGroupsHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 typedef _$DeckGroups = AutoDisposeAsyncNotifier<Iterable<model.DeckGroup>>;
 // ignore_for_file: type=lint

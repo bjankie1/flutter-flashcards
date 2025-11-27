@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_flashcards/src/common/build_context_extensions.dart';
 import 'package:flutter_flashcards/src/common/crypto.dart';
-import 'package:flutter_flashcards/src/model/repository.dart';
+import 'package:flutter_flashcards/src/decks/provisionary_cards/provisionary_cards_review_controller.dart';
+import 'package:flutter_flashcards/src/decks/deck_list/decks_controller.dart';
 
-class ProvisionaryCardAdd extends StatefulWidget {
+class ProvisionaryCardAdd extends ConsumerStatefulWidget {
   @override
-  State<ProvisionaryCardAdd> createState() => _ProvisionaryCardAddState();
+  ConsumerState<ProvisionaryCardAdd> createState() =>
+      _ProvisionaryCardAddState();
 }
 
-class _ProvisionaryCardAddState extends State<ProvisionaryCardAdd> {
+class _ProvisionaryCardAddState extends ConsumerState<ProvisionaryCardAdd> {
   final TextEditingController cardQuestionController = TextEditingController();
 
   final List<String> addedCards = [];
@@ -101,21 +104,30 @@ class _ProvisionaryCardAddState extends State<ProvisionaryCardAdd> {
     String text,
     BuildContext context,
   ) async {
-    await context.cardRepository.finalizeProvisionaryCard(
-      text.trim().sha256Digest,
-      null,
-    );
+    final repository = ref.read(cardsRepositoryProvider);
+    await repository.finalizeProvisionaryCard(text.trim().sha256Digest, null);
     setState(() {
       addedCards.remove(text);
     });
+
+    // Refresh the provisionary cards review controller to update the badge
+    await ref
+        .read(provisionaryCardsReviewControllerProvider.notifier)
+        .refresh();
   }
 
   Future<void> _addProvisionaryCard(BuildContext context, String text) async {
-    await context.cardRepository.addProvisionaryCard(text);
+    final repository = ref.read(cardsRepositoryProvider);
+    await repository.addProvisionaryCard(text);
     setState(() {
       addedCards.add(text);
       cardQuestionController.clear();
     });
+
+    // Refresh the provisionary cards review controller to update the badge
+    await ref
+        .read(provisionaryCardsReviewControllerProvider.notifier)
+        .refresh();
 
     // Ensure focus is maintained and keyboard stays visible after submission
     WidgetsBinding.instance.addPostFrameCallback((_) {

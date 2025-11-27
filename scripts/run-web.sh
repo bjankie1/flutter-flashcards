@@ -29,7 +29,7 @@ if [[ "$*" == *"--prod"* ]]; then
 fi
 
 # Build the Flutter run command
-FLUTTER_CMD="flutter run -d chrome --web-experimental-hot-reload"
+FLUTTER_CMD="flutter run -d chrome"
 
 if [ "$USE_PROD_FIREBASE" = true ]; then
     FLUTTER_CMD="$FLUTTER_CMD --dart-define=FORCE_PROD_FIREBASE=true --dart-define=USE_FIREBASE_EMULATOR=false"

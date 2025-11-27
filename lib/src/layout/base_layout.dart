@@ -49,6 +49,8 @@ class BaseLayout extends StatelessWidget {
 
   final PageIndex? currentPage;
 
+  final VoidCallback? onCardDescriptions;
+
   const BaseLayout({
     /// The main app content.
     required this.child,
@@ -61,6 +63,9 @@ class BaseLayout extends StatelessWidget {
 
     /// The current page index.
     this.currentPage,
+
+    /// Callback for card descriptions (used on deck details page).
+    this.onCardDescriptions,
 
     /// The key of the widget.
     super.key,
@@ -157,7 +162,10 @@ class BaseLayout extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 8.0,
                               ),
-                              child: UserMenu(child: Avatar(size: 30)),
+                              child: UserMenu(
+                                onCardDescriptions: onCardDescriptions,
+                                child: Avatar(size: 30),
+                              ),
                             ),
                             Visibility(
                               visible: false,

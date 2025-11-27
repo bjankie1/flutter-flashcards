@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flashcards/src/common/avatar.dart';
 import 'package:flutter_flashcards/src/common/themes.dart';
+import 'package:flutter_flashcards/src/common/sorting_utils.dart';
 import 'package:flutter_flashcards/src/model/users_collaboration.dart';
 
 import '../common/build_context_extensions.dart';
@@ -25,7 +26,10 @@ class SharedDeckListWidget extends StatelessWidget {
                 ...entry.value.map((deck) => (entry.key, deck)),
               ],
             );
-        userDeckTuple.sort((t1, t2) => t1.$2.name.compareTo(t2.$2.name));
+        userDeckTuple.sort(
+          (t1, t2) =>
+              SortingUtils.compareWithDiacritics(t1.$2.name, t2.$2.name),
+        );
         return SizedBox(
           width: 800,
           child: Padding(

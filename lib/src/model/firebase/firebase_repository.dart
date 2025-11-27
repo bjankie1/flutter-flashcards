@@ -499,12 +499,16 @@ Mature: ${breakdown[CardMastery.mature]}''');
     if ((cardIds ?? {}).isEmpty && (deckIds ?? {}).isEmpty) {
       throw "Either deckIds or cardIds must be provided";
     }
-    final collectionGroup = _firestore
+    final query = _firestore
         .collectionGroup(userPrefix(cardsCollectionName))
         .withCardsConverter;
     final result = deckIds != null && deckIds.isNotEmpty
-        ? _batchQuery(query: collectionGroup, field: 'deckId', ids: deckIds)
-        : _batchQuery(query: collectionGroup, field: 'cardId', ids: cardIds!);
+        ? _batchQuery(query: query, field: 'deckId', ids: deckIds)
+        : _batchQuery(
+            query: query,
+            field: 'cardId',
+            ids: cardIds!,
+          );
     final cards = await result.logError('Error loading cards to review');
     _log.d(
       'Loaded ${cards.length} cards based on filter decks: $deckIds, cards: $cardIds',
@@ -518,12 +522,10 @@ Mature: ${breakdown[CardMastery.mature]}''');
       return Iterable.empty();
     }
     final deckIds = deckGroup.decks ?? {};
-    final collectionGroup = _firestore
-        .collectionGroup(userPrefix(cardsCollectionName))
-        .withCardsConverter;
+    final collection = _cardsCollection;
     if (deckIds.isEmpty) return Iterable.empty();
     final result = _batchQuery(
-      query: collectionGroup,
+      query: collection,
       field: 'deckId',
       ids: deckIds,
     );
@@ -1072,10 +1074,13 @@ Mature: ${breakdown[CardMastery.mature]}''');
     }
     _log.d('Creating deck group $name');
     final existing = await _deckGroupsCollection.get();
-    if (existing.docs
+    final existingGroupDoc = existing.docs
         .where((doc) => doc.data().name.toLowerCase() == name.toLowerCase())
-        .isNotEmpty) {
-      throw 'Group of name $name already exists';
+        .firstOrNull;
+
+    if (existingGroupDoc != null) {
+      _log.d('Group of name $name already exists, returning existing group');
+      return existingGroupDoc.data();
     }
     final docRef = _deckGroupsCollection.doc();
     final group = DeckGroup(
@@ -1145,6 +1150,7 @@ Mature: ${breakdown[CardMastery.mature]}''');
         .userCollection(provisionaryCardsCollectionName, userId)
         .withProvisionaryCardsConverter;
     await collection.doc(provisionaryCard.id).set(provisionaryCard);
+    notifyProvisionaryCardChanged();
   }
 
   @override
@@ -1164,6 +1170,7 @@ Mature: ${breakdown[CardMastery.mature]}''');
       'finalizedDate': DateTime.now(),
       'resultingCardId': resultingCardId,
     });
+    notifyProvisionaryCardChanged();
   }
 
   @override
@@ -1207,5 +1214,14 @@ Mature: ${breakdown[CardMastery.mature]}''');
       allStats.addAll(querySnapshot.docs.map((doc) => doc.data()));
     }
     return allStats;
+  }
+
+  @override
+  Future<void> runTransaction(Future<void> Function() operations) async {
+    _log.d('Starting transaction');
+    await _firestore.runTransaction((transaction) async {
+      await operations();
+    });
+    _log.d('Transaction completed successfully');
   }
 }

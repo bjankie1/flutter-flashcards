@@ -59,9 +59,11 @@ class ProvisionaryCardsReview extends ConsumerWidget {
                   .map(
                     (entry) => ProvisionaryCardChip(
                       text: entry.value.text,
-                      finalized: data.finalizedCardsIndexes.contains(entry.key),
-                      discarded: data.discardedCardsIndexes.contains(entry.key),
-                      active: data.currentIndex == entry.key,
+                      finalized: data.isCardCompleted(entry.value.id),
+                      discarded: data.isCardDiscarded(entry.value.id),
+                      active:
+                          data.currentIndex == entry.key &&
+                          data.isCardPending(entry.value.id),
                       onDelete: () async {
                         await controller.discardCard(entry.key, entry.value);
                       },
@@ -70,7 +72,9 @@ class ProvisionaryCardsReview extends ConsumerWidget {
                   .toList(),
             ),
           ),
-          if (data.currentIndex >= 0 && data.currentCard != null)
+          if (data.currentIndex >= 0 &&
+              data.currentCard != null &&
+              data.isCardPending(data.currentCard!.id))
             ProvisionaryCardFinalization()
           else
             _NoProvisionaryCardsMessage(),

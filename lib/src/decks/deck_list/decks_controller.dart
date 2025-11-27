@@ -4,6 +4,8 @@ import 'package:logger/logger.dart';
 
 import '../../model/cards.dart' as model;
 import '../../model/repository.dart';
+import '../../common/sorting_utils.dart';
+import '../deck_groups/deck_groups_controller.dart';
 
 part 'decks_controller.g.dart';
 
@@ -45,6 +47,14 @@ class DecksController extends _$DecksController {
       final repository = ref.read(cardsRepositoryProvider);
       await repository.saveDeck(deck);
       await _loadDecks(); // Refresh the list
+
+      // Refresh deck groups controller to show new deck in unassigned decks
+      try {
+        await ref.read(deckGroupsControllerProvider.notifier).onDeckChanged();
+      } catch (e) {
+        _log.w('Failed to refresh deck groups controller: $e');
+      }
+
       _log.d('Successfully saved deck: ${deck.name}');
     } catch (error, stackTrace) {
       _log.e('Error saving deck', error: error, stackTrace: stackTrace);
@@ -57,8 +67,31 @@ class DecksController extends _$DecksController {
     try {
       _log.d('Deleting deck: $deckId');
       final repository = ref.read(cardsRepositoryProvider);
-      await repository.deleteDeck(deckId);
+
+      // Use a transaction to ensure atomicity
+      await repository.runTransaction(() async {
+        // First, remove the deck from all groups to clean up references
+        final groups = await repository.loadDeckGroups();
+        for (final group in groups) {
+          if (group.decks?.contains(deckId) ?? false) {
+            _log.d('Removing deck $deckId from group ${group.name}');
+            await repository.removeDeckFromGroup(deckId, group.id);
+          }
+        }
+
+        // Now delete the deck
+        await repository.deleteDeck(deckId);
+      });
+
       await _loadDecks(); // Refresh the list
+
+      // Refresh deck groups controller to update unassigned decks list
+      try {
+        await ref.read(deckGroupsControllerProvider.notifier).onDeckChanged();
+      } catch (e) {
+        _log.w('Failed to refresh deck groups controller: $e');
+      }
+
       _log.d('Successfully deleted deck: $deckId');
     } catch (error, stackTrace) {
       _log.e('Error deleting deck', error: error, stackTrace: stackTrace);
@@ -107,7 +140,10 @@ AsyncValue<List<model.Deck>> sortedDecks(Ref ref) {
   return decksAsync.when(
     data: (decks) {
       final sortedDecks = decks.toList();
-      sortedDecks.sort((deck1, deck2) => deck1.name.compareTo(deck2.name));
+      sortedDecks.sort(
+        (deck1, deck2) =>
+            SortingUtils.compareWithDiacritics(deck1.name, deck2.name),
+      );
       return AsyncValue.data(sortedDecks);
     },
     loading: () => const AsyncValue.loading(),
@@ -152,3 +188,12 @@ class DeckGroups extends _$DeckGroups {
     ref.invalidateSelf();
   }
 }
+
+/// Provider for loading a single deck by ID
+final deckProvider = FutureProvider.family<model.Deck?, model.DeckId>((
+  ref,
+  deckId,
+) async {
+  final repository = ref.watch(cardsRepositoryProvider);
+  return await repository.loadDeck(deckId);
+});
