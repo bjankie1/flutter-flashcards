@@ -87,110 +87,113 @@ class _CardEditState extends State<CardEdit> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: FractionallySizedBox(
-        widthFactor: 0.5,
-        child: FocusTraversalGroup(
-          policy: OrderedTraversalPolicy(),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CardOptions(
-                  value: learnBothSides,
-                  onChanged: (value) {
-                    setState(() {
-                      learnBothSides = value;
-                    });
-                  },
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 600),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: FocusTraversalGroup(
+            policy: OrderedTraversalPolicy(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CardOptions(
+                    value: learnBothSides,
+                    onChanged: (value) {
+                      setState(() {
+                        learnBothSides = value;
+                      });
+                    },
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    MarkdownWithImageInput(
-                      controller: cardQuestionTextController,
-                      focusOrder: 1,
-                      hintText: context.l10n.questionHint,
-                      labelText: context.l10n.questionLabel,
-                      imagePlacement: model.ImagePlacement.question,
-                      onImageUpload: _uploadImage,
-                    ),
-                    const SizedBox(height: 16),
-                    ValueListenableBuilder(
-                      valueListenable: cardQuestionTextController,
-                      builder: (context, value, _) {
-                        return _GenerateAnswerButton(
-                          deck: widget.deck,
-                          question: value.text,
-                          onAnswer: (answer, hint) {
-                            cardAnswerTextController.text = answer;
-                            cardHintTextController.text = hint;
-                          },
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    _answerInput(),
-                    const SizedBox(height: 16),
-                    MarkdownWithImageInput(
-                      controller: cardHintTextController,
-                      focusOrder: 3,
-                      hintText: context.l10n.hintPrompt,
-                      labelText: context.l10n.hintLabel,
-                      imagePlacement: model.ImagePlacement.explanation,
-                      onImageUpload: _uploadImage,
-                    ),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      MarkdownWithImageInput(
+                        controller: cardQuestionTextController,
+                        focusOrder: 1,
+                        hintText: context.l10n.questionHint,
+                        labelText: context.l10n.questionLabel,
+                        imagePlacement: model.ImagePlacement.question,
+                        onImageUpload: _uploadImage,
+                      ),
+                      const SizedBox(height: 16),
+                      ValueListenableBuilder(
+                        valueListenable: cardQuestionTextController,
+                        builder: (context, value, _) {
+                          return _GenerateAnswerButton(
+                            deck: widget.deck,
+                            question: value.text,
+                            onAnswer: (answer, hint) {
+                              cardAnswerTextController.text = answer;
+                              cardHintTextController.text = hint;
+                            },
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      _answerInput(),
+                      const SizedBox(height: 16),
+                      MarkdownWithImageInput(
+                        controller: cardHintTextController,
+                        focusOrder: 3,
+                        hintText: context.l10n.hintPrompt,
+                        labelText: context.l10n.hintLabel,
+                        imagePlacement: model.ImagePlacement.explanation,
+                        onImageUpload: _uploadImage,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              CardEditActions(
-                onSave: () async => _saveCard(context),
-                onSaveAndAddNext: () async => _saveCard(context, addNew: true),
-                isNewCard: widget.card?.id == null,
-              ),
-              const SizedBox(height: 24),
-              Padding(
-                padding: EdgeInsets.only(top: 8, bottom: 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Icon(Icons.visibility, size: 20, color: Colors.grey),
-                    SizedBox(width: 8),
-                    Text(
-                      'Preview',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.bold,
+                CardEditActions(
+                  onSave: () async => _saveCard(context),
+                  onSaveAndAddNext: () async => _saveCard(context, addNew: true),
+                  isNewCard: widget.card?.id == null,
+                ),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: EdgeInsets.only(top: 8, bottom: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.visibility, size: 20, color: Colors.grey),
+                      SizedBox(width: 8),
+                      Text(
+                        'Preview',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.grey[700],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ListenableBuilder(
+                  listenable: textChangeNotifier,
+                  builder: (context, value) => Card(
+                    elevation: 4,
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 0,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: CardPreview(
+                        cardQuestion: cardQuestionTextController.text,
+                        cardAnswer: cardAnswerTextController.text,
+                        cardHint: cardHintTextController.text,
+                        questionImageAttached: questionImageAttached,
+                        explanationImageAttached: explanationImageAttached,
+                        cardId: cardId,
                       ),
                     ),
-                  ],
-                ),
-              ),
-              ListenableBuilder(
-                listenable: textChangeNotifier,
-                builder: (context, value) => Card(
-                  elevation: 4,
-                  margin: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 0,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: CardPreview(
-                      cardQuestion: cardQuestionTextController.text,
-                      cardAnswer: cardAnswerTextController.text,
-                      cardHint: cardHintTextController.text,
-                      questionImageAttached: questionImageAttached,
-                      explanationImageAttached: explanationImageAttached,
-                      cardId: cardId,
-                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
