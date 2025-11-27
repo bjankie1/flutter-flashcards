@@ -49,7 +49,7 @@ class ProvisionaryCardsReview extends ConsumerWidget {
       data: (data) => Column(
         children: [
           ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 600, maxHeight: 50),
+            constraints: BoxConstraints(maxWidth: 600, maxHeight: 80),
             child: ListView(
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               scrollDirection: Axis.horizontal,
@@ -57,13 +57,19 @@ class ProvisionaryCardsReview extends ConsumerWidget {
                   .asMap()
                   .entries
                   .map(
-                    (entry) => ProvisionaryCardChip(
+                    (entry) => ProvisionaryCardButton(
                       text: entry.value.text,
                       finalized: data.isCardCompleted(entry.value.id),
                       discarded: data.isCardDiscarded(entry.value.id),
                       active:
                           data.currentIndex == entry.key &&
                           data.isCardPending(entry.value.id),
+                      onTap: () {
+                        controller.setCurrentIndex(
+                          entry.key,
+                          context.cloudFunctions,
+                        );
+                      },
                       onDelete: () async {
                         await controller.discardCard(entry.key, entry.value);
                       },
@@ -164,87 +170,95 @@ class _NoProvisionaryCardsMessage extends ConsumerWidget {
   }
 }
 
-class ProvisionaryCardChip extends StatelessWidget {
+class ProvisionaryCardButton extends StatelessWidget {
   final String text;
   final bool finalized;
   final bool discarded;
   final bool active;
+  final VoidCallback onTap;
   final VoidCallback onDelete;
 
-  const ProvisionaryCardChip({
+  const ProvisionaryCardButton({
     super.key,
     required this.text,
     required this.finalized,
     required this.discarded,
     required this.active,
+    required this.onTap,
     required this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    Color backgroundColor;
+    Color textColor;
+    Color borderColor;
+
+    if (discarded) {
+      backgroundColor = colorScheme.errorContainer.withOpacity(0.3);
+      textColor = colorScheme.onErrorContainer;
+      borderColor = colorScheme.error;
+    } else if (finalized) {
+      backgroundColor = colorScheme.primaryContainer.withOpacity(0.3);
+      textColor = colorScheme.onPrimaryContainer;
+      borderColor = colorScheme.primary;
+    } else if (active) {
+      backgroundColor = colorScheme.primaryContainer;
+      textColor = colorScheme.onPrimaryContainer;
+      borderColor = colorScheme.primary;
+    } else {
+      backgroundColor = colorScheme.surfaceVariant;
+      textColor = colorScheme.onSurfaceVariant;
+      borderColor = colorScheme.outline;
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: Chip(
-        label: Text(
-          text,
-          style: TextStyle(
-            fontWeight: active ? FontWeight.w600 : FontWeight.normal,
-            color: _getTextColor(context),
+      child: Card(
+        elevation: active ? 4.0 : 1.0,
+        color: backgroundColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+          side: BorderSide(color: borderColor, width: active ? 2.0 : 1.0),
+        ),
+        child: InkWell(
+          onTap: finalized || discarded ? null : onTap,
+          borderRadius: BorderRadius.circular(12.0),
+          child: Container(
+            constraints: const BoxConstraints(minWidth: 100, maxWidth: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: Text(
+                    text,
+                    style: TextStyle(
+                      fontWeight: active ? FontWeight.bold : FontWeight.normal,
+                      color: textColor,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (!finalized && !discarded) ...[
+                  const SizedBox(width: 4),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: textColor, size: 18),
+                    onPressed: onDelete,
+                    constraints: const BoxConstraints(),
+                    padding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ],
+              ],
+            ),
           ),
         ),
-        deleteIcon: Icon(Icons.delete, color: _getTextColor(context), size: 18),
-        onDeleted: finalized || discarded ? null : onDelete,
-        backgroundColor: _getBackgroundColor(context),
-        side: BorderSide(
-          color: _getBorderColor(context),
-          width: active ? 2.0 : 1.0,
-        ),
-        elevation: active ? 4.0 : 1.0,
-        shadowColor: active
-            ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
-            : null,
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       ),
     );
-  }
-
-  Color _getBackgroundColor(BuildContext context) {
-    if (discarded) {
-      return Theme.of(context).colorScheme.errorContainer.withOpacity(0.3);
-    }
-    if (finalized) {
-      return Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3);
-    }
-    if (active) {
-      return Theme.of(context).colorScheme.primaryContainer;
-    }
-    return Theme.of(context).colorScheme.surfaceVariant;
-  }
-
-  Color _getTextColor(BuildContext context) {
-    if (discarded) {
-      return Theme.of(context).colorScheme.onErrorContainer;
-    }
-    if (finalized) {
-      return Theme.of(context).colorScheme.onPrimaryContainer;
-    }
-    if (active) {
-      return Theme.of(context).colorScheme.onPrimaryContainer;
-    }
-    return Theme.of(context).colorScheme.onSurfaceVariant;
-  }
-
-  Color _getBorderColor(BuildContext context) {
-    if (discarded) {
-      return Theme.of(context).colorScheme.error;
-    }
-    if (finalized) {
-      return Theme.of(context).colorScheme.primary;
-    }
-    if (active) {
-      return Theme.of(context).colorScheme.primary;
-    }
-    return Theme.of(context).colorScheme.outline;
   }
 }
 

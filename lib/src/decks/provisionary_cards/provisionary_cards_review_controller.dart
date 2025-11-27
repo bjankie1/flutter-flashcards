@@ -429,6 +429,36 @@ class ProvisionaryCardsReviewController
     }
   }
 
+  /// Sets the current card index
+  void setCurrentIndex(int index, [CloudFunctions? cloudFunctions]) {
+    final currentData = state.value;
+    if (currentData == null) return;
+
+    if (index >= 0 && index < currentData.provisionaryCards.length) {
+      final newCard = currentData.provisionaryCards[index];
+
+      // Use existing logic for setting up the new card state
+      final isQuestion = currentData.isQuestion;
+      final nextQuestionText = isQuestion ? newCard.text : '';
+      final nextAnswerText = isQuestion ? '' : newCard.text;
+
+      state = AsyncValue.data(
+        currentData.copyWith(
+          currentIndex: index,
+          questionText: nextQuestionText,
+          answerText: nextAnswerText,
+          explanationText: '',
+          fetchingSuggestion: false,
+          // Keep selected deck and double sided if they exist
+        ),
+      );
+
+      if (cloudFunctions != null && currentData.selectedDeckId != null) {
+        triggerGeneration(cloudFunctions);
+      }
+    }
+  }
+
   /// Calculates the next index to review
   int _calculateNextIndex(int totalCards, int currentIndex) {
     if (totalCards == 0) {
