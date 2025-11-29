@@ -56,76 +56,67 @@ class _DeckGeneratePageState extends ConsumerState<DeckGeneratePage> {
       title: Text(context.l10n.generateCards),
       child: CustomScrollView(
         slivers: [
-          SliverAppBar(
-            pinned: true,
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            automaticallyImplyLeading: false,
-            elevation: 2,
-            toolbarHeight: 140,
-            collapsedHeight: 140,
-            expandedHeight: 140,
-            flexibleSpace: Padding(
+          SliverToBoxAdapter(
+            child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 16.0,
                 vertical: 8.0,
               ),
-              child: SizedBox(
-                height: 124,
-                child: Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: _ContentInfoSection(
-                                state: state,
-                                deckId: widget.deckId,
-                                hasContent: hasContent,
-                                onShowContent: () =>
-                                    _showContentDialog(context, state),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            _ActionButtonsSection(
+              child: Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: _ContentInfoSection(
                               state: state,
+                              deckId: widget.deckId,
                               hasContent: hasContent,
-                              onShowInputSource: () =>
-                                  _showInputSourceDialog(context, ref),
-                              onGenerateFlashcards: () =>
-                                  _generateFlashcards(context, ref),
-                              onClearContent: () {
-                                final controller = ref.read(
-                                  generateControllerProvider.notifier,
-                                );
-                                controller.clearContent();
-                              },
-                              onTestFilePicker: () {
-                                final controller = ref.read(
-                                  generateControllerProvider.notifier,
-                                );
-                                controller.testFilePicker();
-                              },
+                              onShowContent: () =>
+                                  _showContentDialog(context, state),
                             ),
-                          ],
-                        ),
-                        if (state.error != null) ...[
-                          const SizedBox(height: 16),
-                          _ErrorMessageContainer(state: state),
+                          ),
+                          const SizedBox(width: 12),
+                          _ActionButtonsSection(
+                            state: state,
+                            hasContent: hasContent,
+                            onShowInputSource: () =>
+                                _showInputSourceDialog(context, ref),
+                            onGenerateFlashcards: () =>
+                                _generateFlashcards(context, ref),
+                            onClearContent: () {
+                              final controller = ref.read(
+                                generateControllerProvider.notifier,
+                              );
+                              controller.clearContent();
+                            },
+                            onTestFilePicker: () {
+                              final controller = ref.read(
+                                generateControllerProvider.notifier,
+                              );
+                              controller.testFilePicker();
+                            },
+                          ),
                         ],
-                        if (state.isGeneratingFlashcards) ...[
-                          const SizedBox(height: 16),
-                          const Center(child: CircularProgressIndicator()),
-                        ],
+                      ),
+                      if (state.error != null) ...[
+                        const SizedBox(height: 16),
+                        _ErrorMessageContainer(state: state),
                       ],
-                    ),
+                      if (state.isGeneratingFlashcards) ...[
+                        const SizedBox(height: 16),
+                        const Center(child: CircularProgressIndicator()),
+                      ],
+                    ],
                   ),
                 ),
               ),

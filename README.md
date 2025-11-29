@@ -24,6 +24,25 @@
   - Revoke access to shared decks - Remove access when collaboration is no longer needed.
   - View list of users with access to your decks - Keep track of who has access to your learning materials.
 
+### Main Landing Page (Decks)
+- **Overview of all decks** - See all your flashcard collections in one place, organized by groups.
+- **Deck Groups**:
+    - **Collapsible/expandable groups** - Organize related decks together.
+    - **Editable group names** - Rename groups directly from the landing page.
+    - **Review Group button** - Quickly start reviewing all cards in a group when cards are available.
+- **Deck Items within groups**:
+    - **Mastery progress bar** - Visual indicator of your learning progress for each deck.
+    - **Deck name and info** - Shows deck name and number of cards.
+    - **Cards to review count** - Shows how many cards are ready for review.
+    - **Context menu options**:
+        - **Add Card** - Quickly add a new card to the deck.
+        - **Add to Group** - Move the deck to a different group.
+        - **Generate with AI** - Open the card generation page for this deck.
+        - **Share** - Open sharing options for the deck.
+        - **Delete** - Remove the deck.
+- **Quick access to adding decks** - Use the prominent floating action button to quickly create new decks.
+- **Responsive layout** - The interface adapts to different screen sizes, ensuring a consistent experience on mobile and desktop.
+
 ### Card Creation
 - Create single-sided and double-sided cards - Choose between simple question-answer cards or bidirectional learning cards.
 - Generate cards from text input - Paste any text content and let the AI analyze it to create relevant flashcards, extracting key concepts and their explanations.

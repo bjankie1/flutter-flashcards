@@ -124,6 +124,13 @@ const GenerateFlashCardsInputSchema = z.object({
   text: z.string().describe("The text content to generate flashcards from"),
   numberOfCards: z.number().optional().describe("Number of flashcards to generate (default: 5)"),
   difficulty: z.enum(["easy", "medium", "hard"]).optional().describe("Difficulty level of the flashcards"),
+  frontLanguage: z.string().optional().describe("Language for the front of the card"),
+  backLanguage: z.string().optional().describe("Language for the back of the card"),
+  deckName: z.string().optional().describe("Name of the deck"),
+  deckDescription: z.string().optional().describe("Description of the deck"),
+  frontCardDescription: z.string().optional().describe("Guideline for the front of the card"),
+  backCardDescription: z.string().optional().describe("Guideline for the back of the card"),
+  explanationDescription: z.string().optional().describe("Guideline for the explanation"),
 });
 
 // Define Output Schema (using Zod, matching the prompt's output schema)
@@ -142,36 +149,26 @@ export const flashcardGeneratorFlow = ai.defineFlow(
     outputSchema: GenerateFlashCardsOutputSchema,
   },
   async (input) => {
-    // Render the prompt with the input data
-    const rendered = await generateFlashCardsFromTextPrompt.render({
+    // Call the prompt with the input data
+    const output = await generateFlashCardsFromTextPrompt({
       text: input.text,
       numberOfCards: input.numberOfCards || 5,
       difficulty: input.difficulty || "medium",
+      frontLanguage: input.frontLanguage || "English",
+      backLanguage: input.backLanguage || "English",
+      deckName: input.deckName || "",
+      deckDescription: input.deckDescription || "",
+      frontCardDescription: input.frontCardDescription || "",
+      backCardDescription: input.backCardDescription || "",
+      explanationDescription: input.explanationDescription || "",
     });
 
-    // Generate the flashcards using the AI model
-    const { output } = await ai.generate({
-      messages: rendered.messages, // Pass the fully rendered messages array
-      config: {
-        temperature: 0.7,          // Moderate temperature for creative but consistent responses
-      },
-    });
-
-    // Parse the response to extract flashcards
-    const responseText = output.text || "";
-
-    // Simple parsing: look for question/answer pairs
-    const flashcards = [];
-    const lines = responseText.split('\n').filter((line: string) => line.trim() !== '');
-
-    for (let i = 0; i < lines.length; i += 2) {
-      if (i + 1 < lines.length) {
-        flashcards.push({
-          question: lines[i].replace(/^Q[:\s]*/, '').trim(),
-          answer: lines[i + 1].replace(/^A[:\s]*/, '').trim(),
-        });
-      }
-    }
+    // Map the output from front/back to question/answer for the Flutter app
+    const flashcards = (output as any).cards.map((card: any) => ({
+      question: card.front,
+      answer: card.back,
+      explanation: "", // Prompt doesn't currently generate explanations
+    }));
 
     return {
       flashcards: flashcards.slice(0, input.numberOfCards || 5),
