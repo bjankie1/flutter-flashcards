@@ -24,78 +24,99 @@ class DeckListItem extends StatelessWidget {
     final isWide = context.isWideLayout;
 
     if (isWide) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 40,
-              height: 40,
-              child: DeckMasteryProgress(deck: deck, isWide: true),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: ListTile(
-                dense: true,
-                isThreeLine: true,
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  deck.name,
-                  style: context.theme.textTheme.titleMedium,
-                  overflow: TextOverflow.clip,
-                  softWrap: false,
-                ),
-                subtitle: Row(children: [DeckInfoWidget(deck: deck)]),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FittedBox(child: DeckCardsToReviewWidget(deck: deck)),
-                    const SizedBox(width: 8),
-                    DeckContextMenu(deck: deck),
-                  ],
-                ),
-                onTap: () async {
-                  await context.push('/decks/${deck.id}');
-                },
-              ),
+      return Container(
+        decoration: BoxDecoration(
+          color: context.theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 48,
+                height: 48,
+                child: DeckMasteryProgress(deck: deck, isWide: true),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: ListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    deck.name,
+                    style: context.theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: DeckInfoWidget(deck: deck),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FittedBox(child: DeckCardsToReviewWidget(deck: deck)),
+                      const SizedBox(width: 8),
+                      DeckContextMenu(deck: deck),
+                    ],
+                  ),
+                  onTap: () async {
+                    await context.push('/decks/${deck.id}');
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       );
     } else {
-      final tile = ListTile(
-        dense: true,
-        isThreeLine: true,
-        title: Text(
-          deck.name,
-          style: context.theme.textTheme.titleMedium,
-          overflow: TextOverflow.clip,
-          softWrap: false,
-        ),
-        subtitle: Row(children: [DeckInfoWidget(deck: deck)]),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FittedBox(child: DeckCardsToReviewWidget(deck: deck)),
-            const SizedBox(width: 8),
-            DeckContextMenu(deck: deck),
+      return Container(
+        decoration: BoxDecoration(
+          color: context.theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
-        onTap: () async {
-          await context.push('/decks/${deck.id}');
-        },
-      );
-      return Stack(
-        children: [
-          tile,
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: DeckMasteryProgress(deck: deck, isWide: false),
+        child: ListTile(
+          dense: true,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          leading: SizedBox(
+            width: 40,
+            height: 40,
+            child: DeckMasteryProgress(deck: deck, isWide: true),
           ),
-        ],
+          title: Text(
+            deck.name,
+            style: context.theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: DeckInfoWidget(deck: deck),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FittedBox(child: DeckCardsToReviewWidget(deck: deck)),
+              const SizedBox(width: 4),
+              DeckContextMenu(deck: deck),
+            ],
+          ),
+          onTap: () async {
+            await context.push('/decks/${deck.id}');
+          },
+        ),
       );
     }
   }

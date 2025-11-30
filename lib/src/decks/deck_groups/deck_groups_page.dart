@@ -22,6 +22,8 @@ class DeckGroupsPage extends ConsumerWidget {
         onPressed: () => _showAddDeckDialog(context, ref, null),
         label: Text(context.l10n.addDeck),
         icon: const Icon(Icons.add),
+        backgroundColor: context.theme.colorScheme.primaryContainer,
+        foregroundColor: context.theme.colorScheme.onPrimaryContainer,
       ),
       child: const Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.0),

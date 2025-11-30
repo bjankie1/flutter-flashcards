@@ -118,21 +118,18 @@ class DeckGroupsWidget extends ConsumerWidget {
     if (deckIds.isEmpty) return const SizedBox.shrink();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
             for (int i = 0; i < deckIds.length; i++) ...[
-              if (i > 0) const Divider(height: 1),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                  vertical: 4.0,
-                ),
-                child: DeckListItemById(deckId: deckIds[i]),
-              ),
+              if (i > 0) const SizedBox(height: 8),
+              DeckListItemById(deckId: deckIds[i]),
             ],
           ],
         ),

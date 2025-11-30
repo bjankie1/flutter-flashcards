@@ -29,7 +29,10 @@ class DeckGroupWidget extends ConsumerWidget {
           Expanded(
             child: custom.EditableText(
               text: deckGroup.name,
-              style: context.textTheme.headlineSmall,
+              style: context.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
               onTextChanged: (value) {
                 ref
                     .read(deckGroupsControllerProvider.notifier)
@@ -83,12 +86,12 @@ class DeckGroupReviewButton extends ConsumerWidget {
         final count = countStat.values.fold(0, (p, c) => p + c);
         return Visibility(
           visible: count > 0,
-          child: ElevatedButton.icon(
+          child: FilledButton.icon(
             onPressed: () async =>
                 await context.push('/learn?deckGroupId=${deckGroup.id}'),
-            icon: const Icon(Icons.play_circle_fill),
+            icon: const Icon(Icons.play_arrow_rounded),
             label: Text(context.l10n.cardsToReview(count)),
-            style: ElevatedButton.styleFrom(
+            style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               textStyle: context.textTheme.labelLarge,
             ),

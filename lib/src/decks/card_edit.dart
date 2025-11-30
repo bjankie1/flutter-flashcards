@@ -159,12 +159,12 @@ class _CardEditState extends State<CardEdit> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Icon(Icons.visibility, size: 20, color: Colors.grey),
+                      Icon(Icons.visibility, size: 20, color: Theme.of(context).colorScheme.primary),
                       SizedBox(width: 8),
                       Text(
                         'Preview',
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.grey[700],
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -173,8 +173,22 @@ class _CardEditState extends State<CardEdit> {
                 ),
                 ListenableBuilder(
                   listenable: textChangeNotifier,
-                  builder: (context, value) => Card(
-                    elevation: 4,
+                  builder: (context, value) => Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                        width: 1,
+                      ),
+                    ),
                     margin: const EdgeInsets.symmetric(
                       vertical: 16,
                       horizontal: 0,
@@ -210,7 +224,11 @@ class _CardEditState extends State<CardEdit> {
         decoration: InputDecoration(
           hintText: context.l10n.answerHint,
           labelText: context.l10n.answerLabel,
-          border: OutlineInputBorder(),
+          filled: true,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
         ),
       ),
     );
@@ -312,7 +330,11 @@ class MarkdownWithImageInput extends StatelessWidget {
             decoration: InputDecoration(
               hintText: hintText,
               labelText: labelText,
-              border: OutlineInputBorder(),
+              filled: true,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
             ),
           ),
         ),
@@ -380,11 +402,21 @@ class CardOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(context.l10n.cardOptionDoubleSided),
+          Text(
+            context.l10n.cardOptionDoubleSided,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           FocusTraversalOrder(
             order: const NumericFocusOrder(0),
             child: Switch(value: value, onChanged: onChanged),
@@ -423,7 +455,7 @@ class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          ElevatedButton.icon(
+          FilledButton.tonalIcon(
             onPressed: _loadingType != null
                 ? null
                 : () => processLoading(includeHint: false),
@@ -439,7 +471,7 @@ class _GenerateAnswerButtonState extends State<_GenerateAnswerButton> {
             ),
           ),
           const SizedBox(width: 8),
-          ElevatedButton.icon(
+          FilledButton.tonalIcon(
             onPressed: _loadingType != null
                 ? null
                 : () => processLoading(includeHint: true),
