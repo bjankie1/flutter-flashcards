@@ -18,10 +18,14 @@ class SignupState {
   }
 }
 
-class SignupController extends StateNotifier<SignupState> {
-  final FirebaseAuthService _authService;
+class SignupController extends Notifier<SignupState> {
+  late final FirebaseAuthService _authService;
 
-  SignupController(this._authService) : super(const SignupState());
+  @override
+  SignupState build() {
+    _authService = FirebaseAuthService();
+    return const SignupState();
+  }
 
   Future<void> signUpWithEmail(String email, String password) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
@@ -45,6 +49,5 @@ class SignupController extends StateNotifier<SignupState> {
 }
 
 final signupControllerProvider =
-    StateNotifierProvider<SignupController, SignupState>(
-      (ref) => SignupController(FirebaseAuthService()),
+    NotifierProvider<SignupController, SignupState>(SignupController.new,
     );

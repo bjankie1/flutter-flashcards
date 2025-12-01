@@ -6,25 +6,63 @@ part of 'deck_groups_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$deckGroupsControllerHash() =>
-    r'c5504ff6ebacef201e9bce00bb16769d38bb741e';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+/// Controller for managing deck groups
+
+@ProviderFor(DeckGroupsController)
+const deckGroupsControllerProvider = DeckGroupsControllerProvider._();
 
 /// Controller for managing deck groups
-///
-/// Copied from [DeckGroupsController].
-@ProviderFor(DeckGroupsController)
-final deckGroupsControllerProvider = AutoDisposeAsyncNotifierProvider<
-    DeckGroupsController, List<model.DeckGroup>>.internal(
-  DeckGroupsController.new,
-  name: r'deckGroupsControllerProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$deckGroupsControllerHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final class DeckGroupsControllerProvider
+    extends
+        $StreamNotifierProvider<DeckGroupsController, List<model.DeckGroup>> {
+  /// Controller for managing deck groups
+  const DeckGroupsControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'deckGroupsControllerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-typedef _$DeckGroupsController
-    = AutoDisposeAsyncNotifier<List<model.DeckGroup>>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+  @override
+  String debugGetCreateSourceHash() => _$deckGroupsControllerHash();
+
+  @$internal
+  @override
+  DeckGroupsController create() => DeckGroupsController();
+}
+
+String _$deckGroupsControllerHash() =>
+    r'fbf23f26ced7a90e2ee8d49fe638ea55ab96bd9d';
+
+/// Controller for managing deck groups
+
+abstract class _$DeckGroupsController
+    extends $StreamNotifier<List<model.DeckGroup>> {
+  Stream<List<model.DeckGroup>> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref =
+        this.ref
+            as $Ref<AsyncValue<List<model.DeckGroup>>, List<model.DeckGroup>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<List<model.DeckGroup>>,
+                List<model.DeckGroup>
+              >,
+              AsyncValue<List<model.DeckGroup>>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

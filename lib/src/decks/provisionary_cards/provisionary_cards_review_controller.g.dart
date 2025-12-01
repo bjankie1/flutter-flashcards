@@ -6,26 +6,81 @@ part of 'provisionary_cards_review_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$provisionaryCardsReviewControllerHash() =>
-    r'90cd4a117d411c0a54ad6efc6298275d7e259479';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+/// Controller for managing provisionary cards review operations
+
+@ProviderFor(ProvisionaryCardsReviewController)
+const provisionaryCardsReviewControllerProvider =
+    ProvisionaryCardsReviewControllerProvider._();
 
 /// Controller for managing provisionary cards review operations
-///
-/// Copied from [ProvisionaryCardsReviewController].
-@ProviderFor(ProvisionaryCardsReviewController)
-final provisionaryCardsReviewControllerProvider = AutoDisposeNotifierProvider<
-    ProvisionaryCardsReviewController,
-    AsyncValue<ProvisionaryCardsReviewData>>.internal(
-  ProvisionaryCardsReviewController.new,
-  name: r'provisionaryCardsReviewControllerProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$provisionaryCardsReviewControllerHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final class ProvisionaryCardsReviewControllerProvider
+    extends
+        $NotifierProvider<
+          ProvisionaryCardsReviewController,
+          AsyncValue<ProvisionaryCardsReviewData>
+        > {
+  /// Controller for managing provisionary cards review operations
+  const ProvisionaryCardsReviewControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'provisionaryCardsReviewControllerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-typedef _$ProvisionaryCardsReviewController
-    = AutoDisposeNotifier<AsyncValue<ProvisionaryCardsReviewData>>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+  @override
+  String debugGetCreateSourceHash() =>
+      _$provisionaryCardsReviewControllerHash();
+
+  @$internal
+  @override
+  ProvisionaryCardsReviewController create() =>
+      ProvisionaryCardsReviewController();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<ProvisionaryCardsReviewData> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<AsyncValue<ProvisionaryCardsReviewData>>(value),
+    );
+  }
+}
+
+String _$provisionaryCardsReviewControllerHash() =>
+    r'8f3afb2e144535e65c90585a2001b876df7d017b';
+
+/// Controller for managing provisionary cards review operations
+
+abstract class _$ProvisionaryCardsReviewController
+    extends $Notifier<AsyncValue<ProvisionaryCardsReviewData>> {
+  AsyncValue<ProvisionaryCardsReviewData> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<ProvisionaryCardsReviewData>,
+              AsyncValue<ProvisionaryCardsReviewData>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<ProvisionaryCardsReviewData>,
+                AsyncValue<ProvisionaryCardsReviewData>
+              >,
+              AsyncValue<ProvisionaryCardsReviewData>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

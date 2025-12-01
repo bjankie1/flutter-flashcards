@@ -157,7 +157,7 @@ class ProvisionaryCardsReviewController
 
 
       // Preserve current context before loading, but handle uninitialized state
-      final currentData = state.valueOrNull;
+      final currentData = state.value;
       final lastDeckId = currentData?.lastDeckId;
       final doubleSided = currentData?.doubleSided ?? true;
 
@@ -214,7 +214,7 @@ class ProvisionaryCardsReviewController
       if (error.toString().contains('User not logged in') ||
           error.toString().contains('not logged')) {
 
-        final currentData = state.valueOrNull;
+        final currentData = state.value;
         final lastDeckId = currentData?.lastDeckId;
         final doubleSided = currentData?.doubleSided ?? true;
 

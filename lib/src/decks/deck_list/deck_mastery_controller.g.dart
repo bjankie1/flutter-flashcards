@@ -6,184 +6,128 @@ part of 'deck_mastery_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$deckMasteryControllerHash() =>
-    r'0dba1d92484a835dd1ff632ecbc9ffbf13c72993';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-abstract class _$DeckMasteryController
-    extends BuildlessAutoDisposeNotifier<AsyncValue<Map<CardMastery, int>>> {
-  late final String deckId;
-
-  AsyncValue<Map<CardMastery, int>> build(
-    String deckId,
-  );
-}
-
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 /// Controller for managing deck mastery data
-///
-/// Copied from [DeckMasteryController].
+
 @ProviderFor(DeckMasteryController)
-const deckMasteryControllerProvider = DeckMasteryControllerFamily();
+const deckMasteryControllerProvider = DeckMasteryControllerFamily._();
 
 /// Controller for managing deck mastery data
-///
-/// Copied from [DeckMasteryController].
-class DeckMasteryControllerFamily
-    extends Family<AsyncValue<Map<CardMastery, int>>> {
+final class DeckMasteryControllerProvider
+    extends
+        $NotifierProvider<
+          DeckMasteryController,
+          AsyncValue<Map<CardMastery, int>>
+        > {
   /// Controller for managing deck mastery data
-  ///
-  /// Copied from [DeckMasteryController].
-  const DeckMasteryControllerFamily();
+  const DeckMasteryControllerProvider._({
+    required DeckMasteryControllerFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'deckMasteryControllerProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
-  /// Controller for managing deck mastery data
-  ///
-  /// Copied from [DeckMasteryController].
-  DeckMasteryControllerProvider call(
-    String deckId,
-  ) {
-    return DeckMasteryControllerProvider(
-      deckId,
-    );
+  @override
+  String debugGetCreateSourceHash() => _$deckMasteryControllerHash();
+
+  @override
+  String toString() {
+    return r'deckMasteryControllerProvider'
+        ''
+        '($argument)';
   }
 
+  @$internal
   @override
-  DeckMasteryControllerProvider getProviderOverride(
-    covariant DeckMasteryControllerProvider provider,
-  ) {
-    return call(
-      provider.deckId,
-    );
-  }
+  DeckMasteryController create() => DeckMasteryController();
 
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'deckMasteryControllerProvider';
-}
-
-/// Controller for managing deck mastery data
-///
-/// Copied from [DeckMasteryController].
-class DeckMasteryControllerProvider extends AutoDisposeNotifierProviderImpl<
-    DeckMasteryController, AsyncValue<Map<CardMastery, int>>> {
-  /// Controller for managing deck mastery data
-  ///
-  /// Copied from [DeckMasteryController].
-  DeckMasteryControllerProvider(
-    String deckId,
-  ) : this._internal(
-          () => DeckMasteryController()..deckId = deckId,
-          from: deckMasteryControllerProvider,
-          name: r'deckMasteryControllerProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$deckMasteryControllerHash,
-          dependencies: DeckMasteryControllerFamily._dependencies,
-          allTransitiveDependencies:
-              DeckMasteryControllerFamily._allTransitiveDependencies,
-          deckId: deckId,
-        );
-
-  DeckMasteryControllerProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.deckId,
-  }) : super.internal();
-
-  final String deckId;
-
-  @override
-  AsyncValue<Map<CardMastery, int>> runNotifierBuild(
-    covariant DeckMasteryController notifier,
-  ) {
-    return notifier.build(
-      deckId,
-    );
-  }
-
-  @override
-  Override overrideWith(DeckMasteryController Function() create) {
-    return ProviderOverride(
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<Map<CardMastery, int>> value) {
+    return $ProviderOverride(
       origin: this,
-      override: DeckMasteryControllerProvider._internal(
-        () => create()..deckId = deckId,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        deckId: deckId,
+      providerOverride: $SyncValueProvider<AsyncValue<Map<CardMastery, int>>>(
+        value,
       ),
     );
   }
 
   @override
-  AutoDisposeNotifierProviderElement<DeckMasteryController,
-      AsyncValue<Map<CardMastery, int>>> createElement() {
-    return _DeckMasteryControllerProviderElement(this);
-  }
-
-  @override
   bool operator ==(Object other) {
-    return other is DeckMasteryControllerProvider && other.deckId == deckId;
+    return other is DeckMasteryControllerProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, deckId.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-mixin DeckMasteryControllerRef
-    on AutoDisposeNotifierProviderRef<AsyncValue<Map<CardMastery, int>>> {
-  /// The parameter `deckId` of this provider.
-  String get deckId;
-}
+String _$deckMasteryControllerHash() =>
+    r'0dba1d92484a835dd1ff632ecbc9ffbf13c72993';
 
-class _DeckMasteryControllerProviderElement
-    extends AutoDisposeNotifierProviderElement<DeckMasteryController,
-        AsyncValue<Map<CardMastery, int>>> with DeckMasteryControllerRef {
-  _DeckMasteryControllerProviderElement(super.provider);
+/// Controller for managing deck mastery data
+
+final class DeckMasteryControllerFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          DeckMasteryController,
+          AsyncValue<Map<CardMastery, int>>,
+          AsyncValue<Map<CardMastery, int>>,
+          AsyncValue<Map<CardMastery, int>>,
+          String
+        > {
+  const DeckMasteryControllerFamily._()
+    : super(
+        retry: null,
+        name: r'deckMasteryControllerProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Controller for managing deck mastery data
+
+  DeckMasteryControllerProvider call(String deckId) =>
+      DeckMasteryControllerProvider._(argument: deckId, from: this);
 
   @override
-  String get deckId => (origin as DeckMasteryControllerProvider).deckId;
+  String toString() => r'deckMasteryControllerProvider';
 }
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+
+/// Controller for managing deck mastery data
+
+abstract class _$DeckMasteryController
+    extends $Notifier<AsyncValue<Map<CardMastery, int>>> {
+  late final _$args = ref.$arg as String;
+  String get deckId => _$args;
+
+  AsyncValue<Map<CardMastery, int>> build(String deckId);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build(_$args);
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<Map<CardMastery, int>>,
+              AsyncValue<Map<CardMastery, int>>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<Map<CardMastery, int>>,
+                AsyncValue<Map<CardMastery, int>>
+              >,
+              AsyncValue<Map<CardMastery, int>>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

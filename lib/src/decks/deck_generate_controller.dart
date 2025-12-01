@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:meta/meta.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import '../services/gemini_service.dart';
@@ -72,15 +73,24 @@ class GenerateState {
   }
 }
 
-class GenerateController extends StateNotifier<GenerateState> {
-  final GeminiService _geminiService;
-  final GoogleDocReader _docReader;
+final geminiServiceProvider = Provider<GeminiService>((ref) {
+  return GeminiService(useEmulator: false);
+});
+
+final googleDocReaderProvider = Provider<GoogleDocReader>((ref) {
+  return GoogleDocReader();
+});
+
+class GenerateController extends Notifier<GenerateState> {
   final Logger _log = Logger();
 
-  GenerateController({GeminiService? geminiService, GoogleDocReader? docReader})
-    : _geminiService = geminiService ?? GeminiService(useEmulator: false),
-      _docReader = docReader ?? GoogleDocReader(),
-      super(GenerateState());
+  @override
+  GenerateState build() {
+    return GenerateState();
+  }
+
+  GeminiService get _geminiService => ref.read(geminiServiceProvider);
+  GoogleDocReader get _docReader => ref.read(googleDocReaderProvider);
 
   Future<void> setTextContent(String text) async {
     if (text.trim().isEmpty) {
@@ -360,6 +370,9 @@ class GenerateController extends StateNotifier<GenerateState> {
     state = GenerateState();
   }
 
+  @visibleForTesting
+  set debugState(GenerateState newState) => state = newState;
+
   // Test method to check if file picker works at all
   Future<void> testFilePicker() async {
     _log.i('Testing file picker functionality...');
@@ -379,6 +392,4 @@ class GenerateController extends StateNotifier<GenerateState> {
 }
 
 final generateControllerProvider =
-    StateNotifierProvider<GenerateController, GenerateState>((ref) {
-      return GenerateController();
-    });
+    NotifierProvider<GenerateController, GenerateState>(GenerateController.new);

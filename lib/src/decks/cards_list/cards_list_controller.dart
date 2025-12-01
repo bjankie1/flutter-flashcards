@@ -55,6 +55,19 @@ class CardsListController extends _$CardsListController {
     );
     _deckId = deckId;
     _loadCards();
+
+    // Listen to repository changes
+    final repository = ref.read(cardsRepositoryProvider);
+    void listener() {
+      _log.d('Cards repository updated, refreshing cards list');
+      _loadCards();
+    }
+
+    repository.cardsUpdated.addListener(listener);
+    ref.onDispose(() {
+      repository.cardsUpdated.removeListener(listener);
+    });
+
     return const AsyncValue.loading();
   }
 

@@ -24,11 +24,11 @@ dependencies:
     sdk: flutter
   english_words: ^4.0.0
   provider: ^6.1.5
-  flutter_riverpod: ^2.5.1
-  riverpod_annotation: ^2.3.5
+  flutter_riverpod: ^3.0.3
+  riverpod_annotation: ^3.0.3
   flutter_tex: ^5.1.9
   firebase_ui_auth: ^3.0.1
-  go_router: ^16.1.0
+  go_router: ^17.0.0
   google_sign_in: ^6.3.0
   firebase_ui_oauth_google: ^2.0.1
   logger: ^2.6.0
@@ -37,8 +37,8 @@ dependencies:
   flutter_math_fork: ^0.7.4
   fsrs: ^2.0.1
   intl: ^0.20.2
-  intl_translation: ^0.20.0
-  flex_seed_scheme: ^3.5.1
+  intl_translation: ^0.21.0
+  flex_seed_scheme: ^4.0.1
   flex_color_scheme: ^8.3.0
   random_color_scheme: ^0.1.4
   flag: ^7.0.0
@@ -56,23 +56,25 @@ dependencies:
   googleapis: ^15.0.0
   extension_google_sign_in_as_googleapis_auth: ^2.0.13
   firebase_ai: ^3.4.0
-  freezed_annotation: ^2.4.4
+  freezed_annotation: ^3.1.0
+  rxdart: ^0.28.0
+  meta: ^1.11.0
+  flutter_driver:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
-    sdk: flutter
-  flutter_driver:
     sdk: flutter
 
   flutter_lints: ^6.0.0
   build_runner: ^2.4.0
   json_serializable: ^6.8.0
-  freezed: ^2.5.2
+  freezed: ^3.2.3
   fake_cloud_firestore: ^4.0.0
   firebase_auth_mocks: ^0.15.1
   mocktail: ^1.0.4
   flutter_launcher_icons: ^0.14.3
-  riverpod_generator: ^2.4.0
+  riverpod_generator: ^3.0.3
 
 flutter:
   uses-material-design: true

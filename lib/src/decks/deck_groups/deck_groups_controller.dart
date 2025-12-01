@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../model/cards.dart' as model;
 import '../deck_list/decks_controller.dart';
@@ -13,99 +15,22 @@ class DeckGroupsController extends _$DeckGroupsController {
   final Logger _log = Logger();
 
   @override
-  Future<List<model.DeckGroup>> build() async {
+  Stream<List<model.DeckGroup>> build() {
     _log.d('DeckGroupsController build() called');
-
-    // Wait for cache services to be ready
-    final cacheReady = ref.watch(cacheServicesReadyProvider);
-    _log.d('Cache services ready: $cacheReady');
-
-    if (!cacheReady) {
-      _log.d('Cache services not ready yet, returning empty list');
-      return [];
-    }
-
-    final deckGroupCacheAsync = ref.watch(deckGroupCacheServiceProvider);
-    if (!deckGroupCacheAsync.hasValue) {
-      _log.d('DeckGroupCacheService not ready yet');
-      return [];
-    }
-
-    final deckGroupCache = deckGroupCacheAsync.value;
-    if (deckGroupCache == null) {
-      _log.w('DeckGroupCacheService not available');
-      return [];
-    }
-
-    // Get all groups from cache
-    final allGroups = deckGroupCache.getAllGroups().toList();
-    _log.d('Total groups in cache: ${allGroups.length}');
-
-    for (final group in allGroups) {
-      _log.d(
-        'Group: ${group.name} (id: ${group.id}), decks: ${group.decks?.length ?? 0}',
-      );
-    }
-
-    // Get deck cache to cross-reference deck IDs
-    final deckCacheAsync = ref.watch(deckCacheServiceProvider);
-    List<model.DeckGroup> nonEmptyGroups;
-
-    if (deckCacheAsync.hasValue && deckCacheAsync.value != null) {
-      final deckCache = deckCacheAsync.value!;
-      final validDeckIds = deckCache
-          .getAllDecks()
-          .map((deck) => deck.id!)
-          .toList();
-      _log.d('Valid deck IDs from cache: ${validDeckIds.length}');
-
-      // Clean up orphaned deck references
-      final cleanedGroups = deckGroupCache.cleanupOrphanedDeckReferences(
-        validDeckIds,
-      );
-
-      // Persist cleaned groups to Firebase if any were updated
-      if (cleanedGroups.isNotEmpty) {
-        _log.d('Persisting ${cleanedGroups.length} cleaned groups to Firebase');
-        try {
-          final repository = ref.read(cardsRepositoryProvider);
-          for (final group in cleanedGroups) {
-            await repository.updateDeckGroup(group);
-            _log.d('Persisted cleaned group: ${group.name} (${group.id})');
-          }
-        } catch (error, stackTrace) {
-          _log.e(
-            'Error persisting cleaned groups',
-            error: error,
-            stackTrace: stackTrace,
-          );
-          // Continue with the operation even if persistence fails
-        }
-      }
-
-      // Get updated groups after cleanup
-      final updatedGroups = deckGroupCache.getAllGroups().toList();
-      _log.d('Groups after cleanup: ${updatedGroups.length}');
-
-      // Filter out groups that have no decks using the decks property
-      nonEmptyGroups = updatedGroups
-          .where((group) => group.decks?.isNotEmpty ?? false)
-          .toList();
-    } else {
-      _log.w(
-        'DeckCacheService not available, skipping orphaned reference cleanup',
-      );
-
-      // Filter out groups that have no decks using the decks property
-      nonEmptyGroups = allGroups
-          .where((group) => group.decks?.isNotEmpty ?? false)
-          .toList();
-    }
-
-    _log.d(
-      'Successfully loaded ${nonEmptyGroups.length} non-empty deck groups out of ${allGroups.length} total from cache',
+    final repository = ref.watch(cardsRepositoryProvider);
+    return Rx.combineLatest2(
+      repository.watchDeckGroups(),
+      repository.watchDecks(),
+      (List<model.DeckGroup> groups, List<model.Deck> decks) {
+        _log.d(
+          'Received ${groups.length} groups and ${decks.length} decks from stream',
+        );
+        // Filter out groups that have no decks using the decks property
+        return groups
+            .where((group) => group.decks?.isNotEmpty ?? false)
+            .toList();
+      },
     );
-    return nonEmptyGroups;
   }
 
   Future<void> refresh() async {

@@ -31,6 +31,11 @@ class DeckGroupCacheService {
     }
 
     _log.d('Initializing DeckGroupCacheService for user: $_userId');
+    final deckGroupsCollection = _firestore
+        .collection('deckGroups')
+        .doc(_userId)
+        .collection('userDeckGroups');
+    _log.d('Listening to deck groups collection: ${deckGroupsCollection.path}');
 
     try {
       // Load all existing deck groups
@@ -98,15 +103,22 @@ class DeckGroupCacheService {
           final group = change.doc.data();
           if (group == null) continue;
 
+          _log.i(
+            '!!!CACHE_DIAGNOSTICS!!! Firestore event received: ${change.type} for group ${group.id}',
+          );
           switch (change.type) {
             case DocumentChangeType.added:
             case DocumentChangeType.modified:
               _addGroupToCache(group);
-              _log.d('DeckGroup updated in cache: ${group.id}');
+              _log.i(
+                '!!!CACHE_DIAGNOSTICS!!! DeckGroup updated in cache: ${group.id}',
+              );
               break;
             case DocumentChangeType.removed:
               _removeGroupFromCache(group);
-              _log.d('DeckGroup removed from cache: ${group.id}');
+              _log.i(
+                '!!!CACHE_DIAGNOSTICS!!! DeckGroup removed from cache: ${group.id}',
+              );
               break;
           }
         }

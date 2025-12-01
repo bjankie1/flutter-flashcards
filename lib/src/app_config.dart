@@ -25,6 +25,20 @@ class AppConfig {
     return false;
   }
 
+  /// Auto-login email for emulator
+  static String? get autoLoginEmail {
+    if (kReleaseMode) return null;
+    const email = String.fromEnvironment('AUTO_LOGIN_EMAIL');
+    return email.isEmpty ? null : email;
+  }
+
+  /// Auto-login password for emulator
+  static String? get autoLoginPassword {
+    if (kReleaseMode) return null;
+    const password = String.fromEnvironment('AUTO_LOGIN_PASSWORD');
+    return password.isEmpty ? null : password;
+  }
+
   /// Whether to use Firebase emulator
   static bool get useFirebaseEmulator {
     if (kReleaseMode) return false;

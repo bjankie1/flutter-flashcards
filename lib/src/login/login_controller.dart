@@ -69,8 +69,9 @@ class LoginState {
   }
 }
 
-class LoginController extends StateNotifier<LoginState> {
-  LoginController() : super(const LoginState());
+class LoginController extends Notifier<LoginState> {
+  @override
+  LoginState build() => const LoginState();
 
   Future<void> signInWithEmail(String email, String password) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
@@ -102,6 +103,6 @@ class LoginController extends StateNotifier<LoginState> {
 }
 
 final loginControllerProvider =
-    StateNotifierProvider<LoginController, LoginState>(
-      (ref) => LoginController(),
+    NotifierProvider<LoginController, LoginState>(
+  LoginController.new,
     );

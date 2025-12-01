@@ -33,6 +33,7 @@ class DeckGroupsWidget extends ConsumerWidget {
                 for (final group in deckGroups) ...[
                   // Group header
                   SliverPersistentHeader(
+                    key: ValueKey('header_${group.id}'),
                     pinned: true,
                     delegate: _DeckGroupHeaderDelegate(
                       child: _buildGroupHeader(context, ref, group),
@@ -41,6 +42,7 @@ class DeckGroupsWidget extends ConsumerWidget {
                   ),
                   // Group decks
                   SliverToBoxAdapter(
+                    key: ValueKey('decks_${group.id}'),
                     child: _buildGroupDecks(context, ref, group),
                   ),
                 ],
@@ -129,7 +131,10 @@ class DeckGroupsWidget extends ConsumerWidget {
           children: [
             for (int i = 0; i < deckIds.length; i++) ...[
               if (i > 0) const SizedBox(height: 8),
-              DeckListItemById(deckId: deckIds[i]),
+              DeckListItemById(
+                key: ValueKey('deck_${deckIds[i]}'),
+                deckId: deckIds[i],
+              ),
             ],
           ],
         ),

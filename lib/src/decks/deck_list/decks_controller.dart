@@ -27,11 +27,14 @@ class DecksController extends _$DecksController {
       state = const AsyncValue.loading();
       final repository = ref.read(cardsRepositoryProvider);
       final decks = await repository.loadDecks();
+      if (!ref.mounted) return;
       state = AsyncValue.data(decks);
       _log.d('Successfully loaded ${decks.length} decks');
     } catch (error, stackTrace) {
       _log.e('Error loading decks', error: error, stackTrace: stackTrace);
-      state = AsyncValue.error(error, stackTrace);
+      if (ref.mounted) {
+        state = AsyncValue.error(error, stackTrace);
+      }
     }
   }
 
@@ -46,6 +49,7 @@ class DecksController extends _$DecksController {
       _log.d('Saving deck: ${deck.name}');
       final repository = ref.read(cardsRepositoryProvider);
       await repository.saveDeck(deck);
+      if (!ref.mounted) return;
       await _loadDecks(); // Refresh the list
 
       // Refresh deck groups controller to show new deck in unassigned decks
@@ -83,6 +87,7 @@ class DecksController extends _$DecksController {
         await repository.deleteDeck(deckId);
       });
 
+      if (!ref.mounted) return;
       await _loadDecks(); // Refresh the list
 
       // Refresh deck groups controller to update unassigned decks list

@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_flashcards/src/decks/deck_generate_controller.dart';
@@ -10,19 +11,35 @@ class MockGoogleDocReader extends Mock implements GoogleDocReader {}
 
 void main() {
   group('GenerateController', () {
-    late GenerateController controller;
+    late ProviderContainer container;
+    late MockGeminiService mockGeminiService;
+    late MockGoogleDocReader mockGoogleDocReader;
 
     setUp(() {
-      final mockGeminiService = MockGeminiService();
-      final mockGoogleDocReader = MockGoogleDocReader();
-      controller = GenerateController(
-        geminiService: mockGeminiService,
-        docReader: mockGoogleDocReader,
+      mockGeminiService = MockGeminiService();
+      mockGoogleDocReader = MockGoogleDocReader();
+      container = ProviderContainer(
+        overrides: [
+          geminiServiceProvider.overrideWithValue(mockGeminiService),
+          googleDocReaderProvider.overrideWithValue(mockGoogleDocReader),
+        ],
       );
     });
 
+    tearDown(() {
+      container.dispose();
+    });
+
+    GenerateController getController() {
+      return container.read(generateControllerProvider.notifier);
+    }
+
+    GenerateState getState() {
+      return container.read(generateControllerProvider);
+    }
+
     test('should initialize with default state', () {
-      final state = controller.state;
+      final state = getState();
       expect(state.isLoading, false);
       expect(state.error, null);
       expect(state.content, null);
@@ -37,10 +54,11 @@ void main() {
 
     test('should set text content correctly', () async {
       const testText = 'This is a test text for flashcard generation';
+      final controller = getController();
 
       await controller.setTextContent(testText);
 
-      final state = controller.state;
+      final state = getState();
       expect(state.content, testText);
       expect(state.title, 'Text Input');
       expect(state.source, InputSource.text);
@@ -51,13 +69,14 @@ void main() {
     });
 
     test('should clear content correctly', () async {
+      final controller = getController();
       // First set some content
       await controller.setTextContent('Test content');
 
       // Then clear it
       controller.clearContent();
 
-      final state = controller.state;
+      final state = getState();
       expect(state.content, null);
       expect(state.title, null);
       expect(state.source, null);
@@ -68,13 +87,14 @@ void main() {
     });
 
     test('should toggle flashcard selection', () {
+      final controller = getController();
       // Mock some generated flashcards
       final mockFlashcards = [
         FlashcardData(question: 'Q1', answer: 'A1'),
         FlashcardData(question: 'Q2', answer: 'A2'),
       ];
 
-      controller.state = controller.state.copyWith(
+      controller.debugState = getState().copyWith(
         generatedFlashcards: mockFlashcards,
         selectedFlashcardIndexes: {0},
       );
@@ -82,22 +102,23 @@ void main() {
       // Toggle selection
       controller.toggleFlashcardSelection(1);
 
-      expect(controller.state.selectedFlashcardIndexes, {0, 1});
+      expect(getState().selectedFlashcardIndexes, {0, 1});
 
       // Toggle again to deselect
       controller.toggleFlashcardSelection(0);
 
-      expect(controller.state.selectedFlashcardIndexes, {1});
+      expect(getState().selectedFlashcardIndexes, {1});
     });
 
     test('should get selected flashcards', () {
+      final controller = getController();
       final mockFlashcards = [
         FlashcardData(question: 'Q1', answer: 'A1'),
         FlashcardData(question: 'Q2', answer: 'A2'),
         FlashcardData(question: 'Q3', answer: 'A3'),
       ];
 
-      controller.state = controller.state.copyWith(
+      controller.debugState = getState().copyWith(
         generatedFlashcards: mockFlashcards,
         selectedFlashcardIndexes: {0, 2},
       );
@@ -109,6 +130,7 @@ void main() {
     });
 
     test('should handle empty text content', () async {
+      final controller = getController();
       expect(
         () => controller.setTextContent(''),
         throwsA(isA<ArgumentError>()),
@@ -116,6 +138,7 @@ void main() {
     });
 
     test('should handle whitespace-only text content', () async {
+      final controller = getController();
       expect(
         () => controller.setTextContent('   '),
         throwsA(isA<ArgumentError>()),

@@ -6,183 +6,115 @@ part of 'deck_details_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$deckDetailsControllerHash() =>
-    r'351b5eccd28b5deabb3e3c8478573e4576faf8b2';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-abstract class _$DeckDetailsController
-    extends BuildlessAutoDisposeNotifier<AsyncValue<model.Deck>> {
-  late final String deckId;
-
-  AsyncValue<model.Deck> build(
-    String deckId,
-  );
-}
-
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 /// Controller for managing deck details operations
-///
-/// Copied from [DeckDetailsController].
+
 @ProviderFor(DeckDetailsController)
-const deckDetailsControllerProvider = DeckDetailsControllerFamily();
+const deckDetailsControllerProvider = DeckDetailsControllerFamily._();
 
 /// Controller for managing deck details operations
-///
-/// Copied from [DeckDetailsController].
-class DeckDetailsControllerFamily extends Family<AsyncValue<model.Deck>> {
+final class DeckDetailsControllerProvider
+    extends $NotifierProvider<DeckDetailsController, AsyncValue<model.Deck>> {
   /// Controller for managing deck details operations
-  ///
-  /// Copied from [DeckDetailsController].
-  const DeckDetailsControllerFamily();
+  const DeckDetailsControllerProvider._({
+    required DeckDetailsControllerFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'deckDetailsControllerProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
-  /// Controller for managing deck details operations
-  ///
-  /// Copied from [DeckDetailsController].
-  DeckDetailsControllerProvider call(
-    String deckId,
-  ) {
-    return DeckDetailsControllerProvider(
-      deckId,
-    );
+  @override
+  String debugGetCreateSourceHash() => _$deckDetailsControllerHash();
+
+  @override
+  String toString() {
+    return r'deckDetailsControllerProvider'
+        ''
+        '($argument)';
   }
 
+  @$internal
   @override
-  DeckDetailsControllerProvider getProviderOverride(
-    covariant DeckDetailsControllerProvider provider,
-  ) {
-    return call(
-      provider.deckId,
-    );
-  }
+  DeckDetailsController create() => DeckDetailsController();
 
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'deckDetailsControllerProvider';
-}
-
-/// Controller for managing deck details operations
-///
-/// Copied from [DeckDetailsController].
-class DeckDetailsControllerProvider extends AutoDisposeNotifierProviderImpl<
-    DeckDetailsController, AsyncValue<model.Deck>> {
-  /// Controller for managing deck details operations
-  ///
-  /// Copied from [DeckDetailsController].
-  DeckDetailsControllerProvider(
-    String deckId,
-  ) : this._internal(
-          () => DeckDetailsController()..deckId = deckId,
-          from: deckDetailsControllerProvider,
-          name: r'deckDetailsControllerProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$deckDetailsControllerHash,
-          dependencies: DeckDetailsControllerFamily._dependencies,
-          allTransitiveDependencies:
-              DeckDetailsControllerFamily._allTransitiveDependencies,
-          deckId: deckId,
-        );
-
-  DeckDetailsControllerProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.deckId,
-  }) : super.internal();
-
-  final String deckId;
-
-  @override
-  AsyncValue<model.Deck> runNotifierBuild(
-    covariant DeckDetailsController notifier,
-  ) {
-    return notifier.build(
-      deckId,
-    );
-  }
-
-  @override
-  Override overrideWith(DeckDetailsController Function() create) {
-    return ProviderOverride(
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<model.Deck> value) {
+    return $ProviderOverride(
       origin: this,
-      override: DeckDetailsControllerProvider._internal(
-        () => create()..deckId = deckId,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        deckId: deckId,
-      ),
+      providerOverride: $SyncValueProvider<AsyncValue<model.Deck>>(value),
     );
-  }
-
-  @override
-  AutoDisposeNotifierProviderElement<DeckDetailsController,
-      AsyncValue<model.Deck>> createElement() {
-    return _DeckDetailsControllerProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is DeckDetailsControllerProvider && other.deckId == deckId;
+    return other is DeckDetailsControllerProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, deckId.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-mixin DeckDetailsControllerRef
-    on AutoDisposeNotifierProviderRef<AsyncValue<model.Deck>> {
-  /// The parameter `deckId` of this provider.
-  String get deckId;
-}
+String _$deckDetailsControllerHash() =>
+    r'351b5eccd28b5deabb3e3c8478573e4576faf8b2';
 
-class _DeckDetailsControllerProviderElement
-    extends AutoDisposeNotifierProviderElement<DeckDetailsController,
-        AsyncValue<model.Deck>> with DeckDetailsControllerRef {
-  _DeckDetailsControllerProviderElement(super.provider);
+/// Controller for managing deck details operations
+
+final class DeckDetailsControllerFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          DeckDetailsController,
+          AsyncValue<model.Deck>,
+          AsyncValue<model.Deck>,
+          AsyncValue<model.Deck>,
+          String
+        > {
+  const DeckDetailsControllerFamily._()
+    : super(
+        retry: null,
+        name: r'deckDetailsControllerProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Controller for managing deck details operations
+
+  DeckDetailsControllerProvider call(String deckId) =>
+      DeckDetailsControllerProvider._(argument: deckId, from: this);
 
   @override
-  String get deckId => (origin as DeckDetailsControllerProvider).deckId;
+  String toString() => r'deckDetailsControllerProvider';
 }
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+
+/// Controller for managing deck details operations
+
+abstract class _$DeckDetailsController
+    extends $Notifier<AsyncValue<model.Deck>> {
+  late final _$args = ref.$arg as String;
+  String get deckId => _$args;
+
+  AsyncValue<model.Deck> build(String deckId);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build(_$args);
+    final ref =
+        this.ref as $Ref<AsyncValue<model.Deck>, AsyncValue<model.Deck>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<model.Deck>, AsyncValue<model.Deck>>,
+              AsyncValue<model.Deck>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

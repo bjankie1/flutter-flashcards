@@ -31,6 +31,11 @@ class DeckCacheService {
     }
 
     _log.d('Initializing DeckCacheService for user: $_userId');
+    final decksCollection = _firestore
+        .collection('decks')
+        .doc(_userId)
+        .collection('userDecks');
+    _log.d('Listening to decks collection: ${decksCollection.path}');
 
     try {
       // Load all existing decks
@@ -93,15 +98,22 @@ class DeckCacheService {
           final deck = change.doc.data();
           if (deck == null) continue;
 
+          _log.i(
+            '!!!CACHE_DIAGNOSTICS!!! Firestore event received: ${change.type} for deck ${deck.id}',
+          );
           switch (change.type) {
             case DocumentChangeType.added:
             case DocumentChangeType.modified:
               _addDeckToCache(deck);
-              _log.d('Deck updated in cache: ${deck.id}');
+              _log.i(
+                '!!!CACHE_DIAGNOSTICS!!! Deck updated in cache: ${deck.id}',
+              );
               break;
             case DocumentChangeType.removed:
               _removeDeckFromCache(deck);
-              _log.d('Deck removed from cache: ${deck.id}');
+              _log.i(
+                '!!!CACHE_DIAGNOSTICS!!! Deck removed from cache: ${deck.id}',
+              );
               break;
           }
         }

@@ -44,6 +44,8 @@ abstract class CardsRepository extends ChangeNotifier {
 
   Future<Iterable<model.Deck>> loadDecks();
 
+  Stream<List<model.Deck>> watchDecks();
+
   Future<model.Deck?> loadDeck(String deckId);
 
   Future<void> deleteDeck(String deckId);
@@ -225,6 +227,8 @@ abstract class CardsRepository extends ChangeNotifier {
   Future<model.DeckGroup?> loadDeckGroup(model.DeckGroupId groupId);
 
   Future<Iterable<model.DeckGroup>> loadDeckGroups();
+
+  Stream<List<model.DeckGroup>> watchDeckGroups();
 
   Future<void> deleteDeckGroup(model.DeckGroupId groupId);
 

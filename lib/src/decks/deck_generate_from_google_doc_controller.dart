@@ -44,16 +44,16 @@ class GoogleDocImportState {
   }
 }
 
-class GoogleDocImportController extends StateNotifier<GoogleDocImportState> {
-  final GoogleDocReader _docReader;
-  final GeminiService _geminiService;
+class GoogleDocImportController extends Notifier<GoogleDocImportState> {
+  late final GoogleDocReader _docReader;
+  late final GeminiService _geminiService;
 
-  GoogleDocImportController({
-    GoogleDocReader? docReader,
-    GeminiService? geminiService,
-  }) : _docReader = docReader ?? GoogleDocReader(),
-       _geminiService = geminiService ?? GeminiService(useEmulator: false),
-       super(GoogleDocImportState());
+  @override
+  GoogleDocImportState build() {
+    _docReader = GoogleDocReader();
+    _geminiService = GeminiService(useEmulator: false);
+    return GoogleDocImportState();
+  }
 
   Future<String> processGoogleDoc(String docId) async {
     if (docId.trim().isEmpty) {
@@ -141,8 +141,6 @@ class GoogleDocImportController extends StateNotifier<GoogleDocImportState> {
 }
 
 final googleDocImportControllerProvider =
-    StateNotifierProvider<GoogleDocImportController, GoogleDocImportState>((
-      ref,
-    ) {
-      return GoogleDocImportController();
-    });
+    NotifierProvider<GoogleDocImportController, GoogleDocImportState>(
+      GoogleDocImportController.new,
+    );

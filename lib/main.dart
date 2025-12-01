@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
+import 'package:firebase_auth/firebase_auth.dart'
+    show FirebaseAuth, FirebaseAuthException;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
@@ -22,7 +23,7 @@ import 'package:provider/provider.dart' as provider_package;
 import 'package:flutter_web_plugins/url_strategy.dart';
 
 import 'src/app.dart';
-import 'src/model/repository_provider.dart';
+import 'src/model/repository_provider.dart' as repo_provider;
 import 'src/decks/deck_list/index.dart';
 import 'src/app_config.dart';
 
@@ -79,7 +80,7 @@ void main() async {
       overrides: [cardsRepositoryProvider.overrideWithValue(repository)],
       child: provider_package.MultiProvider(
         providers: [
-          CardsRepositoryProvider(repository),
+          repo_provider.CardsRepositoryProvider(repository),
           provider_package.Provider(
             create: (context) {
               return storageService;
@@ -110,6 +111,37 @@ void main() async {
       router.go('/');
     }
   });
+
+  // Auto-login if configured (dev only)
+  if (AppConfig.useFirebaseEmulator &&
+      AppConfig.autoLoginEmail != null &&
+      AppConfig.autoLoginPassword != null) {
+    try {
+      _log.i('Attempting auto-login for ${AppConfig.autoLoginEmail}');
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: AppConfig.autoLoginEmail!,
+        password: AppConfig.autoLoginPassword!,
+      );
+      _log.i('Auto-login successful');
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found' || e.code == 'invalid-credential') {
+        _log.i('User not found, creating user ${AppConfig.autoLoginEmail}');
+        try {
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: AppConfig.autoLoginEmail!,
+            password: AppConfig.autoLoginPassword!,
+          );
+          _log.i('Auto-login user created and signed in');
+        } catch (e) {
+          _log.e('Failed to create auto-login user: $e');
+        }
+      } else {
+        _log.e('Auto-login failed: $e');
+      }
+    } catch (e) {
+      _log.e('Auto-login failed with unexpected error: $e');
+    }
+  }
 }
 
 Future<void> _connectFirebaseEmulator() async {

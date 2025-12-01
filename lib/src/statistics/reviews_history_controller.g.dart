@@ -6,208 +6,124 @@ part of 'reviews_history_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$reviewHistoryControllerHash() =>
-    r'1036347007ce03c0d320ac2757976853482aa3cb';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-abstract class _$ReviewHistoryController
-    extends BuildlessAutoDisposeNotifier<ReviewHistoryData> {
-  late final Iterable<CardAnswer> answers;
-  late final DateTimeRange<DateTime> dateRange;
-
-  ReviewHistoryData build(
-    Iterable<CardAnswer> answers,
-    DateTimeRange<DateTime> dateRange,
-  );
-}
-
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 /// Controller for managing review history operations
-///
-/// Copied from [ReviewHistoryController].
+
 @ProviderFor(ReviewHistoryController)
-const reviewHistoryControllerProvider = ReviewHistoryControllerFamily();
+const reviewHistoryControllerProvider = ReviewHistoryControllerFamily._();
 
 /// Controller for managing review history operations
-///
-/// Copied from [ReviewHistoryController].
-class ReviewHistoryControllerFamily extends Family<ReviewHistoryData> {
+final class ReviewHistoryControllerProvider
+    extends $NotifierProvider<ReviewHistoryController, ReviewHistoryData> {
   /// Controller for managing review history operations
-  ///
-  /// Copied from [ReviewHistoryController].
-  const ReviewHistoryControllerFamily();
+  const ReviewHistoryControllerProvider._({
+    required ReviewHistoryControllerFamily super.from,
+    required (Iterable<CardAnswer>, DateTimeRange<DateTime>) super.argument,
+  }) : super(
+         retry: null,
+         name: r'reviewHistoryControllerProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
-  /// Controller for managing review history operations
-  ///
-  /// Copied from [ReviewHistoryController].
-  ReviewHistoryControllerProvider call(
-    Iterable<CardAnswer> answers,
-    DateTimeRange<DateTime> dateRange,
-  ) {
-    return ReviewHistoryControllerProvider(
-      answers,
-      dateRange,
-    );
+  @override
+  String debugGetCreateSourceHash() => _$reviewHistoryControllerHash();
+
+  @override
+  String toString() {
+    return r'reviewHistoryControllerProvider'
+        ''
+        '$argument';
   }
 
+  @$internal
   @override
-  ReviewHistoryControllerProvider getProviderOverride(
-    covariant ReviewHistoryControllerProvider provider,
-  ) {
-    return call(
-      provider.answers,
-      provider.dateRange,
-    );
-  }
+  ReviewHistoryController create() => ReviewHistoryController();
 
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'reviewHistoryControllerProvider';
-}
-
-/// Controller for managing review history operations
-///
-/// Copied from [ReviewHistoryController].
-class ReviewHistoryControllerProvider extends AutoDisposeNotifierProviderImpl<
-    ReviewHistoryController, ReviewHistoryData> {
-  /// Controller for managing review history operations
-  ///
-  /// Copied from [ReviewHistoryController].
-  ReviewHistoryControllerProvider(
-    Iterable<CardAnswer> answers,
-    DateTimeRange<DateTime> dateRange,
-  ) : this._internal(
-          () => ReviewHistoryController()
-            ..answers = answers
-            ..dateRange = dateRange,
-          from: reviewHistoryControllerProvider,
-          name: r'reviewHistoryControllerProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$reviewHistoryControllerHash,
-          dependencies: ReviewHistoryControllerFamily._dependencies,
-          allTransitiveDependencies:
-              ReviewHistoryControllerFamily._allTransitiveDependencies,
-          answers: answers,
-          dateRange: dateRange,
-        );
-
-  ReviewHistoryControllerProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.answers,
-    required this.dateRange,
-  }) : super.internal();
-
-  final Iterable<CardAnswer> answers;
-  final DateTimeRange<DateTime> dateRange;
-
-  @override
-  ReviewHistoryData runNotifierBuild(
-    covariant ReviewHistoryController notifier,
-  ) {
-    return notifier.build(
-      answers,
-      dateRange,
-    );
-  }
-
-  @override
-  Override overrideWith(ReviewHistoryController Function() create) {
-    return ProviderOverride(
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ReviewHistoryData value) {
+    return $ProviderOverride(
       origin: this,
-      override: ReviewHistoryControllerProvider._internal(
-        () => create()
-          ..answers = answers
-          ..dateRange = dateRange,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        answers: answers,
-        dateRange: dateRange,
-      ),
+      providerOverride: $SyncValueProvider<ReviewHistoryData>(value),
     );
-  }
-
-  @override
-  AutoDisposeNotifierProviderElement<ReviewHistoryController, ReviewHistoryData>
-      createElement() {
-    return _ReviewHistoryControllerProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
     return other is ReviewHistoryControllerProvider &&
-        other.answers == answers &&
-        other.dateRange == dateRange;
+        other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, answers.hashCode);
-    hash = _SystemHash.combine(hash, dateRange.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-mixin ReviewHistoryControllerRef
-    on AutoDisposeNotifierProviderRef<ReviewHistoryData> {
-  /// The parameter `answers` of this provider.
-  Iterable<CardAnswer> get answers;
+String _$reviewHistoryControllerHash() =>
+    r'1036347007ce03c0d320ac2757976853482aa3cb';
 
-  /// The parameter `dateRange` of this provider.
-  DateTimeRange<DateTime> get dateRange;
-}
+/// Controller for managing review history operations
 
-class _ReviewHistoryControllerProviderElement
-    extends AutoDisposeNotifierProviderElement<ReviewHistoryController,
-        ReviewHistoryData> with ReviewHistoryControllerRef {
-  _ReviewHistoryControllerProviderElement(super.provider);
+final class ReviewHistoryControllerFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          ReviewHistoryController,
+          ReviewHistoryData,
+          ReviewHistoryData,
+          ReviewHistoryData,
+          (Iterable<CardAnswer>, DateTimeRange<DateTime>)
+        > {
+  const ReviewHistoryControllerFamily._()
+    : super(
+        retry: null,
+        name: r'reviewHistoryControllerProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Controller for managing review history operations
+
+  ReviewHistoryControllerProvider call(
+    Iterable<CardAnswer> answers,
+    DateTimeRange<DateTime> dateRange,
+  ) => ReviewHistoryControllerProvider._(
+    argument: (answers, dateRange),
+    from: this,
+  );
 
   @override
-  Iterable<CardAnswer> get answers =>
-      (origin as ReviewHistoryControllerProvider).answers;
-  @override
-  DateTimeRange<DateTime> get dateRange =>
-      (origin as ReviewHistoryControllerProvider).dateRange;
+  String toString() => r'reviewHistoryControllerProvider';
 }
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+
+/// Controller for managing review history operations
+
+abstract class _$ReviewHistoryController extends $Notifier<ReviewHistoryData> {
+  late final _$args =
+      ref.$arg as (Iterable<CardAnswer>, DateTimeRange<DateTime>);
+  Iterable<CardAnswer> get answers => _$args.$1;
+  DateTimeRange<DateTime> get dateRange => _$args.$2;
+
+  ReviewHistoryData build(
+    Iterable<CardAnswer> answers,
+    DateTimeRange<DateTime> dateRange,
+  );
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build(_$args.$1, _$args.$2);
+    final ref = this.ref as $Ref<ReviewHistoryData, ReviewHistoryData>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<ReviewHistoryData, ReviewHistoryData>,
+              ReviewHistoryData,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

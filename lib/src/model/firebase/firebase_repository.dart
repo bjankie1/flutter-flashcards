@@ -159,6 +159,14 @@ class FirebaseCardsRepository extends CardsRepository {
     return snapshot.docs.map((s) => s.data());
   }
 
+  @override
+  Stream<List<Deck>> watchDecks() {
+    _log.d('Watching decks at path: ${_decksCollection.path}');
+    return _decksCollection.snapshots().map(
+      (snapshot) => snapshot.docs.map((doc) => doc.data()).toList(),
+    );
+  }
+
   Future<void> _updateCard(Card card) async {
     _log.d('Updating card');
     final docRef = _cardsCollection.doc(card.id);
@@ -1121,6 +1129,16 @@ Mature: ${breakdown[CardMastery.mature]}''');
         .then((snapshot) => snapshot.docs.map((doc) => doc.data()))
         .logError('Error loading deck groups');
   }
+
+  @override
+  Stream<List<DeckGroup>> watchDeckGroups() {
+    _log.d('Watching deck groups at path: ${_deckGroupsCollection.path}');
+    return _deckGroupsCollection.snapshots().map(
+      (snapshot) => snapshot.docs.map((doc) => doc.data()).toList(),
+    );
+  }
+
+
 
   @override
   Future<void> removeDeckFromGroup(String deckId, String groupId) async {
